@@ -60,10 +60,22 @@ export const projectRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
+      // Get the user's database ID from their Clerk ID
+      const user = await ctx.prisma.user.findUnique({
+        where: { clerkId: ctx.userId },
+        select: { id: true },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'User not found',
+        });
+      }
+
       const project = await ctx.prisma.project.findUnique({
         where: {
           id: input.id,
-          userId: ctx.userId,
         },
         include: {
           pages: {
@@ -78,6 +90,14 @@ export const projectRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Project not found',
+        });
+      }
+
+      // Verify ownership
+      if (project.userId !== user.id) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You do not have permission to access this project',
         });
       }
 
