@@ -8,6 +8,13 @@ interface PropertiesPanelProps {
 }
 
 export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
+  // Debug logging
+  console.log('PropertiesPanel received:', {
+    hasComponent: !!component,
+    componentType: component?.type,
+    componentProps: component?.props,
+  });
+
   if (!component) {
     return (
       <div className="p-6">

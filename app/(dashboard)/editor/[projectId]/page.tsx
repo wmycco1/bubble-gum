@@ -32,10 +32,23 @@ export default function EditorPage(props: EditorPageProps) {
 
   // Load page content when homepage is available
   useEffect(() => {
-    if (homepage && components.length === 0 && Array.isArray(homepage.content)) {
-      setComponents(homepage.content as unknown as PageComponent[]);
+    if (homepage?.content && components.length === 0) {
+      try {
+        const content = Array.isArray(homepage.content)
+          ? homepage.content
+          : typeof homepage.content === 'string'
+          ? JSON.parse(homepage.content)
+          : [];
+
+        if (content.length > 0) {
+          console.log('Loading components from DB:', content);
+          setComponents(content as PageComponent[]);
+        }
+      } catch (error) {
+        console.error('Failed to parse homepage content:', error);
+      }
     }
-  }, [homepage, components.length]);
+  }, [homepage?.content, components.length]);
 
   const handleSave = async () => {
     if (!homepage) return;
@@ -76,6 +89,14 @@ export default function EditorPage(props: EditorPageProps) {
   };
 
   const selectedComponent = components.find((c) => c.id === selectedComponentId);
+
+  // Debug logging
+  console.log('EditorPage State:', {
+    componentsCount: components.length,
+    selectedComponentId,
+    selectedComponent,
+    hasPropsPanel: !!selectedComponent,
+  });
 
   if (projectLoading) {
     return (
