@@ -1,0 +1,112 @@
+openapi: 3.0.3
+info:
+  title: Bubble Gum REST API
+  version: 1.0.0
+  description: |
+    REST API for Bubble Gum AI Page Builder.
+    
+    This REST API is provided alongside the tRPC API for third-party integrations
+    that require standard REST endpoints (n8n, Zapier, Make.com, etc.).
+    
+    For TypeScript/JavaScript applications, we recommend using the tRPC API
+    for full type safety and better developer experience.
+    
+    **Base URL:** `https://api.bubblegum.app/v1`
+    
+    **Authentication:** Bearer token (API key from dashboard)
+    
+    **Rate Limits:**
+    - FREE: 1,000 requests/hour
+    - STARTER: 5,000 requests/hour
+    - PRO: 20,000 requests/hour
+    - ENTERPRISE: Unlimited
+    
+  contact:
+    name: Bubble Gum Support
+    email: api@bubblegum.app
+    url: https://docs.bubblegum.app
+
+servers:
+  - url: https://api.bubblegum.app/v1
+    description: Production
+  - url: http://localhost:3001/v1
+    description: Development
+
+tags:
+  - name: Projects
+  - name: Pages
+  - name: Assets
+  - name: Analytics
+  - name: Forms
+  - name: AI
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /projects:
+    get:
+      tags: [Projects]
+      summary: List projects
+      parameters:
+        - name: organizationId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+    
+    post:
+      tags: [Projects]
+      summary: Create project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+  
+  schemas:
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED, ARCHIVED]
+    
+    CreateProjectInput:
+      type: object
+      required: [organizationId, name, slug]
+      properties:
+        organizationId:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string

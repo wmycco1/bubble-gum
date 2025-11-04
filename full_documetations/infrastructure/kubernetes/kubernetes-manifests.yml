@@ -1,0 +1,663 @@
+# ═══════════════════════════════════════════════════════════════
+# BUBBLE GUM - KUBERNETES MANIFESTS
+# ═══════════════════════════════════════════════════════════════
+# Version: 1.0.0
+# Last Updated: November 2, 2025
+# Purpose: Complete Kubernetes deployment configuration
+# Cluster: AWS EKS / Google GKE / Azure AKS
+# ═══════════════════════════════════════════════════════════════
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# NAMESPACE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bubblegum
+  labels:
+    name: bubblegum
+    environment: production
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# CONFIGMAP - Application Configuration
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bubblegum-config
+  namespace: bubblegum
+data:
+  # Application
+  NODE_ENV: "production"
+  PORT: "3000"
+  NEXT_TELEMETRY_DISABLED: "1"
+  
+  # Public URLs
+  NEXT_PUBLIC_APP_URL: "https://bubblegum.app"
+  NEXT_PUBLIC_APP_NAME: "Bubble Gum"
+  
+  # Clerk URLs
+  NEXT_PUBLIC_CLERK_SIGN_IN_URL: "/sign-in"
+  NEXT_PUBLIC_CLERK_SIGN_UP_URL: "/sign-up"
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: "/dashboard"
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: "/onboarding"
+  
+  # Database Pool
+  DATABASE_POOL_MIN: "2"
+  DATABASE_POOL_MAX: "20"
+  
+  # Redis
+  REDIS_TTL: "3600"
+  
+  # Rate Limiting
+  RATE_LIMIT_WINDOW: "60000"
+  RATE_LIMIT_MAX_REQUESTS_FREE: "10"
+  RATE_LIMIT_MAX_REQUESTS_STARTER: "100"
+  RATE_LIMIT_MAX_REQUESTS_PRO: "1000"
+  
+  # Feature Flags
+  NEXT_PUBLIC_FEATURE_AI_GENERATION: "true"
+  NEXT_PUBLIC_FEATURE_ECOMMERCE: "false"
+  NEXT_PUBLIC_FEATURE_BLOG: "false"
+  
+  # Logging
+  LOG_LEVEL: "info"
+  SENTRY_ENVIRONMENT: "production"
+  SENTRY_TRACES_SAMPLE_RATE: "0.1"
+  
+  # CORS
+  CORS_ALLOWED_METHODS: "GET,POST,PUT,PATCH,DELETE"
+  CORS_ALLOW_CREDENTIALS: "true"
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# SECRET - Sensitive Configuration
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# NOTE: In production, use external secret management:
+# - AWS Secrets Manager
+# - Google Secret Manager
+# - Azure Key Vault
+# - HashiCorp Vault
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bubblegum-secrets
+  namespace: bubblegum
+type: Opaque
+stringData:
+  # Database (base64 encode in production!)
+  DATABASE_URL: "postgresql://user:password@postgres-service:5432/bubblegum"
+  DIRECT_DATABASE_URL: "postgresql://user:password@postgres-service:5432/bubblegum"
+  
+  # Redis
+  REDIS_URL: "redis://redis-service:6379"
+  
+  # Clerk
+  CLERK_SECRET_KEY: "sk_live_xxx"
+  CLERK_WEBHOOK_SECRET: "whsec_xxx"
+  
+  # Anthropic
+  ANTHROPIC_API_KEY: "sk-ant-xxx"
+  
+  # AWS
+  AWS_ACCESS_KEY_ID: "AKIA..."
+  AWS_SECRET_ACCESS_KEY: "xxx"
+  
+  # Stripe
+  STRIPE_SECRET_KEY: "sk_live_xxx"
+  STRIPE_WEBHOOK_SECRET: "whsec_xxx"
+  
+  # Session
+  SESSION_SECRET: "xxx"
+  WEBHOOK_SECRET: "xxx"
+  CRON_SECRET: "xxx"
+  
+  # Sentry
+  SENTRY_DSN: "https://xxx@xxx.ingest.sentry.io/xxx"
+  
+  # Email
+  RESEND_API_KEY: "re_xxx"
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# DEPLOYMENT - Application
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bubblegum-app
+  namespace: bubblegum
+  labels:
+    app: bubblegum
+    component: application
+    version: v1
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: bubblegum
+      component: application
+  template:
+    metadata:
+      labels:
+        app: bubblegum
+        component: application
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/api/metrics"
+    spec:
+      # Security Context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      
+      # Service Account
+      serviceAccountName: bubblegum-sa
+      
+      # Init Containers
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z postgres-service 5432; do
+                echo "Waiting for PostgreSQL..."
+                sleep 2
+              done
+        
+        - name: wait-for-redis
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z redis-service 6379; do
+                echo "Waiting for Redis..."
+                sleep 2
+              done
+        
+        - name: run-migrations
+          image: ghcr.io/bubblegum/app:latest
+          command:
+            - sh
+            - -c
+            - npx prisma migrate deploy
+          envFrom:
+            - configMapRef:
+                name: bubblegum-config
+            - secretRef:
+                name: bubblegum-secrets
+      
+      # Application Container
+      containers:
+        - name: app
+          image: ghcr.io/bubblegum/app:latest
+          imagePullPolicy: Always
+          
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          
+          # Environment Variables
+          envFrom:
+            - configMapRef:
+                name: bubblegum-config
+            - secretRef:
+                name: bubblegum-secrets
+          
+          # Resource Limits
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          
+          # Health Checks
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          
+          # Volume Mounts
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: cache
+              mountPath: /app/.next/cache
+      
+      # Volumes
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: cache
+          emptyDir: {}
+      
+      # Node Affinity (prefer spot instances for cost savings)
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/lifecycle
+                    operator: In
+                    values:
+                      - spot
+        
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: bubblegum
+                topologyKey: kubernetes.io/hostname
+      
+      # Tolerations
+      tolerations:
+        - key: kubernetes.io/lifecycle
+          operator: Equal
+          value: spot
+          effect: NoSchedule
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# SERVICE - Application
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: v1
+kind: Service
+metadata:
+  name: bubblegum-app-service
+  namespace: bubblegum
+  labels:
+    app: bubblegum
+    component: application
+spec:
+  type: ClusterIP
+  selector:
+    app: bubblegum
+    component: application
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# HORIZONTAL POD AUTOSCALER
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: bubblegum-app-hpa
+  namespace: bubblegum
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: bubblegum-app
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 30
+        - type: Pods
+          value: 2
+          periodSeconds: 30
+      selectPolicy: Max
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# INGRESS - Application (NGINX Ingress Controller)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bubblegum-ingress
+  namespace: bubblegum
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://bubblegum.app"
+spec:
+  tls:
+    - hosts:
+        - bubblegum.app
+        - www.bubblegum.app
+        - "*.bubblegum.app"
+      secretName: bubblegum-tls
+  rules:
+    - host: bubblegum.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bubblegum-app-service
+                port:
+                  number: 80
+    
+    - host: www.bubblegum.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bubblegum-app-service
+                port:
+                  number: 80
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# POSTGRES STATEFULSET
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: bubblegum
+spec:
+  serviceName: postgres-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_USER
+              value: bubblegum
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: POSTGRES_DB
+              value: bubblegum
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: gp3
+        resources:
+          requests:
+            storage: 100Gi
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# POSTGRES SERVICE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: bubblegum
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# REDIS DEPLOYMENT
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: bubblegum
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          args:
+            - redis-server
+            - --appendonly
+            - "yes"
+            - --maxmemory
+            - "512mb"
+            - --maxmemory-policy
+            - allkeys-lru
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# REDIS SERVICE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: bubblegum
+spec:
+  type: ClusterIP
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# SERVICE ACCOUNT
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bubblegum-sa
+  namespace: bubblegum
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# POD DISRUPTION BUDGET
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: bubblegum-app-pdb
+  namespace: bubblegum
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: bubblegum
+      component: application
+
+---
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# NETWORK POLICY
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: bubblegum-app-netpol
+  namespace: bubblegum
+spec:
+  podSelector:
+    matchLabels:
+      app: bubblegum
+      component: application
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+
+# ═══════════════════════════════════════════════════════════════
+# DEPLOYMENT INSTRUCTIONS
+# ═══════════════════════════════════════════════════════════════
+#
+# 1. Apply all manifests:
+#    kubectl apply -f kubernetes/
+#
+# 2. Check deployment status:
+#    kubectl get pods -n bubblegum
+#    kubectl get svc -n bubblegum
+#    kubectl get ingress -n bubblegum
+#
+# 3. View logs:
+#    kubectl logs -f deployment/bubblegum-app -n bubblegum
+#
+# 4. Scale deployment:
+#    kubectl scale deployment/bubblegum-app --replicas=5 -n bubblegum
+#
+# 5. Update deployment:
+#    kubectl set image deployment/bubblegum-app \
+#      app=ghcr.io/bubblegum/app:v2 -n bubblegum
+#
+# 6. Rollback deployment:
+#    kubectl rollout undo deployment/bubblegum-app -n bubblegum
+#
+# 7. Delete all resources:
+#    kubectl delete namespace bubblegum
+#
+# ═══════════════════════════════════════════════════════════════

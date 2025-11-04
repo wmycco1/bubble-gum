@@ -1,0 +1,578 @@
+# ═══════════════════════════════════════════════════════════════
+# BUBBLE GUM - CI/CD PIPELINE (GitHub Actions)
+# ═══════════════════════════════════════════════════════════════
+# Version: 1.0.0
+# Last Updated: November 2, 2025
+# Purpose: Complete CI/CD pipeline for Bubble Gum application
+# Stages: Lint → Test → Build → Security Scan → Deploy
+# ═══════════════════════════════════════════════════════════════
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+# Permissions
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  pull-requests: write
+  issues: write
+
+# Environment variables
+env:
+  NODE_VERSION: '20'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# JOBS
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+jobs:
+
+  # ┌─────────────────────────────────────────────────────────────┐
+  # │ JOB 1: LINT & CODE QUALITY                                  │
+  # └─────────────────────────────────────────────────────────────┘
+  lint:
+    name: 🔍 Lint & Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🔍 Run ESLint
+        run: npm run lint
+        continue-on-error: false
+
+      - name: 💅 Check code formatting (Prettier)
+        run: npm run format:check
+
+      - name: 📝 TypeScript type checking
+        run: npm run type-check
+
+      - name: 📊 Code complexity analysis
+        run: npx complexity-report --output complexity-report.json src/
+        continue-on-error: true
+
+      - name: 📤 Upload lint results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-results
+          path: |
+            eslint-report.json
+            complexity-report.json
+          retention-days: 7
+
+  # ┌─────────────────────────────────────────────────────────────┐
+  # │ JOB 2: UNIT TESTS                                           │
+  # └─────────────────────────────────────────────────────────────┘
+  test-unit:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: lint
+
+    strategy:
+      matrix:
+        node-version: [18, 20]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🧪 Run unit tests
+        run: npm run test:unit -- --coverage --maxWorkers=2
+        env:
+          NODE_ENV: test
+
+      - name: 📊 Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unit-tests
+          name: unit-tests-node-${{ matrix.node-version }}
+          fail_ci_if_error: false
+
+      - name: 📤 Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-unit-node-${{ matrix.node-version }}
+          path: |
+            coverage/
+            test-results/
+          retention-days: 7
+
+  # ┌─────────────────────────────────────────────────────────────┐
+  # │ JOB 3: INTEGRATION TESTS                                    │
+  # └─────────────────────────────────────────────────────────────┘
+  test-integration:
+    name: 🔗 Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: lint
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: bubblegum_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🗄️ Run database migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/bubblegum_test
+
+      - name: 🌱 Seed test database
+        run: npx prisma db seed
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/bubblegum_test
+
+      - name: 🧪 Run integration tests
+        run: npm run test:integration -- --coverage
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://test:test@localhost:5432/bubblegum_test
+          REDIS_URL: redis://localhost:6379
+
+      - name: 📊 Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/coverage-final.json
+          flags: integration-tests
+          name: integration-tests
+          fail_ci_if_error: false
+
+  # ┌─────────────────────────────────────────────────────────────┐
+  # │ JOB 4: E2E TESTS (Playwright)                               │
+  # └─────────────────────────────────────────────────────────────┘
+  test-e2e:
+    name: 🎭 E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [test-unit, test-integration]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: 🚀 Start application
+        run: |
+          npm run start &
+          npx wait-on http://localhost:3000 -t 60000
+        env:
+          PORT: 3000
+
+      - name: 🧪 Run E2E tests
+        run: npm run test:e2e
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: 📤 Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      - name: 📸 Upload test screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-screenshots
+          path: test-results/
+          retention-days: 7
+
+  # ┌─────────────────────────────────────────────────────────────┐
+  # │ JOB 5: SECURITY SCAN                                        │
+  # └─────────────────────────────────────────────────────────────┘
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: lint
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🔍 Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: 🔒 Run Snyk security scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+      - name: 🛡️ Run OWASP dependency check
+        run: |
+          npm install -g @cyclonedx/cyclonedx-npm
+          cyclonedx-npm --output-file sbom.json
+        continue-on-error: true
+
+      - name: 📊 CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        continue-on-error: true
+
+  # ┌─────────────────────────────────────────────────────────────┐
+  # │ JOB 6: BUILD DOCKER IMAGE                                   │
+  # └─────────────────────────────────────────────────────────────┘
+  build:
+    name: 🏗️ Build Docker Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [test-unit, test-integration, security]
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🐳 Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: 🏗️ Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+            NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
+
+      - name: 🔍 Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: 📤 Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # ┌─────────────────────────────────────────────────────────────┐
+  # │ JOB 7: DEPLOY TO STAGING                                    │
+  # └─────────────────────────────────────────────────────────────┘
+  deploy-staging:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: https://staging.bubblegum.app
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: 🗄️ Run database migrations
+        run: |
+          npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+
+      - name: 🚀 Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster bubblegum-staging \
+            --service bubblegum-app \
+            --force-new-deployment
+
+      - name: ⏳ Wait for deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster bubblegum-staging \
+            --services bubblegum-app
+
+      - name: 🧪 Run smoke tests
+        run: |
+          curl -f https://staging.bubblegum.app/api/health || exit 1
+          curl -f https://staging.bubblegum.app/api/status || exit 1
+
+      - name: 📢 Notify deployment
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          text: 'Staging deployment ${{ job.status }}'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # ┌─────────────────────────────────────────────────────────────┐
+  # │ JOB 8: DEPLOY TO PRODUCTION                                 │
+  # └─────────────────────────────────────────────────────────────┘
+  deploy-production:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [build, test-e2e]
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
+    environment:
+      name: production
+      url: https://bubblegum.app
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: 📊 Create deployment record
+        run: |
+          echo "Deployment started at $(date)" > deployment.log
+          echo "Image: ${{ needs.build.outputs.image-tag }}" >> deployment.log
+          echo "Digest: ${{ needs.build.outputs.image-digest }}" >> deployment.log
+
+      - name: 🗄️ Run database migrations
+        run: |
+          npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+      - name: 🚀 Deploy to ECS (Blue/Green)
+        run: |
+          aws ecs update-service \
+            --cluster bubblegum-production \
+            --service bubblegum-app \
+            --force-new-deployment \
+            --deployment-configuration "maximumPercent=200,minimumHealthyPercent=100"
+
+      - name: ⏳ Wait for deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster bubblegum-production \
+            --services bubblegum-app
+
+      - name: 🔄 Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: 🧪 Run smoke tests
+        run: |
+          curl -f https://bubblegum.app/api/health || exit 1
+          curl -f https://bubblegum.app/api/status || exit 1
+
+      - name: 📊 Record deployment in Sentry
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.SENTRY_AUTH_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "version": "${{ github.sha }}",
+              "projects": ["bubblegum-app"],
+              "refs": [{
+                "repository": "${{ github.repository }}",
+                "commit": "${{ github.sha }}"
+              }]
+            }' \
+            https://sentry.io/api/0/organizations/bubblegum/releases/
+
+      - name: 📢 Notify deployment success
+        uses: 8398a7/action-slack@v3
+        if: success()
+        with:
+          status: success
+          text: '🎉 Production deployment successful!'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: 🚨 Notify deployment failure
+        uses: 8398a7/action-slack@v3
+        if: failure()
+        with:
+          status: failure
+          text: '❌ Production deployment failed!'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: 🔄 Rollback on failure
+        if: failure()
+        run: |
+          echo "Rolling back deployment..."
+          aws ecs update-service \
+            --cluster bubblegum-production \
+            --service bubblegum-app \
+            --force-new-deployment \
+            --task-definition bubblegum-app:previous
+
+# ═══════════════════════════════════════════════════════════════
+# PIPELINE SUMMARY
+# ═══════════════════════════════════════════════════════════════
+#
+# Stages:
+# 1. Lint (5-10 min)
+# 2. Unit Tests (10-15 min)
+# 3. Integration Tests (15-20 min)
+# 4. E2E Tests (20-30 min)
+# 5. Security Scan (10-15 min)
+# 6. Build Docker Image (20-30 min)
+# 7. Deploy Staging (10-15 min)
+# 8. Deploy Production (15-20 min)
+#
+# Total Time: ~60-90 minutes (parallelized)
+#
+# ═══════════════════════════════════════════════════════════════
+# REQUIRED SECRETS
+# ═══════════════════════════════════════════════════════════════
+#
+# GitHub Secrets (Settings → Secrets → Actions):
+# - AWS_ACCESS_KEY_ID
+# - AWS_SECRET_ACCESS_KEY
+# - STAGING_DATABASE_URL
+# - PRODUCTION_DATABASE_URL
+# - CLOUDFRONT_DISTRIBUTION_ID
+# - SNYK_TOKEN
+# - SENTRY_AUTH_TOKEN
+# - SLACK_WEBHOOK
+# - NEXT_PUBLIC_APP_URL
+#
+# ═══════════════════════════════════════════════════════════════

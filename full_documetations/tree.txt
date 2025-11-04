@@ -1,0 +1,104 @@
+.
+├── ./ARCHITECTURE.md
+├── ./CHANGELOG.md
+├── ./CLAUDE_CODE_GUIDE.md
+├── ./CONTRIBUTING.md
+├── ./docs
+│   ├── ./docs/DOCUMENTATION_100_PERCENT_COMPLETE.md
+│   ├── ./docs/DOCUMENTATION_CHECKLIST.md
+│   ├── ./docs/FINAL_DOWNLOAD_LINKS_100_PERCENT.md
+│   ├── ./docs/guides
+│   │   ├── ./docs/guides/ACCESSIBILITY_GUIDE.md
+│   │   ├── ./docs/guides/ANALYTICS_SETUP.md
+│   │   ├── ./docs/guides/ARCHITECTURE.md
+│   │   ├── ./docs/guides/BACKUP_STRATEGY.md
+│   │   ├── ./docs/guides/GETTING_STARTED.md
+│   │   ├── ./docs/guides/INTERNATIONALIZATION.md
+│   │   ├── ./docs/guides/SCALING_GUIDE.md
+│   │   ├── ./docs/guides/SECURITY_GUIDE.md
+│   │   └── ./docs/guides/TROUBLESHOOTING.md
+│   ├── ./docs/iterations
+│   │   ├── ./docs/iterations/01-handoff
+│   │   │   └── ./docs/iterations/01-handoff/BUBBLE_GUM_HANDOFF_v1.2_COMPLETE.md
+│   │   ├── ./docs/iterations/02-executive-summary
+│   │   │   ├── ./docs/iterations/02-executive-summary/BUBBLE_GUM_POWERPOINT_SPEC_10_10.md
+│   │   │   ├── ./docs/iterations/02-executive-summary/EXECUTIVE_SUMMARY_FINAL_V3_ENHANCED.md
+│   │   │   └── ./docs/iterations/02-executive-summary/ITERATION_2_COMPLETE.md
+│   │   ├── ./docs/iterations/03-financial-model
+│   │   │   ├── ./docs/iterations/03-financial-model/FINANCIAL_MODEL.csv
+│   │   │   ├── ./docs/iterations/03-financial-model/FINANCIAL_MODEL_GUIDE.md
+│   │   │   ├── ./docs/iterations/03-financial-model/FINANCIAL_MODEL_SUMMARY.md
+│   │   │   └── ./docs/iterations/03-financial-model/ITERATION_3_COMPLETE.md
+│   │   ├── ./docs/iterations/04-roadmap
+│   │   │   ├── ./docs/iterations/04-roadmap/DETAILED_ROADMAP.md
+│   │   │   ├── ./docs/iterations/04-roadmap/ITERATION_4_COMPLETE.md
+│   │   │   └── ./docs/iterations/04-roadmap/ROADMAP_GANTT_DATA.csv
+│   │   ├── ./docs/iterations/05-database
+│   │   │   ├── ./docs/iterations/05-database/DATABASE_DOCUMENTATION.md
+│   │   │   ├── ./docs/iterations/05-database/DATABASE_ERD.md
+│   │   │   ├── ./docs/iterations/05-database/DATABASE_MIGRATION_GUIDE.md
+│   │   │   └── ./docs/iterations/05-database/ITERATION_5_COMPLETE.md
+│   │   ├── ./docs/iterations/06-api
+│   │   │   ├── ./docs/iterations/06-api/API_DOCUMENTATION.md
+│   │   │   └── ./docs/iterations/06-api/ITERATION_6_COMPLETE.md
+│   │   ├── ./docs/iterations/07-sdk
+│   │   │   ├── ./docs/iterations/07-sdk/ITERATION_7_COMPLETE.md
+│   │   │   ├── ./docs/iterations/07-sdk/openapi.yaml
+│   │   │   ├── ./docs/iterations/07-sdk/SDK_EXAMPLES.md
+│   │   │   └── ./docs/iterations/07-sdk/WEBHOOK_DOCUMENTATION.md
+│   │   ├── ./docs/iterations/08-ai-components
+│   │   │   ├── ./docs/iterations/08-ai-components/AI_PROMPT_TEMPLATES.md
+│   │   │   ├── ./docs/iterations/08-ai-components/COMPONENT_EXAMPLES.md
+│   │   │   ├── ./docs/iterations/08-ai-components/COMPONENT_LIBRARY.md
+│   │   │   └── ./docs/iterations/08-ai-components/ITERATION_8_COMPLETE.md
+│   │   ├── ./docs/iterations/09-devops
+│   │   │   ├── ./docs/iterations/09-devops/DEPLOYMENT_GUIDE.md
+│   │   │   ├── ./docs/iterations/09-devops/ITERATION_9_COMPLETE.md
+│   │   │   └── ./docs/iterations/09-devops/MONITORING_SETUP.md
+│   │   ├── ./docs/iterations/10-testing
+│   │   │   ├── ./docs/iterations/10-testing/E2E_TESTS_EXAMPLES.md
+│   │   │   ├── ./docs/iterations/10-testing/ITERATION_10_COMPLETE.md
+│   │   │   ├── ./docs/iterations/10-testing/PERFORMANCE_TESTING.md
+│   │   │   ├── ./docs/iterations/10-testing/QA_CHECKLISTS.md
+│   │   │   ├── ./docs/iterations/10-testing/SECURITY_TESTING.md
+│   │   │   ├── ./docs/iterations/10-testing/TESTING_STRATEGY.md
+│   │   │   └── ./docs/iterations/10-testing/UNIT_TESTS_EXAMPLES.md
+│   │   └── ./docs/iterations/11-performance
+│   │       ├── ./docs/iterations/11-performance/API_OPTIMIZATION.md
+│   │       ├── ./docs/iterations/11-performance/BUNDLE_OPTIMIZATION.md
+│   │       ├── ./docs/iterations/11-performance/CACHING_STRATEGIES.md
+│   │       ├── ./docs/iterations/11-performance/CDN_CONFIGURATION.md
+│   │       ├── ./docs/iterations/11-performance/DATABASE_OPTIMIZATION.md
+│   │       ├── ./docs/iterations/11-performance/DOWNLOAD_LINKS.md
+│   │       ├── ./docs/iterations/11-performance/IMAGE_OPTIMIZATION.md
+│   │       ├── ./docs/iterations/11-performance/ITERATION_11_COMPLETE.md
+│   │       ├── ./docs/iterations/11-performance/LIGHTHOUSE_OPTIMIZATION.md
+│   │       └── ./docs/iterations/11-performance/PERFORMANCE_OPTIMIZATION_GUIDE.md
+│   └── ./docs/README.md
+├── ./infrastructure
+│   ├── ./infrastructure/CI_CD_PIPELINE.md
+│   ├── ./infrastructure/docker
+│   │   ├── ./infrastructure/docker/docker-compose.yml
+│   │   ├── ./infrastructure/docker/Dockerfile
+│   │   └── ./infrastructure/docker/DOCKER_SETUP.md
+│   ├── ./infrastructure/kubernetes
+│   │   └── ./infrastructure/kubernetes/kubernetes-manifests.yml
+│   └── ./infrastructure/next.config.optimized.js
+├── ./LICENSE
+├── ./README.md
+├── ./src
+│   ├── ./src/prisma
+│   │   └── ./src/prisma/schema.prisma
+│   └── ./src/trpc
+│       └── ./src/trpc/trpc-router.ts
+├── ./tests
+│   ├── ./tests/jest.config.js
+│   ├── ./tests/jest.setup.js
+│   └── ./tests/playwright.config.ts
+├── ./tools
+│   └── ./tools/TRELLO_BOARD_V3_FULL.json
+├── ./tree0.txt
+├── ./tree.txt
+└── ./TRELLO_BOARD
+
+24 directories, 78 files

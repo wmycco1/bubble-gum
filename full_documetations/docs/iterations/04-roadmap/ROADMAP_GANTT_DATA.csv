@@ -1,0 +1,105 @@
+Task ID,Task Name,Phase,Sprint,Start Week,Duration (weeks),End Week,Story Points,Assignee,Dependencies,Status,Priority
+P0.1,Project Initialization & Setup,Phase 0,Sprint 1,1,0.5,1,3,CTO + DevOps,None,Not Started,High
+P0.2,Database Setup (PostgreSQL + Prisma),Phase 0,Sprint 1,1,0.5,1,5,Backend Developer,P0.1,Not Started,High
+P0.3,Authentication System (Clerk),Phase 0,Sprint 1,1,0.5,1,5,Full-stack Developer,P0.2,Not Started,High
+P0.4,Frontend Foundation (React + Vite + Tailwind),Phase 0,Sprint 1,2,0.5,2,5,Frontend Developers (2),P0.1,Not Started,High
+P0.5,API Layer Setup (Fastify + tRPC),Phase 0,Sprint 1,2,0.5,2,5,Backend Developer,P0.2;P0.4,Not Started,High
+P0.6,State Management (Zustand + React Query),Phase 0,Sprint 1,2,0.5,2,3,Frontend Developer,P0.4;P0.5,Not Started,Medium
+P0.7,Storage Setup (Cloudflare R2),Phase 0,Sprint 2,3,0.5,3,5,Backend + DevOps,P0.5,Not Started,High
+P0.8,Cache Layer (Redis/Upstash),Phase 0,Sprint 2,3,0.5,3,3,Backend Developer,P0.5,Not Started,Medium
+P0.9,AI Provider Integration (Claude),Phase 0,Sprint 2,3,0.5,3,5,AI/ML Engineer,P0.5,Not Started,High
+P0.10,Component Library Foundation,Phase 0,Sprint 2,4,1,4,8,Frontend (2) + Designer,P0.4,Not Started,Medium
+P1.1,Dashboard UI (Projects List),Phase 1,Sprint 3,5,0.5,5,5,Frontend Developers (2),P0.10,Not Started,High
+P1.2,Create Project Flow,Phase 1,Sprint 3,5,0.5,5,5,Full-stack Developer,P1.1,Not Started,High
+P1.3,Canvas Foundation (Drag & Drop),Phase 1,Sprint 3,6,1,6,13,Senior Frontend + 2 Devs,P1.2,Not Started,High
+P1.4,Component Rendering System,Phase 1,Sprint 4,7,0.5,7,8,Senior Frontend Developer,P1.3,Not Started,High
+P1.5,Properties Panel,Phase 1,Sprint 4,7,0.5,7,8,Frontend Developer,P1.4,Not Started,High
+P1.6,Component Library (First 20 Components),Phase 1,Sprint 4,8,1,8,13,All Frontend (4),P1.4,Not Started,Medium
+P1.7,Undo/Redo System,Phase 1,Sprint 5,9,0.5,9,5,Frontend Developer,P1.4,Not Started,Medium
+P1.8,Auto-Save & Version History,Phase 1,Sprint 5,9,0.5,9,5,Full-stack Developer,P1.7,Not Started,Medium
+P1.9,AI Chat Interface (Basic),Phase 1,Sprint 5,10,1,10,8,Frontend + AI Engineer,P0.9,Not Started,High
+P1.10,Page Management,Phase 1,Sprint 5,9,0.5,9,5,Full-stack Developer,P1.2,Not Started,Medium
+P1.11,AI Page Generation (Form → Full Site),Phase 1,Sprint 6,11,1,11,13,AI Engineer + Full-stack,P1.6;P0.9,Not Started,High
+P1.12,Responsive Design Controls,Phase 1,Sprint 6,12,0.5,12,8,Frontend Developer,P1.5,Not Started,Medium
+P1.13,Image Library & Upload,Phase 1,Sprint 6,12,0.5,12,5,Full-stack Developer,P0.7,Not Started,Medium
+P1.14,Site Preview Mode,Phase 1,Sprint 6-7,12,1,13,5,Frontend Developer,P1.4,Not Started,Medium
+P1.15,Basic SEO Settings,Phase 1,Sprint 7,14,0.5,14,5,Full-stack Developer,P1.10,Not Started,Medium
+P2.1,Product Management (CRUD),Phase 2,Backlog,21,1,22,8,Full-stack Developer,P1.15,Backlog,High
+P2.2,Product Component (Display),Phase 2,Backlog,21,0.5,21,5,Frontend Developer,P1.6,Backlog,High
+P2.3,Product Variants (Size Color),Phase 2,Backlog,22,1,23,8,Full-stack Developer,P2.1,Backlog,Medium
+P2.4,Shopping Cart (Sidebar),Phase 2,Backlog,22,1,23,8,Frontend Developer,P2.2,Backlog,High
+P2.5,Stripe Checkout Integration,Phase 2,Backlog,23,1,24,8,Full-stack Developer,P2.4,Backlog,High
+P2.6,Order Management (Admin),Phase 2,Backlog,24,0.5,24,5,Full-stack Developer,P2.5,Backlog,Medium
+P2.7,Product Gallery Component,Phase 2,Backlog,24,0.5,24,5,Frontend Developer,P2.2,Backlog,Medium
+P2.8,Inventory Tracking,Phase 2,Backlog,25,0.5,25,5,Backend Developer,P2.1,Backlog,Medium
+P3.1,Blog Post Management (CRUD),Phase 3,Backlog,25,1,26,8,Full-stack Developer,P1.15,Backlog,High
+P3.2,Blog Post Component (Display),Phase 3,Backlog,25,0.5,25,5,Frontend Developer,P1.6,Backlog,High
+P3.3,Blog Post List Component,Phase 3,Backlog,26,0.5,26,5,Frontend Developer,P3.2,Backlog,Medium
+P3.4,Categories & Tags System,Phase 3,Backlog,26,0.5,26,5,Full-stack Developer,P3.1,Backlog,Medium
+P3.5,Comments System,Phase 3,Backlog,27,1,28,8,Full-stack Developer,P3.1,Backlog,Medium
+P3.6,AI Blog Post Writing Assistant,Phase 3,Backlog,27,1,28,8,AI Engineer,P3.1;P0.9,Backlog,Medium
+P4.1,Custom Domain Connection,Phase 4,Backlog,28,1,29,8,DevOps + Backend,P1.15,Backlog,High
+P4.2,Analytics Dashboard (Built-in),Phase 4,Backlog,28,1,29,8,Full-stack Developer,P1.1,Backlog,Medium
+P4.3,Form Builder & Submissions,Phase 4,Backlog,29,1,30,8,Full-stack Developer,P1.6,Backlog,Medium
+P4.4,n8n REST API (Full Specification),Phase 4,Backlog,29,1.5,30,13,Backend + API Specialist,P0.5,Backlog,High
+P4.5,Team Collaboration (Invite Members),Phase 4,Backlog,30,1,31,8,Full-stack Developer,P0.3,Backlog,Medium
+P5.1,Performance Optimization,Phase 5,Backlog,31,1,32,8,All Engineers,All Phase 1-4,Backlog,High
+P5.2,Accessibility Audit (WCAG AA),Phase 5,Backlog,31,0.5,31,5,Frontend + QA,P1.6,Backlog,Medium
+P5.3,Error Handling & Monitoring,Phase 5,Backlog,32,0.5,32,5,DevOps + Backend,P0.5,Backlog,Medium
+P5.4,User Onboarding Flow,Phase 5,Backlog,32,0.5,32,5,Product + Frontend,P1.1,Backlog,Medium
+P5.5,Documentation & Help Center,Phase 5,Backlog,33,1,34,8,All Team,All tasks,Backlog,Low
+P5.6,Beta Testing Program,Phase 5,Backlog,34,0.5,34,5,Customer Success,P1.15,Backlog,High
+P5.7,Launch Preparation (Final QA),Phase 5,Backlog,35,1,36,8,All Team,All Phase 1-4,Backlog,High
+P5.8,Public Launch 🚀,Phase 5,Launch,36,0.5,36,5,All Team,P5.7,Backlog,High
+
+MILESTONES
+Milestone,Week,Description,Gate Criteria
+Foundation Complete,4,"Phase 0 done, all infrastructure ready","Auth, DB, API, Frontend working"
+Canvas Working,6,"Drag-drop functional, can place components","User can drag Button to canvas"
+Component System Ready,8,"20 components + properties panel done","Can build pages with components"
+AI Integration Working,11,"AI generates full sites from prompts","Generated sites are 70%+ usable"
+MVP Feature Complete,14,"All Phase 1 tasks complete","SEO, Preview, all core features done"
+Code Freeze,18,"No new features, bug fixes only","All critical bugs resolved"
+MVP Launch,20,"Production deployment, first 100 users","Site live, monitoring active"
+
+SPRINTS
+Sprint,Weeks,Theme,Planned SP,Cumulative SP
+Sprint 1,1-2,"Foundation (Repo, DB, Auth, Frontend, API)",31,31
+Sprint 2,3-4,"Infrastructure (Storage, Cache, AI, Components)",21,52
+Sprint 3,5-6,"Dashboard + Canvas (Projects, Drag-drop)",23,75
+Sprint 4,7-8,"Components (Rendering, Properties, Library)",29,104
+Sprint 5,9-10,"UX + AI (Undo/redo, Auto-save, Chat)",23,127
+Sprint 6,11-12,"AI + Polish (Generation, Responsive, Images)",31,158
+Sprint 7,13-14,"SEO + Preview (Preview mode, SEO settings)",10,168
+Sprint 8-10,15-20,"Buffer + Launch (Bug fixes, Testing, Launch)",0,168
+
+TEAM_ALLOCATION
+Week,Backend,Frontend,AI Engineer,DevOps,Designer,Total
+1,3,3,1,1,1,9
+2,3,3,1,1,1,9
+3,3,2,1,1,0,7
+4,2,4,0,1,1,8
+5,2,4,0,1,0,7
+6,1,5,0,1,0,7
+7,2,4,0,1,0,7
+8,1,4,1,1,1,8
+9,2,3,1,1,0,7
+10,2,3,1,1,0,7
+11,2,3,2,1,0,8
+12,2,3,1,1,0,7
+13,1,3,0,1,0,5
+14,2,3,0,1,0,6
+15-20,3,4,1,1,1,10
+
+RISK_REGISTER
+Risk,Impact,Probability,Score,Mitigation,Owner
+Canvas Drag-Drop Complexity,Critical,70%,High,Allocate senior dev; prototype first,CTO
+AI Generation Quality,Critical,60%,High,Extensive prompt engineering; fallback templates,AI Engineer
+Scope Creep,High,50%,Medium,Strict MVP scope; weekly review,Product Manager
+Team Velocity Lower Than Expected,High,40%,Medium,6-week buffer; track velocity,CTO
+Key Person Risk (CTO/AI),High,20%,Medium,Knowledge sharing; pair programming,CEO
+Third-Party API Issues,Medium,30%,Medium,Use stable services; build fallbacks,DevOps
+Performance Issues,Medium,30%,Low,Optimize rendering; performance testing,Frontend Lead
+Security Vulnerabilities,Critical,15%,Medium,Security audit Week 16; use Clerk,DevOps
+Browser Compatibility,Medium,20%,Low,Target modern browsers; test Week 17,QA
+Funding Runs Out,Critical,10%,Low,$2M seed = 22mo runway; start fundraising Month 12,CEO

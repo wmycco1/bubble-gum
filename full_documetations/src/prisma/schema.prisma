@@ -1,0 +1,766 @@
+// ================================================================
+// BUBBLE GUM - DATABASE SCHEMA (Prisma)
+// ================================================================
+// 
+// This is the complete database schema for Bubble Gum AI Page Builder.
+// It uses PostgreSQL with Prisma ORM.
+//
+// Generated: November 1, 2025
+// Version: 1.0.0
+// Target: MVP (Phases 0-1)
+//
+// ================================================================
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+// ================================================================
+// ENUMS
+// ================================================================
+
+enum Role {
+  OWNER    // Full control of organization
+  ADMIN    // Can manage projects and members
+  EDITOR   // Can edit projects
+  VIEWER   // Read-only access
+}
+
+enum SubscriptionTier {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+  PAUSED
+}
+
+enum ProjectStatus {
+  DRAFT       // Not published
+  PUBLISHED   // Live on custom domain
+  ARCHIVED    // No longer active
+}
+
+enum ComponentType {
+  LAYOUT      // Container, Section, Grid, Column
+  CONTENT     // Text, Heading, Image, Video
+  FORM        // Input, Textarea, Button, Checkbox
+  NAVIGATION  // Link, Menu, Breadcrumb
+  ECOMMERCE   // Product, Cart, Checkout
+  BLOG        // BlogPost, BlogList, Category
+  CUSTOM      // User-created components
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  FONT
+  ICON
+}
+
+enum IntegrationType {
+  STRIPE       // Payment processing
+  GOOGLE_ANALYTICS
+  FACEBOOK_PIXEL
+  MAILCHIMP
+  ZAPIER
+  N8N
+  CUSTOM_WEBHOOK
+}
+
+// ================================================================
+// AUTHENTICATION & USERS
+// ================================================================
+
+/// User accounts (synced from Clerk)
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique // Clerk user ID
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  avatar    String?  // URL to profile image
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  ownedOrganizations Organization[] @relation("OrganizationOwner")
+  memberships        OrganizationMember[]
+  projects           Project[]       @relation("ProjectCreator")
+  assets             Asset[]
+  apiKeys            APIKey[]
+  versions           Version[]       // Version history created by this user
+  
+  @@index([clerkId])
+  @@index([email])
+  @@map("users")
+}
+
+// ================================================================
+// ORGANIZATIONS (Multi-Tenancy)
+// ================================================================
+
+/// Organizations for team collaboration
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique // URL-friendly identifier
+  description String?
+  logo        String?  // URL to logo
+  
+  // Ownership
+  ownerId     String
+  owner       User     @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  // Subscription
+  subscriptionTier   SubscriptionTier   @default(FREE)
+  subscriptionStatus SubscriptionStatus @default(ACTIVE)
+  stripeCustomerId   String?            @unique
+  
+  // Limits (based on tier)
+  projectLimit       Int                @default(1)   // FREE: 1, STARTER: 3, PRO: 10, ENTERPRISE: unlimited
+  storageLimit       Int                @default(100) // MB: FREE: 100, STARTER: 5GB, PRO: 50GB
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  members     OrganizationMember[]
+  projects    Project[]
+  assets      Asset[]
+  apiKeys     APIKey[]
+  
+  @@index([slug])
+  @@index([ownerId])
+  @@map("organizations")
+}
+
+/// Organization members (team collaboration)
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  role           Role         @default(VIEWER)
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@unique([organizationId, userId]) // User can only be member once per org
+  @@index([userId])
+  @@index([organizationId])
+  @@map("organization_members")
+}
+
+// ================================================================
+// PROJECTS (Sites)
+// ================================================================
+
+/// Projects represent individual websites
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  slug        String   // URL-friendly identifier (unique within org)
+  
+  // Ownership
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  createdById    String
+  createdBy      User         @relation("ProjectCreator", fields: [createdById], references: [id])
+  
+  // Status
+  status         ProjectStatus @default(DRAFT)
+  
+  // Domain
+  customDomain   String?       @unique // e.g., "example.com"
+  subdomain      String        @unique // e.g., "my-site.bubblegum.app"
+  
+  // SEO
+  metaTitle      String?
+  metaDescription String?
+  favicon        String?       // URL to favicon
+  
+  // AI Generation metadata
+  aiPrompt       String?       // Original prompt used to generate site
+  businessType   String?       // E.g., "restaurant", "portfolio"
+  
+  // Published version
+  publishedAt    DateTime?
+  publishedVersion String?     // Version ID of published site
+  
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  
+  // Relationships
+  pages          Page[]
+  assets         Asset[]
+  versions       Version[]
+  integrations   Integration[]
+  
+  @@unique([organizationId, slug]) // Slug unique within organization
+  @@index([organizationId])
+  @@index([createdById])
+  @@index([customDomain])
+  @@index([subdomain])
+  @@map("projects")
+}
+
+// ================================================================
+// PAGES
+// ================================================================
+
+/// Pages within a project
+model Page {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   // URL path: "/" for homepage, "/about", "/contact"
+  
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Page settings
+  isHomepage  Boolean  @default(false)
+  isPublished Boolean  @default(true)
+  
+  // SEO
+  metaTitle        String?
+  metaDescription  String?
+  ogImage          String? // Open Graph image URL
+  
+  // Content (JSON structure of components)
+  content          Json    // Component tree as JSON
+  
+  // Responsive breakpoints (optional overrides)
+  mobileContent    Json?   // Mobile-specific layout
+  tabletContent    Json?   // Tablet-specific layout
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([projectId, slug]) // Slug unique within project
+  @@index([projectId])
+  @@map("pages")
+}
+
+// ================================================================
+// COMPONENTS (User-created component instances)
+// ================================================================
+
+/// Component instances on pages
+/// Note: This model stores individual component data.
+/// The actual rendering is done from Page.content JSON.
+/// This model is for metadata, templates, and reusable components.
+model Component {
+  id          String   @id @default(cuid())
+  name        String   // User-defined name
+  type        ComponentType
+  
+  // Component definition (JSON)
+  schema      Json     // Props, children, style
+  
+  // Template/Reusable
+  isTemplate  Boolean  @default(false) // Can be reused across pages
+  
+  // Library reference (if based on library component)
+  libraryComponentId String?
+  libraryComponent   ComponentLibrary? @relation(fields: [libraryComponentId], references: [id])
+  
+  // Ownership (if template)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([organizationId])
+  @@index([libraryComponentId])
+  @@map("components")
+}
+
+// ================================================================
+// COMPONENT LIBRARY (Pre-built components)
+// ================================================================
+
+/// Pre-built components available to all users
+model ComponentLibrary {
+  id          String   @id @default(cuid())
+  name        String   @unique // E.g., "Button", "Hero", "Navbar"
+  displayName String   // Human-readable: "Call to Action Button"
+  description String?
+  
+  type        ComponentType
+  category    String   // E.g., "Layout", "Content", "Forms"
+  
+  // Component definition
+  schema      Json     // Default props, structure
+  thumbnail   String?  // Preview image URL
+  
+  // Metadata
+  tags        String[] // E.g., ["responsive", "accessible"]
+  isPro       Boolean  @default(false) // Requires Pro subscription
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  instances   Component[]
+  
+  @@index([category])
+  @@map("component_library")
+}
+
+// ================================================================
+// ASSETS (Media files)
+// ================================================================
+
+/// Uploaded media assets
+model Asset {
+  id          String    @id @default(cuid())
+  name        String
+  type        AssetType
+  
+  // Storage
+  url         String    // Cloudflare R2 URL
+  key         String    @unique // Storage key
+  size        Int       // File size in bytes
+  mimeType    String
+  
+  // Image-specific
+  width       Int?
+  height      Int?
+  
+  // Ownership
+  projectId      String?
+  project        Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  uploadedById   String
+  uploadedBy     User          @relation(fields: [uploadedById], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([organizationId])
+  @@index([projectId])
+  @@index([uploadedById])
+  @@map("assets")
+}
+
+// ================================================================
+// VERSIONS (Version history)
+// ================================================================
+
+/// Version history for projects (auto-save + manual saves)
+model Version {
+  id          String   @id @default(cuid())
+  
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Snapshot of all pages
+  snapshot    Json     // Full project state (pages + settings)
+  
+  // Version metadata
+  label       String?  // Optional user label: "Before redesign"
+  isAutoSave  Boolean  @default(true)
+  
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([projectId])
+  @@index([createdAt])
+  @@map("versions")
+}
+
+// ================================================================
+// INTEGRATIONS
+// ================================================================
+
+/// Third-party integrations
+model Integration {
+  id          String           @id @default(cuid())
+  
+  projectId   String
+  project     Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  type        IntegrationType
+  
+  // Configuration (API keys, settings)
+  config      Json             // Encrypted sensitive data
+  
+  isActive    Boolean          @default(true)
+  
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  @@index([projectId])
+  @@map("integrations")
+}
+
+// ================================================================
+// API KEYS (n8n integration)
+// ================================================================
+
+/// API keys for programmatic access
+model APIKey {
+  id          String   @id @default(cuid())
+  name        String   // User-defined name
+  
+  key         String   @unique // Actual API key (hashed)
+  
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  
+  // Usage tracking
+  lastUsedAt  DateTime?
+  usageCount  Int      @default(0)
+  
+  // Permissions
+  canRead     Boolean  @default(true)
+  canWrite    Boolean  @default(false)
+  canDelete   Boolean  @default(false)
+  
+  expiresAt   DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([organizationId])
+  @@map("api_keys")
+}
+
+// ================================================================
+// E-COMMERCE (Phase 2)
+// ================================================================
+
+/// Products for e-commerce sites
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  slug        String
+  
+  // Pricing
+  price       Int      // Price in cents (e.g., $29.99 = 2999)
+  compareAtPrice Int?  // Original price (for showing discount)
+  
+  // Inventory
+  sku         String?  @unique
+  quantity    Int      @default(0)
+  
+  // Media
+  images      String[] // Array of image URLs
+  
+  // Organization
+  organizationId String
+  // organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  // Status
+  isPublished Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  variants    ProductVariant[]
+  orders      OrderItem[]
+  
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@map("products")
+}
+
+/// Product variants (size, color, etc.)
+model ProductVariant {
+  id          String   @id @default(cuid())
+  
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  name        String   // E.g., "Small / Red"
+  sku         String?  @unique
+  price       Int?     // Override product price
+  quantity    Int      @default(0)
+  
+  // Variant options (JSON)
+  options     Json     // E.g., { "size": "S", "color": "Red" }
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([productId])
+  @@map("product_variants")
+}
+
+/// Orders (e-commerce)
+model Order {
+  id          String   @id @default(cuid())
+  orderNumber String   @unique // Human-readable: "ORDER-1001"
+  
+  // Customer
+  customerEmail String
+  customerName  String?
+  
+  // Pricing
+  subtotal    Int      // Sum of items
+  tax         Int      @default(0)
+  shipping    Int      @default(0)
+  total       Int      // subtotal + tax + shipping
+  
+  // Payment
+  stripePaymentIntentId String? @unique
+  paymentStatus         String  @default("pending") // pending, paid, failed
+  
+  // Fulfillment
+  fulfillmentStatus String  @default("unfulfilled") // unfulfilled, fulfilled, shipped
+  
+  // Shipping
+  shippingAddress Json?
+  
+  organizationId String
+  // organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  items       OrderItem[]
+  
+  @@index([organizationId])
+  @@index([customerEmail])
+  @@map("orders")
+}
+
+/// Order items
+model OrderItem {
+  id          String   @id @default(cuid())
+  
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  
+  quantity    Int
+  price       Int      // Price at time of purchase (cents)
+  
+  @@index([orderId])
+  @@map("order_items")
+}
+
+// ================================================================
+// BLOG (Phase 3)
+// ================================================================
+
+/// Blog posts
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String
+  excerpt     String?
+  content     String   @db.Text // Markdown or HTML
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  
+  // Media
+  featuredImage String?
+  
+  // Status
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  
+  // Author
+  authorId    String
+  // author      User     @relation(fields: [authorId], references: [id])
+  
+  organizationId String
+  // organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  categories  BlogCategory[]
+  tags        BlogTag[]
+  comments    BlogComment[]
+  
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@index([authorId])
+  @@map("blog_posts")
+}
+
+/// Blog categories
+model BlogCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  
+  organizationId String
+  // organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  posts       BlogPost[]
+  
+  @@unique([organizationId, slug])
+  @@map("blog_categories")
+}
+
+/// Blog tags
+model BlogTag {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  
+  organizationId String
+  // organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  posts       BlogPost[]
+  
+  @@unique([organizationId, slug])
+  @@map("blog_tags")
+}
+
+/// Blog comments
+model BlogComment {
+  id          String   @id @default(cuid())
+  
+  postId      String
+  post        BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  authorName  String
+  authorEmail String
+  content     String   @db.Text
+  
+  isApproved  Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([postId])
+  @@map("blog_comments")
+}
+
+// ================================================================
+// FORM SUBMISSIONS (Phase 4)
+// ================================================================
+
+/// Form submissions from published sites
+model FormSubmission {
+  id          String   @id @default(cuid())
+  
+  projectId   String
+  // project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  formId      String   // ID of form component
+  
+  // Submission data (JSON)
+  data        Json     // E.g., { "name": "John", "email": "..." }
+  
+  // Metadata
+  userAgent   String?
+  ipAddress   String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([projectId])
+  @@index([formId])
+  @@map("form_submissions")
+}
+
+// ================================================================
+// ANALYTICS (Phase 4)
+// ================================================================
+
+/// Page view analytics
+model PageView {
+  id          String   @id @default(cuid())
+  
+  projectId   String
+  // project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  path        String   // Page path: "/", "/about"
+  
+  // Visitor info
+  visitorId   String   // Anonymous visitor ID (cookie)
+  userAgent   String?
+  referrer    String?
+  
+  // Geo
+  country     String?
+  city        String?
+  
+  timestamp   DateTime @default(now())
+  
+  @@index([projectId])
+  @@index([path])
+  @@index([timestamp])
+  @@map("page_views")
+}
+
+// ================================================================
+// INDEXES & OPTIMIZATIONS
+// ================================================================
+
+// Additional indexes for performance:
+// - projects.organizationId (already indexed via @relation)
+// - pages.projectId (already indexed via @relation)
+// - versions.createdAt (for time-based queries)
+// - assets.organizationId (for storage limit checks)
+// - page_views.timestamp (for analytics queries)
+
+// ================================================================
+// NOTES
+// ================================================================
+
+// 1. All IDs use CUID (Collision-resistant Unique Identifier)
+// 2. Timestamps: createdAt, updatedAt (automatic)
+// 3. Soft deletes: Not implemented (use onDelete: Cascade)
+// 4. JSON fields: Use for flexible schemas (Component.schema, Page.content)
+// 5. Enums: For type safety and validation
+// 6. Indexes: Added on foreign keys and frequently queried fields
+// 7. Unique constraints: Prevent duplicate slugs, emails, etc.
+
+// ================================================================
+// MIGRATIONS
+// ================================================================
+
+// To create migration:
+// $ prisma migrate dev --name init
+
+// To apply to production:
+// $ prisma migrate deploy
+
+// To generate Prisma Client:
+// $ prisma generate
+
+// ================================================================
+// END OF SCHEMA
+// ================================================================

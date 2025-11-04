@@ -1,0 +1,1308 @@
+{
+  "name": "Bubble Gum - AI-Powered Page Builder (MVP Phases 0-5)",
+  "lists": [
+    {
+      "name": "📋 Backlog - Phase 4 & 5",
+      "cards": [
+        {
+          "name": "P4.3: Form Builder & Submissions",
+          "desc": "## Description\nCreate form builder for contact forms, lead capture, etc.\n\n## Acceptance Criteria\n- [ ] Form component in palette\n- [ ] Add fields (text, email, textarea, checkbox)\n- [ ] Configure submission endpoint\n- [ ] View form submissions in dashboard\n- [ ] Export submissions to CSV\n\n## Story Points: 8\n\n## Dependencies\n- P1.6: Component Library\n\n## Technical Notes\n- Store submissions in form_submissions table\n- Send email notification on submission\n- Add spam protection (honeypot, reCAPTCHA)",
+          "checklists": [
+            {
+              "name": "Form Builder",
+              "items": [
+                "Create Form component",
+                "Add Input, Textarea, Checkbox, Select fields",
+                "Add form validation (required, email, min/max)",
+                "Create form_submissions table",
+                "Add columns: form_id, data (JSON), submitted_at",
+                "Create API endpoint (POST /api/forms/:id/submit)",
+                "Store submission in database",
+                "Send email notification to project owner",
+                "Add honeypot field (spam protection)",
+                "Create Submissions page (/dashboard/:projectId/forms/:id/submissions)",
+                "Display all submissions in table",
+                "Add 'Export to CSV' button"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P4.4: n8n REST API (Full Specification)",
+          "desc": "## Description\nBuild complete REST API for n8n integration (site generation, updates, publishing).\n\n## Acceptance Criteria\n- [ ] API documented (OpenAPI 3.0)\n- [ ] Authentication with API keys\n- [ ] Endpoints for CRUD operations\n- [ ] Webhooks for site events\n- [ ] Rate limiting implemented\n\n## Story Points: 13\n\n## Dependencies\n- P0.5: API Layer Setup\n- P1.11: AI Page Generation\n\n## Technical Notes\n- Use Fastify for REST endpoints\n- Generate API keys per organization\n- Document with Swagger UI",
+          "checklists": [
+            {
+              "name": "REST API Implementation",
+              "items": [
+                "Create API keys table in Prisma schema",
+                "Add API key generation (POST /api/api-keys)",
+                "Implement API key authentication middleware",
+                "Create endpoint: POST /api/v1/projects (create project)",
+                "Create endpoint: GET /api/v1/projects/:id (get project)",
+                "Create endpoint: PATCH /api/v1/projects/:id (update project)",
+                "Create endpoint: DELETE /api/v1/projects/:id (delete project)",
+                "Create endpoint: POST /api/v1/generate-site (AI generation)",
+                "Create endpoint: POST /api/v1/projects/:id/publish (publish site)",
+                "Create endpoint: POST /api/v1/webhooks (register webhook)",
+                "Implement rate limiting (100 req/min per API key)",
+                "Write OpenAPI 3.0 specification",
+                "Set up Swagger UI (at /api/docs)",
+                "Add API usage tracking (requests, errors)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P4.5: Team Collaboration (Invite Members)",
+          "desc": "## Description\nAllow multiple users to collaborate on projects with role-based permissions.\n\n## Acceptance Criteria\n- [ ] Invite members via email\n- [ ] Roles: Owner, Editor, Viewer\n- [ ] Members list in project settings\n- [ ] Permissions enforced (editors can edit, viewers can't)\n- [ ] Remove members\n\n## Story Points: 8\n\n## Dependencies\n- P0.3: Authentication System\n\n## Technical Notes\n- Store members in project_members table\n- Use middleware for permission checks\n- Send invitation emails",
+          "checklists": [
+            {
+              "name": "Team Collaboration",
+              "items": [
+                "Create project_members table",
+                "Add columns: project_id, user_id, role (owner/editor/viewer)",
+                "Create Team Settings page (/dashboard/:projectId/settings/team)",
+                "Add 'Invite Member' button",
+                "Create InviteMemberModal (email, role)",
+                "Create API endpoint (POST /api/projects/:id/members)",
+                "Send invitation email",
+                "Display members list (name, email, role)",
+                "Add 'Remove' button (only owner can remove)",
+                "Create API endpoint (DELETE /api/projects/:id/members/:userId)",
+                "Implement permission middleware (checkRole)",
+                "Enforce permissions (viewers can't edit)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P5.1: Performance Optimization",
+          "desc": "## Description\nOptimize site performance to achieve Lighthouse 95+ on all metrics.\n\n## Acceptance Criteria\n- [ ] Lighthouse Performance score: 95+\n- [ ] Lighthouse Accessibility score: 95+\n- [ ] Lighthouse Best Practices score: 95+\n- [ ] Lighthouse SEO score: 95+\n- [ ] Core Web Vitals passing (LCP, FID, CLS)\n\n## Story Points: 8\n\n## Dependencies\n- All Phase 1-4 features\n\n## Technical Notes\n- Implement lazy loading for images\n- Code splitting for large bundles\n- Use WebP/AVIF formats\n- Minify CSS/JS\n- Enable HTTP/2 and compression",
+          "checklists": [
+            {
+              "name": "Performance Optimization",
+              "items": [
+                "Run Lighthouse audit (baseline)",
+                "Implement image lazy loading (native + IntersectionObserver)",
+                "Generate WebP and AVIF formats for all images",
+                "Implement responsive images (srcset, sizes)",
+                "Enable code splitting (dynamic imports)",
+                "Minify CSS and JS (Vite production build)",
+                "Enable Brotli compression (Cloudflare)",
+                "Implement HTTP/2 (Cloudflare)",
+                "Preload critical resources (fonts, CSS)",
+                "Optimize fonts (subset, WOFF2)",
+                "Remove unused CSS (PurgeCSS)",
+                "Optimize Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)",
+                "Run final Lighthouse audit (all metrics 95+)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P5.2: Accessibility Audit (WCAG AA)",
+          "desc": "## Description\nEnsure all components meet WCAG AA accessibility standards.\n\n## Acceptance Criteria\n- [ ] All interactive elements keyboard accessible\n- [ ] Color contrast ratios meet AA standards\n- [ ] ARIA labels for screen readers\n- [ ] Focus indicators visible\n- [ ] No accessibility errors in axe DevTools\n\n## Story Points: 5\n\n## Dependencies\n- P1.6: Component Library\n\n## Technical Notes\n- Use axe DevTools for testing\n- Add aria-label, aria-describedby\n- Ensure focus trapping in modals",
+          "checklists": [
+            {
+              "name": "Accessibility Audit",
+              "items": [
+                "Install axe DevTools extension",
+                "Run accessibility scan on all pages",
+                "Fix contrast issues (text, buttons)",
+                "Add ARIA labels to all interactive elements",
+                "Add aria-describedby for form inputs",
+                "Implement focus indicators (outline)",
+                "Test keyboard navigation (Tab, Enter, Escape)",
+                "Implement focus trapping in modals",
+                "Add skip to main content link",
+                "Test with screen reader (NVDA/JAWS)",
+                "Run final axe scan (0 errors)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P5.3: Error Handling & Monitoring",
+          "desc": "## Description\nImplement comprehensive error handling and monitoring with Sentry.\n\n## Acceptance Criteria\n- [ ] Sentry integrated (frontend and backend)\n- [ ] All errors logged with context\n- [ ] User feedback form on errors\n- [ ] Error rate alerts configured\n- [ ] Source maps uploaded for stack traces\n\n## Story Points: 5\n\n## Dependencies\n- All Phase 1-4 features\n\n## Technical Notes\n- Use Sentry SDK for React and Node\n- Capture user info with errors (email, project)\n- Set up alerts (>10 errors/hour)",
+          "checklists": [
+            {
+              "name": "Error Monitoring",
+              "items": [
+                "Create Sentry account and project",
+                "Install @sentry/react (frontend)",
+                "Install @sentry/node (backend)",
+                "Initialize Sentry in frontend (main.tsx)",
+                "Initialize Sentry in backend (server.ts)",
+                "Configure error boundaries in React",
+                "Capture unhandled promise rejections",
+                "Add user context (email, project ID)",
+                "Add error feedback form (optional)",
+                "Upload source maps to Sentry",
+                "Configure alerts (email, Slack)",
+                "Test error tracking (throw test error)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P5.4: User Onboarding Flow",
+          "desc": "## Description\nCreate interactive onboarding for new users (product tour, tooltips).\n\n## Acceptance Criteria\n- [ ] Welcome modal on first login\n- [ ] Product tour highlights key features\n- [ ] Tooltips for complex UI elements\n- [ ] Onboarding checklist (create project, add page, publish)\n- [ ] Progress tracked in user profile\n\n## Story Points: 5\n\n## Dependencies\n- P1.1: Dashboard UI\n- P1.3: Canvas Foundation\n\n## Technical Notes\n- Use Shepherd.js or Intro.js for tours\n- Store onboarding state in database\n- Allow users to skip/dismiss",
+          "checklists": [
+            {
+              "name": "Onboarding Implementation",
+              "items": [
+                "Install Shepherd.js (pnpm add shepherd.js)",
+                "Create WelcomeModal component",
+                "Show modal on first login (check user.onboarding_completed)",
+                "Create product tour (5-7 steps)",
+                "Highlight: Dashboard, Create Project, Canvas, AI Chat, Publish",
+                "Add tooltips for complex features (properties panel, components)",
+                "Create onboarding checklist (progress bar)",
+                "Track progress (created_project, added_page, published)",
+                "Update user.onboarding_completed on finish",
+                "Add 'Skip Tour' button",
+                "Add 'Restart Tour' in help menu"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P5.5: Documentation & Help Center",
+          "desc": "## Description\nCreate comprehensive documentation and in-app help center.\n\n## Acceptance Criteria\n- [ ] Help Center page with search\n- [ ] Articles for all features\n- [ ] Video tutorials (optional)\n- [ ] FAQ section\n- [ ] Contact support form\n\n## Story Points: 8\n\n## Dependencies\n- All Phase 1-4 features\n\n## Technical Notes\n- Use Markdown for articles\n- Implement Algolia/Typesense for search\n- Embed videos from YouTube/Vimeo",
+          "checklists": [
+            {
+              "name": "Documentation",
+              "items": [
+                "Create Help Center page (/help)",
+                "Write articles (Getting Started, Features, FAQ)",
+                "Create article categories (Getting Started, Builder, E-commerce, Blog)",
+                "Implement search (Algolia or Typesense)",
+                "Add 'Was this helpful?' feedback on articles",
+                "Create FAQ page (/faq)",
+                "Record video tutorials (optional)",
+                "Embed videos in articles",
+                "Create Contact Support form",
+                "Add live chat widget (Intercom/Crisp) - optional"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P5.6: Beta Testing Program",
+          "desc": "## Description\nLaunch private beta with 100 users for feedback and bug fixing.\n\n## Acceptance Criteria\n- [ ] Beta landing page created\n- [ ] 100 beta testers signed up\n- [ ] Feedback form accessible in app\n- [ ] Bug reports tracked (Trello/Linear)\n- [ ] At least 50% active usage\n\n## Story Points: 5\n\n## Dependencies\n- All Phase 0-5 features (MVP complete)\n\n## Technical Notes\n- Use Typeform for beta signup\n- Add feedback widget (UserVoice/Canny)\n- Track usage in PostHog/Mixpanel",
+          "checklists": [
+            {
+              "name": "Beta Program",
+              "items": [
+                "Create beta landing page (/beta)",
+                "Add signup form (Typeform or embedded)",
+                "Collect emails and use cases",
+                "Reach 100 signups (marketing on Twitter, Reddit, etc.)",
+                "Send invitations to beta testers (onboarding email)",
+                "Add feedback widget in app (Canny/UserVoice)",
+                "Create bug tracking board (Trello/Linear)",
+                "Set up analytics (PostHog/Mixpanel)",
+                "Track key metrics (signups, projects created, time spent)",
+                "Schedule weekly check-ins with beta users (surveys)",
+                "Fix critical bugs reported",
+                "Iterate based on feedback (priority features)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P5.7: Launch Preparation (Final QA)",
+          "desc": "## Description\nFinal quality assurance before public launch.\n\n## Acceptance Criteria\n- [ ] All critical bugs fixed\n- [ ] All features tested (manual + automated)\n- [ ] Performance benchmarks met (Lighthouse 95+)\n- [ ] Security audit completed\n- [ ] Launch checklist 100% complete\n\n## Story Points: 8\n\n## Dependencies\n- All Phase 0-5 features\n- P5.6: Beta Testing Program\n\n## Technical Notes\n- Use Playwright for E2E tests\n- Run load tests (k6 or Locust)\n- Security scan (Snyk, npm audit)",
+          "checklists": [
+            {
+              "name": "Final QA",
+              "items": [
+                "Run full manual QA (test all features)",
+                "Fix all P0 bugs (blocking launch)",
+                "Fix all P1 bugs (critical)",
+                "Write E2E tests (Playwright)",
+                "Test user flows (signup, create project, publish)",
+                "Run load tests (k6 or Locust)",
+                "Test with 100 concurrent users",
+                "Run security audit (npm audit, Snyk)",
+                "Fix all critical vulnerabilities",
+                "Run final Lighthouse audit (95+ on all metrics)",
+                "Test on all browsers (Chrome, Firefox, Safari, Edge)",
+                "Test on mobile devices (iOS, Android)",
+                "Review launch checklist (100% complete)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P5.8: Public Launch 🚀",
+          "desc": "## Description\nOfficial public launch of Bubble Gum!\n\n## Acceptance Criteria\n- [ ] Production environment ready\n- [ ] Domain configured (bubblegum.com)\n- [ ] Payment system live (Stripe)\n- [ ] Support channels open (email, chat)\n- [ ] Launch announcement published\n\n## Story Points: 5\n\n## Dependencies\n- P5.7: Launch Preparation\n\n## Technical Notes\n- Deploy to production (Railway + Vercel)\n- Monitor closely for first 48 hours\n- Have rollback plan ready",
+          "checklists": [
+            {
+              "name": "Launch Checklist",
+              "items": [
+                "Deploy to production (Railway + Vercel)",
+                "Configure production domain (bubblegum.com)",
+                "Set up SSL certificate (automatic)",
+                "Test production environment (full smoke test)",
+                "Enable Stripe live mode (switch API keys)",
+                "Test payment flow in production",
+                "Set up monitoring (Sentry, Better Uptime)",
+                "Configure alerts (email, Slack)",
+                "Open support channels (email, live chat)",
+                "Publish launch announcement (blog, Twitter, Product Hunt)",
+                "Monitor traffic for first 24 hours",
+                "Respond to user feedback quickly",
+                "Celebrate! 🎉"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 1 (Weeks 1-2) - Phase 0 Foundation",
+      "cards": [
+        {
+          "name": "P0.1: Project Initialization & Setup",
+          "desc": "## Description\nInitialize the project repository, configure development environment, and set up essential tooling for the entire team.\n\n## Acceptance Criteria\n- [ ] Git repository created with proper .gitignore\n- [ ] README.md with project overview\n- [ ] Development environment documented\n- [ ] All team members can clone and run locally\n- [ ] CI/CD pipeline skeleton ready\n\n## Story Points: 3\n\n## Dependencies\nNone (First task)\n\n## Technical Notes\n- Use pnpm workspaces for monorepo\n- Configure ESLint + Prettier from day 1\n- Set up Husky for pre-commit hooks",
+          "checklists": [
+            {
+              "name": "Setup Tasks",
+              "items": [
+                "Create GitHub/GitLab repository",
+                "Initialize pnpm workspace (monorepo)",
+                "Configure TypeScript (strict mode)",
+                "Set up ESLint + Prettier",
+                "Configure Husky + lint-staged",
+                "Create .env.example template",
+                "Write comprehensive README.md",
+                "Set up GitHub Actions (basic CI)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P0.2: Database Setup (PostgreSQL + Prisma)",
+          "desc": "## Description\nSet up PostgreSQL database with Prisma ORM. Create initial schema with Users, Organizations, and Projects tables.\n\n## Acceptance Criteria\n- [ ] PostgreSQL 15+ running (Railway or local)\n- [ ] Prisma installed and configured\n- [ ] Initial migration successful\n- [ ] Database connection tested\n- [ ] Seed script for development data\n\n## Story Points: 5\n\n## Dependencies\n- P0.1: Project Initialization\n\n## Technical Notes\n- Use Railway for dev/staging PostgreSQL\n- Enable pgvector extension (for AI embeddings later)\n- Configure connection pooling (PgBouncer)",
+          "checklists": [
+            {
+              "name": "Database Tasks",
+              "items": [
+                "Provision PostgreSQL instance on Railway",
+                "Install Prisma CLI and Client",
+                "Create schema.prisma (initial models)",
+                "Define User model (email, password, etc.)",
+                "Define Organization model (multi-tenancy)",
+                "Define Project model (sites)",
+                "Run initial migration: prisma migrate dev",
+                "Create seed.ts with sample data",
+                "Test database connection from API",
+                "Configure PgBouncer for connection pooling"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P0.3: Authentication System (Clerk Integration)",
+          "desc": "## Description\nIntegrate Clerk for authentication with email/password and OAuth (Google, GitHub). Set up protected routes and session management.\n\n## Acceptance Criteria\n- [ ] Clerk SDK integrated\n- [ ] Sign up / Sign in flows working\n- [ ] OAuth providers (Google, GitHub) configured\n- [ ] Protected API routes implemented\n- [ ] User stored in database after sign up\n\n## Story Points: 5\n\n## Dependencies\n- P0.2: Database Setup\n\n## Technical Notes\n- Use Clerk for simplicity (no manual JWT handling)\n- Sync Clerk user to PostgreSQL via webhook\n- Store only essential user data locally",
+          "checklists": [
+            {
+              "name": "Auth Implementation",
+              "items": [
+                "Create Clerk application (clerk.dev)",
+                "Install @clerk/nextjs or @clerk/clerk-react",
+                "Configure API keys in .env",
+                "Create sign-in page (/sign-in)",
+                "Create sign-up page (/sign-up)",
+                "Enable Google OAuth provider",
+                "Enable GitHub OAuth provider",
+                "Set up Clerk webhook for user sync",
+                "Create API endpoint to store user in DB",
+                "Implement protected route middleware",
+                "Test full authentication flow"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P0.4: Frontend Foundation (React + Vite + Tailwind)",
+          "desc": "## Description\nBootstrap the frontend application with React 18, Vite, TypeScript, and Tailwind CSS. Set up routing and basic layout.\n\n## Acceptance Criteria\n- [ ] Vite project created and running\n- [ ] TypeScript configured (strict mode)\n- [ ] Tailwind CSS installed and working\n- [ ] React Router set up with basic routes\n- [ ] Basic layout components (Header, Sidebar, Footer)\n\n## Story Points: 5\n\n## Dependencies\n- P0.1: Project Initialization\n\n## Technical Notes\n- Use Vite for faster dev server (HMR)\n- Configure Tailwind with custom theme (Bubble Gum colors)\n- Set up shadcn/ui from day 1",
+          "checklists": [
+            {
+              "name": "Frontend Setup",
+              "items": [
+                "Create Vite project: pnpm create vite",
+                "Install React 18 + TypeScript",
+                "Configure tsconfig.json (strict mode)",
+                "Install Tailwind CSS (pnpm add -D tailwindcss)",
+                "Create tailwind.config.js with theme",
+                "Install React Router v6",
+                "Set up basic routes (/dashboard, /projects, etc.)",
+                "Create AppLayout component",
+                "Create Header component (nav, user menu)",
+                "Create Sidebar component (navigation)",
+                "Install shadcn/ui CLI and init",
+                "Add first shadcn components (Button, Card)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P0.5: API Layer Setup (Fastify + tRPC)",
+          "desc": "## Description\nSet up Fastify server with tRPC for type-safe API. Create basic endpoints for health check and user management.\n\n## Acceptance Criteria\n- [ ] Fastify server running on port 3001\n- [ ] tRPC router configured\n- [ ] Health check endpoint working\n- [ ] Basic CRUD for users tested\n- [ ] Frontend can call API with type safety\n\n## Story Points: 5\n\n## Dependencies\n- P0.2: Database Setup\n- P0.4: Frontend Foundation\n\n## Technical Notes\n- Use tRPC for type safety between frontend and backend\n- Configure CORS properly for local dev\n- Add request logging (pino)",
+          "checklists": [
+            {
+              "name": "API Setup",
+              "items": [
+                "Install Fastify (pnpm add fastify)",
+                "Install tRPC (pnpm add @trpc/server @trpc/client)",
+                "Create server.ts with Fastify instance",
+                "Configure CORS plugin",
+                "Install pino logger",
+                "Create tRPC app router",
+                "Create health check endpoint (GET /health)",
+                "Create user router (CRUD operations)",
+                "Set up tRPC client on frontend",
+                "Test API calls from React components",
+                "Add error handling middleware"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P0.6: State Management (Zustand + React Query)",
+          "desc": "## Description\nSet up client-side state management with Zustand for UI state and React Query for server state.\n\n## Acceptance Criteria\n- [ ] Zustand stores created (auth, builder, UI)\n- [ ] React Query configured with proper cache settings\n- [ ] Devtools working in development\n- [ ] Example queries and mutations tested\n\n## Story Points: 3\n\n## Dependencies\n- P0.4: Frontend Foundation\n- P0.5: API Layer Setup\n\n## Technical Notes\n- Use Zustand for local UI state (canvas, modals, etc.)\n- Use React Query for server data (projects, pages)\n- Configure query cache (staleTime, cacheTime)",
+          "checklists": [
+            {
+              "name": "State Management",
+              "items": [
+                "Install Zustand (pnpm add zustand)",
+                "Install React Query (pnpm add @tanstack/react-query)",
+                "Create authStore (user, login, logout)",
+                "Create builderStore (canvas state, selected element)",
+                "Create uiStore (modals, sidebars, theme)",
+                "Configure React Query client",
+                "Wrap app with QueryClientProvider",
+                "Install React Query Devtools",
+                "Create example query hook (useProjects)",
+                "Create example mutation hook (useCreateProject)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 2 (Weeks 3-4) - Phase 0 Cont.",
+      "cards": [
+        {
+          "name": "P0.7: Storage Setup (Cloudflare R2)",
+          "desc": "## Description\nConfigure Cloudflare R2 for image and file storage. Create upload API and test file operations.\n\n## Acceptance Criteria\n- [ ] R2 bucket created and configured\n- [ ] Upload API endpoint working\n- [ ] Image optimization implemented\n- [ ] CDN URLs working\n- [ ] Delete/list operations tested\n\n## Story Points: 5\n\n## Dependencies\n- P0.5: API Layer Setup\n\n## Technical Notes\n- Use AWS SDK with R2 endpoints\n- Implement image optimization (Sharp library)\n- Generate WebP/AVIF formats automatically",
+          "checklists": [
+            {
+              "name": "Storage Setup",
+              "items": [
+                "Create Cloudflare R2 bucket",
+                "Get R2 API credentials (Access Key, Secret)",
+                "Install AWS SDK (pnpm add @aws-sdk/client-s3)",
+                "Configure S3 client with R2 endpoints",
+                "Create upload API (POST /api/upload)",
+                "Install Sharp for image processing",
+                "Implement image optimization (resize, compress)",
+                "Generate WebP and AVIF formats",
+                "Create delete API (DELETE /api/assets/:id)",
+                "Create list API (GET /api/assets)",
+                "Configure R2 public access (CDN URLs)",
+                "Test upload from frontend"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P0.8: Cache Layer (Redis/Upstash)",
+          "desc": "## Description\nSet up Redis (Upstash) for caching, session storage, and rate limiting.\n\n## Acceptance Criteria\n- [ ] Upstash Redis instance created\n- [ ] Redis client configured in backend\n- [ ] Session caching working\n- [ ] API response caching implemented\n- [ ] Rate limiting tested\n\n## Story Points: 3\n\n## Dependencies\n- P0.5: API Layer Setup\n\n## Technical Notes\n- Use Upstash for serverless-friendly Redis\n- Cache expensive AI responses (10 min TTL)\n- Implement rate limiting (100 req/min per user)",
+          "checklists": [
+            {
+              "name": "Cache Implementation",
+              "items": [
+                "Create Upstash Redis instance",
+                "Get Redis URL and token",
+                "Install ioredis (pnpm add ioredis)",
+                "Create Redis client wrapper",
+                "Implement session caching",
+                "Implement API response caching middleware",
+                "Implement rate limiting middleware",
+                "Cache AI generation responses (10 min TTL)",
+                "Add cache invalidation logic",
+                "Test rate limiting (429 responses)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P0.9: AI Provider Integration (Anthropic Claude)",
+          "desc": "## Description\nIntegrate Anthropic Claude API for AI generation. Set up API key management and basic prompt testing.\n\n## Acceptance Criteria\n- [ ] Anthropic SDK installed\n- [ ] API key stored securely (env var)\n- [ ] Test prompt working (simple generation)\n- [ ] Error handling implemented\n- [ ] Usage tracking set up\n\n## Story Points: 5\n\n## Dependencies\n- P0.5: API Layer Setup\n- P0.8: Cache Layer\n\n## Technical Notes\n- Use Claude Sonnet 4 as default model\n- Cache AI responses in Redis\n- Track token usage per organization",
+          "checklists": [
+            {
+              "name": "AI Integration",
+              "items": [
+                "Create Anthropic account and get API key",
+                "Install @anthropic-ai/sdk",
+                "Store API key in .env (ANTHROPIC_API_KEY)",
+                "Create AI service wrapper (src/services/ai.ts)",
+                "Implement generateText() function",
+                "Test simple prompt (Hello World)",
+                "Implement error handling (rate limits, timeouts)",
+                "Add retry logic (3 attempts with exponential backoff)",
+                "Cache AI responses in Redis (10 min TTL)",
+                "Track token usage (store in DB)",
+                "Create usage dashboard endpoint (GET /api/usage)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P0.10: Component Library Foundation",
+          "desc": "## Description\nSet up shadcn/ui and create base components (Button, Input, Card, Modal, etc.) with consistent styling.\n\n## Acceptance Criteria\n- [ ] shadcn/ui fully configured\n- [ ] 20+ base components installed\n- [ ] Storybook set up for component docs\n- [ ] Component variants working\n- [ ] Accessibility (WCAG AA) verified\n\n## Story Points: 8\n\n## Dependencies\n- P0.4: Frontend Foundation\n\n## Technical Notes\n- Use shadcn/ui for headless components\n- Create custom variants (sizes, colors)\n- Document all components in Storybook",
+          "checklists": [
+            {
+              "name": "Component Library",
+              "items": [
+                "Run shadcn/ui init",
+                "Install Button component (npx shadcn-ui add button)",
+                "Install Input component",
+                "Install Card component",
+                "Install Dialog (Modal) component",
+                "Install Dropdown Menu component",
+                "Install Toast component",
+                "Install Tooltip component",
+                "Install Badge component",
+                "Install Avatar component",
+                "Install Select component",
+                "Install Checkbox component",
+                "Install Switch component",
+                "Install Tabs component",
+                "Install Alert component",
+                "Install Progress component",
+                "Install Skeleton component",
+                "Install Table component",
+                "Install Pagination component",
+                "Install Popover component",
+                "Set up Storybook (pnpm add -D @storybook/react)",
+                "Create stories for all components",
+                "Test accessibility (keyboard nav, screen readers)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.1: Dashboard UI (Projects List)",
+          "desc": "## Description\nCreate the main dashboard showing all user projects with grid/list view, search, and filters.\n\n## Acceptance Criteria\n- [ ] Projects displayed in grid/list view\n- [ ] Search by project name working\n- [ ] Filter by status (draft, published)\n- [ ] Sort by date, name, etc.\n- [ ] Pagination implemented (20 per page)\n\n## Story Points: 5\n\n## Dependencies\n- P0.10: Component Library Foundation\n- P0.6: State Management\n\n## Technical Notes\n- Use virtual scrolling for large lists (react-window)\n- Implement optimistic updates\n- Add skeleton loaders",
+          "checklists": [
+            {
+              "name": "Dashboard Implementation",
+              "items": [
+                "Create Dashboard page (/dashboard)",
+                "Create ProjectCard component",
+                "Implement grid view layout",
+                "Implement list view layout",
+                "Add view toggle button (grid/list)",
+                "Create search input (debounced)",
+                "Implement filter dropdown (status, date)",
+                "Implement sort dropdown (name, date, views)",
+                "Add 'Create New Project' button",
+                "Fetch projects from API (useQuery)",
+                "Add pagination controls",
+                "Add skeleton loaders (loading state)",
+                "Add empty state (no projects)",
+                "Implement project actions (edit, delete, duplicate)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 3 (Weeks 5-6) - Phase 1",
+      "cards": [
+        {
+          "name": "P1.2: Create Project Flow",
+          "desc": "## Description\nBuild the 'Create New Project' modal/page with template selection and initial configuration.\n\n## Acceptance Criteria\n- [ ] Create Project modal opens\n- [ ] User can name project\n- [ ] Template selection working (blank, e-commerce, blog)\n- [ ] Project created in database\n- [ ] Redirect to builder after creation\n\n## Story Points: 5\n\n## Dependencies\n- P1.1: Dashboard UI\n\n## Technical Notes\n- Use React Hook Form for validation\n- Show template previews (thumbnails)\n- Implement 'Start from scratch' option",
+          "checklists": [
+            {
+              "name": "Create Project Implementation",
+              "items": [
+                "Create CreateProjectModal component",
+                "Add form fields (name, description)",
+                "Install React Hook Form + Zod",
+                "Add form validation (name required, 3-50 chars)",
+                "Create template cards (Blank, E-commerce, Blog, Portfolio)",
+                "Add template thumbnails/previews",
+                "Create API endpoint (POST /api/projects)",
+                "Implement project creation logic (DB insert)",
+                "Generate subdomain (e.g., myproject.bubblegum.com)",
+                "Create initial home page for project",
+                "Handle API errors (name conflict, etc.)",
+                "Show success toast",
+                "Redirect to /builder/:projectId"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.3: Canvas Foundation (Drag & Drop)",
+          "desc": "## Description\nImplement the core canvas with drag-and-drop functionality using @dnd-kit.\n\n## Acceptance Criteria\n- [ ] Canvas renders with blank state\n- [ ] Component palette (sidebar) displays\n- [ ] Drag component from palette to canvas\n- [ ] Drop zones highlighted on hover\n- [ ] Component rendered on canvas after drop\n\n## Story Points: 13\n\n## Dependencies\n- P1.2: Create Project Flow\n\n## Technical Notes\n- Use @dnd-kit for accessibility and performance\n- Implement nested drop zones (components inside containers)\n- Add visual feedback (ghost, drop indicators)",
+          "checklists": [
+            {
+              "name": "Canvas Implementation",
+              "items": [
+                "Install @dnd-kit/core and @dnd-kit/sortable",
+                "Create Canvas component (main builder area)",
+                "Create ComponentPalette (sidebar with draggable items)",
+                "Set up DndContext (root drag-and-drop provider)",
+                "Create DraggableComponent wrapper",
+                "Create DroppableZone wrapper",
+                "Implement onDragStart handler",
+                "Implement onDragOver handler (highlight drop zones)",
+                "Implement onDragEnd handler (add component to canvas)",
+                "Add ghost preview while dragging",
+                "Implement nested drop zones (containers)",
+                "Add 'remove component' action",
+                "Add 'duplicate component' action",
+                "Implement component selection (click to select)",
+                "Add selection highlight (border)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.4: Component Rendering System",
+          "desc": "## Description\nBuild the system that renders components on canvas based on JSON schema.\n\n## Acceptance Criteria\n- [ ] Component schema defined (type, props, children)\n- [ ] Renderer maps schema to React components\n- [ ] Basic components render (Button, Text, Image, Container)\n- [ ] Props can be modified\n- [ ] Changes reflect immediately\n\n## Story Points: 8\n\n## Dependencies\n- P1.3: Canvas Foundation\n\n## Technical Notes\n- Use JSON schema for component tree\n- Implement component registry (type → React component)\n- Support recursive rendering (nested components)",
+          "checklists": [
+            {
+              "name": "Rendering System",
+              "items": [
+                "Define component schema interface (ComponentNode)",
+                "Create component registry (Map<string, React.Component>)",
+                "Build ComponentRenderer (recursive)",
+                "Create basic components (Button, Text, Image, Container)",
+                "Register components in registry",
+                "Implement props mapping (schema props → React props)",
+                "Support children rendering (nested components)",
+                "Add default props for each component",
+                "Implement prop updates (modify schema → re-render)",
+                "Test complex nested structures"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 4 (Weeks 7-8) - Phase 1 Cont.",
+      "cards": [
+        {
+          "name": "P1.5: Properties Panel",
+          "desc": "## Description\nCreate the right sidebar properties panel for editing selected component props.\n\n## Acceptance Criteria\n- [ ] Panel shows when component selected\n- [ ] Displays component-specific fields\n- [ ] Changes update canvas in real-time\n- [ ] Supports text, color, number, select inputs\n- [ ] Layout/spacing controls working\n\n## Story Points: 8\n\n## Dependencies\n- P1.4: Component Rendering System\n\n## Technical Notes\n- Use React Hook Form for prop editing\n- Implement debounced updates (avoid re-render lag)\n- Add color picker, font picker, spacing controls",
+          "checklists": [
+            {
+              "name": "Properties Panel",
+              "items": [
+                "Create PropertiesPanel component (right sidebar)",
+                "Show panel only when component selected",
+                "Display component type and name",
+                "Create form fields based on component schema",
+                "Add text input (for text content)",
+                "Add color picker (for colors)",
+                "Add number input (for sizes, spacing)",
+                "Add select dropdown (for variants)",
+                "Add toggle switches (for boolean props)",
+                "Implement real-time updates (debounced 300ms)",
+                "Add layout controls (margin, padding)",
+                "Add typography controls (font, size, weight)",
+                "Add border controls (width, color, radius)",
+                "Add shadow controls (box-shadow)",
+                "Add 'Reset to default' button"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.6: Component Library (First 20 Components)",
+          "desc": "## Description\nBuild the first 20 essential components: Button, Heading, Text, Image, Container, Hero, CTA, etc.\n\n## Acceptance Criteria\n- [ ] 20 components implemented and tested\n- [ ] Each has configurable props\n- [ ] Responsive behavior working\n- [ ] Accessible (WCAG AA)\n- [ ] Preview in component palette\n\n## Story Points: 13\n\n## Dependencies\n- P1.4: Component Rendering System\n\n## Technical Notes\n- Follow atomic design (atoms → molecules → organisms)\n- Use Tailwind utility classes\n- Ensure mobile responsiveness",
+          "checklists": [
+            {
+              "name": "Component Implementation",
+              "items": [
+                "Button component (variants: primary, secondary, outline)",
+                "Heading component (h1-h6)",
+                "Text component (paragraph, span)",
+                "Image component (with lazy loading)",
+                "Container component (wrapper with max-width)",
+                "Section component (with background, padding)",
+                "Hero component (title, subtitle, CTA)",
+                "CTA component (call-to-action block)",
+                "Card component (title, image, description)",
+                "Grid component (responsive columns)",
+                "Column component (flex child)",
+                "Spacer component (vertical/horizontal space)",
+                "Divider component (horizontal line)",
+                "Icon component (Lucide icons)",
+                "Link component (with href, target)",
+                "Form component (wrapper)",
+                "Input component (text, email, tel)",
+                "Textarea component",
+                "Checkbox component",
+                "Submit Button component",
+                "Test all components on canvas",
+                "Verify responsive behavior (mobile, tablet, desktop)",
+                "Test accessibility (keyboard navigation, screen reader)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.7: Undo/Redo System",
+          "desc": "## Description\nImplement undo/redo functionality for all canvas operations.\n\n## Acceptance Criteria\n- [ ] Undo/redo buttons in toolbar\n- [ ] Keyboard shortcuts (Ctrl+Z, Ctrl+Y)\n- [ ] History stack maintained (50 steps)\n- [ ] All operations reversible\n- [ ] UI shows undo/redo availability\n\n## Story Points: 5\n\n## Dependencies\n- P1.4: Component Rendering System\n\n## Technical Notes\n- Use Immer for immutable state updates\n- Store history in Zustand\n- Implement command pattern for reversibility",
+          "checklists": [
+            {
+              "name": "Undo/Redo Implementation",
+              "items": [
+                "Install Immer (pnpm add immer)",
+                "Add history to Zustand store (past, present, future)",
+                "Implement undo() action",
+                "Implement redo() action",
+                "Limit history to 50 steps",
+                "Add undo/redo buttons to toolbar",
+                "Disable buttons when no history",
+                "Add keyboard shortcuts (Ctrl+Z, Ctrl+Shift+Z)",
+                "Test with add/delete/move operations",
+                "Test with prop changes"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 5 (Weeks 9-10) - Phase 1 Cont.",
+      "cards": [
+        {
+          "name": "P1.8: Auto-Save & Version History",
+          "desc": "## Description\nImplement auto-save every 30 seconds and version history with named snapshots.\n\n## Acceptance Criteria\n- [ ] Auto-save runs every 30 seconds\n- [ ] Manual save button available\n- [ ] Version history modal shows all versions\n- [ ] User can name versions\n- [ ] User can restore previous versions\n\n## Story Points: 5\n\n## Dependencies\n- P1.4: Component Rendering System\n\n## Technical Notes\n- Use debounced save to avoid race conditions\n- Store versions in separate table (versions table)\n- Show diff preview in version history",
+          "checklists": [
+            {
+              "name": "Auto-Save & Versioning",
+              "items": [
+                "Implement auto-save timer (30s interval)",
+                "Create API endpoint (PATCH /api/pages/:id)",
+                "Save entire page JSON to database",
+                "Add 'Saving...' indicator in UI",
+                "Add manual 'Save' button",
+                "Create versions table in Prisma schema",
+                "Implement 'Save Version' modal (with name)",
+                "Create API endpoint (POST /api/pages/:id/versions)",
+                "Create Version History modal",
+                "Fetch all versions (GET /api/pages/:id/versions)",
+                "Show version list (name, date, author)",
+                "Implement 'Restore Version' action",
+                "Add confirmation dialog before restore"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.9: AI Chat Interface (Basic)",
+          "desc": "## Description\nCreate the AI chat interface for conversational page editing.\n\n## Acceptance Criteria\n- [ ] Chat panel toggles open/close\n- [ ] User can type messages\n- [ ] AI responds (basic text response)\n- [ ] Chat history displayed\n- [ ] Messages saved in database\n\n## Story Points: 8\n\n## Dependencies\n- P0.9: AI Provider Integration\n- P1.4: Component Rendering System\n\n## Technical Notes\n- Use WebSocket or SSE for streaming responses\n- Store chat history in database\n- Show typing indicator while AI thinks",
+          "checklists": [
+            {
+              "name": "AI Chat Implementation",
+              "items": [
+                "Create AIChatPanel component (sliding panel)",
+                "Add toggle button (bottom right)",
+                "Create message input (textarea + send button)",
+                "Create message list (scrollable)",
+                "Style user vs AI messages (different colors)",
+                "Create API endpoint (POST /api/chat)",
+                "Implement basic AI response (echo for now)",
+                "Add typing indicator (three dots animation)",
+                "Store messages in database (chat_messages table)",
+                "Load chat history on open",
+                "Add 'Clear Chat' button",
+                "Test with real Claude API (simple prompt)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.10: Page Management (Add/Delete/Rename)",
+          "desc": "## Description\nAllow users to add new pages, delete pages, and rename pages within a project.\n\n## Acceptance Criteria\n- [ ] Pages list in sidebar\n- [ ] Add new page button working\n- [ ] Delete page with confirmation\n- [ ] Rename page inline\n- [ ] Navigate between pages\n\n## Story Points: 5\n\n## Dependencies\n- P1.4: Component Rendering System\n\n## Technical Notes\n- Each page has unique path (e.g., /about, /contact)\n- Home page (/) cannot be deleted\n- Show unsaved changes warning",
+          "checklists": [
+            {
+              "name": "Page Management",
+              "items": [
+                "Create PagesList component (left sidebar)",
+                "Fetch all pages (GET /api/projects/:id/pages)",
+                "Display pages with icons",
+                "Add 'New Page' button",
+                "Create AddPageModal (name, path)",
+                "Create API endpoint (POST /api/pages)",
+                "Implement page creation (blank canvas)",
+                "Add delete icon for each page",
+                "Show confirmation dialog before delete",
+                "Create API endpoint (DELETE /api/pages/:id)",
+                "Implement inline rename (double-click)",
+                "Create API endpoint (PATCH /api/pages/:id)",
+                "Add page navigation (click to switch)",
+                "Show unsaved changes warning on switch"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.11: AI Page Generation (Form → Full Site)",
+          "desc": "## Description\nImplement AI-powered full site generation from business form data.\n\n## Acceptance Criteria\n- [ ] User fills business form (name, industry, services)\n- [ ] AI generates 5-8 pages (Home, About, Services, Contact, etc.)\n- [ ] Each page has appropriate content and layout\n- [ ] Images suggested (placeholder or AI-generated)\n- [ ] Site ready in under 60 seconds\n\n## Story Points: 13\n\n## Dependencies\n- P0.9: AI Provider Integration\n- P1.4: Component Rendering System\n- P1.6: Component Library\n\n## Technical Notes\n- Use Claude with detailed system prompt\n- Generate page JSON (component tree)\n- Implement retry logic for failed generations",
+          "checklists": [
+            {
+              "name": "AI Generation Implementation",
+              "items": [
+                "Create BusinessForm component (modal)",
+                "Add form fields (business name, industry, services, etc.)",
+                "Create API endpoint (POST /api/generate-site)",
+                "Write system prompt for Claude (page structure)",
+                "Write user prompt template (inject form data)",
+                "Implement AI call (Claude Sonnet 4)",
+                "Parse AI response (extract page JSON)",
+                "Create pages in database (batch insert)",
+                "Generate Home page (hero, features, CTA)",
+                "Generate About page (story, team, mission)",
+                "Generate Services page (service cards)",
+                "Generate Contact page (form, map, info)",
+                "Generate Blog page (if requested)",
+                "Generate Shop page (if e-commerce)",
+                "Add placeholder images (Unsplash API)",
+                "Show progress indicator (Generating Home... 20%)",
+                "Handle errors (retry 3 times)",
+                "Redirect to builder after completion"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 6 (Weeks 11-12) - Phase 1 Final",
+      "cards": [
+        {
+          "name": "P1.12: Responsive Design Controls",
+          "desc": "## Description\nAdd breakpoint controls for mobile, tablet, and desktop views.\n\n## Acceptance Criteria\n- [ ] Breakpoint selector in toolbar (Mobile/Tablet/Desktop)\n- [ ] Canvas resizes to selected breakpoint\n- [ ] Components have responsive overrides\n- [ ] Properties panel shows breakpoint-specific props\n- [ ] Preview mode for each breakpoint\n\n## Story Points: 8\n\n## Dependencies\n- P1.5: Properties Panel\n\n## Technical Notes\n- Use Tailwind responsive classes (sm:, md:, lg:)\n- Store responsive overrides in component schema\n- Show breakpoint indicator in canvas",
+          "checklists": [
+            {
+              "name": "Responsive Design",
+              "items": [
+                "Add breakpoint selector to toolbar",
+                "Define breakpoints (mobile: 375px, tablet: 768px, desktop: 1440px)",
+                "Implement canvas resize on breakpoint change",
+                "Add breakpoint state to Zustand store",
+                "Extend component schema for responsive props",
+                "Update properties panel to show current breakpoint",
+                "Add responsive prop overrides (e.g., fontSize: { base: 16, md: 20, lg: 24 })",
+                "Render correct props based on breakpoint",
+                "Add 'Show on Mobile' toggle",
+                "Add 'Show on Desktop' toggle",
+                "Test responsive behavior on real devices"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.13: Image Library & Upload",
+          "desc": "## Description\nCreate image library modal for uploading, browsing, and inserting images.\n\n## Acceptance Criteria\n- [ ] Image library modal opens\n- [ ] Drag-and-drop upload working\n- [ ] Images displayed in grid\n- [ ] Search/filter by name or date\n- [ ] Insert image into canvas\n\n## Story Points: 5\n\n## Dependencies\n- P0.7: Storage Setup\n- P1.4: Component Rendering System\n\n## Technical Notes\n- Show upload progress\n- Support multiple formats (JPG, PNG, WebP, SVG)\n- Generate thumbnails for faster loading",
+          "checklists": [
+            {
+              "name": "Image Library",
+              "items": [
+                "Create ImageLibraryModal component",
+                "Add 'Open Library' button in toolbar",
+                "Create upload dropzone (drag-and-drop)",
+                "Implement file validation (size, type)",
+                "Show upload progress bar",
+                "Call upload API (POST /api/upload)",
+                "Fetch all images (GET /api/assets)",
+                "Display images in grid layout",
+                "Add search input (filter by name)",
+                "Add sort dropdown (date, name, size)",
+                "Implement image selection (click to select)",
+                "Add 'Insert Image' button",
+                "Insert Image component on canvas",
+                "Add delete image action"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.14: Site Preview Mode",
+          "desc": "## Description\nImplement preview mode that shows site as end-users will see it (no builder UI).\n\n## Acceptance Criteria\n- [ ] Preview button in toolbar\n- [ ] Opens site in new tab (without builder)\n- [ ] All interactions working (links, forms)\n- [ ] Responsive for all breakpoints\n- [ ] Performance matches production\n\n## Story Points: 5\n\n## Dependencies\n- P1.4: Component Rendering System\n\n## Technical Notes\n- Render site on subdomain (myproject.bubblegum.com)\n- Use Next.js ISR for fast loading\n- No auth required for preview",
+          "checklists": [
+            {
+              "name": "Preview Implementation",
+              "items": [
+                "Add 'Preview' button to toolbar",
+                "Create preview route (GET /:subdomain)",
+                "Fetch project pages (no auth required)",
+                "Render pages with ComponentRenderer",
+                "Remove builder UI (canvas, panels, toolbar)",
+                "Enable navigation between pages",
+                "Test all components render correctly",
+                "Test responsive behavior",
+                "Implement ISR (revalidate every 10s)",
+                "Add exit preview button (back to builder)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P1.15: Basic SEO Settings",
+          "desc": "## Description\nAdd basic SEO controls for meta tags, title, description, and Open Graph.\n\n## Acceptance Criteria\n- [ ] SEO panel in properties sidebar\n- [ ] User can edit page title\n- [ ] User can edit meta description\n- [ ] Open Graph image upload\n- [ ] Preview of how page appears in search\n\n## Story Points: 5\n\n## Dependencies\n- P1.5: Properties Panel\n\n## Technical Notes\n- Store SEO data in pages table\n- Generate meta tags in Next.js head\n- Add schema.org markup (JSON-LD)",
+          "checklists": [
+            {
+              "name": "SEO Implementation",
+              "items": [
+                "Add SEO tab to properties panel",
+                "Add 'Page Title' input",
+                "Add 'Meta Description' textarea (160 chars max)",
+                "Add character counter for description",
+                "Add 'Keywords' input (comma-separated)",
+                "Add Open Graph image uploader",
+                "Add 'Canonical URL' input (optional)",
+                "Update pages table with SEO columns",
+                "Create API endpoint (PATCH /api/pages/:id/seo)",
+                "Generate meta tags in Next.js <Head>",
+                "Generate Open Graph tags",
+                "Add Twitter Card tags",
+                "Add schema.org JSON-LD (Article/WebSite)",
+                "Add preview of Google search result"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 7 (Weeks 13-14) - Phase 2 E-commerce",
+      "cards": [
+        {
+          "name": "P2.1: Product Management (CRUD)",
+          "desc": "## Description\nCreate product management interface for adding, editing, and deleting products.\n\n## Acceptance Criteria\n- [ ] Products page in dashboard\n- [ ] Add product form (name, price, SKU, images)\n- [ ] Edit product modal\n- [ ] Delete product with confirmation\n- [ ] Product list with search/filter\n\n## Story Points: 8\n\n## Dependencies\n- P1.1: Dashboard UI\n\n## Technical Notes\n- Store products in database (products table)\n- Support multiple images per product\n- Add inventory tracking field",
+          "checklists": [
+            {
+              "name": "Product Management",
+              "items": [
+                "Create Products page (/dashboard/:projectId/products)",
+                "Create products table in Prisma schema",
+                "Add columns: name, description, price, SKU, stock, images",
+                "Create AddProductModal component",
+                "Add form fields (name, description, price, SKU)",
+                "Add image uploader (multiple images)",
+                "Add inventory field (stock quantity)",
+                "Create API endpoint (POST /api/products)",
+                "Create EditProductModal component",
+                "Create API endpoint (PATCH /api/products/:id)",
+                "Add delete button with confirmation",
+                "Create API endpoint (DELETE /api/products/:id)",
+                "Display products in table/grid",
+                "Add search input (by name, SKU)",
+                "Add filter dropdown (in stock, out of stock)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P2.2: Product Component (Display)",
+          "desc": "## Description\nCreate Product component for displaying products on canvas.\n\n## Acceptance Criteria\n- [ ] Product component in palette\n- [ ] Displays product image, name, price\n- [ ] User can select product from dropdown\n- [ ] Component updates when product data changes\n- [ ] Add to cart button included\n\n## Story Points: 5\n\n## Dependencies\n- P2.1: Product Management\n- P1.6: Component Library\n\n## Technical Notes\n- Component props: productId (linked to product)\n- Support layout variants (card, list, grid)\n- Show 'Out of Stock' badge",
+          "checklists": [
+            {
+              "name": "Product Component",
+              "items": [
+                "Create Product component (ProductCard.tsx)",
+                "Add to component registry",
+                "Add props: productId, layout (card/list)",
+                "Fetch product data (GET /api/products/:id)",
+                "Display product image",
+                "Display product name (heading)",
+                "Display product price (formatted)",
+                "Display product description (truncated)",
+                "Add 'Add to Cart' button",
+                "Show 'Out of Stock' badge if stock = 0",
+                "Add layout variants (card, list, grid)",
+                "Make component editable in properties panel",
+                "Add product selector dropdown (choose product)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P2.3: Product Variants (Size, Color)",
+          "desc": "## Description\nAdd support for product variants (e.g., T-shirt in Small/Medium/Large, Red/Blue).\n\n## Acceptance Criteria\n- [ ] Variant management in product form\n- [ ] Add variant options (name, values)\n- [ ] Each variant has unique SKU and price\n- [ ] Product component shows variant selector\n- [ ] Inventory tracked per variant\n\n## Story Points: 8\n\n## Dependencies\n- P2.1: Product Management\n\n## Technical Notes\n- Store variants in product_variants table\n- Support multiple variant types (size + color)\n- Generate variant combinations automatically",
+          "checklists": [
+            {
+              "name": "Product Variants",
+              "items": [
+                "Create product_variants table in Prisma schema",
+                "Add columns: product_id, sku, price, options (JSON), stock",
+                "Add variant section to AddProductModal",
+                "Add 'Add Variant Option' button (e.g., Size: S, M, L)",
+                "Generate variant combinations (Size × Color)",
+                "Show variants table (SKU, options, price, stock)",
+                "Allow editing individual variants",
+                "Create API endpoint (POST /api/products/:id/variants)",
+                "Update Product component to show variant selectors",
+                "Add dropdown for each variant type (Size, Color)",
+                "Update price when variant selected",
+                "Show 'Out of Stock' for unavailable variants"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P2.4: Shopping Cart (Sidebar)",
+          "desc": "## Description\nImplement shopping cart sidebar that slides in from the right.\n\n## Acceptance Criteria\n- [ ] Cart icon in header (with item count badge)\n- [ ] Cart sidebar slides in on click\n- [ ] Displays cart items (image, name, quantity, price)\n- [ ] User can update quantity\n- [ ] User can remove items\n- [ ] Shows subtotal and total\n\n## Story Points: 8\n\n## Dependencies\n- P2.2: Product Component\n\n## Technical Notes\n- Store cart in localStorage (guest users)\n- Store cart in database (logged-in users)\n- Use Zustand for cart state",
+          "checklists": [
+            {
+              "name": "Shopping Cart",
+              "items": [
+                "Create ShoppingCart component (sliding sidebar)",
+                "Add cart icon to header (with badge)",
+                "Create cart state in Zustand (items, total)",
+                "Implement addToCart() action",
+                "Implement removeFromCart() action",
+                "Implement updateQuantity() action",
+                "Display cart items in list",
+                "Show product image, name, variant, price",
+                "Add quantity input (number, min=1)",
+                "Add remove button (trash icon)",
+                "Calculate subtotal",
+                "Calculate total (subtotal + tax + shipping)",
+                "Add 'Checkout' button",
+                "Persist cart in localStorage (guest)",
+                "Sync cart to database (logged-in)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 8 (Weeks 15-16) - Phase 2 Cont.",
+      "cards": [
+        {
+          "name": "P2.5: Stripe Checkout Integration",
+          "desc": "## Description\nIntegrate Stripe Checkout for payment processing.\n\n## Acceptance Criteria\n- [ ] Stripe account connected\n- [ ] Checkout button redirects to Stripe\n- [ ] Payment session created with cart items\n- [ ] Success/cancel URLs configured\n- [ ] Order created after successful payment\n\n## Story Points: 8\n\n## Dependencies\n- P2.4: Shopping Cart\n\n## Technical Notes\n- Use Stripe Checkout (hosted, no PCI compliance needed)\n- Create webhook for payment_intent.succeeded\n- Store order in database after payment",
+          "checklists": [
+            {
+              "name": "Stripe Integration",
+              "items": [
+                "Create Stripe account (or use test mode)",
+                "Get Stripe API keys (publishable, secret)",
+                "Install Stripe SDK (pnpm add stripe)",
+                "Create API endpoint (POST /api/checkout)",
+                "Create Stripe Checkout session",
+                "Add cart items as line_items",
+                "Set success_url and cancel_url",
+                "Return session URL to frontend",
+                "Redirect user to Stripe Checkout",
+                "Set up Stripe webhook endpoint (POST /api/webhooks/stripe)",
+                "Verify webhook signature",
+                "Handle payment_intent.succeeded event",
+                "Create order in database (orders table)",
+                "Clear cart after successful payment",
+                "Send order confirmation email"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P2.6: Order Management (Admin)",
+          "desc": "## Description\nCreate admin interface for viewing and managing orders.\n\n## Acceptance Criteria\n- [ ] Orders page in dashboard\n- [ ] List all orders with status\n- [ ] Order details modal (items, customer, total)\n- [ ] Update order status (pending, processing, shipped, delivered)\n- [ ] Export orders to CSV\n\n## Story Points: 5\n\n## Dependencies\n- P2.5: Stripe Checkout Integration\n\n## Technical Notes\n- Store orders in orders table\n- Store order items in order_items table\n- Add order status enum (pending, processing, etc.)",
+          "checklists": [
+            {
+              "name": "Order Management",
+              "items": [
+                "Create Orders page (/dashboard/:projectId/orders)",
+                "Create orders table in Prisma schema",
+                "Add columns: customer_email, total, status, created_at",
+                "Create order_items table",
+                "Add columns: order_id, product_id, quantity, price",
+                "Fetch all orders (GET /api/orders)",
+                "Display orders in table (date, customer, total, status)",
+                "Add status badge (color-coded)",
+                "Create OrderDetailsModal component",
+                "Show customer info, items, subtotal, total",
+                "Add 'Update Status' dropdown",
+                "Create API endpoint (PATCH /api/orders/:id)",
+                "Add 'Export to CSV' button",
+                "Generate CSV with all order data"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P2.7: Product Gallery Component",
+          "desc": "## Description\nCreate Product Gallery component for displaying multiple products in grid/carousel.\n\n## Acceptance Criteria\n- [ ] Gallery component in palette\n- [ ] User selects products to display\n- [ ] Grid or carousel layout\n- [ ] Clicking product opens detail page\n- [ ] Responsive (mobile-friendly)\n\n## Story Points: 5\n\n## Dependencies\n- P2.2: Product Component\n\n## Technical Notes\n- Use Embla Carousel or Swiper for carousel\n- Support filtering (by category, price range)\n- Lazy load products (pagination or infinite scroll)",
+          "checklists": [
+            {
+              "name": "Product Gallery",
+              "items": [
+                "Create ProductGallery component",
+                "Add to component registry",
+                "Add props: productIds (array), layout (grid/carousel)",
+                "Fetch products (GET /api/products?ids=1,2,3)",
+                "Render products in grid layout",
+                "Install Embla Carousel (pnpm add embla-carousel-react)",
+                "Render products in carousel layout",
+                "Add navigation arrows (prev/next)",
+                "Add pagination dots",
+                "Make gallery responsive (1 col mobile, 2 tablet, 3+ desktop)",
+                "Add product selection in properties panel",
+                "Support 'Show All Products' option"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P2.8: Inventory Tracking",
+          "desc": "## Description\nImplement inventory tracking that updates when orders are placed.\n\n## Acceptance Criteria\n- [ ] Stock quantity decrements on order\n- [ ] Low stock alerts (< 10 items)\n- [ ] Out of stock products hidden/disabled\n- [ ] Stock history tracked (audit log)\n- [ ] Admin can adjust stock manually\n\n## Story Points: 5\n\n## Dependencies\n- P2.6: Order Management\n\n## Technical Notes\n- Update stock atomically (transaction)\n- Add stock_history table for audit\n- Send email alert for low stock",
+          "checklists": [
+            {
+              "name": "Inventory Tracking",
+              "items": [
+                "Add stock column to products table",
+                "Update stock on order creation (transaction)",
+                "Create stock_history table (audit log)",
+                "Add columns: product_id, change, reason, timestamp",
+                "Log stock changes (order, manual adjustment)",
+                "Create low stock alert (< 10 items)",
+                "Send email to admin when stock low",
+                "Show 'Out of Stock' badge in Product component",
+                "Disable 'Add to Cart' when out of stock",
+                "Add manual stock adjustment in product form",
+                "Create API endpoint (POST /api/products/:id/adjust-stock)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 9 (Weeks 17-18) - Phase 3 Blog",
+      "cards": [
+        {
+          "name": "P3.1: Blog Post Management (CRUD)",
+          "desc": "## Description\nCreate blog post management interface with rich text editor.\n\n## Acceptance Criteria\n- [ ] Posts page in dashboard\n- [ ] Add post with title, content, excerpt\n- [ ] Rich text editor (TipTap) with formatting\n- [ ] Featured image upload\n- [ ] Draft/published status\n\n## Story Points: 8\n\n## Dependencies\n- P1.1: Dashboard UI\n\n## Technical Notes\n- Use TipTap for rich text editing\n- Store content as HTML or Markdown\n- Support categories and tags",
+          "checklists": [
+            {
+              "name": "Blog Post Management",
+              "items": [
+                "Create Posts page (/dashboard/:projectId/posts)",
+                "Create posts table in Prisma schema",
+                "Add columns: title, slug, content, excerpt, featured_image, status, published_at",
+                "Create AddPostPage (/dashboard/:projectId/posts/new)",
+                "Install TipTap (pnpm add @tiptap/react @tiptap/starter-kit)",
+                "Create RichTextEditor component (TipTap)",
+                "Add formatting toolbar (bold, italic, heading, link, list)",
+                "Add image insertion (upload to R2)",
+                "Add title input",
+                "Add excerpt textarea (optional)",
+                "Add featured image uploader",
+                "Add status toggle (Draft/Published)",
+                "Auto-generate slug from title",
+                "Create API endpoint (POST /api/posts)",
+                "Create EditPostPage (/dashboard/:projectId/posts/:id/edit)",
+                "Create API endpoint (PATCH /api/posts/:id)",
+                "Add delete button with confirmation",
+                "Create API endpoint (DELETE /api/posts/:id)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P3.2: Blog Post Component (Display)",
+          "desc": "## Description\nCreate Blog Post component for displaying posts on canvas.\n\n## Acceptance Criteria\n- [ ] BlogPost component in palette\n- [ ] Displays title, date, author, content\n- [ ] Featured image at top\n- [ ] Read more link (if excerpt)\n- [ ] Responsive design\n\n## Story Points: 5\n\n## Dependencies\n- P3.1: Blog Post Management\n- P1.6: Component Library\n\n## Technical Notes\n- Component props: postId (linked to post)\n- Support layout variants (full, excerpt, card)\n- Render HTML content safely (DOMPurify)",
+          "checklists": [
+            {
+              "name": "Blog Post Component",
+              "items": [
+                "Create BlogPost component",
+                "Add to component registry",
+                "Add props: postId, layout (full/excerpt/card)",
+                "Fetch post data (GET /api/posts/:id)",
+                "Display featured image",
+                "Display post title",
+                "Display publish date (formatted)",
+                "Display author name",
+                "Display content (full or excerpt)",
+                "Install DOMPurify (pnpm add dompurify)",
+                "Sanitize HTML content before rendering",
+                "Add 'Read More' link (if excerpt)",
+                "Add layout variants (full, excerpt, card)",
+                "Make component responsive"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P3.3: Blog Post List Component",
+          "desc": "## Description\nCreate Blog Post List component for displaying multiple posts (archive page).\n\n## Acceptance Criteria\n- [ ] BlogPostList component in palette\n- [ ] Displays multiple posts in grid/list\n- [ ] Pagination or load more\n- [ ] Filter by category/tag\n- [ ] Sort by date, popularity\n\n## Story Points: 5\n\n## Dependencies\n- P3.2: Blog Post Component\n\n## Technical Notes\n- Fetch posts with pagination (limit, offset)\n- Support search by title\n- Add loading skeleton",
+          "checklists": [
+            {
+              "name": "Blog Post List",
+              "items": [
+                "Create BlogPostList component",
+                "Add to component registry",
+                "Add props: limit, category, tag, sortBy",
+                "Fetch posts (GET /api/posts?limit=10&offset=0)",
+                "Render posts in grid layout",
+                "Add pagination controls (prev/next)",
+                "Add 'Load More' button (infinite scroll)",
+                "Add filter by category dropdown",
+                "Add filter by tag dropdown",
+                "Add sort dropdown (date, title, views)",
+                "Add search input (by title)",
+                "Show loading skeleton while fetching",
+                "Show empty state (no posts)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P3.4: Categories & Tags System",
+          "desc": "## Description\nImplement categories and tags for blog post organization.\n\n## Acceptance Criteria\n- [ ] Categories management page\n- [ ] Tags management page\n- [ ] Assign categories/tags to posts\n- [ ] Filter posts by category/tag\n- [ ] Display category/tag on post\n\n## Story Points: 5\n\n## Dependencies\n- P3.1: Blog Post Management\n\n## Technical Notes\n- Store categories in categories table\n- Store tags in tags table (many-to-many with posts)\n- Auto-suggest tags when typing",
+          "checklists": [
+            {
+              "name": "Categories & Tags",
+              "items": [
+                "Create categories table in Prisma schema",
+                "Add columns: name, slug, description",
+                "Create tags table",
+                "Add columns: name, slug",
+                "Create junction table (post_tags)",
+                "Create Categories page (/dashboard/:projectId/categories)",
+                "Add CRUD for categories",
+                "Create Tags page (/dashboard/:projectId/tags)",
+                "Add CRUD for tags",
+                "Add category selector to post form (dropdown)",
+                "Add tag selector to post form (multi-select with autocomplete)",
+                "Display categories and tags on BlogPost component",
+                "Filter posts by category (GET /api/posts?category=tech)",
+                "Filter posts by tag (GET /api/posts?tag=ai)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏃 Sprint 10 (Weeks 19-20) - Phase 3 Cont. + Phase 4",
+      "cards": [
+        {
+          "name": "P3.5: Comments System",
+          "desc": "## Description\nAdd comments functionality for blog posts with moderation.\n\n## Acceptance Criteria\n- [ ] Comment form below blog posts\n- [ ] Comments displayed (nested/threaded)\n- [ ] Admin moderation (approve/reject/delete)\n- [ ] Email notifications for new comments\n- [ ] Spam protection (reCAPTCHA)\n\n## Story Points: 8\n\n## Dependencies\n- P3.2: Blog Post Component\n\n## Technical Notes\n- Store comments in comments table\n- Support nested replies (parent_id)\n- Use Akismet for spam detection",
+          "checklists": [
+            {
+              "name": "Comments System",
+              "items": [
+                "Create comments table in Prisma schema",
+                "Add columns: post_id, parent_id, author_name, author_email, content, approved, created_at",
+                "Create CommentForm component",
+                "Add fields: name, email, comment",
+                "Add reCAPTCHA (Google)",
+                "Create API endpoint (POST /api/posts/:id/comments)",
+                "Store comment in database (default: not approved)",
+                "Send email notification to admin",
+                "Create CommentList component",
+                "Fetch approved comments (GET /api/posts/:id/comments)",
+                "Display comments (nested, threaded)",
+                "Add 'Reply' button for nested replies",
+                "Create Comments moderation page (/dashboard/:projectId/comments)",
+                "Add approve/reject/delete actions",
+                "Create API endpoint (PATCH /api/comments/:id)",
+                "Integrate Akismet for spam detection (optional)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P3.6: AI Blog Post Writing Assistant",
+          "desc": "## Description\nAdd AI-powered writing assistant to blog post editor.\n\n## Acceptance Criteria\n- [ ] AI button in editor toolbar\n- [ ] User can request AI to write content\n- [ ] AI generates blog post based on topic\n- [ ] AI can expand existing content\n- [ ] AI can rewrite/improve paragraphs\n\n## Story Points: 8\n\n## Dependencies\n- P3.1: Blog Post Management\n- P0.9: AI Provider Integration\n\n## Technical Notes\n- Use Claude for blog writing (better at long-form)\n- Implement streaming for real-time generation\n- Add prompt templates (intro, conclusion, etc.)",
+          "checklists": [
+            {
+              "name": "AI Writing Assistant",
+              "items": [
+                "Add 'AI Assist' button to TipTap toolbar",
+                "Create AIAssistModal component",
+                "Add action buttons (Generate, Expand, Rewrite, Improve)",
+                "Add topic input (for Generate)",
+                "Create API endpoint (POST /api/ai/blog-write)",
+                "Write system prompt (blog writing instructions)",
+                "Implement Generate action (topic → full post)",
+                "Implement Expand action (short → detailed)",
+                "Implement Rewrite action (improve clarity)",
+                "Implement Improve action (grammar, style)",
+                "Add streaming (SSE) for real-time generation",
+                "Show loading indicator while generating",
+                "Insert generated content into editor",
+                "Add 'Regenerate' button"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P4.1: Custom Domain Connection",
+          "desc": "## Description\nAllow users to connect custom domains to their projects.\n\n## Acceptance Criteria\n- [ ] Custom domain input in project settings\n- [ ] DNS instructions displayed\n- [ ] Domain verification (CNAME check)\n- [ ] SSL certificate provisioned automatically\n- [ ] Site accessible via custom domain\n\n## Story Points: 8\n\n## Dependencies\n- P1.14: Site Preview Mode\n\n## Technical Notes\n- Use Cloudflare API for DNS management\n- Use Cloudflare for SSL (automatic)\n- Verify domain ownership (TXT record or CNAME)",
+          "checklists": [
+            {
+              "name": "Custom Domain",
+              "items": [
+                "Add custom_domain column to projects table",
+                "Create Domain Settings page (/dashboard/:projectId/settings/domain)",
+                "Add custom domain input field",
+                "Show DNS instructions (CNAME record)",
+                "Create API endpoint (POST /api/projects/:id/domain)",
+                "Verify CNAME points to subdomain (DNS check)",
+                "Add domain to Cloudflare via API",
+                "Provision SSL certificate (Cloudflare)",
+                "Update project routes to support custom domain",
+                "Test site on custom domain",
+                "Show verification status (pending, verified, failed)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "P4.2: Analytics Dashboard (Built-in)",
+          "desc": "## Description\nCreate built-in analytics dashboard for tracking page views, visitors, and events.\n\n## Acceptance Criteria\n- [ ] Analytics page in dashboard\n- [ ] Display page views (daily, weekly, monthly)\n- [ ] Display unique visitors\n- [ ] Display top pages\n- [ ] Display referrer sources\n\n## Story Points: 8\n\n## Dependencies\n- P1.14: Site Preview Mode\n\n## Technical Notes\n- Track page views on client side (beacon API)\n- Store in page_views table (PostgreSQL)\n- Use Recharts for visualizations",
+          "checklists": [
+            {
+              "name": "Analytics Implementation",
+              "items": [
+                "Create page_views table in Prisma schema",
+                "Add columns: project_id, page_id, timestamp, referrer, user_agent, ip",
+                "Add tracking script to client sites (beacon API)",
+                "Create API endpoint (POST /api/track)",
+                "Store page view in database",
+                "Create Analytics page (/dashboard/:projectId/analytics)",
+                "Fetch page views (GET /api/analytics/:projectId)",
+                "Calculate metrics (total views, unique visitors)",
+                "Display line chart (views over time)",
+                "Display top pages table",
+                "Display referrer sources (pie chart)",
+                "Add date range filter (last 7 days, 30 days, 90 days)"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
