@@ -14,29 +14,40 @@ export default async function HomePage() {
           AI-Powered Page Builder - Create production-ready websites in 30 minutes
         </p>
 
-        <div className="flex gap-4 justify-center">
-          {userId ? (
-            <Link
-              href="/dashboard"
-              className="rounded-lg bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
-            >
-              Go to Dashboard
-            </Link>
-          ) : (
-            <>
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex gap-4 justify-center">
+            {userId ? (
               <Link
-                href="/sign-in"
+                href="/dashboard"
                 className="rounded-lg bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
               >
-                Sign In
+                Go to Dashboard
               </Link>
-              <Link
-                href="/sign-up"
-                className="rounded-lg border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm hover:bg-slate-50 transition-colors"
-              >
-                Sign Up
-              </Link>
-            </>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  className="rounded-lg bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="rounded-lg border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm hover:bg-slate-50 transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+
+          {process.env.NODE_ENV === 'development' && !userId && (
+            <Link
+              href="/dev-login"
+              className="text-sm text-slate-600 hover:text-slate-900 underline"
+            >
+              🔧 Clerk requires phone? Click here
+            </Link>
           )}
         </div>
       </div>
