@@ -1,13 +1,44 @@
-export default function HomePage() {
+import Link from 'next/link';
+import { auth } from '@clerk/nextjs/server';
+
+export default async function HomePage() {
+  const { userId } = await auth();
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm">
-        <h1 className="text-4xl font-bold text-center mb-4">
+    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="z-10 w-full max-w-5xl">
+        <h1 className="text-5xl font-bold text-center mb-4 text-slate-900">
           Bubble Gum
         </h1>
-        <p className="text-center text-muted-foreground">
-          AI-Powered Page Builder - Coming Soon
+        <p className="text-center text-lg text-slate-600 mb-8">
+          AI-Powered Page Builder - Create production-ready websites in 30 minutes
         </p>
+
+        <div className="flex gap-4 justify-center">
+          {userId ? (
+            <Link
+              href="/dashboard"
+              className="rounded-lg bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
+            >
+              Go to Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                className="rounded-lg bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/sign-up"
+                className="rounded-lg border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm hover:bg-slate-50 transition-colors"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </main>
   );

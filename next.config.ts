@@ -8,8 +8,9 @@ const nextConfig: NextConfig = {
   // Enable strict mode for better development experience
   reactStrictMode: true,
 
-  // Cache components (replaces experimental.ppr in Next.js 16)
-  cacheComponents: true,
+  // Cache components disabled for Clerk compatibility
+  // TODO: Re-enable when Clerk supports it
+  // cacheComponents: true,
 
   // Experimental features
   experimental: {
