@@ -12,9 +12,22 @@ export const projectRouter = createTRPCRouter({
    * List all projects for the authenticated user
    */
   list: protectedProcedure.query(async ({ ctx }) => {
+    // Get the user's database ID from their Clerk ID
+    const user = await ctx.prisma.user.findUnique({
+      where: { clerkId: ctx.userId },
+      select: { id: true },
+    });
+
+    if (!user) {
+      console.log('User not found for clerk ID:', ctx.userId);
+      return [];
+    }
+
+    console.log('Fetching projects for user:', { clerkId: ctx.userId, dbId: user.id });
+
     const projects = await ctx.prisma.project.findMany({
       where: {
-        userId: ctx.userId,
+        userId: user.id, // Use database ID, not Clerk ID
       },
       orderBy: {
         updatedAt: 'desc',
