@@ -13,6 +13,14 @@ export default function ProjectsPage() {
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
+
+  // Debug logging
+  console.log('Projects Page State:', {
+    projects,
+    projectsCount: projects?.length,
+    isLoading,
+    error: error?.message,
+  });
   const createProject = trpc.project.create.useMutation({
     onSuccess: () => {
       setNewProjectName('');
