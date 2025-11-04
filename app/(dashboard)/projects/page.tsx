@@ -9,7 +9,10 @@ export default function ProjectsPage() {
   const [newProjectName, setNewProjectName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  const { data: projects, isLoading, error, refetch } = trpc.project.list.useQuery();
+  const { data: projects, isLoading, error, refetch } = trpc.project.list.useQuery(undefined, {
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+  });
   const createProject = trpc.project.create.useMutation({
     onSuccess: () => {
       setNewProjectName('');
@@ -25,7 +28,12 @@ export default function ProjectsPage() {
 
   const handleCreateProject = async () => {
     if (!newProjectName.trim()) return;
-    await createProject.mutateAsync({ name: newProjectName.trim() });
+    try {
+      await createProject.mutateAsync({ name: newProjectName.trim() });
+      console.log('Project created successfully, refetching list...');
+    } catch (error) {
+      console.error('Error creating project:', error);
+    }
   };
 
   if (isLoading) {
