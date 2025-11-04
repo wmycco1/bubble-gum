@@ -1,0 +1,250 @@
+// ═══════════════════════════════════════════════════════════════
+// BUBBLE GUM - PRISMA SCHEMA (PROTOTYPE)
+// ═══════════════════════════════════════════════════════════════
+// Database: PostgreSQL 16.6
+// ORM: Prisma 6.18.0
+// Purpose: Core tables for Rapid Prototype (Phase 1)
+// ═══════════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// USER & AUTHENTICATION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model User {
+  id            String   @id @default(uuid())
+  clerkId       String   @unique @map("clerk_id") // Clerk user ID
+  email         String   @unique
+  firstName     String?  @map("first_name")
+  lastName      String?  @map("last_name")
+  avatarUrl     String?  @map("avatar_url")
+
+  // Subscription
+  subscriptionTier  SubscriptionTier @default(FREE) @map("subscription_tier")
+  stripeCustomerId  String?          @unique @map("stripe_customer_id")
+  subscriptionId    String?          @unique @map("subscription_id")
+  subscriptionStatus String?         @map("subscription_status") // active, canceled, past_due
+  currentPeriodEnd  DateTime?        @map("current_period_end")
+
+  // Usage tracking
+  aiGenerationsUsed Int      @default(0) @map("ai_generations_used")
+  aiGenerationsLimit Int     @default(10) @map("ai_generations_limit")
+  lastAiGenerationAt DateTime? @map("last_ai_generation_at")
+
+  // Timestamps
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  projects      Project[]
+
+  @@map("users")
+}
+
+enum SubscriptionTier {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PROJECTS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Project {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  name        String
+  slug        String   @unique
+  description String?
+
+  // Domain configuration
+  subdomain   String?  @unique // username.bubblegum.app
+  customDomain String? @unique @map("custom_domain")
+  domainVerified Boolean @default(false) @map("domain_verified")
+
+  // Publishing
+  isPublished Boolean  @default(false) @map("is_published")
+  publishedAt DateTime? @map("published_at")
+
+  // SEO
+  metaTitle       String? @map("meta_title")
+  metaDescription String? @map("meta_description")
+  ogImage         String? @map("og_image")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pages       Page[]
+  assets      Asset[]
+
+  @@index([userId])
+  @@index([subdomain])
+  @@index([customDomain])
+  @@map("projects")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PAGES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Page {
+  id          String   @id @default(uuid())
+  projectId   String   @map("project_id")
+  title       String
+  slug        String
+  path        String   // Full path including nested routes
+
+  // Content (JSON)
+  content     Json     // Array of components with props
+
+  // SEO
+  metaTitle       String? @map("meta_title")
+  metaDescription String? @map("meta_description")
+  ogImage         String? @map("og_image")
+
+  // Publishing
+  isPublished Boolean  @default(false) @map("is_published")
+  publishedAt DateTime? @map("published_at")
+
+  // Ordering
+  order       Int      @default(0)
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, slug])
+  @@index([projectId])
+  @@index([slug])
+  @@map("pages")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// COMPONENTS (Template Library)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Component {
+  id          String   @id @default(uuid())
+  name        String   // e.g., "Hero", "Text Block", "Image"
+  category    ComponentCategory
+  description String?
+
+  // Component definition (JSON)
+  schema      Json     // Schema defining props and structure
+  defaults    Json     // Default props values
+  preview     String?  // Preview image URL
+
+  // Metadata
+  isBuiltIn   Boolean  @default(true) @map("is_built_in")
+  isActive    Boolean  @default(true) @map("is_active")
+  version     String   @default("1.0.0")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([isActive])
+  @@map("components")
+}
+
+enum ComponentCategory {
+  HERO
+  TEXT
+  IMAGE
+  BUTTON
+  FORM
+  LAYOUT
+  NAVIGATION
+  FOOTER
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ASSETS (Images, Files)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Asset {
+  id          String   @id @default(uuid())
+  projectId   String   @map("project_id")
+
+  // File metadata
+  filename    String
+  originalName String  @map("original_name")
+  mimeType    String   @map("mime_type")
+  size        Int      // bytes
+
+  // Storage
+  url         String   // Full URL to asset
+  key         String   // S3 key or path
+
+  // Image metadata (if applicable)
+  width       Int?
+  height      Int?
+  alt         String?
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("assets")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// AI GENERATION HISTORY
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model AiGeneration {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+
+  // Request
+  prompt      String   @db.Text
+  model       String   // e.g., "claude-sonnet-4-20250514"
+
+  // Response
+  result      Json?    // Generated components
+  tokensUsed  Int?     @map("tokens_used")
+
+  // Status
+  status      GenerationStatus @default(PENDING)
+  error       String?  @db.Text
+
+  // Cost tracking
+  costUsd     Float?   @map("cost_usd")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  completedAt DateTime? @map("completed_at")
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("ai_generations")
+}
+
+enum GenerationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
