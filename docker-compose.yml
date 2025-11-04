@@ -1,33 +1,241 @@
-version: '3.8'
+# ═══════════════════════════════════════════════════════════════
+# BUBBLE GUM - DOCKER COMPOSE (ENTERPRISE-GRADE)
+# ═══════════════════════════════════════════════════════════════
+# Version: 3.0.0
+# Last Updated: November 04, 2025
+# PostgreSQL: 16.6-alpine | Redis: 7.4-alpine
+# Performance: Enterprise-grade tuning
+# ═══════════════════════════════════════════════════════════════
 
 services:
-  # PostgreSQL Database
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # PostgreSQL 16.6 - Primary Database
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16.6-alpine
     container_name: bubblegum-postgres
     restart: unless-stopped
+    
     environment:
       POSTGRES_USER: bubblegum
       POSTGRES_PASSWORD: bubblegum_password
       POSTGRES_DB: bubblegum
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.UTF-8"
+      # Logging (optional for debugging)
+      POSTGRES_LOG_STATEMENT: "none"
+      POSTGRES_LOG_MIN_DURATION_STATEMENT: "1000"
+    
+    command:
+      - "postgres"
+      # Connection settings
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "superuser_reserved_connections=3"
+      # Memory settings (optimized for 4GB RAM system)
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "effective_cache_size=768MB"
+      - "-c"
+      - "maintenance_work_mem=64MB"
+      - "-c"
+      - "work_mem=2MB"
+      # WAL settings
+      - "-c"
+      - "wal_buffers=16MB"
+      - "-c"
+      - "min_wal_size=1GB"
+      - "-c"
+      - "max_wal_size=4GB"
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+      # Query planner
+      - "-c"
+      - "default_statistics_target=100"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "effective_io_concurrency=200"
+      # Other optimizations
+      - "-c"
+      - "huge_pages=off"
+      - "-c"
+      - "max_worker_processes=4"
+      - "-c"
+      - "max_parallel_workers_per_gather=2"
+      - "-c"
+      - "max_parallel_workers=4"
+      - "-c"
+      - "max_parallel_maintenance_workers=2"
+    
     ports:
       - "5432:5432"
+    
     volumes:
+      # Data persistence
       - postgres_data:/var/lib/postgresql/data
+      # Init script for extensions
       - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    
+    networks:
+      - bubblegum-network
+    
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U bubblegum -d bubblegum"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 15s
+    
+    # Resource limits (optional, uncomment for production)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '2'
+    #       memory: 1G
+    #     reservations:
+    #       cpus: '1'
+    #       memory: 512M
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Redis 7.4 - Cache & Sessions
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  redis:
+    image: redis:7.4-alpine
+    container_name: bubblegum-redis
+    restart: unless-stopped
+    
+    command:
+      - "redis-server"
+      # Persistence (AOF + RDB)
+      - "--appendonly"
+      - "yes"
+      - "--appendfsync"
+      - "everysec"
+      - "--save"
+      - "900 1"
+      - "--save"
+      - "300 10"
+      - "--save"
+      - "60 10000"
+      # Memory management
+      - "--maxmemory"
+      - "512mb"
+      - "--maxmemory-policy"
+      - "allkeys-lru"
+      - "--maxmemory-samples"
+      - "5"
+      # Network settings
+      - "--tcp-backlog"
+      - "511"
+      - "--timeout"
+      - "0"
+      - "--tcp-keepalive"
+      - "300"
+      # Performance
+      - "--lazyfree-lazy-eviction"
+      - "yes"
+      - "--lazyfree-lazy-expire"
+      - "yes"
+      - "--lazyfree-lazy-server-del"
+      - "yes"
+      - "--lazyfree-lazy-user-del"
+      - "yes"
+      # Replication (for future scaling)
+      - "--replica-read-only"
+      - "yes"
+      # Logging
+      - "--loglevel"
+      - "notice"
+    
+    ports:
+      - "6379:6379"
+    
+    volumes:
+      # Data persistence (AOF + RDB snapshots)
+      - redis_data:/data
+    
     networks:
       - bubblegum-network
+    
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    
+    # Resource limits (optional)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1'
+    #       memory: 768M
+    #     reservations:
+    #       cpus: '0.5'
+    #       memory: 512M
 
-volumes:
-  postgres_data:
-    driver: local
-
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Networks - Isolated Bridge Network
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 networks:
   bubblegum-network:
     driver: bridge
+    name: bubblegum-network
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Volumes - Named Volumes for Data Persistence
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+volumes:
+  postgres_data:
+    driver: local
+    name: bubblegum-postgres-data
+  redis_data:
+    driver: local
+    name: bubblegum-redis-data
+
+# ═══════════════════════════════════════════════════════════════
+# USAGE COMMANDS
+# ═══════════════════════════════════════════════════════════════
+#
+# Start services:
+#   docker compose up -d
+#
+# Stop services:
+#   docker compose down
+#
+# View logs:
+#   docker compose logs -f
+#   docker compose logs -f postgres
+#   docker compose logs -f redis
+#
+# Check status:
+#   docker compose ps
+#
+# Execute commands:
+#   docker compose exec postgres psql -U bubblegum -d bubblegum
+#   docker compose exec redis redis-cli
+#
+# Backup database:
+#   docker compose exec postgres pg_dump -U bubblegum bubblegum > backup.sql
+#
+# Restore database:
+#   docker compose exec -T postgres psql -U bubblegum bubblegum < backup.sql
+#
+# Check PostgreSQL config:
+#   docker compose exec postgres psql -U bubblegum -d bubblegum -c "SHOW ALL;"
+#
+# Check Redis config:
+#   docker compose exec redis redis-cli CONFIG GET "*"
+#
+# Monitor performance:
+#   docker stats bubblegum-postgres bubblegum-redis
+#
+# Remove volumes (⚠️ DELETES DATA):
+#   docker compose down -v
+#
+# ═══════════════════════════════════════════════════════════════
