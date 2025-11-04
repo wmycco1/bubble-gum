@@ -16,7 +16,7 @@ services:
     container_name: bubblegum-postgres
     restart: unless-stopped
     network_mode: "host"
-    
+
     environment:
       POSTGRES_USER: bubblegum
       POSTGRES_PASSWORD: bubblegum_password
@@ -70,7 +70,7 @@ services:
       - "-c"
       - "max_parallel_maintenance_workers=2"
     
-    # ports: # Not needed with network_mode: host
+    # ports:  # Not needed with network_mode: host
     #   - "5432:5432"
 
     volumes:
@@ -79,9 +79,9 @@ services:
       # Init script for extensions
       - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
-    # networks: # Not compatible with network_mode: host
+    # networks:  # Not compatible with network_mode: host
     #   - bubblegum-network
-    
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U bubblegum -d bubblegum"]
       interval: 10s
