@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useEffect } from 'react';
 import { trpc } from '@/lib/trpc/client';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -31,9 +31,11 @@ export default function EditorPage(props: EditorPageProps) {
   const homepage = project?.pages.find((p) => p.slug === 'index');
 
   // Load page content when homepage is available
-  if (homepage && components.length === 0 && Array.isArray(homepage.content)) {
-    setComponents(homepage.content as unknown as PageComponent[]);
-  }
+  useEffect(() => {
+    if (homepage && components.length === 0 && Array.isArray(homepage.content)) {
+      setComponents(homepage.content as unknown as PageComponent[]);
+    }
+  }, [homepage, components.length]);
 
   const handleSave = async () => {
     if (!homepage) return;
