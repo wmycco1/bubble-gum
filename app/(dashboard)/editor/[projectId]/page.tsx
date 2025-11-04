@@ -1,13 +1,12 @@
 'use client';
 
-import { use, useEffect } from 'react';
+import { use, useEffect, useState } from 'react';
 import { trpc } from '@/lib/trpc/client';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Canvas } from '@/components/editor/Canvas';
 import { ComponentPalette } from '@/components/editor/ComponentPalette';
 import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
-import { useState } from 'react';
 import type { PageComponent } from '@/types/components';
 
 interface EditorPageProps {
@@ -20,6 +19,10 @@ export default function EditorPage(props: EditorPageProps) {
     null
   );
   const [components, setComponents] = useState<PageComponent[]>([]);
+
+  // Editor UI state
+  const [deviceMode, setDeviceMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [zoom, setZoom] = useState<number>(1);
 
   const { data: project, isLoading: projectLoading } =
     trpc.project.getById.useQuery({
@@ -124,36 +127,98 @@ export default function EditorPage(props: EditorPageProps) {
 
   return (
     <div className="flex h-screen flex-col bg-slate-50">
-      {/* Header */}
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Link href="/projects">
-            <Button variant="ghost" size="sm">
-              ← Back
+      {/* Header with Toolbar */}
+      <header className="border-b border-slate-200 bg-white">
+        {/* Top bar - Project info and actions */}
+        <div className="flex items-center justify-between px-6 py-3">
+          <div className="flex items-center gap-4">
+            <Link href="/projects">
+              <Button variant="ghost" size="sm">
+                ← Back
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-lg font-semibold text-slate-900">
+                {project.name}
+              </h1>
+              <p className="text-sm text-slate-600">Editing: Home Page</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSave}
+              disabled={updatePageContent.isPending}
+            >
+              {updatePageContent.isPending ? 'Saving...' : 'Save'}
             </Button>
-          </Link>
-          <div>
-            <h1 className="text-lg font-semibold text-slate-900">
-              {project.name}
-            </h1>
-            <p className="text-sm text-slate-600">Editing: Home Page</p>
+            <Button size="sm" disabled>
+              Preview
+            </Button>
+            <Button size="sm" variant="secondary" disabled>
+              Publish
+            </Button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSave}
-            disabled={updatePageContent.isPending}
-          >
-            {updatePageContent.isPending ? 'Saving...' : 'Save'}
-          </Button>
-          <Button size="sm" disabled>
-            Preview
-          </Button>
-          <Button size="sm" variant="secondary" disabled>
-            Publish
-          </Button>
+
+        {/* Toolbar - Device modes and zoom */}
+        <div className="flex items-center justify-center gap-4 border-t border-slate-100 px-6 py-2">
+          {/* Device Mode */}
+          <div className="flex items-center gap-1 rounded-lg border border-slate-200 p-1">
+            <Button
+              variant={deviceMode === 'desktop' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setDeviceMode('desktop')}
+              title="Desktop (1440px)"
+              className="h-8"
+            >
+              🖥️ Desktop
+            </Button>
+            <Button
+              variant={deviceMode === 'tablet' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setDeviceMode('tablet')}
+              title="Tablet (768px)"
+              className="h-8"
+            >
+              📱 Tablet
+            </Button>
+            <Button
+              variant={deviceMode === 'mobile' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setDeviceMode('mobile')}
+              title="Mobile (375px)"
+              className="h-8"
+            >
+              📱 Mobile
+            </Button>
+          </div>
+
+          {/* Zoom */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
+              disabled={zoom <= 0.5}
+              className="h-8 w-8 p-0"
+            >
+              −
+            </Button>
+            <span className="w-16 text-center text-sm text-slate-700">
+              {Math.round(zoom * 100)}%
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setZoom(Math.min(2, zoom + 0.25))}
+              disabled={zoom >= 2}
+              className="h-8 w-8 p-0"
+            >
+              +
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -165,14 +230,26 @@ export default function EditorPage(props: EditorPageProps) {
         </div>
 
         {/* Canvas - Center */}
-        <div className="flex-1 overflow-y-auto p-8">
-          <Canvas
-            components={components}
-            selectedId={selectedComponentId}
-            onSelectComponent={setSelectedComponentId}
-            onDeleteComponent={handleDeleteComponent}
-            onMoveComponent={handleMoveComponent}
-          />
+        <div className="flex-1 overflow-y-auto p-8 bg-slate-100">
+          <div className="flex items-center justify-center min-h-full">
+            <div
+              className="transition-all duration-200"
+              style={{
+                transform: `scale(${zoom})`,
+                transformOrigin: 'top center',
+                width: deviceMode === 'desktop' ? '1440px' : deviceMode === 'tablet' ? '768px' : '375px',
+                maxWidth: '100%',
+              }}
+            >
+              <Canvas
+                components={components}
+                selectedId={selectedComponentId}
+                onSelectComponent={setSelectedComponentId}
+                onDeleteComponent={handleDeleteComponent}
+                onMoveComponent={handleMoveComponent}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Properties Panel - Right Sidebar */}
