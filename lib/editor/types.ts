@@ -21,13 +21,16 @@ export interface ComponentStyle {
   // Layout
   width?: string;
   height?: string;
+  minHeight?: string;
   margin?: string;
+  marginBottom?: string;
   padding?: string;
   display?: string;
   flexDirection?: string;
   justifyContent?: string;
   alignItems?: string;
   gap?: string;
+  gridTemplateColumns?: string;
 
   // Typography
   fontSize?: string;
@@ -54,6 +57,7 @@ export interface ComponentStyle {
   opacity?: string;
   transform?: string;
   transition?: string;
+  cursor?: string;
 }
 
 export interface ComponentProps {

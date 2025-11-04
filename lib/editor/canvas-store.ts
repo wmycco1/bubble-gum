@@ -494,12 +494,14 @@ export const useCanvasStore = create<CanvasStore>()(
 
 export const useUndo = () => {
   const undo = useCanvasStore.temporal.getState().undo;
-  const canUndo = useCanvasStore.temporal((state) => state.pastStates.length > 0);
+  const pastStates = useCanvasStore.temporal.getState().pastStates;
+  const canUndo = pastStates.length > 0;
   return { undo, canUndo };
 };
 
 export const useRedo = () => {
   const redo = useCanvasStore.temporal.getState().redo;
-  const canRedo = useCanvasStore.temporal((state) => state.futureStates.length > 0);
+  const futureStates = useCanvasStore.temporal.getState().futureStates;
+  const canRedo = futureStates.length > 0;
   return { redo, canRedo };
 };

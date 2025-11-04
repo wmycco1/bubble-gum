@@ -9,7 +9,7 @@
 
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cn';
 import type { CanvasComponent } from '@/lib/editor/types';
 
 interface RenderComponentProps {
@@ -48,8 +48,8 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
     },
   });
 
-  const style = {
-    ...component.style,
+  const style: React.CSSProperties = {
+    ...(component.style as React.CSSProperties),
     transform: transform
       ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
       : undefined,
@@ -82,8 +82,9 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
         return <p style={style}>{component.props.text || 'Text'}</p>;
 
       case 'Heading':
-        const HeadingTag = (component.props.variant || 'h2') as keyof JSX.IntrinsicElements;
-        return <HeadingTag style={style}>{component.props.text || 'Heading'}</HeadingTag>;
+        const HeadingTag = (component.props.variant || 'h2') as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+        const HeadingElement = HeadingTag;
+        return <HeadingElement style={style}>{component.props.text || 'Heading'}</HeadingElement>;
 
       case 'Image':
         return (

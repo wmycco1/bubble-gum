@@ -49,7 +49,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={undo}
+          onClick={() => undo()}
           disabled={!canUndo}
           title="Undo (Ctrl+Z)"
         >
@@ -58,7 +58,7 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={redo}
+          onClick={() => redo()}
           disabled={!canRedo}
           title="Redo (Ctrl+Y)"
         >

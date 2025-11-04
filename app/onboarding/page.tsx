@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 export default function OnboardingPage() {
-  const { user, isLoaded } = useUser();
+  const { isLoaded } = useUser();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
