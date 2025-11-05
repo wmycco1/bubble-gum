@@ -1,13 +1,13 @@
 // ═══════════════════════════════════════════════════════════════
 // BUBBLE GUM - CANVAS STORE (ZUSTAND)
 // ═══════════════════════════════════════════════════════════════
-// Version: 1.0.0
+// Version: 2.0.0 - Added localStorage persistence
 // Enterprise-grade state management for visual editor
-// Features: Undo/Redo, Time-travel debugging, Immutable updates
+// Features: Undo/Redo, Time-travel debugging, Immutable updates, localStorage backup
 // ═══════════════════════════════════════════════════════════════
 
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { temporal } from 'zundo';
 import { nanoid } from 'nanoid';
 import type { CanvasComponent, CanvasState, ComponentType, ComponentProps, ComponentStyle } from './types';
@@ -194,13 +194,27 @@ const initialState: CanvasState = {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Persistence Configuration
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+interface PersistedState {
+  components: CanvasComponent[];
+  version: number;
+  timestamp: number;
+}
+
+const STORAGE_KEY = 'bubble-gum-canvas-v1';
+const STORAGE_VERSION = 1;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Store Implementation
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export const useCanvasStore = create<CanvasStore>()(
-  devtools(
-    temporal(
-      (set, get) => ({
+  persist(
+    devtools(
+      temporal(
+        (set, get) => ({
         ...initialState,
 
         // Add new component
@@ -485,7 +499,60 @@ export const useCanvasStore = create<CanvasStore>()(
       }
     ),
     { name: 'CanvasStore' }
-  )
+  ),
+  {
+    name: STORAGE_KEY,
+    version: STORAGE_VERSION,
+    storage: createJSONStorage(() => localStorage),
+
+    // Only persist canvas data (NOT UI state like selection, zoom)
+    partialize: (state) => ({
+      components: state.components,
+      // DON'T persist: selectedComponentId, hoveredComponentId, zoom, deviceMode, isDragging, isResizing, past, future
+    }),
+
+    // Merge strategy: override components from localStorage, keep UI state from initialState
+    merge: (persistedState: any, currentState) => {
+      console.log('📦 localStorage: Restoring persisted state');
+      return {
+        ...currentState, // Keep UI state (selection, zoom, etc.)
+        ...(persistedState as Partial<CanvasStore>), // Override with persisted canvas data
+      };
+    },
+
+    // Migration function for version changes
+    migrate: (persistedState: any, version: number) => {
+      console.log(`🔄 localStorage: Migrating from version ${version} to ${STORAGE_VERSION}`);
+
+      if (version === 0) {
+        // Migrate from v0 to v1 (if needed in future)
+        return {
+          ...persistedState,
+          version: 1,
+        };
+      }
+
+      return persistedState;
+    },
+
+    // Only persist in browser environment
+    skipHydration: typeof window === 'undefined',
+
+    // Log persistence events
+    onRehydrateStorage: () => {
+      console.log('💾 localStorage: Starting hydration');
+      return (state, error) => {
+        if (error) {
+          console.error('❌ localStorage: Hydration error:', error);
+        } else {
+          console.log('✅ localStorage: Hydration complete', {
+            components: state?.components.length || 0,
+          });
+        }
+      };
+    },
+  }
+)
 );
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -504,4 +571,58 @@ export const useRedo = () => {
   const futureStates = useCanvasStore.temporal.getState().futureStates;
   const canRedo = futureStates.length > 0;
   return { redo, canRedo };
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// localStorage Utilities
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Clear localStorage backup (call on logout or when starting fresh)
+ */
+export const clearCanvasLocalStorage = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(STORAGE_KEY);
+    console.log('🧹 localStorage: Cleared canvas backup');
+  }
+};
+
+/**
+ * Get persisted state from localStorage (for conflict detection)
+ */
+export const getPersistedCanvasState = (): PersistedState | null => {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored);
+    return parsed.state as PersistedState;
+  } catch (error) {
+    console.error('❌ localStorage: Failed to read persisted state:', error);
+    return null;
+  }
+};
+
+/**
+ * Check if localStorage has unsaved changes compared to database
+ */
+export const hasLocalStorageConflict = (dbComponents: CanvasComponent[]): boolean => {
+  const persisted = getPersistedCanvasState();
+  if (!persisted || !persisted.components) return false;
+
+  const localCount = persisted.components.length;
+  const dbCount = dbComponents.length;
+
+  // Simple conflict detection: local has more components
+  if (localCount > dbCount) {
+    console.warn('⚠️ localStorage conflict detected:', {
+      local: localCount,
+      database: dbCount,
+    });
+    return true;
+  }
+
+  return false;
 };

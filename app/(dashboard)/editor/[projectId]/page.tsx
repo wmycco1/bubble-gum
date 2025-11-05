@@ -13,7 +13,7 @@
 // - Added toast notifications for user feedback
 // ═══════════════════════════════════════════════════════════════
 
-import { use, useEffect, useCallback, useMemo } from 'react';
+import { use, useEffect, useCallback, useMemo, useState } from 'react';
 import { trpc } from '@/lib/trpc/client';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -21,7 +21,14 @@ import { Canvas } from '@/components/editor/Canvas';
 import { ComponentPalette } from '@/components/editor/ComponentPalette';
 import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
 import { EditorToolbar } from '@/components/editor/EditorToolbar';
-import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
+import { ConflictResolutionModal } from '@/components/editor/ConflictResolutionModal';
+import {
+  useCanvasStore,
+  useUndo,
+  useRedo,
+  hasLocalStorageConflict,
+  getPersistedCanvasState,
+} from '@/lib/editor/canvas-store';
 import { convertArrayOldToNew, convertArrayNewToOld } from '@/lib/editor/adapter';
 import { useAutoSave } from '@/lib/hooks/useAutoSave';
 import { useKeyboardShortcuts } from '@/lib/hooks/useKeyboardShortcuts';
@@ -55,6 +62,13 @@ export default function EditorPage(props: EditorPageProps) {
   // Undo/Redo hooks (only for keyboard shortcuts)
   const { undo, canUndo } = useUndo();
   const { redo, canRedo } = useRedo();
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Conflict Resolution State
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  const [showConflictModal, setShowConflictModal] = useState(false);
+  const [conflictResolved, setConflictResolved] = useState(false);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // Data Fetching
@@ -110,28 +124,42 @@ export default function EditorPage(props: EditorPageProps) {
     },
   });
 
-  // Load page content from DB when homepage is available
+  // Load page content from DB when homepage is available (with conflict detection)
   useEffect(() => {
-    if (homepage?.content && components.length === 0) {
-      try {
-        const content = Array.isArray(homepage.content)
-          ? homepage.content
-          : typeof homepage.content === 'string'
-            ? JSON.parse(homepage.content)
-            : [];
-
-        if (content.length > 0) {
-          console.log('📥 Loading components from DB:', content);
-          // Convert DB components to Store components
-          const canvasComponents = convertArrayOldToNew(content as any[]);
-          loadComponents(canvasComponents);
-          console.log('✅ Loaded', canvasComponents.length, 'components into canvas-store');
-        }
-      } catch (error) {
-        console.error('❌ Failed to parse homepage content:', error);
-      }
+    if (!homepage?.content || components.length > 0 || conflictResolved) {
+      return;
     }
-  }, [homepage?.content, components.length, loadComponents]);
+
+    try {
+      const content = Array.isArray(homepage.content)
+        ? homepage.content
+        : typeof homepage.content === 'string'
+          ? JSON.parse(homepage.content)
+          : [];
+
+      // Convert DB components to Store components
+      const dbComponents = convertArrayOldToNew(content as any[]);
+
+      // Check for localStorage conflict
+      const hasConflict = hasLocalStorageConflict(dbComponents);
+
+      if (hasConflict && !conflictResolved) {
+        console.warn('⚠️ Conflict detected, showing modal');
+        setShowConflictModal(true);
+        return;
+      }
+
+      // No conflict, load from database
+      if (dbComponents.length > 0) {
+        console.log('📥 Loading components from DB:', dbComponents.length);
+        loadComponents(dbComponents);
+        console.log('✅ Loaded', dbComponents.length, 'components into canvas-store');
+        setConflictResolved(true);
+      }
+    } catch (error) {
+      console.error('❌ Failed to parse homepage content:', error);
+    }
+  }, [homepage?.content, components.length, loadComponents, conflictResolved]);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // Keyboard Shortcuts (Using useKeyboardShortcuts hook)
@@ -263,6 +291,44 @@ export default function EditorPage(props: EditorPageProps) {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   /**
+   * Handle restoring from localStorage backup
+   */
+  const handleRestoreFromLocal = useCallback(() => {
+    console.log('🔄 Restoring from localStorage backup');
+    // localStorage components are already loaded by Zustand persist middleware
+    // Just need to mark conflict as resolved
+    setShowConflictModal(false);
+    setConflictResolved(true);
+    toast.success('Restored from local backup', { duration: 3000 });
+  }, []);
+
+  /**
+   * Handle discarding localStorage and using database version
+   */
+  const handleDiscardLocal = useCallback(() => {
+    console.log('🗑️ Discarding localStorage, using database');
+
+    if (!homepage?.content) return;
+
+    try {
+      const content = Array.isArray(homepage.content)
+        ? homepage.content
+        : typeof homepage.content === 'string'
+          ? JSON.parse(homepage.content)
+          : [];
+
+      const dbComponents = convertArrayOldToNew(content as any[]);
+      loadComponents(dbComponents);
+      setShowConflictModal(false);
+      setConflictResolved(true);
+      toast.success('Loaded from database', { duration: 3000 });
+    } catch (error) {
+      console.error('❌ Failed to load database version:', error);
+      toast.error('Failed to load database version');
+    }
+  }, [homepage?.content, loadComponents]);
+
+  /**
    * Handle component property updates from PropertiesPanel
    */
   const handleUpdateComponent = useCallback(
@@ -340,6 +406,23 @@ export default function EditorPage(props: EditorPageProps) {
   // Render
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+  // Get persisted state for conflict modal
+  const persistedState = getPersistedCanvasState();
+  const localCount = persistedState?.components?.length || 0;
+  const dbCount = useMemo(() => {
+    if (!homepage?.content) return 0;
+    try {
+      const content = Array.isArray(homepage.content)
+        ? homepage.content
+        : typeof homepage.content === 'string'
+          ? JSON.parse(homepage.content)
+          : [];
+      return content.length;
+    } catch {
+      return 0;
+    }
+  }, [homepage?.content]);
+
   return (
     <div className="flex h-screen flex-col bg-slate-50">
       {/* Toast Notifications */}
@@ -367,6 +450,16 @@ export default function EditorPage(props: EditorPageProps) {
             },
           },
         }}
+      />
+
+      {/* Conflict Resolution Modal */}
+      <ConflictResolutionModal
+        isOpen={showConflictModal}
+        localCount={localCount}
+        databaseCount={dbCount}
+        onRestore={handleRestoreFromLocal}
+        onDiscard={handleDiscardLocal}
+        onClose={() => setShowConflictModal(false)}
       />
 
       {/* EditorToolbar - Replaces custom header */}
