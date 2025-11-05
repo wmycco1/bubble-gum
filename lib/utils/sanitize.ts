@@ -108,10 +108,17 @@ export function sanitizeMarketing(dirty: string): string {
  * @returns Plain text (no HTML)
  */
 export function stripHTML(dirty: string): string {
-  return DOMPurify.sanitize(dirty, {
+  // First sanitize with DOMPurify to prevent XSS
+  const sanitized = DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: [],
     KEEP_CONTENT: true,
   });
+
+  // Then strip all remaining HTML tags with regex
+  const stripped = sanitized.replace(/<[^>]*>/g, '');
+
+  // Remove extra whitespace and trim
+  return stripped.replace(/\s+/g, ' ').trim();
 }
 
 /**
