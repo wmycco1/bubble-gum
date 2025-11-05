@@ -28,6 +28,7 @@ import { BorderRadiusControl } from './controls/BorderRadiusControl';
 import { BackgroundControl } from './controls/BackgroundControl';
 import { BoxShadowControl } from './controls/BoxShadowControl';
 import { OpacityControl } from './controls/OpacityControl';
+import { TransformControl } from './controls/TransformControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 
 interface PropertiesPanelProps {
@@ -2097,6 +2098,15 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
         defaultExpanded={false}
       >
         <OpacityControl componentId={component.id} />
+      </PropertyGroup>
+
+      {/* Transform Control (ALL components) */}
+      <PropertyGroup
+        title="Transform"
+        storageKey="transform-group"
+        defaultExpanded={false}
+      >
+        <TransformControl componentId={component.id} />
       </PropertyGroup>
 
       {/* Background Control (Layout components only) */}
