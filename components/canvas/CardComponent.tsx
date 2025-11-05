@@ -11,7 +11,6 @@
 import type { CanvasComponent, CardProps } from '@/lib/editor/types';
 import { RenderComponent } from '@/components/editor/RenderComponent';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
-import Image from 'next/image';
 
 interface CardComponentProps {
   component: CanvasComponent;

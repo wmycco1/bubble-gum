@@ -17,6 +17,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
 import { LinksEditor, type Link } from './LinksEditor';
 import { BreakpointTabs } from './BreakpointTabs';
+import { ImageLibraryModal } from './ImageLibraryModal';
 
 interface PropertiesPanelProps {
   component: CanvasComponent | undefined;
@@ -34,6 +35,9 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
   // Local state mirrors component.props for immediate input feedback
   const [localProps, setLocalProps] = useState<Record<string, unknown>>(component?.props || {});
+
+  // Image library modal state
+  const [showImageLibrary, setShowImageLibrary] = useState(false);
 
   // Debounce timer reference
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -202,13 +206,22 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           <>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Image URL</label>
-              <input
-                type="text"
-                value={(localProps.src as string) || ''}
-                onChange={(e) => handleChange('src', e.target.value)}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
-                placeholder="https://..."
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={(localProps.src as string) || ''}
+                  onChange={(e) => handleChange('src', e.target.value)}
+                  className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                  placeholder="https://..."
+                />
+                <button
+                  onClick={() => setShowImageLibrary(true)}
+                  className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
+                  title="Open Image Library"
+                >
+                  🖼️ Library
+                </button>
+              </div>
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Alt Text</label>
@@ -1172,6 +1185,15 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       {/* Properties Form */}
       <div className="space-y-4">{renderProperties()}</div>
+
+      {/* Image Library Modal */}
+      <ImageLibraryModal
+        isOpen={showImageLibrary}
+        onClose={() => setShowImageLibrary(false)}
+        onSelectImage={(url) => {
+          handleChange('src', url);
+        }}
+      />
     </div>
   );
 }
