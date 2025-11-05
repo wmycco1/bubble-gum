@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // BUBBLE GUM - EDITOR TYPES
 // ═══════════════════════════════════════════════════════════════
-// Version: 1.0.0
+// Version: 2.0.0 - Enhanced with specific component interfaces
 // Enterprise-grade TypeScript types for visual editor
 // ═══════════════════════════════════════════════════════════════
 
@@ -16,6 +16,86 @@ export type ComponentType =
   | 'Card'
   | 'Input'
   | 'Form';
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Specific Component Props Interfaces
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/** Button component props */
+export interface ButtonProps {
+  text?: string;
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+}
+
+/** Text/Heading component props */
+export interface TextProps {
+  text?: string;
+  variant?: 'h1' | 'h2' | 'h3' | 'paragraph';
+}
+
+/** Image component props */
+export interface ImageProps {
+  src?: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+}
+
+/** Input component props */
+export interface InputProps {
+  placeholder?: string;
+  type?: 'text' | 'email' | 'password' | 'number';
+  name?: string;
+  required?: boolean;
+  label?: string;
+}
+
+/** Form component props */
+export interface FormProps {
+  submitText?: string;
+  fields?: Array<{
+    name: string;
+    type: string;
+    label: string;
+    required?: boolean;
+  }>;
+}
+
+/** Section (Hero) component props */
+export interface SectionProps {
+  text?: string;           // Title
+  subtitle?: string;       // Subtitle
+  ctaText?: string;        // Call-to-action button text
+  ctaLink?: string;        // Call-to-action button link
+  backgroundImage?: string;
+  overlay?: boolean;
+}
+
+/** Container component props */
+export interface ContainerProps {
+  maxWidth?: string;       // Max width (e.g., '1200px', '100%')
+  padding?: string;        // Padding (e.g., '2rem', '20px')
+  backgroundColor?: string;
+  alignment?: 'left' | 'center' | 'right';
+}
+
+/** Grid component props */
+export interface GridProps {
+  columns?: number;        // Number of columns (1-4)
+  gap?: string;           // Gap between items (e.g., '1rem', '20px')
+  alignItems?: 'start' | 'center' | 'end' | 'stretch';
+}
+
+/** Card component props */
+export interface CardProps {
+  title?: string;
+  description?: string;
+  image?: string;
+  href?: string;
+  variant?: 'default' | 'bordered' | 'elevated';
+}
 
 export interface ComponentStyle {
   // Layout

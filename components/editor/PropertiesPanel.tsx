@@ -249,23 +249,194 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           </>
         );
 
-      // Container components
+      // Container
       case 'Container':
+        return (
+          <>
+            <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
+              <p className="text-xs text-blue-900 font-medium mb-1">📦 Container Component</p>
+              <p className="text-xs text-blue-700">
+                Layout container • Children: {component.children?.length || 0}
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Max Width</label>
+              <select
+                value={(component.props.maxWidth as string) || '100%'}
+                onChange={(e) => handleChange('maxWidth', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="100%">Full Width (100%)</option>
+                <option value="1200px">Large (1200px)</option>
+                <option value="960px">Medium (960px)</option>
+                <option value="640px">Small (640px)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Padding</label>
+              <select
+                value={(component.props.padding as string) || '1rem'}
+                onChange={(e) => handleChange('padding', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="0">None</option>
+                <option value="0.5rem">Small (0.5rem)</option>
+                <option value="1rem">Medium (1rem)</option>
+                <option value="2rem">Large (2rem)</option>
+                <option value="4rem">Extra Large (4rem)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Alignment</label>
+              <select
+                value={(component.props.alignment as string) || 'left'}
+                onChange={(e) => handleChange('alignment', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="left">Left</option>
+                <option value="center">Center</option>
+                <option value="right">Right</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Background Color</label>
+              <input
+                type="text"
+                value={(component.props.backgroundColor as string) || ''}
+                onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="#ffffff or transparent"
+              />
+            </div>
+          </>
+        );
+
+      // Grid
       case 'Grid':
+        return (
+          <>
+            <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
+              <p className="text-xs text-blue-900 font-medium mb-1">🔲 Grid Component</p>
+              <p className="text-xs text-blue-700">
+                Responsive grid layout • Children: {component.children?.length || 0}
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Columns</label>
+              <select
+                value={(component.props.columns as number) || 3}
+                onChange={(e) => handleChange('columns', parseInt(e.target.value))}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="1">1 Column</option>
+                <option value="2">2 Columns</option>
+                <option value="3">3 Columns</option>
+                <option value="4">4 Columns</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Gap</label>
+              <select
+                value={(component.props.gap as string) || '1rem'}
+                onChange={(e) => handleChange('gap', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="0">No gap</option>
+                <option value="0.5rem">Small (0.5rem)</option>
+                <option value="1rem">Medium (1rem)</option>
+                <option value="1.5rem">Large (1.5rem)</option>
+                <option value="2rem">Extra Large (2rem)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Align Items</label>
+              <select
+                value={(component.props.alignItems as string) || 'start'}
+                onChange={(e) => handleChange('alignItems', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="start">Start</option>
+                <option value="center">Center</option>
+                <option value="end">End</option>
+                <option value="stretch">Stretch</option>
+              </select>
+            </div>
+          </>
+        );
+
+      // Card
       case 'Card':
         return (
           <>
-            <div className="rounded-md bg-slate-50 p-4 border border-slate-200">
-              <p className="text-sm font-medium text-slate-900 mb-2">
-                📦 {component.type} Component
+            <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
+              <p className="text-xs text-blue-900 font-medium mb-1">🃏 Card Component</p>
+              <p className="text-xs text-blue-700">
+                Content card • Children: {component.children?.length || 0}
               </p>
-              <p className="text-xs text-slate-600 mb-3">
-                This is a container component. Drag other components inside it to create layouts.
-              </p>
-              <div className="text-xs text-slate-700 space-y-1">
-                <div>• Children: {component.children?.length || 0}</div>
-                <div>• Style properties available in future update</div>
-              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Title</label>
+              <input
+                type="text"
+                value={(component.props.title as string) || ''}
+                onChange={(e) => handleChange('title', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Card title"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Description</label>
+              <textarea
+                value={(component.props.description as string) || ''}
+                onChange={(e) => handleChange('description', e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Card description"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Image URL</label>
+              <input
+                type="text"
+                value={(component.props.image as string) || ''}
+                onChange={(e) => handleChange('image', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="https://..."
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Link (Optional)</label>
+              <input
+                type="text"
+                value={(component.props.href as string) || ''}
+                onChange={(e) => handleChange('href', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="#"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
+              <select
+                value={(component.props.variant as string) || 'default'}
+                onChange={(e) => handleChange('variant', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="default">Default</option>
+                <option value="bordered">Bordered</option>
+                <option value="elevated">Elevated (Shadow)</option>
+              </select>
             </div>
           </>
         );
