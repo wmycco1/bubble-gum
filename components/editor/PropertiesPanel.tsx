@@ -3,8 +3,12 @@
 // ═══════════════════════════════════════════════════════════════
 // BUBBLE GUM - PROPERTIES PANEL (FIXED CONTROLLED INPUTS)
 // ═══════════════════════════════════════════════════════════════
-// Version: 3.1.0 - FIXED: Grid columns visual update
-// Changes:
+// Version: 4.0.0 - M1: Universal Styling System Integration
+// New Features (M1):
+// - ✅ BorderRadiusControl for ALL components (collapsible)
+// - ✅ BackgroundControl for layout components (Container, Section, Card, Grid)
+// - ✅ PropertyGroup wrapper for collapsible sections with localStorage
+// Previous Fixes (v3.1.0):
 // - ✅ FIXED: Grid columns now update visually when changed (3→6 columns)
 // - ✅ Atomic update for columns + columnWidths (no debounce)
 // - ✅ FIXED: Controlled input lag with async Zustand store updates
@@ -20,6 +24,9 @@ import type { CanvasComponent } from '@/lib/editor/types';
 import { LinksEditor, type Link } from './LinksEditor';
 import { ImageLibraryModal } from './ImageLibraryModal';
 import { SpacingControls } from './SpacingControls';
+import { BorderRadiusControl } from './controls/BorderRadiusControl';
+import { BackgroundControl } from './controls/BackgroundControl';
+import { PropertyGroup } from './controls/PropertyGroup';
 
 interface PropertiesPanelProps {
   component: CanvasComponent | undefined;
@@ -1243,6 +1250,26 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       {/* Spacing Controls (Margin/Padding) */}
       <SpacingControls componentId={component.id} />
+
+      {/* Border Radius Control (ALL components) */}
+      <PropertyGroup
+        title="Border Radius"
+        storageKey="border-radius-group"
+        defaultExpanded={false}
+      >
+        <BorderRadiusControl componentId={component.id} />
+      </PropertyGroup>
+
+      {/* Background Control (Layout components only) */}
+      {['Container', 'ContainerComponent', 'Section', 'SectionComponent', 'Card', 'CardComponent', 'Grid', 'GridComponent'].includes(component.type) && (
+        <PropertyGroup
+          title="Background"
+          storageKey="background-group"
+          defaultExpanded={false}
+        >
+          <BackgroundControl componentId={component.id} />
+        </PropertyGroup>
+      )}
 
       {/* Image Library Modal */}
       <ImageLibraryModal
