@@ -67,6 +67,7 @@
     "recharts": "^2.15.0",
     "stripe": "^18.2.0",
     "superjson": "^2.2.5",
+    "svix": "^1.81.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss": "^4.1.16",
     "tailwindcss-animate": "^1.0.7",
