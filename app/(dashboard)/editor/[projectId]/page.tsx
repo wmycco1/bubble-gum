@@ -24,6 +24,7 @@ import { EditorToolbar } from '@/components/editor/EditorToolbar';
 import { ConflictResolutionModal } from '@/components/editor/ConflictResolutionModal';
 import { AIChat } from '@/components/editor/AIChat';
 import { DragDropContextProvider } from '@/components/editor/DragDropContext';
+import { ResizablePanel } from '@/components/editor/ResizablePanel';
 import {
   useCanvasStore,
   useUndo,
@@ -499,12 +500,21 @@ export default function EditorPage(props: EditorPageProps) {
       {/* Editor Layout with Drag & Drop */}
       <DragDropContextProvider>
         <div className="flex flex-1 overflow-hidden">
-          {/* Component Palette - Left Sidebar */}
-          <div className="w-64 border-r border-slate-200 bg-white overflow-y-auto">
-            <ComponentPalette />
-          </div>
+          {/* Component Palette - Left Resizable Panel */}
+          <ResizablePanel
+            id="component-palette"
+            position="left"
+            defaultWidth={280}
+            minWidth={200}
+            maxWidth={400}
+            collapsible={true}
+          >
+            <div className="h-full overflow-y-auto">
+              <ComponentPalette />
+            </div>
+          </ResizablePanel>
 
-          {/* Canvas - Center */}
+          {/* Canvas - Center (flex-1 fills remaining space) */}
           <div className="flex-1 overflow-y-auto p-8 bg-slate-100">
             <div className="flex items-center justify-center min-h-full">
               <div
@@ -529,17 +539,26 @@ export default function EditorPage(props: EditorPageProps) {
             </div>
           </div>
 
-          {/* Properties Panel - Right Sidebar */}
-          <div className="w-80 border-l border-slate-200 bg-white overflow-y-auto">
-            <PropertiesPanel
-              component={selectedComponent}
-              onUpdate={(props) => {
-                if (selectedComponentId) {
-                  handleUpdateComponent(selectedComponentId, props);
-                }
-              }}
-            />
-          </div>
+          {/* Properties Panel - Right Resizable Panel */}
+          <ResizablePanel
+            id="properties-panel"
+            position="right"
+            defaultWidth={360}
+            minWidth={280}
+            maxWidth={500}
+            collapsible={true}
+          >
+            <div className="h-full overflow-y-auto">
+              <PropertiesPanel
+                component={selectedComponent}
+                onUpdate={(props) => {
+                  if (selectedComponentId) {
+                    handleUpdateComponent(selectedComponentId, props);
+                  }
+                }}
+              />
+            </div>
+          </ResizablePanel>
         </div>
       </DragDropContextProvider>
 
