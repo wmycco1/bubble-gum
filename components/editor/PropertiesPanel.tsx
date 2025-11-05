@@ -29,6 +29,7 @@ import { BackgroundControl } from './controls/BackgroundControl';
 import { BoxShadowControl } from './controls/BoxShadowControl';
 import { OpacityControl } from './controls/OpacityControl';
 import { TransformControl } from './controls/TransformControl';
+import { TextShadowControl } from './controls/TextShadowControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 
 interface PropertiesPanelProps {
@@ -2108,6 +2109,17 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       >
         <TransformControl componentId={component.id} />
       </PropertyGroup>
+
+      {/* Text Shadow Control (Text-based components) */}
+      {['Text', 'TextComponent', 'Heading', 'HeadingComponent', 'Button', 'ButtonComponent', 'Link', 'LinkComponent'].includes(component.type) && (
+        <PropertyGroup
+          title="Text Shadow"
+          storageKey="text-shadow-group"
+          defaultExpanded={false}
+        >
+          <TextShadowControl componentId={component.id} />
+        </PropertyGroup>
+      )}
 
       {/* Background Control (Layout components only) */}
       {['Container', 'ContainerComponent', 'Section', 'SectionComponent', 'Card', 'CardComponent', 'Grid', 'GridComponent'].includes(component.type) && (
