@@ -1,13 +1,13 @@
 // ═══════════════════════════════════════════════════════════════
 // GRID COMPONENT (ADVANCED)
 // ═══════════════════════════════════════════════════════════════
-// Version: 2.1.0 - Added resize handles
+// Version: 2.2.0 - Functional resize with mouse drag
 // Features:
 // - Per-column drop zones
 // - Customizable column count (1-12)
 // - Custom column widths (columnWidths array)
 // - Drag components to specific columns
-// - Visual resize handles between columns
+// - Functional resize handles with mouse drag
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
@@ -15,7 +15,7 @@ import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { RenderComponent } from '@/components/editor/RenderComponent';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { useDroppable } from '@dnd-kit/core';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 interface GridComponentProps {
   component: CanvasComponent;
@@ -29,16 +29,14 @@ function GridColumn({
   gridId,
   columnIndex,
   columnChildren,
-  columnWidth,
   totalColumns,
   onResizeStart,
 }: {
   gridId: string;
   columnIndex: number;
   columnChildren: CanvasComponent[];
-  columnWidth?: string;
   totalColumns: number;
-  onResizeStart?: (columnIndex: number) => void;
+  onResizeStart?: (columnIndex: number, e: React.MouseEvent) => void;
 }) {
   const selectedComponentId = useCanvasStore((state) => state.selectedComponentId);
 
@@ -63,7 +61,6 @@ function GridColumn({
             ? 'border-blue-500 bg-blue-50'
             : 'border-slate-200 bg-white'
         }`}
-        style={{ width: columnWidth }}
       >
         {isEmpty ? (
           <div className="flex items-center justify-center h-full text-xs text-slate-400">
@@ -86,7 +83,11 @@ function GridColumn({
           className="absolute top-0 right-0 bottom-0 w-2 cursor-col-resize hover:bg-blue-400 transition-colors z-10 flex items-center justify-center group"
           style={{ transform: 'translateX(50%)' }}
           title="Drag to resize column"
-          onMouseDown={() => onResizeStart?.(columnIndex)}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onResizeStart?.(columnIndex, e);
+          }}
         >
           <div className="w-1 h-8 bg-slate-300 group-hover:bg-blue-500 rounded-full transition-colors" />
         </div>
@@ -97,7 +98,12 @@ function GridColumn({
 
 export function GridComponent({ component }: GridComponentProps) {
   const { props, style, children } = component;
+  const updateComponent = useCanvasStore((state) => state.updateComponent);
+
   const [resizing, setResizing] = useState<number | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const startXRef = useRef<number>(0);
+  const startWidthsRef = useRef<number[]>([]);
 
   // Get column configuration from props
   const columns = (props.columns as number) || 3;
@@ -115,19 +121,105 @@ export function GridComponent({ component }: GridComponentProps) {
     }
   });
 
-  // Generate grid template columns based on columnWidths or equal distribution
-  const gridTemplateColumns =
-    columnWidths.length > 0
-      ? columnWidths.slice(0, columns).join(' ')
-      : `repeat(${columns}, 1fr)`;
+  // Convert columnWidths to pixels for resize calculations
+  const getPixelWidths = (): number[] => {
+    if (!gridRef.current) return [];
+    const gridElement = gridRef.current;
+    const gridWidth = gridElement.offsetWidth;
+    const gapValue = parseFloat(gap) * 16; // Convert rem to px (assuming 16px base)
+    const totalGap = gapValue * (columns - 1);
+    const availableWidth = gridWidth - totalGap;
+
+    // Calculate pixel width for each column
+    const pixelWidths: number[] = [];
+    const frUnits: number[] = [];
+    const fixedWidths: number[] = [];
+
+    columnWidths.forEach((width, i) => {
+      if (width.endsWith('fr')) {
+        frUnits[i] = parseFloat(width);
+        fixedWidths[i] = 0;
+      } else if (width.endsWith('px')) {
+        frUnits[i] = 0;
+        fixedWidths[i] = parseFloat(width);
+      } else if (width.endsWith('rem')) {
+        frUnits[i] = 0;
+        fixedWidths[i] = parseFloat(width) * 16;
+      } else {
+        frUnits[i] = 1;
+        fixedWidths[i] = 0;
+      }
+    });
+
+    const totalFixed = fixedWidths.reduce((sum, w) => sum + w, 0);
+    const totalFr = frUnits.reduce((sum, fr) => sum + fr, 0);
+    const remainingWidth = availableWidth - totalFixed;
+    const frValue = totalFr > 0 ? remainingWidth / totalFr : 0;
+
+    columnWidths.forEach((_, i) => {
+      if ((frUnits[i] ?? 0) > 0) {
+        pixelWidths[i] = (frUnits[i] ?? 0) * frValue;
+      } else {
+        pixelWidths[i] = fixedWidths[i] ?? 0;
+      }
+    });
+
+    return pixelWidths;
+  };
 
   // Handle resize start
-  const handleResizeStart = (columnIndex: number) => {
+  const handleResizeStart = (columnIndex: number, e: React.MouseEvent) => {
     setResizing(columnIndex);
-    console.log('🔄 Resize started for column:', columnIndex);
-    // TODO: Implement actual resize logic with mouse move
-    // For now, just show visual feedback
+    startXRef.current = e.clientX;
+    startWidthsRef.current = getPixelWidths();
+
+    console.log('🔄 Resize started for column:', columnIndex, {
+      startX: e.clientX,
+      startWidths: startWidthsRef.current,
+    });
+
+    // Add mouse move and mouse up listeners
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - startXRef.current;
+      const newWidths = [...startWidthsRef.current];
+
+      // Update current column width
+      const currentWidth = newWidths[columnIndex] || 0;
+      const nextWidth = newWidths[columnIndex + 1] || 0;
+
+      // Ensure minimum width of 50px
+      const newCurrentWidth = Math.max(50, currentWidth + deltaX);
+      const newNextWidth = Math.max(50, nextWidth - deltaX);
+
+      newWidths[columnIndex] = newCurrentWidth;
+      newWidths[columnIndex + 1] = newNextWidth;
+
+      // Convert pixel widths back to fr units (proportional)
+      const totalWidth = newWidths.reduce((sum, w) => sum + w, 0);
+      const newColumnWidths = newWidths.map(w => `${((w / totalWidth) * columns).toFixed(3)}fr`);
+
+      // Update component props
+      updateComponent(component.id, {
+        props: {
+          ...props,
+          columnWidths: newColumnWidths,
+        },
+      });
+    };
+
+    const handleMouseUp = () => {
+      setResizing(null);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      console.log('✅ Resize ended');
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
+
+  // Generate grid template columns based on columnWidths
+  const gridTemplateColumns = columnWidths.slice(0, columns).join(' ');
 
   // Remove Tailwind spacing classes if custom spacing is set
   const baseClassName = 'grid p-6 border-2 border-solid rounded-lg min-h-[200px] bg-slate-50 relative';
@@ -136,6 +228,7 @@ export function GridComponent({ component }: GridComponentProps) {
 
   return (
     <div
+      ref={gridRef}
       className={wrapperClassName}
       style={{
         ...(style as React.CSSProperties),
@@ -149,7 +242,6 @@ export function GridComponent({ component }: GridComponentProps) {
           gridId={component.id}
           columnIndex={columnIndex}
           columnChildren={childrenByColumn[columnIndex] || []}
-          columnWidth={columnWidths[columnIndex]}
           totalColumns={columns}
           onResizeStart={handleResizeStart}
         />
