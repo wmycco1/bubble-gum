@@ -5,7 +5,7 @@
 // Coverage: Component interactions, drag & drop, undo/redo, auto-save
 // ═══════════════════════════════════════════════════════════════
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
@@ -92,7 +92,7 @@ const MockCanvas = () => {
 
 // Mock PropertiesPanel
 const MockPropertiesPanel = () => {
-  const { selectedComponentId, components, updateComponentProps, getComponentById } =
+  const { selectedComponentId, updateComponentProps, getComponentById } =
     useCanvasStore();
 
   const selectedComponent = selectedComponentId
@@ -268,7 +268,8 @@ describe('Editor Integration Tests', () => {
 
       // Get component ID
       const { components } = useCanvasStore.getState();
-      const buttonId = components[0].id;
+      const buttonId = components[0]?.id;
+      if (!buttonId) throw new Error('Component not found');
 
       // Click component to select it
       const componentElement = screen.getByTestId(`component-${buttonId}`);
@@ -292,7 +293,8 @@ describe('Editor Integration Tests', () => {
 
       // Select component
       const { components } = useCanvasStore.getState();
-      const buttonId = components[0].id;
+      const buttonId = components[0]?.id;
+      if (!buttonId) throw new Error('Component not found');
       await user.click(screen.getByTestId(`component-${buttonId}`));
 
       // Find text input in properties panel
@@ -306,7 +308,7 @@ describe('Editor Integration Tests', () => {
       // Verify store updated
       await waitFor(() => {
         const { components } = useCanvasStore.getState();
-        expect(components[0].props.text).toBe('New Button Text');
+        expect(components[0]?.props.text).toBe('New Button Text');
       });
     });
   });
@@ -371,7 +373,8 @@ describe('Editor Integration Tests', () => {
 
       // Select component
       const { components } = useCanvasStore.getState();
-      const buttonId = components[0].id;
+      const buttonId = components[0]?.id;
+      if (!buttonId) throw new Error('Component not found');
       await user.click(screen.getByTestId(`component-${buttonId}`));
 
       // Edit text
@@ -380,14 +383,14 @@ describe('Editor Integration Tests', () => {
       await user.type(textInput, 'Modified');
 
       // Verify change
-      expect(useCanvasStore.getState().components[0].props.text).toBe('Modified');
+      expect(useCanvasStore.getState().components[0]?.props.text).toBe('Modified');
 
       // Undo
       await user.click(screen.getByTestId('btn-undo'));
 
       // Should revert to original
       await waitFor(() => {
-        expect(useCanvasStore.getState().components[0].props.text).toBe('Click Me');
+        expect(useCanvasStore.getState().components[0]?.props.text).toBe('Click Me');
       });
 
       // Redo
@@ -395,7 +398,7 @@ describe('Editor Integration Tests', () => {
 
       // Should apply change again
       await waitFor(() => {
-        expect(useCanvasStore.getState().components[0].props.text).toBe('Modified');
+        expect(useCanvasStore.getState().components[0]?.props.text).toBe('Modified');
       });
     });
   });
@@ -410,7 +413,8 @@ describe('Editor Integration Tests', () => {
 
       // Select component
       const { components } = useCanvasStore.getState();
-      const buttonId = components[0].id;
+      const buttonId = components[0]?.id;
+      if (!buttonId) throw new Error('Component not found');
       await user.click(screen.getByTestId(`component-${buttonId}`));
 
       // Delete button should be enabled
@@ -453,7 +457,8 @@ describe('Editor Integration Tests', () => {
 
       // Step 3: Select first component (Button)
       const { components } = useCanvasStore.getState();
-      const buttonId = components[0].id;
+      const buttonId = components[0]?.id;
+      if (!buttonId) throw new Error('Component not found');
       await user.click(screen.getByTestId(`component-${buttonId}`));
       expect(useCanvasStore.getState().selectedComponentId).toBe(buttonId);
 
@@ -461,20 +466,20 @@ describe('Editor Integration Tests', () => {
       const textInput = screen.getByTestId('input-button-text');
       await user.clear(textInput);
       await user.type(textInput, 'Edited Button');
-      expect(useCanvasStore.getState().components[0].props.text).toBe('Edited Button');
+      expect(useCanvasStore.getState().components[0]?.props.text).toBe('Edited Button');
 
       // Step 5: Undo edit
       await user.click(screen.getByTestId('btn-undo'));
-      expect(useCanvasStore.getState().components[0].props.text).toBe('Click Me');
+      expect(useCanvasStore.getState().components[0]?.props.text).toBe('Click Me');
 
       // Step 6: Redo edit
       await user.click(screen.getByTestId('btn-redo'));
-      expect(useCanvasStore.getState().components[0].props.text).toBe('Edited Button');
+      expect(useCanvasStore.getState().components[0]?.props.text).toBe('Edited Button');
 
       // Step 7: Delete Button
       await user.click(screen.getByTestId('btn-delete'));
       expect(useCanvasStore.getState().components).toHaveLength(1);
-      expect(useCanvasStore.getState().components[0].type).toBe('Text');
+      expect(useCanvasStore.getState().components[0]?.type).toBe('Text');
     });
   });
 
