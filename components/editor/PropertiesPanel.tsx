@@ -504,6 +504,260 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           </>
         );
 
+      // Navbar
+      case 'Navbar':
+      case 'NavbarComponent':
+        return (
+          <>
+            <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
+              <p className="text-xs text-blue-900 font-medium mb-1">🧭 Navbar Component</p>
+              <p className="text-xs text-blue-700">
+                Navigation bar with logo and links
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Logo Text</label>
+              <input
+                type="text"
+                value={(localProps.logo as string) || ''}
+                onChange={(e) => handleChange('logo', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Brand Name"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Links (JSON)</label>
+              <textarea
+                value={JSON.stringify((localProps.links as Array<{ text: string; href: string }>) || [], null, 2)}
+                onChange={(e) => {
+                  try {
+                    const parsed = JSON.parse(e.target.value);
+                    handleChange('links', parsed);
+                  } catch {
+                    // Invalid JSON, don't update
+                  }
+                }}
+                rows={6}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-mono focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder='[{"text": "Home", "href": "#"}]'
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                Format: [{"{"}"text": "Link", "href": "#"{"}"}]
+              </p>
+            </div>
+          </>
+        );
+
+      // Hero
+      case 'Hero':
+      case 'HeroComponent':
+        return (
+          <>
+            <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
+              <p className="text-xs text-blue-900 font-medium mb-1">🦸 Hero Component</p>
+              <p className="text-xs text-blue-700">
+                Hero section with title, subtitle, and CTA
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Title</label>
+              <input
+                type="text"
+                value={(localProps.title as string) || ''}
+                onChange={(e) => handleChange('title', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Welcome to our site"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Subtitle</label>
+              <textarea
+                value={(localProps.subtitle as string) || ''}
+                onChange={(e) => handleChange('subtitle', e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="A brief description..."
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">CTA Button Text</label>
+              <input
+                type="text"
+                value={(localProps.ctaText as string) || ''}
+                onChange={(e) => handleChange('ctaText', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Get Started"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">CTA Link</label>
+              <input
+                type="text"
+                value={(localProps.ctaLink as string) || ''}
+                onChange={(e) => handleChange('ctaLink', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="#"
+              />
+            </div>
+          </>
+        );
+
+      // Footer
+      case 'Footer':
+      case 'FooterComponent':
+        return (
+          <>
+            <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
+              <p className="text-xs text-blue-900 font-medium mb-1">👣 Footer Component</p>
+              <p className="text-xs text-blue-700">
+                Footer with copyright and links
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Copyright Text</label>
+              <input
+                type="text"
+                value={(localProps.copyright as string) || ''}
+                onChange={(e) => handleChange('copyright', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="© 2025 Company Name"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Links (JSON)</label>
+              <textarea
+                value={JSON.stringify((localProps.links as Array<{ text: string; href: string }>) || [], null, 2)}
+                onChange={(e) => {
+                  try {
+                    const parsed = JSON.parse(e.target.value);
+                    handleChange('links', parsed);
+                  } catch {
+                    // Invalid JSON, don't update
+                  }
+                }}
+                rows={6}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-mono focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder='[{"text": "Privacy", "href": "#"}]'
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                Format: [{"{"}"text": "Link", "href": "#"{"}"}]
+              </p>
+            </div>
+          </>
+        );
+
+      // Features
+      case 'Features':
+      case 'FeaturesComponent':
+        return (
+          <>
+            <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
+              <p className="text-xs text-blue-900 font-medium mb-1">⭐ Features Component</p>
+              <p className="text-xs text-blue-700">
+                Feature grid with icons and descriptions
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Section Title</label>
+              <input
+                type="text"
+                value={(localProps.title as string) || ''}
+                onChange={(e) => handleChange('title', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Our Features"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Features (JSON)</label>
+              <textarea
+                value={JSON.stringify((localProps.features as Array<{ icon: string; title: string; description: string }>) || [], null, 2)}
+                onChange={(e) => {
+                  try {
+                    const parsed = JSON.parse(e.target.value);
+                    handleChange('features', parsed);
+                  } catch {
+                    // Invalid JSON, don't update
+                  }
+                }}
+                rows={10}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-mono focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder='[{"icon": "⚡", "title": "Fast", "description": "Lightning quick"}]'
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                Format: [{"{"}"icon": "emoji", "title": "...", "description": "..."{"}"}]
+              </p>
+            </div>
+          </>
+        );
+
+      // CTA
+      case 'CTA':
+      case 'CTAComponent':
+        return (
+          <>
+            <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
+              <p className="text-xs text-blue-900 font-medium mb-1">📣 CTA Component</p>
+              <p className="text-xs text-blue-700">
+                Call-to-action section
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Title</label>
+              <input
+                type="text"
+                value={(localProps.title as string) || ''}
+                onChange={(e) => handleChange('title', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Ready to get started?"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Description</label>
+              <textarea
+                value={(localProps.description as string) || ''}
+                onChange={(e) => handleChange('description', e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Join thousands of users..."
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Button Text</label>
+              <input
+                type="text"
+                value={(localProps.buttonText as string) || ''}
+                onChange={(e) => handleChange('buttonText', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Get Started Now"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Button Link</label>
+              <input
+                type="text"
+                value={(localProps.buttonLink as string) || ''}
+                onChange={(e) => handleChange('buttonLink', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="#"
+              />
+            </div>
+          </>
+        );
+
       default:
         return (
           <div className="rounded-md bg-yellow-50 p-3 border border-yellow-200">
