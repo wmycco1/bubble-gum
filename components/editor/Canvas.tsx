@@ -1,14 +1,22 @@
 'use client';
 
-import type { PageComponent } from '@/types/components';
-import type { DragEndEvent } from '@dnd-kit/core';
-import { ComponentRenderer } from './ComponentRenderer';
-import { DndContext, closestCenter } from '@dnd-kit/core';
+// ═══════════════════════════════════════════════════════════════
+// BUBBLE GUM - CANVAS (MIGRATED TO NEW SYSTEM)
+// ═══════════════════════════════════════════════════════════════
+// Version: 2.0.0 - Now uses NEW CanvasComponent and RenderComponent
+// Changes:
+// - Uses RenderComponent instead of ComponentRenderer
+// - Works with NEW CanvasComponent types
+// - Simplified: drag/drop/delete handled by RenderComponent
+// ═══════════════════════════════════════════════════════════════
+
+import type { CanvasComponent } from '@/lib/editor/types';
+import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { SortableItem } from './SortableItem';
+import { RenderComponent } from './RenderComponent';
 
 interface CanvasProps {
-  components: PageComponent[];
+  components: CanvasComponent[];
   selectedId: string | null;
   onSelectComponent: (id: string) => void;
   onDeleteComponent: (id: string) => void;
@@ -18,50 +26,61 @@ interface CanvasProps {
 export function Canvas({
   components,
   selectedId,
-  onSelectComponent,
-  onDeleteComponent,
+  onSelectComponent, // Note: Currently unused - RenderComponent uses canvas-store directly
+  onDeleteComponent, // Note: Currently unused - RenderComponent uses canvas-store directly
   onMoveComponent,
 }: CanvasProps) {
+  // Suppress unused variable warnings - these are here for API consistency
+  void onSelectComponent;
+  void onDeleteComponent;
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
       const oldIndex = components.findIndex((c) => c.id === active.id);
       const newIndex = components.findIndex((c) => c.id === over.id);
-      onMoveComponent(oldIndex, newIndex);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        onMoveComponent(oldIndex, newIndex);
+      }
     }
   };
 
   if (components.length === 0) {
     return (
       <div className="flex min-h-[600px] items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-white">
-        <div className="text-center">
-          <svg
-            className="mx-auto h-12 w-12 text-slate-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          <h3 className="mt-2 text-sm font-semibold text-slate-900">
+        <div className="text-center max-w-md">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
+            <svg
+              className="h-8 w-8 text-slate-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">
             No components yet
           </h3>
-          <p className="mt-1 text-sm text-slate-600">
-            Add components from the left sidebar to get started
+          <p className="text-sm text-slate-600 mb-4">
+            Start building by adding components from the left sidebar
           </p>
+          <div className="text-xs text-slate-500 space-y-1">
+            <p>💡 Tip: Try adding a Text or Button component first</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-5xl rounded-lg border border-slate-200 bg-white shadow-sm">
+    <div className="min-h-[600px] rounded-lg border border-slate-200 bg-white shadow-sm">
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={components.map((c) => c.id)}
@@ -69,30 +88,11 @@ export function Canvas({
         >
           <div className="space-y-0">
             {components.map((component) => (
-              <SortableItem key={component.id} id={component.id}>
-                <div
-                  className={`group relative border-2 transition-all ${
-                    selectedId === component.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-transparent hover:border-slate-300 hover:bg-slate-50'
-                  }`}
-                  onClick={() => onSelectComponent(component.id)}
-                >
-                  {/* Delete Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteComponent(component.id);
-                    }}
-                    className="absolute right-2 top-2 z-10 rounded bg-red-500 px-2 py-1 text-xs text-white opacity-0 transition-opacity hover:bg-red-600 group-hover:opacity-100"
-                  >
-                    Delete
-                  </button>
-
-                  {/* Component Content */}
-                  <ComponentRenderer component={component} />
-                </div>
-              </SortableItem>
+              <RenderComponent
+                key={component.id}
+                component={component}
+                isSelected={selectedId === component.id}
+              />
             ))}
           </div>
         </SortableContext>

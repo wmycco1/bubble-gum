@@ -1,12 +1,26 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+// ═══════════════════════════════════════════════════════════════
+// BUBBLE GUM - EDITOR PAGE (MIGRATED TO CANVAS-STORE)
+// ═══════════════════════════════════════════════════════════════
+// Version: 2.0.0 - Migrated to Zustand canvas-store
+// Changes:
+// - Removed ALL local useState (components, selectedId, deviceMode, zoom)
+// - Using canvas-store for state management
+// - Enabled Undo/Redo functionality
+// - Added keyboard shortcuts (Ctrl+Z, Ctrl+Y, Delete)
+// - Using type adapter for OLD/NEW component compatibility
+// ═══════════════════════════════════════════════════════════════
+
+import { use, useEffect, useCallback, useMemo } from 'react';
 import { trpc } from '@/lib/trpc/client';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Canvas } from '@/components/editor/Canvas';
 import { ComponentPalette } from '@/components/editor/ComponentPalette';
 import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
+import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
+import { convertArrayOldToNew, convertArrayNewToOld } from '@/lib/editor/adapter';
 import type { PageComponent } from '@/types/components';
 
 interface EditorPageProps {
@@ -15,91 +29,201 @@ interface EditorPageProps {
 
 export default function EditorPage(props: EditorPageProps) {
   const params = use(props.params);
-  const [selectedComponentId, setSelectedComponentId] = useState<string | null>(
-    null
-  );
-  const [components, setComponents] = useState<PageComponent[]>([]);
 
-  // Editor UI state
-  const [deviceMode, setDeviceMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [zoom, setZoom] = useState<number>(1);
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Canvas Store Integration (NEW!)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  const { data: project, isLoading: projectLoading } =
-    trpc.project.getById.useQuery({
-      id: params.projectId,
-    });
+  // Selective subscriptions for optimal performance
+  const components = useCanvasStore((state) => state.components);
+  const selectedComponentId = useCanvasStore((state) => state.selectedComponentId);
+  const deviceMode = useCanvasStore((state) => state.deviceMode);
+  const zoom = useCanvasStore((state) => state.zoom);
+
+  // Actions
+  const loadComponents = useCanvasStore((state) => state.loadComponents);
+  const updateComponentProps = useCanvasStore((state) => state.updateComponentProps);
+  const deleteComponent = useCanvasStore((state) => state.deleteComponent);
+  const moveComponent = useCanvasStore((state) => state.moveComponent);
+  const selectComponent = useCanvasStore((state) => state.selectComponent);
+  const setDeviceMode = useCanvasStore((state) => state.setDeviceMode);
+  const setZoom = useCanvasStore((state) => state.setZoom);
+  const getComponentById = useCanvasStore((state) => state.getComponentById);
+
+  // Undo/Redo hooks
+  const { undo, canUndo } = useUndo();
+  const { redo, canRedo } = useRedo();
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Data Fetching
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  const { data: project, isLoading: projectLoading } = trpc.project.getById.useQuery({
+    id: params.projectId,
+  });
 
   const updatePageContent = trpc.page.updateContent.useMutation();
 
   const homepage = project?.pages.find((p) => p.slug === 'index');
 
-  // Load page content when homepage is available
+  // Load page content from DB when homepage is available
   useEffect(() => {
     if (homepage?.content && components.length === 0) {
       try {
         const content = Array.isArray(homepage.content)
           ? homepage.content
           : typeof homepage.content === 'string'
-          ? JSON.parse(homepage.content)
-          : [];
+            ? JSON.parse(homepage.content)
+            : [];
 
         if (content.length > 0) {
-          console.log('Loading components from DB:', content);
-          setComponents(content as PageComponent[]);
+          console.log('📥 Loading components from DB:', content);
+          // Convert OLD PageComponents to NEW CanvasComponents
+          const canvasComponents = convertArrayOldToNew(content as PageComponent[]);
+          loadComponents(canvasComponents);
+          console.log('✅ Loaded', canvasComponents.length, 'components into canvas-store');
         }
       } catch (error) {
-        console.error('Failed to parse homepage content:', error);
+        console.error('❌ Failed to parse homepage content:', error);
       }
     }
-  }, [homepage?.content, components.length]);
+  }, [homepage?.content, components.length, loadComponents]);
 
-  const handleSave = async () => {
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Keyboard Shortcuts (NEW!)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Undo: Ctrl+Z (Windows/Linux) or Cmd+Z (Mac)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey && canUndo) {
+        e.preventDefault();
+        undo();
+        console.log('⎌ Undo');
+        return;
+      }
+
+      // Redo: Ctrl+Y (Windows/Linux) or Cmd+Shift+Z (Mac)
+      if (
+        ((e.ctrlKey || e.metaKey) && e.key === 'y') ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z')
+      ) {
+        if (canRedo) {
+          e.preventDefault();
+          redo();
+          console.log('⎌ Redo');
+        }
+        return;
+      }
+
+      // Delete: Delete or Backspace
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedComponentId) {
+        // Don't delete if user is typing in an input
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+          return;
+        }
+
+        e.preventDefault();
+        deleteComponent(selectedComponentId);
+        console.log('🗑️ Deleted component:', selectedComponentId);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [canUndo, canRedo, selectedComponentId, undo, redo, deleteComponent]);
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Handlers
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  /**
+   * Save current state to database
+   * Converts NEW CanvasComponents back to OLD PageComponents for DB compatibility
+   */
+  const handleSave = useCallback(async () => {
     if (!homepage) return;
-    await updatePageContent.mutateAsync({
-      id: homepage.id,
-      content: components,
+
+    try {
+      // Convert NEW components to OLD format for DB
+      const oldComponents = convertArrayNewToOld(components);
+
+      await updatePageContent.mutateAsync({
+        id: homepage.id,
+        content: oldComponents,
+      });
+
+      console.log('💾 Saved', oldComponents.length, 'components to database');
+    } catch (error) {
+      console.error('❌ Save failed:', error);
+    }
+  }, [homepage, components, updatePageContent]);
+
+  /**
+   * Handle component property updates from PropertiesPanel
+   */
+  const handleUpdateComponent = useCallback(
+    (id: string, props: Record<string, unknown>) => {
+      updateComponentProps(id, props);
+    },
+    [updateComponentProps]
+  );
+
+  /**
+   * Handle component drag & drop reordering
+   */
+  const handleMoveComponent = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      const fromComponent = components[fromIndex];
+      if (!fromComponent) return;
+
+      moveComponent(fromComponent.id, null, toIndex);
+    },
+    [components, moveComponent]
+  );
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Computed Values
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  const selectedComponent = useMemo(() => {
+    return selectedComponentId ? getComponentById(selectedComponentId) : undefined;
+  }, [selectedComponentId, getComponentById]);
+
+  // Device width mapping
+  const deviceWidth = useMemo(() => {
+    switch (deviceMode) {
+      case 'desktop':
+        return '1440px';
+      case 'tablet':
+        return '768px';
+      case 'mobile':
+        return '375px';
+      default:
+        return '1440px';
+    }
+  }, [deviceMode]);
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Debug Logging
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  useEffect(() => {
+    console.log('📊 EditorPage State:', {
+      componentsCount: components.length,
+      selectedComponentId,
+      selectedComponent: selectedComponent?.type,
+      deviceMode,
+      zoom,
+      canUndo,
+      canRedo,
     });
-  };
+  }, [components.length, selectedComponentId, selectedComponent, deviceMode, zoom, canUndo, canRedo]);
 
-  const handleAddComponent = (component: PageComponent) => {
-    setComponents([...components, component]);
-  };
-
-  const handleUpdateComponent = (id: string, props: Record<string, unknown>) => {
-    setComponents(
-      components.map((comp) =>
-        comp.id === id
-          ? ({ ...comp, props: { ...comp.props, ...props } } as PageComponent)
-          : comp
-      )
-    );
-  };
-
-  const handleDeleteComponent = (id: string) => {
-    setComponents(components.filter((comp) => comp.id !== id));
-    if (selectedComponentId === id) {
-      setSelectedComponentId(null);
-    }
-  };
-
-  const handleMoveComponent = (fromIndex: number, toIndex: number) => {
-    const newComponents = [...components];
-    const [removed] = newComponents.splice(fromIndex, 1);
-    if (removed) {
-      newComponents.splice(toIndex, 0, removed);
-      setComponents(newComponents);
-    }
-  };
-
-  const selectedComponent = components.find((c) => c.id === selectedComponentId);
-
-  // Debug logging
-  console.log('EditorPage State:', {
-    componentsCount: components.length,
-    selectedComponentId,
-    selectedComponent,
-    hasPropsPanel: !!selectedComponent,
-  });
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Loading & Error States
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   if (projectLoading) {
     return (
@@ -125,6 +249,10 @@ export default function EditorPage(props: EditorPageProps) {
     );
   }
 
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Render
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   return (
     <div className="flex h-screen flex-col bg-slate-50">
       {/* Header with Toolbar */}
@@ -138,21 +266,46 @@ export default function EditorPage(props: EditorPageProps) {
               </Button>
             </Link>
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">
-                {project.name}
-              </h1>
+              <h1 className="text-lg font-semibold text-slate-900">{project.name}</h1>
               <p className="text-sm text-slate-600">Editing: Home Page</p>
             </div>
           </div>
+
+          {/* Actions */}
           <div className="flex items-center gap-2">
+            {/* Undo/Redo */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => undo()}
+              disabled={!canUndo}
+              title="Undo (Ctrl+Z)"
+            >
+              ↶ Undo
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => redo()}
+              disabled={!canRedo}
+              title="Redo (Ctrl+Y)"
+            >
+              ↷ Redo
+            </Button>
+
+            <div className="mx-2 h-6 w-px bg-slate-200" />
+
+            {/* Save */}
             <Button
               variant="outline"
               size="sm"
               onClick={handleSave}
               disabled={updatePageContent.isPending}
             >
-              {updatePageContent.isPending ? 'Saving...' : 'Save'}
+              {updatePageContent.isPending ? 'Saving...' : '💾 Save'}
             </Button>
+
+            {/* Future actions */}
             <Button size="sm" disabled>
               Preview
             </Button>
@@ -219,6 +372,11 @@ export default function EditorPage(props: EditorPageProps) {
               +
             </Button>
           </div>
+
+          {/* Status indicators */}
+          <div className="ml-4 flex items-center gap-2 text-xs text-slate-600">
+            {canUndo && <span title="History available">📝 {components.length} components</span>}
+          </div>
         </div>
       </header>
 
@@ -226,7 +384,7 @@ export default function EditorPage(props: EditorPageProps) {
       <div className="flex flex-1 overflow-hidden">
         {/* Component Palette - Left Sidebar */}
         <div className="w-64 border-r border-slate-200 bg-white overflow-y-auto">
-          <ComponentPalette onAddComponent={handleAddComponent} />
+          <ComponentPalette />
         </div>
 
         {/* Canvas - Center */}
@@ -237,15 +395,15 @@ export default function EditorPage(props: EditorPageProps) {
               style={{
                 transform: `scale(${zoom})`,
                 transformOrigin: 'top center',
-                width: deviceMode === 'desktop' ? '1440px' : deviceMode === 'tablet' ? '768px' : '375px',
+                width: deviceWidth,
                 maxWidth: '100%',
               }}
             >
               <Canvas
                 components={components}
                 selectedId={selectedComponentId}
-                onSelectComponent={setSelectedComponentId}
-                onDeleteComponent={handleDeleteComponent}
+                onSelectComponent={selectComponent}
+                onDeleteComponent={deleteComponent}
                 onMoveComponent={handleMoveComponent}
               />
             </div>
