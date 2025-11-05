@@ -23,6 +23,7 @@ import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
 import { EditorToolbar } from '@/components/editor/EditorToolbar';
 import { ConflictResolutionModal } from '@/components/editor/ConflictResolutionModal';
 import { AIChat } from '@/components/editor/AIChat';
+import { DragDropContextProvider } from '@/components/editor/DragDropContext';
 import {
   useCanvasStore,
   useUndo,
@@ -495,50 +496,52 @@ export default function EditorPage(props: EditorPageProps) {
         onToggleAIChat={() => setIsAIChatOpen((prev) => !prev)}
       />
 
-      {/* Editor Layout */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Component Palette - Left Sidebar */}
-        <div className="w-64 border-r border-slate-200 bg-white overflow-y-auto">
-          <ComponentPalette />
-        </div>
+      {/* Editor Layout with Drag & Drop */}
+      <DragDropContextProvider>
+        <div className="flex flex-1 overflow-hidden">
+          {/* Component Palette - Left Sidebar */}
+          <div className="w-64 border-r border-slate-200 bg-white overflow-y-auto">
+            <ComponentPalette />
+          </div>
 
-        {/* Canvas - Center */}
-        <div className="flex-1 overflow-y-auto p-8 bg-slate-100">
-          <div className="flex items-center justify-center min-h-full">
-            <div
-              className="transition-all duration-200"
-              style={{
-                transform: `scale(${zoom})`,
-                transformOrigin: 'top center',
-                width: deviceWidth,
-                maxWidth: '100%',
-              }}
-            >
-              <Canvas
-                components={components}
-                selectedId={selectedComponentId}
-                deviceMode={deviceMode}
-                zoom={zoom}
-                onSelectComponent={selectComponent}
-                onDeleteComponent={deleteComponent}
-                onMoveComponent={handleMoveComponent}
-              />
+          {/* Canvas - Center */}
+          <div className="flex-1 overflow-y-auto p-8 bg-slate-100">
+            <div className="flex items-center justify-center min-h-full">
+              <div
+                className="transition-all duration-200"
+                style={{
+                  transform: `scale(${zoom})`,
+                  transformOrigin: 'top center',
+                  width: deviceWidth,
+                  maxWidth: '100%',
+                }}
+              >
+                <Canvas
+                  components={components}
+                  selectedId={selectedComponentId}
+                  deviceMode={deviceMode}
+                  zoom={zoom}
+                  onSelectComponent={selectComponent}
+                  onDeleteComponent={deleteComponent}
+                  onMoveComponent={handleMoveComponent}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Properties Panel - Right Sidebar */}
-        <div className="w-80 border-l border-slate-200 bg-white overflow-y-auto">
-          <PropertiesPanel
-            component={selectedComponent}
-            onUpdate={(props) => {
-              if (selectedComponentId) {
-                handleUpdateComponent(selectedComponentId, props);
-              }
-            }}
-          />
+          {/* Properties Panel - Right Sidebar */}
+          <div className="w-80 border-l border-slate-200 bg-white overflow-y-auto">
+            <PropertiesPanel
+              component={selectedComponent}
+              onUpdate={(props) => {
+                if (selectedComponentId) {
+                  handleUpdateComponent(selectedComponentId, props);
+                }
+              }}
+            />
+          </div>
         </div>
-      </div>
+      </DragDropContextProvider>
 
       {/* AI Chat Panel */}
       <AIChat

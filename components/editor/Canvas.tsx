@@ -19,6 +19,7 @@ import {
   useSensors,
   MouseSensor,
   TouchSensor,
+  useDroppable,
 } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { RenderComponent } from './RenderComponent';
@@ -91,9 +92,19 @@ export function Canvas({
     }
   };
 
+  // Make canvas droppable for palette components
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: 'canvas',
+  });
+
   if (components.length === 0) {
     return (
-      <div className="flex min-h-[600px] items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-white">
+      <div
+        ref={setDroppableRef}
+        className={`flex min-h-[600px] items-center justify-center rounded-lg border-2 border-dashed ${
+          isOver ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-white'
+        } transition-colors`}
+      >
         <div className="text-center max-w-md">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
             <svg
@@ -114,10 +125,10 @@ export function Canvas({
             No components yet
           </h3>
           <p className="text-sm text-slate-600 mb-4">
-            Start building by adding components from the left sidebar
+            Drag components from the left sidebar or click to add
           </p>
           <div className="text-xs text-slate-500 space-y-1">
-            <p>💡 Tip: Try adding a Text or Button component first</p>
+            <p>💡 Tip: Try dragging a Text or Button component here</p>
           </div>
         </div>
       </div>
@@ -127,7 +138,10 @@ export function Canvas({
   return (
     <div className="flex justify-center bg-slate-50 p-8 min-h-screen">
       <div
-        className="min-h-[600px] rounded-lg border border-slate-200 bg-white shadow-sm mx-auto"
+        ref={setDroppableRef}
+        className={`min-h-[600px] rounded-lg border ${
+          isOver ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white'
+        } shadow-sm mx-auto transition-colors`}
         style={canvasStyle}
       >
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

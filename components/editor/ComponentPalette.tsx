@@ -1,17 +1,19 @@
 'use client';
 
 // ═══════════════════════════════════════════════════════════════
-// BUBBLE GUM - COMPONENT PALETTE (MIGRATED TO CANVAS-STORE)
+// BUBBLE GUM - COMPONENT PALETTE (WITH DRAG & DROP)
 // ═══════════════════════════════════════════════════════════════
-// Version: 2.0.0 - Now uses canvas-store directly
+// Version: 3.0.0 - Added drag and drop support
 // Changes:
-// - Removed onAddComponent prop (uses store action directly)
-// - Using NEW component types (PascalCase)
-// - Integrated with canvas-store for seamless adding
+// - Added @dnd-kit/core draggable items
+// - Click to add OR drag to canvas/containers
+// - Visual drag feedback
 // ═══════════════════════════════════════════════════════════════
 
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import type { ComponentType } from '@/lib/editor/types';
+import { useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 
 const componentTypes: Array<{ type: ComponentType; label: string; icon: string; description: string }> = [
   // Layout components (3)
@@ -38,37 +40,75 @@ const componentTypes: Array<{ type: ComponentType; label: string; icon: string; 
   { type: 'Submit', label: 'Submit Button', icon: '📤', description: 'Form submit button' },
 ];
 
-export function ComponentPalette() {
+/**
+ * Draggable Component Item
+ * Supports both click to add AND drag to drop
+ */
+function DraggableComponentItem({
+  type,
+  label,
+  icon,
+  description,
+}: {
+  type: ComponentType;
+  label: string;
+  icon: string;
+  description: string;
+}) {
   const addComponent = useCanvasStore((state) => state.addComponent);
 
-  /**
-   * Handle adding component to canvas
-   * Uses canvas-store action directly (no props needed!)
-   */
-  const handleAdd = (type: ComponentType) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `palette-${type}`,
+    data: { type },
+  });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const handleClick = () => {
     addComponent(type);
-    console.log('➕ Added component:', type);
+    console.log('➕ Clicked to add:', type);
   };
 
   return (
+    <button
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onClick={handleClick}
+      className="group flex w-full items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow-sm cursor-grab active:cursor-grabbing"
+      title={`${description} - Click to add or drag to canvas`}
+    >
+      <span className="text-2xl flex-shrink-0">{icon}</span>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-slate-900 group-hover:text-slate-700">
+          {label}
+        </div>
+        <div className="text-xs text-slate-600 mt-0.5 line-clamp-1">{description}</div>
+      </div>
+    </button>
+  );
+}
+
+export function ComponentPalette() {
+  return (
     <div className="p-4">
       <h2 className="mb-4 text-sm font-semibold text-slate-900">Components</h2>
+      <p className="mb-3 text-xs text-slate-600">
+        Click to add or drag to canvas
+      </p>
       <div className="space-y-2">
         {componentTypes.map(({ type, label, icon, description }) => (
-          <button
+          <DraggableComponentItem
             key={type}
-            onClick={() => handleAdd(type)}
-            className="group flex w-full items-start gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow-sm"
-            title={description}
-          >
-            <span className="text-2xl flex-shrink-0">{icon}</span>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-slate-900 group-hover:text-slate-700">
-                {label}
-              </div>
-              <div className="text-xs text-slate-600 mt-0.5 line-clamp-1">{description}</div>
-            </div>
-          </button>
+            type={type}
+            label={label}
+            icon={icon}
+            description={description}
+          />
         ))}
       </div>
 
