@@ -447,14 +447,22 @@ export const useCanvasStore = create<CanvasStore>()(
         },
 
         updateComponentProps: (id, props) => {
+          console.log('🔧 updateComponentProps called:', { id, props });
+
           set((state) => {
             const updateInTree = (comps: CanvasComponent[]): CanvasComponent[] => {
               return comps.map((comp) => {
                 if (comp.id === id) {
-                  return {
+                  const updated = {
                     ...comp,
                     props: { ...comp.props, ...props },
                   };
+                  console.log('✅ Component props updated:', {
+                    id,
+                    oldProps: comp.props,
+                    newProps: updated.props,
+                  });
+                  return updated;
                 }
                 if (comp.children) {
                   return { ...comp, children: updateInTree(comp.children) };
@@ -463,8 +471,13 @@ export const useCanvasStore = create<CanvasStore>()(
               });
             };
 
+            const newComponents = updateInTree(state.components);
+
+            // Save to history for undo/redo
             return {
-              components: updateInTree(state.components),
+              components: newComponents,
+              past: [...state.past, state.components],
+              future: [], // Clear future when making new changes
             };
           });
         },

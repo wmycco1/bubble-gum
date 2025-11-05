@@ -6,6 +6,7 @@
 // Supports: h1, h2, h3, paragraph variants
 // ═══════════════════════════════════════════════════════════════
 
+import { useEffect } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
 
 interface TextComponentProps {
@@ -17,6 +18,11 @@ export function TextComponent({ component }: TextComponentProps) {
 
   const text = (props.text as string) || 'Your text here...';
   const variant = (props.variant as string) || 'paragraph';
+
+  // Debug: Log when props change
+  useEffect(() => {
+    console.log('📄 TextComponent render:', { id: component.id, text, variant, props });
+  }, [component.id, text, variant, props]);
 
   const variantClasses = {
     h1: 'text-4xl font-bold',
