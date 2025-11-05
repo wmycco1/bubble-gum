@@ -1,8 +1,14 @@
 // ═══════════════════════════════════════════════════════════════
 // BUBBLE GUM - EDITOR TYPES
 // ═══════════════════════════════════════════════════════════════
-// Version: 2.0.0 - Enhanced with specific component interfaces
-// Enterprise-grade TypeScript types for visual editor
+// Version: 3.0.0 - Advanced Builder Enhancement
+// Changes:
+// - Added individual border-radius properties (4 corners)
+// - Added gradient support (backgroundImage)
+// - Added filter and backdrop-filter
+// - Added individual border properties (width, color, style per side)
+// - Added transform individual properties
+// - Enterprise-grade TypeScript types for visual editor
 // ═══════════════════════════════════════════════════════════════
 
 export type ComponentType =
@@ -233,18 +239,99 @@ export interface StyleProperties {
   backgroundSize?: string;
   backgroundPosition?: string;
 
-  // Border
+  // Border - Shorthand
   border?: string;
   borderRadius?: string;
   borderWidth?: string;
   borderColor?: string;
+  borderStyle?: string;
 
-  // Effects
+  // Border - Individual corners (NEW!)
+  borderTopLeftRadius?: string;
+  borderTopRightRadius?: string;
+  borderBottomLeftRadius?: string;
+  borderBottomRightRadius?: string;
+
+  // Border - Individual sides width
+  borderTopWidth?: string;
+  borderRightWidth?: string;
+  borderBottomWidth?: string;
+  borderLeftWidth?: string;
+
+  // Border - Individual sides color
+  borderTopColor?: string;
+  borderRightColor?: string;
+  borderBottomColor?: string;
+  borderLeftColor?: string;
+
+  // Border - Individual sides style
+  borderTopStyle?: 'solid' | 'dashed' | 'dotted' | 'double' | 'none';
+  borderRightStyle?: 'solid' | 'dashed' | 'dotted' | 'double' | 'none';
+  borderBottomStyle?: 'solid' | 'dashed' | 'dotted' | 'double' | 'none';
+  borderLeftStyle?: 'solid' | 'dashed' | 'dotted' | 'double' | 'none';
+
+  // Background - Extended (NEW!)
+  backgroundRepeat?: string;
+  backgroundAttachment?: string;
+  backgroundBlendMode?: string;
+
+  // Effects - Extended (NEW!)
   boxShadow?: string;
   opacity?: string;
   transform?: string;
   transition?: string;
   cursor?: string;
+  filter?: string;              // 'blur(5px) brightness(1.2) contrast(1.1)'
+  backdropFilter?: string;      // Same as filter, for backdrop
+  mixBlendMode?: string;        // 'normal' | 'multiply' | 'screen' | 'overlay' etc.
+
+  // Transform - Individual properties (NEW!)
+  rotate?: string;              // '45deg'
+  rotateX?: string;
+  rotateY?: string;
+  rotateZ?: string;
+  scale?: string;               // '1.5'
+  scaleX?: string;
+  scaleY?: string;
+  skewX?: string;               // '10deg'
+  skewY?: string;
+  translateX?: string;          // '100px'
+  translateY?: string;
+
+  // Typography - Extended (NEW!)
+  letterSpacing?: string;
+  textTransform?: string;       // 'none' | 'uppercase' | 'lowercase' | 'capitalize'
+  textDecoration?: string;
+  textShadow?: string;
+  wordSpacing?: string;
+  whiteSpace?: string;
+
+  // Layout - Extended (NEW!)
+  minWidth?: string;
+  maxWidth?: string;
+  maxHeight?: string;
+  overflow?: string;
+  overflowX?: string;
+  overflowY?: string;
+  position?: string;
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
+  zIndex?: string;
+
+  // Flexbox/Grid - Extended (NEW!)
+  flexWrap?: string;
+  flexGrow?: string;
+  flexShrink?: string;
+  flexBasis?: string;
+  alignSelf?: string;
+  justifySelf?: string;
+  order?: string;
+
+  // Interaction (NEW!)
+  pointerEvents?: string;
+  userSelect?: string;
 }
 
 /**

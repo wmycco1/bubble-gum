@@ -3,8 +3,10 @@
 // ═══════════════════════════════════════════════════════════════
 // BUBBLE GUM - PROPERTIES PANEL (FIXED CONTROLLED INPUTS)
 // ═══════════════════════════════════════════════════════════════
-// Version: 3.0.0 - LOCAL STATE FIX for controlled inputs
+// Version: 3.1.0 - FIXED: Grid columns visual update
 // Changes:
+// - ✅ FIXED: Grid columns now update visually when changed (3→6 columns)
+// - ✅ Atomic update for columns + columnWidths (no debounce)
 // - ✅ FIXED: Controlled input lag with async Zustand store updates
 // - ✅ FIXED: Input fields now editable (were showing only first char)
 // - ✅ Local state with debounced updates (300ms) to store
@@ -425,8 +427,31 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                   const newWidths = Array.from({ length: newColumns }, (_, i) =>
                     columnWidths[i] || '1fr'
                   );
-                  handleChange('columns', newColumns);
-                  handleChange('columnWidths', newWidths);
+
+                  // Update local state immediately for BOTH properties
+                  setLocalProps((prev) => ({
+                    ...prev,
+                    columns: newColumns,
+                    columnWidths: newWidths,
+                  }));
+
+                  // Clear any pending debounce timers
+                  if (debounceTimerRef.current) {
+                    clearTimeout(debounceTimerRef.current);
+                  }
+
+                  // Update store immediately (no debounce for column count changes)
+                  // This ensures visual update happens instantly
+                  onUpdate({
+                    columns: newColumns,
+                    columnWidths: newWidths,
+                  });
+
+                  console.log('🔄 Grid columns updated:', {
+                    newColumns,
+                    newWidths,
+                    timestamp: new Date().toISOString(),
+                  });
                 }}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
