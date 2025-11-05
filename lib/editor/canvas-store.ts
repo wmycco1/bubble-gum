@@ -172,9 +172,109 @@ const getDefaultComponent = (type: ComponentType): Omit<CanvasComponent, 'id'> =
       },
       children: [],
     },
+    Navbar: {
+      type: 'Navbar',
+      props: { logo: 'Logo', links: [{ text: 'Home', href: '#' }] },
+      style: {},
+    },
+    NavbarComponent: {
+      type: 'NavbarComponent',
+      props: { logo: 'Logo', links: [{ text: 'Home', href: '#' }] },
+      style: {},
+    },
+    Hero: {
+      type: 'Hero',
+      props: { title: 'Hero Title', subtitle: 'Subtitle' },
+      style: {},
+    },
+    HeroComponent: {
+      type: 'HeroComponent',
+      props: { title: 'Hero Title', subtitle: 'Subtitle' },
+      style: {},
+    },
+    Footer: {
+      type: 'Footer',
+      props: { copyright: '© 2025 Company' },
+      style: {},
+    },
+    FooterComponent: {
+      type: 'FooterComponent',
+      props: { copyright: '© 2025 Company' },
+      style: {},
+    },
+    Features: {
+      type: 'Features',
+      props: { title: 'Features', features: [] },
+      style: {},
+    },
+    FeaturesComponent: {
+      type: 'FeaturesComponent',
+      props: { title: 'Features', features: [] },
+      style: {},
+    },
+    CTA: {
+      type: 'CTA',
+      props: { title: 'Call to Action', buttonText: 'Click Here' },
+      style: {},
+    },
+    CTAComponent: {
+      type: 'CTAComponent',
+      props: { title: 'Call to Action', buttonText: 'Click Here' },
+      style: {},
+    },
+    SectionComponent: {
+      type: 'SectionComponent',
+      props: {},
+      style: {},
+      children: [],
+    },
+    TextComponent: {
+      type: 'TextComponent',
+      props: { text: 'Text' },
+      style: {},
+    },
+    ImageComponent: {
+      type: 'ImageComponent',
+      props: { src: 'https://via.placeholder.com/400x300', alt: 'Image' },
+      style: {},
+    },
+    ButtonComponent: {
+      type: 'ButtonComponent',
+      props: { text: 'Button' },
+      style: {},
+    },
+    InputComponent: {
+      type: 'InputComponent',
+      props: { placeholder: 'Input...' },
+      style: {},
+    },
+    FormComponent: {
+      type: 'FormComponent',
+      props: {},
+      style: {},
+      children: [],
+    },
+    ContainerComponent: {
+      type: 'ContainerComponent',
+      props: {},
+      style: {},
+      children: [],
+    },
+    GridComponent: {
+      type: 'GridComponent',
+      props: {},
+      style: {},
+      children: [],
+    },
+    CardComponent: {
+      type: 'CardComponent',
+      props: {},
+      style: {},
+      children: [],
+    },
   };
 
-  return defaults[type];
+  return defaults[type] || defaults.Text;
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

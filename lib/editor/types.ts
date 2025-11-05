@@ -15,7 +15,26 @@ export type ComponentType =
   | 'Grid'
   | 'Card'
   | 'Input'
-  | 'Form';
+  | 'Form'
+  | 'Navbar'
+  | 'NavbarComponent'
+  | 'Hero'
+  | 'HeroComponent'
+  | 'Footer'
+  | 'FooterComponent'
+  | 'Features'
+  | 'FeaturesComponent'
+  | 'CTA'
+  | 'CTAComponent'
+  | 'SectionComponent'
+  | 'TextComponent'
+  | 'ImageComponent'
+  | 'ButtonComponent'
+  | 'InputComponent'
+  | 'FormComponent'
+  | 'ContainerComponent'
+  | 'GridComponent'
+  | 'CardComponent';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Specific Component Props Interfaces

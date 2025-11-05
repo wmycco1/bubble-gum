@@ -26,6 +26,11 @@ import { ContainerComponent } from '@/components/canvas/ContainerComponent';
 import { GridComponent } from '@/components/canvas/GridComponent';
 import { CardComponent } from '@/components/canvas/CardComponent';
 import { InputComponent } from '@/components/canvas/InputComponent';
+import { NavbarComponent } from '@/components/canvas/NavbarComponent';
+import { HeroComponent } from '@/components/canvas/HeroComponent';
+import { FooterComponent } from '@/components/canvas/FooterComponent';
+import { FeaturesComponent } from '@/components/canvas/FeaturesComponent';
+import { CTAComponent } from '@/components/canvas/CTAComponent';
 
 interface RenderComponentProps {
   component: CanvasComponent;
@@ -112,32 +117,61 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
   const renderVisualComponent = () => {
     switch (component.type) {
       case 'Section':
+      case 'SectionComponent':
         return <SectionComponent component={component} />;
 
       case 'Text':
       case 'Heading':
+      case 'TextComponent':
         return <TextComponent component={component} />;
 
       case 'Image':
+      case 'ImageComponent':
         return <ImageComponent component={component} />;
 
       case 'Button':
+      case 'ButtonComponent':
         return <ButtonComponent component={component} />;
 
       case 'Input':
+      case 'InputComponent':
         return <InputComponent component={component} />;
 
       case 'Form':
+      case 'FormComponent':
         return <FormComponent component={component} />;
 
       case 'Container':
+      case 'ContainerComponent':
         return <ContainerComponent component={component} />;
 
       case 'Grid':
+      case 'GridComponent':
         return <GridComponent component={component} />;
 
       case 'Card':
+      case 'CardComponent':
         return <CardComponent component={component} />;
+
+      case 'Navbar':
+      case 'NavbarComponent':
+        return <NavbarComponent component={component} />;
+
+      case 'Hero':
+      case 'HeroComponent':
+        return <HeroComponent component={component} />;
+
+      case 'Footer':
+      case 'FooterComponent':
+        return <FooterComponent component={component} />;
+
+      case 'Features':
+      case 'FeaturesComponent':
+        return <FeaturesComponent component={component} />;
+
+      case 'CTA':
+      case 'CTAComponent':
+        return <CTAComponent component={component} />;
 
       default:
         return (
