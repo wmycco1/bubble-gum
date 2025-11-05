@@ -59,7 +59,10 @@ function DraggableComponentItem({
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `palette-${type}`,
-    data: { type },
+    data: {
+      type,
+      dragType: 'palette', // Identify as palette drag
+    },
   });
 
   const style = {

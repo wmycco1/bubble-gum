@@ -61,16 +61,16 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     style: resolvedStyles,
   };
 
-  // Make component draggable
+  // Make component draggable (only via drag handle)
   const {
-    attributes,
-    listeners,
+    attributes: dragAttributes,
+    listeners: dragListeners,
     setNodeRef: setDragRef,
     transform,
   } = useDraggable({
     id: component.id,
     data: {
-      type: 'existing-component',
+      dragType: 'canvas-component', // Identify as canvas reorder
       componentId: component.id,
     },
   });
@@ -228,14 +228,12 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
   return (
     <div
       ref={setDragRef}
-      {...listeners}
-      {...attributes}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={style}
       className={cn(
-        'relative cursor-pointer transition-all', // cursor-pointer instead of cursor-move
+        'relative cursor-pointer transition-all',
         isSelected && 'ring-2 ring-blue-500 ring-offset-2 bg-blue-50/10',
         isHovered && !isSelected && 'ring-1 ring-slate-300 bg-slate-50',
         isOver && 'ring-2 ring-blue-400 bg-blue-50'
@@ -244,8 +242,20 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       {/* Selection Label & Actions */}
       {isSelected && (
         <div className="absolute -top-6 left-0 right-0 z-20 flex items-center justify-between gap-2">
-          <div className="rounded bg-blue-500 px-2 py-1 text-xs font-medium text-white shadow-sm">
-            {component.type}
+          <div className="flex items-center gap-1">
+            {/* Drag Handle */}
+            <button
+              {...dragListeners}
+              {...dragAttributes}
+              className="rounded bg-slate-500 px-2 py-1 text-xs font-medium text-white shadow-sm hover:bg-slate-600 transition-colors cursor-grab active:cursor-grabbing"
+              title="Drag to reorder"
+              onClick={(e) => e.stopPropagation()}
+            >
+              ⋮⋮
+            </button>
+            <div className="rounded bg-blue-500 px-2 py-1 text-xs font-medium text-white shadow-sm">
+              {component.type}
+            </div>
           </div>
           <div className="flex gap-1">
             <button

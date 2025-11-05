@@ -69,46 +69,76 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
       return;
     }
 
-    const draggedType = active.data.current?.type as ComponentType;
+    const dragType = active.data.current?.dragType;
     const droppedOn = over.id as string;
     const dropData = over.data.current;
 
     console.log('✅ Drag ended:', {
-      draggedType,
+      dragType,
+      activeId: active.id,
       droppedOn,
       dropData,
     });
 
-    // Check if dropped on a container/grid
-    if (dropData?.accepts && dropData.accepts.includes(draggedType)) {
-      const parentId = dropData.parentId;
-      const index = dropData.index ?? 0;
-      const columnIndex = dropData.columnIndex;
+    // CASE 1: Dragging from palette (new component)
+    if (dragType === 'palette') {
+      const componentType = active.data.current?.type as ComponentType;
 
-      console.log('➕ Adding component to parent:', { draggedType, parentId, index, columnIndex });
+      // Check if dropped on a container/grid
+      if (dropData?.accepts && dropData.accepts.includes(componentType)) {
+        const parentId = dropData.parentId;
+        const index = dropData.index ?? 0;
+        const columnIndex = dropData.columnIndex;
 
-      // Add the component
-      addComponent(draggedType, parentId, index);
+        console.log('➕ Adding component to parent:', { componentType, parentId, index, columnIndex });
 
-      // If dropped into a Grid column, update the newly added component with columnIndex
-      if (columnIndex !== undefined) {
-        // Get the last added component (the one we just added)
-        const state = useCanvasStore.getState();
-        const parent = state.components.find((c) => c.id === parentId);
-        if (parent && parent.children) {
-          const newComponent = parent.children[parent.children.length - 1];
-          if (newComponent) {
-            const updateComponent = state.updateComponent;
-            updateComponent(newComponent.id, {
-              props: { ...newComponent.props, columnIndex },
-            });
+        // Add the component
+        addComponent(componentType, parentId, index);
+
+        // If dropped into a Grid column, update the newly added component with columnIndex
+        if (columnIndex !== undefined) {
+          const state = useCanvasStore.getState();
+          const parent = state.components.find((c) => c.id === parentId);
+          if (parent && parent.children) {
+            const newComponent = parent.children[parent.children.length - 1];
+            if (newComponent) {
+              const updateComponent = state.updateComponent;
+              updateComponent(newComponent.id, {
+                props: { ...newComponent.props, columnIndex },
+              });
+            }
           }
         }
+      } else if (droppedOn === 'canvas') {
+        // Dropped on main canvas
+        console.log('➕ Adding component to canvas');
+        addComponent(componentType);
       }
-    } else if (droppedOn === 'canvas') {
-      // Dropped on main canvas
-      console.log('➕ Adding component to canvas');
-      addComponent(draggedType);
+    }
+
+    // CASE 2: Reordering existing components on canvas
+    else if (dragType === 'canvas-component') {
+      const draggedComponentId = active.id as string;
+
+      if (active.id !== over.id) {
+        const state = useCanvasStore.getState();
+        const components = state.components;
+
+        const oldIndex = components.findIndex((c) => c.id === draggedComponentId);
+        const newIndex = components.findIndex((c) => c.id === droppedOn);
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          console.log('🔄 Reordering components:', { from: oldIndex, to: newIndex });
+
+          // Reorder components array
+          const newComponents = [...components];
+          const [movedComponent] = newComponents.splice(oldIndex, 1);
+          newComponents.splice(newIndex, 0, movedComponent!);
+
+          // Update store
+          state.setComponents(newComponents);
+        }
+      }
     }
 
     setActiveType(null);

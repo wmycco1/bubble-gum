@@ -23,6 +23,7 @@ interface CanvasStore extends CanvasState {
   deleteComponent: (id: string) => void;
   moveComponent: (id: string, newParentId: string | null, newIndex: number) => void;
   duplicateComponent: (id: string) => void;
+  setComponents: (components: CanvasComponent[]) => void; // For reordering
 
   // Selection actions
   selectComponent: (id: string | null) => void;
@@ -521,6 +522,11 @@ export const useCanvasStore = create<CanvasStore>()(
 
             return { components };
           });
+        },
+
+        // Set components (for reordering)
+        setComponents: (components) => {
+          set({ components });
         },
 
         // Duplicate component
