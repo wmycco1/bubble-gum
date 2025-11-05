@@ -38,6 +38,18 @@ import { IconComponent } from '@/components/canvas/IconComponent';
 import { TextareaComponent } from '@/components/canvas/TextareaComponent';
 import { CheckboxComponent } from '@/components/canvas/CheckboxComponent';
 import { SubmitComponent } from '@/components/canvas/SubmitComponent';
+// M2: New Interactive Components
+import { AccordionComponent } from '@/components/canvas/AccordionComponent';
+import { TabsComponent } from '@/components/canvas/TabsComponent';
+import { CounterComponent } from '@/components/canvas/CounterComponent';
+import { ProgressComponent } from '@/components/canvas/ProgressComponent';
+import { TooltipComponent } from '@/components/canvas/TooltipComponent';
+import { ModalComponent } from '@/components/canvas/ModalComponent';
+import { AlertComponent } from '@/components/canvas/AlertComponent';
+import { BadgeComponent } from '@/components/canvas/BadgeComponent';
+import { BreadcrumbComponent } from '@/components/canvas/BreadcrumbComponent';
+import { DividerComponent } from '@/components/canvas/DividerComponent';
+import { CarouselComponent } from '@/components/canvas/CarouselComponent';
 
 interface RenderComponentProps {
   component: CanvasComponent;
@@ -213,6 +225,51 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       case 'Submit':
       case 'SubmitComponent':
         return <SubmitComponent component={comp} />;
+
+      // M2: New Interactive Components
+      case 'Accordion':
+      case 'AccordionComponent':
+        return <AccordionComponent component={comp} />;
+
+      case 'Tabs':
+      case 'TabsComponent':
+        return <TabsComponent component={comp} />;
+
+      case 'Counter':
+      case 'CounterComponent':
+        return <CounterComponent component={comp} />;
+
+      case 'Progress':
+      case 'ProgressComponent':
+        return <ProgressComponent component={comp} />;
+
+      case 'Tooltip':
+      case 'TooltipComponent':
+        return <TooltipComponent component={comp} />;
+
+      case 'Modal':
+      case 'ModalComponent':
+        return <ModalComponent component={comp} />;
+
+      case 'Alert':
+      case 'AlertComponent':
+        return <AlertComponent component={comp} />;
+
+      case 'Badge':
+      case 'BadgeComponent':
+        return <BadgeComponent component={comp} />;
+
+      case 'Breadcrumb':
+      case 'BreadcrumbComponent':
+        return <BreadcrumbComponent component={comp} />;
+
+      case 'Divider':
+      case 'DividerComponent':
+        return <DividerComponent component={comp} />;
+
+      case 'Carousel':
+      case 'CarouselComponent':
+        return <CarouselComponent component={comp} />;
 
       default:
         return (

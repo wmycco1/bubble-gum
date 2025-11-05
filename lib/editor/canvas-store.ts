@@ -329,6 +329,317 @@ const getDefaultComponent = (type: ComponentType): Omit<CanvasComponent, 'id'> =
       props: { text: 'Heading', level: 'h2' },
       style: {},
     },
+    // M2: New Interactive Components
+    Accordion: {
+      type: 'Accordion',
+      props: {
+        items: [
+          { id: '1', title: 'Accordion Item 1', content: 'Content for item 1' },
+          { id: '2', title: 'Accordion Item 2', content: 'Content for item 2' },
+          { id: '3', title: 'Accordion Item 3', content: 'Content for item 3' },
+        ],
+        allowMultiple: false,
+        defaultOpen: [],
+        variant: 'default',
+        iconType: 'chevron',
+      },
+      style: {},
+    },
+    AccordionComponent: {
+      type: 'AccordionComponent',
+      props: {
+        items: [
+          { id: '1', title: 'Accordion Item 1', content: 'Content for item 1' },
+          { id: '2', title: 'Accordion Item 2', content: 'Content for item 2' },
+          { id: '3', title: 'Accordion Item 3', content: 'Content for item 3' },
+        ],
+        allowMultiple: false,
+        defaultOpen: [],
+        variant: 'default',
+        iconType: 'chevron',
+      },
+      style: {},
+    },
+    Tabs: {
+      type: 'Tabs',
+      props: {
+        tabs: [
+          { id: '1', label: 'Tab 1', content: 'Content for tab 1' },
+          { id: '2', label: 'Tab 2', content: 'Content for tab 2' },
+          { id: '3', label: 'Tab 3', content: 'Content for tab 3' },
+        ],
+        defaultActive: '1',
+        variant: 'default',
+        orientation: 'horizontal',
+        closable: false,
+      },
+      style: {},
+    },
+    TabsComponent: {
+      type: 'TabsComponent',
+      props: {
+        tabs: [
+          { id: '1', label: 'Tab 1', content: 'Content for tab 1' },
+          { id: '2', label: 'Tab 2', content: 'Content for tab 2' },
+          { id: '3', label: 'Tab 3', content: 'Content for tab 3' },
+        ],
+        defaultActive: '1',
+        variant: 'default',
+        orientation: 'horizontal',
+        closable: false,
+      },
+      style: {},
+    },
+    Counter: {
+      type: 'Counter',
+      props: {
+        initialValue: 0,
+        min: 0,
+        max: 100,
+        step: 1,
+        label: 'Counter',
+        size: 'md',
+        showButtons: true,
+        format: 'number',
+      },
+      style: {},
+    },
+    CounterComponent: {
+      type: 'CounterComponent',
+      props: {
+        initialValue: 0,
+        min: 0,
+        max: 100,
+        step: 1,
+        label: 'Counter',
+        size: 'md',
+        showButtons: true,
+        format: 'number',
+      },
+      style: {},
+    },
+    Progress: {
+      type: 'Progress',
+      props: {
+        value: 50,
+        variant: 'default',
+        showLabel: true,
+        animated: false,
+        striped: false,
+      },
+      style: {},
+    },
+    ProgressComponent: {
+      type: 'ProgressComponent',
+      props: {
+        value: 50,
+        variant: 'default',
+        showLabel: true,
+        animated: false,
+        striped: false,
+      },
+      style: {},
+    },
+    Tooltip: {
+      type: 'Tooltip',
+      props: {
+        text: 'Hover me',
+        content: 'This is a tooltip',
+        placement: 'top',
+        trigger: 'hover',
+        delay: 200,
+      },
+      style: {},
+    },
+    TooltipComponent: {
+      type: 'TooltipComponent',
+      props: {
+        text: 'Hover me',
+        content: 'This is a tooltip',
+        placement: 'top',
+        trigger: 'hover',
+        delay: 200,
+      },
+      style: {},
+    },
+    Modal: {
+      type: 'Modal',
+      props: {
+        title: 'Modal Title',
+        content: 'Modal content goes here...',
+        size: 'md',
+        closeButton: true,
+        backdrop: true,
+        centered: true,
+      },
+      style: {},
+    },
+    ModalComponent: {
+      type: 'ModalComponent',
+      props: {
+        title: 'Modal Title',
+        content: 'Modal content goes here...',
+        size: 'md',
+        closeButton: true,
+        backdrop: true,
+        centered: true,
+      },
+      style: {},
+    },
+    Alert: {
+      type: 'Alert',
+      props: {
+        title: 'Alert Title',
+        message: 'This is an alert message',
+        variant: 'info',
+        dismissible: true,
+      },
+      style: {},
+    },
+    AlertComponent: {
+      type: 'AlertComponent',
+      props: {
+        title: 'Alert Title',
+        message: 'This is an alert message',
+        variant: 'info',
+        dismissible: true,
+      },
+      style: {},
+    },
+    Badge: {
+      type: 'Badge',
+      props: {
+        text: 'Badge',
+        variant: 'default',
+        size: 'md',
+        dot: false,
+        pulse: false,
+      },
+      style: {},
+    },
+    BadgeComponent: {
+      type: 'BadgeComponent',
+      props: {
+        text: 'Badge',
+        variant: 'default',
+        size: 'md',
+        dot: false,
+        pulse: false,
+      },
+      style: {},
+    },
+    Breadcrumb: {
+      type: 'Breadcrumb',
+      props: {
+        items: [
+          { label: 'Home', href: '/' },
+          { label: 'Products', href: '/products' },
+          { label: 'Current Page', href: '#' },
+        ],
+        separator: 'slash',
+      },
+      style: {},
+    },
+    BreadcrumbComponent: {
+      type: 'BreadcrumbComponent',
+      props: {
+        items: [
+          { label: 'Home', href: '/' },
+          { label: 'Products', href: '/products' },
+          { label: 'Current Page', href: '#' },
+        ],
+        separator: 'slash',
+      },
+      style: {},
+    },
+    Divider: {
+      type: 'Divider',
+      props: {
+        orientation: 'horizontal',
+        variant: 'solid',
+        label: '',
+        labelPosition: 'center',
+        thickness: '1px',
+        color: '#e2e8f0',
+        spacing: '1rem',
+      },
+      style: {},
+    },
+    DividerComponent: {
+      type: 'DividerComponent',
+      props: {
+        orientation: 'horizontal',
+        variant: 'solid',
+        label: '',
+        labelPosition: 'center',
+        thickness: '1px',
+        color: '#e2e8f0',
+        spacing: '1rem',
+      },
+      style: {},
+    },
+    Carousel: {
+      type: 'Carousel',
+      props: {
+        slides: [
+          {
+            id: '1',
+            image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+            title: 'Slide 1',
+            description: 'Beautiful mountain landscape',
+          },
+          {
+            id: '2',
+            image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800',
+            title: 'Slide 2',
+            description: 'Serene forest path',
+          },
+          {
+            id: '3',
+            image: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800',
+            title: 'Slide 3',
+            description: 'Peaceful beach sunset',
+          },
+        ],
+        autoPlay: true,
+        interval: 3000,
+        showControls: true,
+        showIndicators: true,
+        loop: true,
+      },
+      style: {},
+    },
+    CarouselComponent: {
+      type: 'CarouselComponent',
+      props: {
+        slides: [
+          {
+            id: '1',
+            image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+            title: 'Slide 1',
+            description: 'Beautiful mountain landscape',
+          },
+          {
+            id: '2',
+            image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800',
+            title: 'Slide 2',
+            description: 'Serene forest path',
+          },
+          {
+            id: '3',
+            image: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800',
+            title: 'Slide 3',
+            description: 'Peaceful beach sunset',
+          },
+        ],
+        autoPlay: true,
+        interval: 3000,
+        showControls: true,
+        showIndicators: true,
+        loop: true,
+      },
+      style: {},
+    },
   };
 
   return defaults[type] || defaults.Text;

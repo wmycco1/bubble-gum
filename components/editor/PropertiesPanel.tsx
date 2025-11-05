@@ -1220,6 +1220,763 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           </>
         );
 
+      // M2: New Interactive Components
+      case 'Accordion':
+      case 'AccordionComponent':
+        return (
+          <>
+            <div className="rounded-md bg-purple-50 p-3 border border-purple-200 mb-4">
+              <p className="text-xs text-purple-900 font-medium mb-1">🎵 Accordion Component</p>
+              <p className="text-xs text-purple-700">
+                Collapsible panels with multiple items
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
+              <select
+                value={(localProps.variant as string) || 'default'}
+                onChange={(e) => handleChange('variant', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="default">Default</option>
+                <option value="bordered">Bordered</option>
+                <option value="filled">Filled</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Icon Type</label>
+              <select
+                value={(localProps.iconType as string) || 'chevron'}
+                onChange={(e) => handleChange('iconType', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="chevron">Chevron</option>
+                <option value="plus-minus">Plus/Minus</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="accordion-allowMultiple"
+                checked={(localProps.allowMultiple as boolean) ?? false}
+                onChange={(e) => handleChange('allowMultiple', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="accordion-allowMultiple" className="text-sm font-medium text-slate-700">
+                Allow Multiple Open
+              </label>
+            </div>
+          </>
+        );
+
+      case 'Tabs':
+      case 'TabsComponent':
+        return (
+          <>
+            <div className="rounded-md bg-indigo-50 p-3 border border-indigo-200 mb-4">
+              <p className="text-xs text-indigo-900 font-medium mb-1">📑 Tabs Component</p>
+              <p className="text-xs text-indigo-700">
+                Tabbed navigation interface
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
+              <select
+                value={(localProps.variant as string) || 'default'}
+                onChange={(e) => handleChange('variant', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="default">Default</option>
+                <option value="pills">Pills</option>
+                <option value="underline">Underline</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Orientation</label>
+              <select
+                value={(localProps.orientation as string) || 'horizontal'}
+                onChange={(e) => handleChange('orientation', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="horizontal">Horizontal</option>
+                <option value="vertical">Vertical</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="tabs-closable"
+                checked={(localProps.closable as boolean) ?? false}
+                onChange={(e) => handleChange('closable', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="tabs-closable" className="text-sm font-medium text-slate-700">
+                Closable Tabs
+              </label>
+            </div>
+          </>
+        );
+
+      case 'Counter':
+      case 'CounterComponent':
+        return (
+          <>
+            <div className="rounded-md bg-cyan-50 p-3 border border-cyan-200 mb-4">
+              <p className="text-xs text-cyan-900 font-medium mb-1">🔢 Counter Component</p>
+              <p className="text-xs text-cyan-700">
+                Numeric counter with increment/decrement
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Label</label>
+              <input
+                type="text"
+                value={(localProps.label as string) || ''}
+                onChange={(e) => handleChange('label', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Counter"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Initial Value</label>
+              <input
+                type="number"
+                value={(localProps.initialValue as number) || 0}
+                onChange={(e) => handleChange('initialValue', parseInt(e.target.value) || 0)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Min</label>
+                <input
+                  type="number"
+                  value={(localProps.min as number) || 0}
+                  onChange={(e) => handleChange('min', parseInt(e.target.value) || 0)}
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Max</label>
+                <input
+                  type="number"
+                  value={(localProps.max as number) || 100}
+                  onChange={(e) => handleChange('max', parseInt(e.target.value) || 100)}
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Step</label>
+              <input
+                type="number"
+                value={(localProps.step as number) || 1}
+                onChange={(e) => handleChange('step', parseInt(e.target.value) || 1)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Format</label>
+              <select
+                value={(localProps.format as string) || 'number'}
+                onChange={(e) => handleChange('format', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="number">Number</option>
+                <option value="currency">Currency ($)</option>
+                <option value="percentage">Percentage (%)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Size</label>
+              <select
+                value={(localProps.size as string) || 'md'}
+                onChange={(e) => handleChange('size', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="sm">Small</option>
+                <option value="md">Medium</option>
+                <option value="lg">Large</option>
+              </select>
+            </div>
+          </>
+        );
+
+      case 'Progress':
+      case 'ProgressComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">📊 Progress Component</p>
+              <p className="text-xs text-green-700">
+                Progress bar indicator
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Value (%)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={(localProps.value as number) || 50}
+                onChange={(e) => handleChange('value', Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
+              <select
+                value={(localProps.variant as string) || 'default'}
+                onChange={(e) => handleChange('variant', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="default">Default</option>
+                <option value="success">Success</option>
+                <option value="warning">Warning</option>
+                <option value="error">Error</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="progress-showLabel"
+                checked={(localProps.showLabel as boolean) ?? true}
+                onChange={(e) => handleChange('showLabel', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="progress-showLabel" className="text-sm font-medium text-slate-700">
+                Show Label
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="progress-animated"
+                checked={(localProps.animated as boolean) ?? false}
+                onChange={(e) => handleChange('animated', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="progress-animated" className="text-sm font-medium text-slate-700">
+                Animated
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="progress-striped"
+                checked={(localProps.striped as boolean) ?? false}
+                onChange={(e) => handleChange('striped', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="progress-striped" className="text-sm font-medium text-slate-700">
+                Striped
+              </label>
+            </div>
+          </>
+        );
+
+      case 'Tooltip':
+      case 'TooltipComponent':
+        return (
+          <>
+            <div className="rounded-md bg-amber-50 p-3 border border-amber-200 mb-4">
+              <p className="text-xs text-amber-900 font-medium mb-1">💬 Tooltip Component</p>
+              <p className="text-xs text-amber-700">
+                Contextual help tooltip
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Trigger Text</label>
+              <input
+                type="text"
+                value={(localProps.text as string) || ''}
+                onChange={(e) => handleChange('text', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Hover me"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Tooltip Content</label>
+              <textarea
+                value={(localProps.content as string) || ''}
+                onChange={(e) => handleChange('content', e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="This is a tooltip"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Placement</label>
+              <select
+                value={(localProps.placement as string) || 'top'}
+                onChange={(e) => handleChange('placement', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="top">Top</option>
+                <option value="bottom">Bottom</option>
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Trigger</label>
+              <select
+                value={(localProps.trigger as string) || 'hover'}
+                onChange={(e) => handleChange('trigger', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="hover">Hover</option>
+                <option value="click">Click</option>
+                <option value="focus">Focus</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Delay (ms)</label>
+              <input
+                type="number"
+                value={(localProps.delay as number) || 200}
+                onChange={(e) => handleChange('delay', parseInt(e.target.value) || 200)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+            </div>
+          </>
+        );
+
+      case 'Modal':
+      case 'ModalComponent':
+        return (
+          <>
+            <div className="rounded-md bg-violet-50 p-3 border border-violet-200 mb-4">
+              <p className="text-xs text-violet-900 font-medium mb-1">🪟 Modal Component</p>
+              <p className="text-xs text-violet-700">
+                Dialog/modal window
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Title</label>
+              <input
+                type="text"
+                value={(localProps.title as string) || ''}
+                onChange={(e) => handleChange('title', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Modal Title"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Content</label>
+              <textarea
+                value={(localProps.content as string) || ''}
+                onChange={(e) => handleChange('content', e.target.value)}
+                rows={4}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Modal content goes here..."
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Size</label>
+              <select
+                value={(localProps.size as string) || 'md'}
+                onChange={(e) => handleChange('size', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="sm">Small</option>
+                <option value="md">Medium</option>
+                <option value="lg">Large</option>
+                <option value="xl">Extra Large</option>
+                <option value="full">Full Screen</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="modal-closeButton"
+                checked={(localProps.closeButton as boolean) ?? true}
+                onChange={(e) => handleChange('closeButton', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="modal-closeButton" className="text-sm font-medium text-slate-700">
+                Show Close Button
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="modal-centered"
+                checked={(localProps.centered as boolean) ?? true}
+                onChange={(e) => handleChange('centered', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="modal-centered" className="text-sm font-medium text-slate-700">
+                Centered
+              </label>
+            </div>
+          </>
+        );
+
+      case 'Alert':
+      case 'AlertComponent':
+        return (
+          <>
+            <div className="rounded-md bg-rose-50 p-3 border border-rose-200 mb-4">
+              <p className="text-xs text-rose-900 font-medium mb-1">🚨 Alert Component</p>
+              <p className="text-xs text-rose-700">
+                Alert/notification message
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Title</label>
+              <input
+                type="text"
+                value={(localProps.title as string) || ''}
+                onChange={(e) => handleChange('title', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Alert Title"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Message</label>
+              <textarea
+                value={(localProps.message as string) || ''}
+                onChange={(e) => handleChange('message', e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="This is an alert message"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
+              <select
+                value={(localProps.variant as string) || 'info'}
+                onChange={(e) => handleChange('variant', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="info">Info</option>
+                <option value="success">Success</option>
+                <option value="warning">Warning</option>
+                <option value="error">Error</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="alert-dismissible"
+                checked={(localProps.dismissible as boolean) ?? true}
+                onChange={(e) => handleChange('dismissible', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="alert-dismissible" className="text-sm font-medium text-slate-700">
+                Dismissible
+              </label>
+            </div>
+          </>
+        );
+
+      case 'Badge':
+      case 'BadgeComponent':
+        return (
+          <>
+            <div className="rounded-md bg-pink-50 p-3 border border-pink-200 mb-4">
+              <p className="text-xs text-pink-900 font-medium mb-1">🏷️ Badge Component</p>
+              <p className="text-xs text-pink-700">
+                Status badge/label
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Text</label>
+              <input
+                type="text"
+                value={(localProps.text as string) || ''}
+                onChange={(e) => handleChange('text', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Badge"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
+              <select
+                value={(localProps.variant as string) || 'default'}
+                onChange={(e) => handleChange('variant', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="default">Default</option>
+                <option value="primary">Primary</option>
+                <option value="success">Success</option>
+                <option value="warning">Warning</option>
+                <option value="error">Error</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Size</label>
+              <select
+                value={(localProps.size as string) || 'md'}
+                onChange={(e) => handleChange('size', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="sm">Small</option>
+                <option value="md">Medium</option>
+                <option value="lg">Large</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="badge-dot"
+                checked={(localProps.dot as boolean) ?? false}
+                onChange={(e) => handleChange('dot', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="badge-dot" className="text-sm font-medium text-slate-700">
+                Show Dot
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="badge-pulse"
+                checked={(localProps.pulse as boolean) ?? false}
+                onChange={(e) => handleChange('pulse', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="badge-pulse" className="text-sm font-medium text-slate-700">
+                Pulse Animation
+              </label>
+            </div>
+          </>
+        );
+
+      case 'Breadcrumb':
+      case 'BreadcrumbComponent':
+        return (
+          <>
+            <div className="rounded-md bg-teal-50 p-3 border border-teal-200 mb-4">
+              <p className="text-xs text-teal-900 font-medium mb-1">🗺️ Breadcrumb Component</p>
+              <p className="text-xs text-teal-700">
+                Navigation breadcrumb trail
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Separator</label>
+              <select
+                value={(localProps.separator as string) || 'slash'}
+                onChange={(e) => handleChange('separator', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="slash">Slash (/)</option>
+                <option value="chevron">Chevron (&gt;)</option>
+                <option value="arrow">Arrow (→)</option>
+              </select>
+            </div>
+          </>
+        );
+
+      case 'Divider':
+      case 'DividerComponent':
+        return (
+          <>
+            <div className="rounded-md bg-gray-50 p-3 border border-gray-200 mb-4">
+              <p className="text-xs text-gray-900 font-medium mb-1">➖ Divider Component</p>
+              <p className="text-xs text-gray-700">
+                Visual content separator
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Orientation</label>
+              <select
+                value={(localProps.orientation as string) || 'horizontal'}
+                onChange={(e) => handleChange('orientation', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="horizontal">Horizontal</option>
+                <option value="vertical">Vertical</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
+              <select
+                value={(localProps.variant as string) || 'solid'}
+                onChange={(e) => handleChange('variant', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="solid">Solid</option>
+                <option value="dashed">Dashed</option>
+                <option value="dotted">Dotted</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Label (Optional)</label>
+              <input
+                type="text"
+                value={(localProps.label as string) || ''}
+                onChange={(e) => handleChange('label', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="Divider label"
+              />
+            </div>
+
+            {localProps.label && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Label Position</label>
+                <select
+                  value={(localProps.labelPosition as string) || 'center'}
+                  onChange={(e) => handleChange('labelPosition', e.target.value)}
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
+            )}
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Thickness</label>
+              <input
+                type="text"
+                value={(localProps.thickness as string) || '1px'}
+                onChange={(e) => handleChange('thickness', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="1px"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Color</label>
+              <input
+                type="color"
+                value={(localProps.color as string) || '#e2e8f0'}
+                onChange={(e) => handleChange('color', e.target.value)}
+                className="w-full h-10 rounded-md border border-slate-300"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Spacing</label>
+              <input
+                type="text"
+                value={(localProps.spacing as string) || '1rem'}
+                onChange={(e) => handleChange('spacing', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                placeholder="1rem"
+              />
+            </div>
+          </>
+        );
+
+      case 'Carousel':
+      case 'CarouselComponent':
+        return (
+          <>
+            <div className="rounded-md bg-orange-50 p-3 border border-orange-200 mb-4">
+              <p className="text-xs text-orange-900 font-medium mb-1">🎠 Carousel Component</p>
+              <p className="text-xs text-orange-700">
+                Image carousel/slideshow
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Interval (ms)</label>
+              <input
+                type="number"
+                value={(localProps.interval as number) || 3000}
+                onChange={(e) => handleChange('interval', parseInt(e.target.value) || 3000)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="carousel-autoPlay"
+                checked={(localProps.autoPlay as boolean) ?? true}
+                onChange={(e) => handleChange('autoPlay', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="carousel-autoPlay" className="text-sm font-medium text-slate-700">
+                Auto Play
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="carousel-showControls"
+                checked={(localProps.showControls as boolean) ?? true}
+                onChange={(e) => handleChange('showControls', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="carousel-showControls" className="text-sm font-medium text-slate-700">
+                Show Controls
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="carousel-showIndicators"
+                checked={(localProps.showIndicators as boolean) ?? true}
+                onChange={(e) => handleChange('showIndicators', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="carousel-showIndicators" className="text-sm font-medium text-slate-700">
+                Show Indicators
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="carousel-loop"
+                checked={(localProps.loop as boolean) ?? true}
+                onChange={(e) => handleChange('loop', e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              />
+              <label htmlFor="carousel-loop" className="text-sm font-medium text-slate-700">
+                Loop
+              </label>
+            </div>
+          </>
+        );
+
       default:
         return (
           <div className="rounded-md bg-yellow-50 p-3 border border-yellow-200">

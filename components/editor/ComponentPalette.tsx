@@ -38,6 +38,19 @@ const componentTypes: Array<{ type: ComponentType; label: string; icon: string; 
   { type: 'Textarea', label: 'Textarea', icon: '📝', description: 'Multiline text input' },
   { type: 'Checkbox', label: 'Checkbox', icon: '☑️', description: 'Checkbox with label' },
   { type: 'Submit', label: 'Submit Button', icon: '📤', description: 'Form submit button' },
+
+  // M2: New Interactive Components (11)
+  { type: 'Accordion', label: 'Accordion', icon: '🎵', description: 'Collapsible panels' },
+  { type: 'Tabs', label: 'Tabs', icon: '📑', description: 'Tabbed navigation' },
+  { type: 'Counter', label: 'Counter', icon: '🔢', description: 'Numeric counter' },
+  { type: 'Progress', label: 'Progress Bar', icon: '📊', description: 'Progress indicator' },
+  { type: 'Tooltip', label: 'Tooltip', icon: '💬', description: 'Contextual help' },
+  { type: 'Modal', label: 'Modal', icon: '🪟', description: 'Dialog window' },
+  { type: 'Alert', label: 'Alert', icon: '🚨', description: 'Alert message' },
+  { type: 'Badge', label: 'Badge', icon: '🏷️', description: 'Status badge' },
+  { type: 'Breadcrumb', label: 'Breadcrumb', icon: '🗺️', description: 'Navigation trail' },
+  { type: 'Divider', label: 'Divider', icon: '➖', description: 'Content separator' },
+  { type: 'Carousel', label: 'Carousel', icon: '🎠', description: 'Image carousel' },
 ];
 
 /**

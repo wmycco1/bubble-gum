@@ -1,8 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
 // BUBBLE GUM - EDITOR TYPES
 // ═══════════════════════════════════════════════════════════════
-// Version: 3.0.0 - Advanced Builder Enhancement
-// Changes:
+// Version: 4.0.0 - M2: New Interactive Components
+// Changes (v4.0.0):
+// - Added 11 new component types (Accordion, Tabs, Counter, etc.)
+// - Added prop interfaces for all new components
+// Previous (v3.0.0):
 // - Added individual border-radius properties (4 corners)
 // - Added gradient support (backgroundImage)
 // - Added filter and backdrop-filter
@@ -51,7 +54,30 @@ export type ComponentType =
   | 'IconComponent'
   | 'TextareaComponent'
   | 'CheckboxComponent'
-  | 'SubmitComponent';
+  | 'SubmitComponent'
+  // M2: New Interactive Components
+  | 'Accordion'
+  | 'AccordionComponent'
+  | 'Tabs'
+  | 'TabsComponent'
+  | 'Counter'
+  | 'CounterComponent'
+  | 'Progress'
+  | 'ProgressComponent'
+  | 'Tooltip'
+  | 'TooltipComponent'
+  | 'Modal'
+  | 'ModalComponent'
+  | 'Alert'
+  | 'AlertComponent'
+  | 'Badge'
+  | 'BadgeComponent'
+  | 'Breadcrumb'
+  | 'BreadcrumbComponent'
+  | 'Divider'
+  | 'DividerComponent'
+  | 'Carousel'
+  | 'CarouselComponent';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Specific Component Props Interfaces
@@ -437,4 +463,131 @@ export function getResponsiveStyles(
     default:
       return baseStyles;
   }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// M2: New Interactive Components Props
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/** Accordion component props */
+export interface AccordionProps {
+  items?: Array<{
+    id: string;
+    title: string;
+    content: string;
+  }>;
+  allowMultiple?: boolean;
+  defaultOpen?: string[];
+  variant?: 'default' | 'bordered' | 'filled';
+  iconType?: 'chevron' | 'plus-minus';
+}
+
+/** Tabs component props */
+export interface TabsProps {
+  tabs?: Array<{
+    id: string;
+    label: string;
+    content: string;
+    icon?: string;
+  }>;
+  defaultTab?: string;
+  orientation?: 'horizontal' | 'vertical';
+  variant?: 'default' | 'pills' | 'underline';
+  closable?: boolean;
+}
+
+/** Counter component props */
+export interface CounterProps {
+  label?: string;
+  value?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  format?: 'number' | 'currency' | 'percentage';
+  prefix?: string;
+  suffix?: string;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+/** Progress component props */
+export interface ProgressProps {
+  value?: number;
+  label?: string;
+  showValue?: boolean;
+  variant?: 'default' | 'success' | 'warning' | 'error';
+  size?: 'sm' | 'md' | 'lg';
+  animated?: boolean;
+  striped?: boolean;
+}
+
+/** Tooltip component props */
+export interface TooltipProps {
+  text?: string;
+  content?: string;
+  placement?: 'top' | 'bottom' | 'left' | 'right';
+  trigger?: 'hover' | 'click' | 'focus';
+  delay?: number;
+}
+
+/** Modal component props */
+export interface ModalProps {
+  title?: string;
+  content?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  closeButton?: boolean;
+  backdrop?: boolean | 'static';
+  centered?: boolean;
+}
+
+/** Alert component props */
+export interface AlertProps {
+  title?: string;
+  message?: string;
+  variant?: 'info' | 'success' | 'warning' | 'error';
+  dismissible?: boolean;
+}
+
+/** Badge component props */
+export interface BadgeProps {
+  text?: string;
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'error';
+  size?: 'sm' | 'md' | 'lg';
+  dot?: boolean;
+  pulse?: boolean;
+}
+
+/** Breadcrumb component props */
+export interface BreadcrumbProps {
+  items?: Array<{
+    id: string;
+    label: string;
+    href?: string;
+  }>;
+  separator?: string | 'slash' | 'chevron' | 'arrow';
+}
+
+/** Divider component props */
+export interface DividerProps {
+  orientation?: 'horizontal' | 'vertical';
+  variant?: 'solid' | 'dashed' | 'dotted';
+  thickness?: number;
+  color?: string;
+  spacing?: string;
+  label?: string;
+  labelPosition?: 'left' | 'center' | 'right';
+}
+
+/** Carousel component props */
+export interface CarouselProps {
+  slides?: Array<{
+    id: string;
+    image: string;
+    title?: string;
+    description?: string;
+  }>;
+  autoPlay?: boolean;
+  interval?: number;
+  showControls?: boolean;
+  showIndicators?: boolean;
+  loop?: boolean;
 }
