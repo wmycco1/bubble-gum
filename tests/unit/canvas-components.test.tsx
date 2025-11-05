@@ -174,7 +174,7 @@ describe('Canvas Components - New Components', () => {
       const component: CanvasComponent = {
         id: 'test-size-number',
         type: 'Icon',
-        props: { icon: 'star', size: 32 },
+        props: { icon: 'star', size: '32' },
         style: {},
       };
 

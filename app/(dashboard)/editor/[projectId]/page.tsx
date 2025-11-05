@@ -517,6 +517,8 @@ export default function EditorPage(props: EditorPageProps) {
               <Canvas
                 components={components}
                 selectedId={selectedComponentId}
+                deviceMode={deviceMode}
+                zoom={zoom}
                 onSelectComponent={selectComponent}
                 onDeleteComponent={deleteComponent}
                 onMoveComponent={handleMoveComponent}

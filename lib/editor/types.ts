@@ -175,7 +175,23 @@ export interface SubmitProps {
   fullWidth?: boolean;
 }
 
-export interface ComponentStyle {
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Responsive Breakpoints
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+export type Breakpoint = 'desktop' | 'tablet' | 'mobile';
+
+export const BREAKPOINTS = {
+  desktop: { min: 1024, label: 'Desktop', icon: '🖥️' },
+  tablet: { min: 768, label: 'Tablet', icon: '📱' },
+  mobile: { min: 0, label: 'Mobile', icon: '📱' },
+} as const;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Style Properties (Responsive-aware)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+export interface StyleProperties {
   // Layout
   width?: string;
   height?: string;
@@ -216,6 +232,17 @@ export interface ComponentStyle {
   transform?: string;
   transition?: string;
   cursor?: string;
+}
+
+/**
+ * Component Style with Responsive Breakpoints
+ * Desktop styles are default, tablet/mobile override as needed
+ * Inheritance: mobile → tablet → desktop
+ */
+export interface ComponentStyle extends StyleProperties {
+  // Responsive overrides (optional)
+  tablet?: Partial<StyleProperties>;
+  mobile?: Partial<StyleProperties>;
 }
 
 export interface ComponentProps {
@@ -276,4 +303,38 @@ export interface DragItem {
 export interface DropPosition {
   parentId: string | null;
   index: number;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Responsive Style Utilities
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Get resolved styles for a specific breakpoint
+ * Implements inheritance: mobile → tablet → desktop
+ */
+export function getResponsiveStyles(
+  style: ComponentStyle,
+  breakpoint: Breakpoint
+): StyleProperties {
+  const baseStyles = { ...style };
+  delete baseStyles.tablet;
+  delete baseStyles.mobile;
+
+  switch (breakpoint) {
+    case 'mobile':
+      return {
+        ...baseStyles,
+        ...(style.tablet || {}),
+        ...(style.mobile || {}),
+      };
+    case 'tablet':
+      return {
+        ...baseStyles,
+        ...(style.tablet || {}),
+      };
+    case 'desktop':
+    default:
+      return baseStyles;
+  }
 }

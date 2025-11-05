@@ -13,7 +13,8 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { cn } from '@/lib/utils/cn';
-import type { CanvasComponent } from '@/lib/editor/types';
+import type { CanvasComponent, Breakpoint } from '@/lib/editor/types';
+import { getResponsiveStyles } from '@/lib/editor/types';
 import toast from 'react-hot-toast';
 
 // Import NEW visual components
@@ -41,9 +42,10 @@ import { SubmitComponent } from '@/components/canvas/SubmitComponent';
 interface RenderComponentProps {
   component: CanvasComponent;
   isSelected: boolean;
+  deviceMode?: Breakpoint;
 }
 
-export function RenderComponent({ component, isSelected }: RenderComponentProps) {
+export function RenderComponent({ component, isSelected, deviceMode = 'desktop' }: RenderComponentProps) {
   const { selectComponent, setHoveredComponent, hoveredComponentId, deleteComponent } =
     useCanvasStore();
 
@@ -51,6 +53,13 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
   const canHaveChildren = ['Container', 'Section', 'Grid', 'Card', 'Form'].includes(
     component.type
   );
+
+  // Resolve responsive styles based on current breakpoint
+  const resolvedStyles = getResponsiveStyles(component.style, deviceMode);
+  const componentWithResolvedStyles = {
+    ...component,
+    style: resolvedStyles,
+  };
 
   // Make component draggable
   const {
@@ -119,89 +128,91 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
     setHoveredComponent(null);
   };
 
-  // Render visual component based on type
+  // Render visual component based on type (with resolved responsive styles)
   const renderVisualComponent = () => {
+    const comp = componentWithResolvedStyles;
+
     switch (component.type) {
       case 'Section':
       case 'SectionComponent':
-        return <SectionComponent component={component} />;
+        return <SectionComponent component={comp} />;
 
       case 'Text':
       case 'Heading':
       case 'TextComponent':
-        return <TextComponent component={component} />;
+        return <TextComponent component={comp} />;
 
       case 'Image':
       case 'ImageComponent':
-        return <ImageComponent component={component} />;
+        return <ImageComponent component={comp} />;
 
       case 'Button':
       case 'ButtonComponent':
-        return <ButtonComponent component={component} />;
+        return <ButtonComponent component={comp} />;
 
       case 'Input':
       case 'InputComponent':
-        return <InputComponent component={component} />;
+        return <InputComponent component={comp} />;
 
       case 'Form':
       case 'FormComponent':
-        return <FormComponent component={component} />;
+        return <FormComponent component={comp} />;
 
       case 'Container':
       case 'ContainerComponent':
-        return <ContainerComponent component={component} />;
+        return <ContainerComponent component={comp} />;
 
       case 'Grid':
       case 'GridComponent':
-        return <GridComponent component={component} />;
+        return <GridComponent component={comp} />;
 
       case 'Card':
       case 'CardComponent':
-        return <CardComponent component={component} />;
+        return <CardComponent component={comp} />;
 
       case 'Navbar':
       case 'NavbarComponent':
-        return <NavbarComponent component={component} />;
+        return <NavbarComponent component={comp} />;
 
       case 'Hero':
       case 'HeroComponent':
-        return <HeroComponent component={component} />;
+        return <HeroComponent component={comp} />;
 
       case 'Footer':
       case 'FooterComponent':
-        return <FooterComponent component={component} />;
+        return <FooterComponent component={comp} />;
 
       case 'Features':
       case 'FeaturesComponent':
-        return <FeaturesComponent component={component} />;
+        return <FeaturesComponent component={comp} />;
 
       case 'CTA':
       case 'CTAComponent':
-        return <CTAComponent component={component} />;
+        return <CTAComponent component={comp} />;
 
       case 'Heading':
       case 'HeadingComponent':
-        return <HeadingComponent component={component} />;
+        return <HeadingComponent component={comp} />;
 
       case 'Link':
       case 'LinkComponent':
-        return <LinkComponent component={component} />;
+        return <LinkComponent component={comp} />;
 
       case 'Icon':
       case 'IconComponent':
-        return <IconComponent component={component} />;
+        return <IconComponent component={comp} />;
 
       case 'Textarea':
       case 'TextareaComponent':
-        return <TextareaComponent component={component} />;
+        return <TextareaComponent component={comp} />;
 
       case 'Checkbox':
       case 'CheckboxComponent':
-        return <CheckboxComponent component={component} />;
+        return <CheckboxComponent component={comp} />;
 
       case 'Submit':
       case 'SubmitComponent':
-        return <SubmitComponent component={component} />;
+        return <SubmitComponent component={comp} />;
 
       default:
         return (

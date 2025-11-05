@@ -10,7 +10,7 @@
 // - Simplified: drag/drop/delete handled by RenderComponent
 // ═══════════════════════════════════════════════════════════════
 
-import type { CanvasComponent } from '@/lib/editor/types';
+import type { CanvasComponent, Breakpoint } from '@/lib/editor/types';
 import {
   DndContext,
   closestCenter,
@@ -23,9 +23,18 @@ import {
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { RenderComponent } from './RenderComponent';
 
+// Responsive canvas widths
+const CANVAS_WIDTHS: Record<Breakpoint, string> = {
+  desktop: '100%',
+  tablet: '768px',
+  mobile: '375px',
+};
+
 interface CanvasProps {
   components: CanvasComponent[];
   selectedId: string | null;
+  deviceMode: Breakpoint;
+  zoom: number;
   onSelectComponent: (id: string) => void;
   onDeleteComponent: (id: string) => void;
   onMoveComponent: (fromIndex: number, toIndex: number) => void;
@@ -34,6 +43,8 @@ interface CanvasProps {
 export function Canvas({
   components,
   selectedId,
+  deviceMode = 'desktop',
+  zoom = 1,
   onSelectComponent, // Note: Currently unused - RenderComponent uses canvas-store directly
   onDeleteComponent, // Note: Currently unused - RenderComponent uses canvas-store directly
   onMoveComponent,
@@ -41,6 +52,14 @@ export function Canvas({
   // Suppress unused variable warnings - these are here for API consistency
   void onSelectComponent;
   void onDeleteComponent;
+
+  const canvasWidth = CANVAS_WIDTHS[deviceMode];
+  const canvasStyle = {
+    width: canvasWidth,
+    transform: `scale(${zoom})`,
+    transformOrigin: 'top center',
+    transition: 'width 0.3s ease, transform 0.3s ease',
+  };
 
   // Configure sensors to allow clicks while enabling drag
   const sensors = useSensors(
@@ -106,23 +125,29 @@ export function Canvas({
   }
 
   return (
-    <div className="min-h-[600px] rounded-lg border border-slate-200 bg-white shadow-sm">
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext
-          items={components.map((c) => c.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="space-y-0">
-            {components.map((component) => (
-              <RenderComponent
-                key={component.id}
-                component={component}
-                isSelected={selectedId === component.id}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+    <div className="flex justify-center bg-slate-50 p-8 min-h-screen">
+      <div
+        className="min-h-[600px] rounded-lg border border-slate-200 bg-white shadow-sm mx-auto"
+        style={canvasStyle}
+      >
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={components.map((c) => c.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-0">
+              {components.map((component) => (
+                <RenderComponent
+                  key={component.id}
+                  component={component}
+                  isSelected={selectedId === component.id}
+                  deviceMode={deviceMode}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
     </div>
   );
 }

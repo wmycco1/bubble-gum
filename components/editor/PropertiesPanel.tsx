@@ -16,6 +16,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
 import { LinksEditor, type Link } from './LinksEditor';
+import { BreakpointTabs } from './BreakpointTabs';
 
 interface PropertiesPanelProps {
   component: CanvasComponent | undefined;
@@ -1165,6 +1166,9 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           {component.id && <span className="ml-1 text-slate-400">• {component.id.slice(0, 8)}</span>}
         </p>
       </div>
+
+      {/* Breakpoint Tabs for Responsive Design */}
+      <BreakpointTabs />
 
       {/* Properties Form */}
       <div className="space-y-4">{renderProperties()}</div>

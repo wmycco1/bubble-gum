@@ -31,6 +31,7 @@ interface CanvasStore extends CanvasState {
   // Style actions
   updateComponentStyle: (id: string, style: Partial<ComponentStyle>) => void;
   updateComponentProps: (id: string, props: Partial<ComponentProps>) => void;
+  updateResponsiveStyle: (id: string, breakpoint: 'desktop' | 'tablet' | 'mobile', style: Partial<ComponentStyle>) => void;
 
   // UI actions
   setIsDragging: (isDragging: boolean) => void;
@@ -587,6 +588,44 @@ export const useCanvasStore = create<CanvasStore>()(
                     ...comp,
                     style: { ...comp.style, ...style },
                   };
+                }
+                if (comp.children) {
+                  return { ...comp, children: updateInTree(comp.children) };
+                }
+                return comp;
+              });
+            };
+
+            return {
+              components: updateInTree(state.components),
+            };
+          });
+        },
+
+        updateResponsiveStyle: (id, breakpoint, style) => {
+          set((state) => {
+            const updateInTree = (comps: CanvasComponent[]): CanvasComponent[] => {
+              return comps.map((comp) => {
+                if (comp.id === id) {
+                  if (breakpoint === 'desktop') {
+                    // Desktop is base style, update directly
+                    return {
+                      ...comp,
+                      style: { ...comp.style, ...style },
+                    };
+                  } else {
+                    // Tablet/Mobile are nested overrides
+                    return {
+                      ...comp,
+                      style: {
+                        ...comp.style,
+                        [breakpoint]: {
+                          ...(comp.style[breakpoint] || {}),
+                          ...style,
+                        },
+                      },
+                    };
+                  }
                 }
                 if (comp.children) {
                   return { ...comp, children: updateInTree(comp.children) };
