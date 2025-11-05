@@ -19,15 +19,6 @@ export function BreakpointTabs() {
 
   return (
     <div className="flex flex-col gap-2 p-4 border-b border-slate-200 bg-slate-50">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-slate-700">
-          Edit styles for:
-        </span>
-        <span className="text-xs text-slate-500">
-          {BREAKPOINTS[deviceMode].min}px+
-        </span>
-      </div>
-
       <div className="flex gap-1 rounded-lg border border-slate-200 bg-white p-1">
         {breakpoints.map((breakpoint) => {
           const isActive = deviceMode === breakpoint;

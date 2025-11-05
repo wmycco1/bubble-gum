@@ -196,9 +196,22 @@ export interface StyleProperties {
   width?: string;
   height?: string;
   minHeight?: string;
+
+  // Spacing - Shorthand
   margin?: string;
-  marginBottom?: string;
   padding?: string;
+
+  // Spacing - Individual sides
+  marginTop?: string;
+  marginRight?: string;
+  marginBottom?: string;
+  marginLeft?: string;
+  paddingTop?: string;
+  paddingRight?: string;
+  paddingBottom?: string;
+  paddingLeft?: string;
+
+  // Display & Flexbox
   display?: string;
   flexDirection?: string;
   justifyContent?: string;

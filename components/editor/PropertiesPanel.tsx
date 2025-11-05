@@ -18,6 +18,7 @@ import type { CanvasComponent } from '@/lib/editor/types';
 import { LinksEditor, type Link } from './LinksEditor';
 import { BreakpointTabs } from './BreakpointTabs';
 import { ImageLibraryModal } from './ImageLibraryModal';
+import { SpacingControls } from './SpacingControls';
 
 interface PropertiesPanelProps {
   component: CanvasComponent | undefined;
@@ -1185,6 +1186,9 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       {/* Properties Form */}
       <div className="space-y-4">{renderProperties()}</div>
+
+      {/* Spacing Controls (Margin/Padding) */}
+      <SpacingControls componentId={component.id} />
 
       {/* Image Library Modal */}
       <ImageLibraryModal
