@@ -109,6 +109,8 @@ export function GridComponent({ component }: GridComponentProps) {
   const columns = (props.columns as number) || 3;
   const columnWidths = (props.columnWidths as string[]) || Array.from({ length: columns }, () => '1fr');
   const gap = (props.gap as string) || '1.5rem';
+  const justifyContent = (props.justifyContent as string) || undefined;
+  const alignItems = (props.alignItems as string) || undefined;
 
   // Organize children by column
   // If children have columnIndex, use it; otherwise distribute evenly
@@ -234,6 +236,8 @@ export function GridComponent({ component }: GridComponentProps) {
         ...(style as React.CSSProperties),
         gridTemplateColumns,
         gap,
+        ...(justifyContent && { justifyContent }),
+        ...(alignItems && { alignItems }),
       }}
     >
       {Array.from({ length: columns }).map((_, columnIndex) => (

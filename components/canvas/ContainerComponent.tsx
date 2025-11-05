@@ -16,7 +16,7 @@ interface ContainerComponentProps {
 }
 
 export function ContainerComponent({ component }: ContainerComponentProps) {
-  const { style, children } = component;
+  const { style, props, children } = component;
   const selectedComponentId = useCanvasStore((state) => state.selectedComponentId);
 
   // Make container droppable
@@ -29,6 +29,10 @@ export function ContainerComponent({ component }: ContainerComponentProps) {
     },
   });
 
+  // Extract alignment props
+  const justifyContent = (props.justifyContent as string) || undefined;
+  const alignItems = (props.alignItems as string) || undefined;
+
   // Remove Tailwind spacing classes if custom spacing is set
   const baseClassName = 'flex flex-col gap-4 p-6 border-2 border-dashed rounded-lg min-h-[150px]';
   const stateClassName = isOver
@@ -40,8 +44,15 @@ export function ContainerComponent({ component }: ContainerComponentProps) {
     style
   );
 
+  // Merge alignment props with style
+  const mergedStyle: React.CSSProperties = {
+    ...(style as React.CSSProperties),
+    ...(justifyContent && { justifyContent }),
+    ...(alignItems && { alignItems }),
+  };
+
   return (
-    <div ref={setNodeRef} className={wrapperClassName} style={style as React.CSSProperties}>
+    <div ref={setNodeRef} className={wrapperClassName} style={mergedStyle}>
       {children && children.length > 0 ? (
         children.map((child) => (
           <RenderComponent

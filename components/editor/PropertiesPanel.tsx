@@ -397,6 +397,37 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             </div>
 
             <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Horizontal Align (Justify)</label>
+              <select
+                value={(localProps.justifyContent as string) || 'flex-start'}
+                onChange={(e) => handleChange('justifyContent', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="flex-start">Left</option>
+                <option value="center">Center</option>
+                <option value="flex-end">Right</option>
+                <option value="space-between">Space Between</option>
+                <option value="space-around">Space Around</option>
+                <option value="space-evenly">Space Evenly</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Vertical Align (Items)</label>
+              <select
+                value={(localProps.alignItems as string) || 'flex-start'}
+                onChange={(e) => handleChange('alignItems', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="flex-start">Top</option>
+                <option value="center">Center</option>
+                <option value="flex-end">Bottom</option>
+                <option value="stretch">Stretch</option>
+                <option value="baseline">Baseline</option>
+              </select>
+            </div>
+
+            <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Background Color</label>
               <input
                 type="text"
@@ -517,6 +548,37 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <option value="1rem">Medium (1rem)</option>
                 <option value="1.5rem">Large (1.5rem)</option>
                 <option value="2rem">Extra Large (2rem)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Horizontal Align (Justify)</label>
+              <select
+                value={(localProps.justifyContent as string) || 'flex-start'}
+                onChange={(e) => handleChange('justifyContent', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="flex-start">Left</option>
+                <option value="center">Center</option>
+                <option value="flex-end">Right</option>
+                <option value="space-between">Space Between</option>
+                <option value="space-around">Space Around</option>
+                <option value="space-evenly">Space Evenly</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Vertical Align (Items)</label>
+              <select
+                value={(localProps.alignItems as string) || 'flex-start'}
+                onChange={(e) => handleChange('alignItems', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+              >
+                <option value="flex-start">Top</option>
+                <option value="center">Center</option>
+                <option value="flex-end">Bottom</option>
+                <option value="stretch">Stretch</option>
+                <option value="baseline">Baseline</option>
               </select>
             </div>
           </>
