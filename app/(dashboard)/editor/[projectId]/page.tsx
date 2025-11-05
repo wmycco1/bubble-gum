@@ -69,9 +69,12 @@ export default function EditorPage(props: EditorPageProps) {
   // Auto-Save Integration (NEW!)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  const { isSaving, lastSaved, error: autoSaveError, saveNow } = useAutoSave({
+  // Smart save detection (disable during drag operations)
+  const isDragging = useCanvasStore((state) => state.isDragging);
+
+  const { status, lastSaved, error: autoSaveError, saveNow, retryCount, isOnline } = useAutoSave({
     data: components,
-    onSave: async (data) => {
+    onSave: async (data, signal) => {
       if (!homepage) {
         console.warn('💾 Auto-save: No homepage found, skipping save');
         return;
@@ -80,6 +83,11 @@ export default function EditorPage(props: EditorPageProps) {
       // Convert NEW components to OLD format for DB
       const oldComponents = convertArrayNewToOld(data);
 
+      // Note: tRPC doesn't support AbortSignal directly, but we track it
+      if (signal.aborted) {
+        throw new Error('Save aborted');
+      }
+
       await updatePageContent.mutateAsync({
         id: homepage.id,
         content: oldComponents,
@@ -87,8 +95,16 @@ export default function EditorPage(props: EditorPageProps) {
 
       console.log('💾 Auto-save: Saved', oldComponents.length, 'components to database');
     },
-    delay: 10000, // 10 seconds
-    enabled: !!homepage, // Only enable when homepage is available
+    debounceMs: 10000, // 10 seconds
+    enabled: !!homepage && !isDragging, // Disable during drag operations
+    maxRetries: 3,
+    retryDelayMs: 1000,
+    onSaveSuccess: () => {
+      console.log('✅ Auto-save: Success callback');
+    },
+    onSaveError: (error) => {
+      console.error('❌ Auto-save: Error callback', error);
+    },
   });
 
   // Load page content from DB when homepage is available
@@ -247,9 +263,11 @@ export default function EditorPage(props: EditorPageProps) {
       <EditorToolbar
         projectId={params.projectId}
         projectName={project.name}
-        isSaving={isSaving}
+        status={status}
         lastSaved={lastSaved}
         saveError={autoSaveError}
+        retryCount={retryCount}
+        isOnline={isOnline}
         onSaveNow={saveNow}
       />
 

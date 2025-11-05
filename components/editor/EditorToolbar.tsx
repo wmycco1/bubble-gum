@@ -10,24 +10,31 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
+import { SaveIndicator } from '@/components/editor/SaveIndicator';
+import type { SaveStatus } from '@/lib/hooks/useAutoSave';
 
 interface EditorToolbarProps {
   projectId: string;
   projectName?: string;
-  isSaving?: boolean;
+  status?: SaveStatus;
   lastSaved?: Date | null;
   saveError?: Error | null;
+  retryCount?: number;
+  isOnline?: boolean;
   onSaveNow?: () => Promise<void>;
 }
 
 export function EditorToolbar({
   projectId: _projectId, // Keep for future use (e.g., project-specific settings)
   projectName = 'Untitled Project',
-  isSaving = false,
+  status = 'idle',
   lastSaved = null,
   saveError = null,
+  retryCount = 0,
+  isOnline = true,
   onSaveNow
 }: EditorToolbarProps) {
+  const isSaving = status === 'saving' || status === 'retrying';
   const { deviceMode, setDeviceMode, zoom, setZoom } = useCanvasStore();
   const { undo, canUndo } = useUndo();
   const { redo, canRedo } = useRedo();
@@ -41,22 +48,6 @@ export function EditorToolbar({
   const handlePreview = () => {
     // TODO: Implement preview
     alert('Preview functionality coming soon!');
-  };
-
-  // Format last saved time
-  const formatLastSaved = (date: Date | null): string => {
-    if (!date) return 'Never';
-
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffSecs = Math.floor(diffMs / 1000);
-    const diffMins = Math.floor(diffSecs / 60);
-
-    if (diffSecs < 10) return 'Just now';
-    if (diffSecs < 60) return `${diffSecs}s ago`;
-    if (diffMins < 60) return `${diffMins}m ago`;
-
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -155,17 +146,14 @@ export function EditorToolbar({
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
-        {/* Auto-save status */}
-        <div className="flex flex-col text-xs">
-          <span className="text-slate-600">
-            {isSaving ? 'Saving...' : `Saved ${formatLastSaved(lastSaved)}`}
-          </span>
-          {saveError && (
-            <span className="text-red-600" title={saveError.message}>
-              ⚠️ Save failed
-            </span>
-          )}
-        </div>
+        {/* Auto-save status with new SaveIndicator component */}
+        <SaveIndicator
+          status={status}
+          lastSavedAt={lastSaved}
+          error={saveError?.message}
+          retryCount={retryCount}
+          isOnline={isOnline}
+        />
 
         <div className="mx-2 h-6 w-px bg-slate-200" />
 
