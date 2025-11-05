@@ -207,7 +207,7 @@ function extractJSON(text: string): unknown {
       hasMetadata: 'metadata' in parsed,
     });
     return parsed;
-  } catch (_firstError) {
+  } catch {
     console.warn('[AI Service] First parse attempt failed, trying fixes...');
 
     // Try fixing common issues
