@@ -61,7 +61,21 @@ export function EditorToolbar({
       <KeyboardShortcutsHelp
         isOpen={showShortcutsHelp}
         onClose={() => setShowShortcutsHelp(false)}
+        showTriggerHint={false}
       />
+
+      {/* Floating trigger button (only when modal is closed) */}
+      {!showShortcutsHelp && (
+        <button
+          onClick={() => setShowShortcutsHelp(true)}
+          className="fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 shadow-sm transition-all hover:border-slate-300 hover:shadow-md"
+          aria-label="Show keyboard shortcuts"
+        >
+          <span>⌨️</span>
+          <span>Keyboard Shortcuts</span>
+          <kbd className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs">?</kbd>
+        </button>
+      )}
 
       <div className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4">
         {/* Left: Back button and project info */}
