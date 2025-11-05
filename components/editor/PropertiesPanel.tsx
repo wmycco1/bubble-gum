@@ -1,17 +1,19 @@
 'use client';
 
 // ═══════════════════════════════════════════════════════════════
-// BUBBLE GUM - PROPERTIES PANEL (UPDATED FOR NEW TYPES)
+// BUBBLE GUM - PROPERTIES PANEL (FIXED CONTROLLED INPUTS)
 // ═══════════════════════════════════════════════════════════════
-// Version: 2.1.0 - Enhanced debug logging
+// Version: 3.0.0 - LOCAL STATE FIX for controlled inputs
 // Changes:
+// - ✅ FIXED: Controlled input lag with async Zustand store updates
+// - ✅ FIXED: Input fields now editable (were showing only first char)
+// - ✅ Local state with debounced updates (300ms) to store
+// - ✅ Immediate UI feedback, batch store updates for performance
 // - Accepts CanvasComponent instead of PageComponent
-// - Handles both OLD and NEW component types
-// - Uses adapter for backward compatibility
 // - Enhanced debug logging with useEffect
 // ═══════════════════════════════════════════════════════════════
 
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
 
 interface PropertiesPanelProps {
@@ -20,6 +22,56 @@ interface PropertiesPanelProps {
 }
 
 export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
+  // ═══════════════════════════════════════════════════════════════
+  // LOCAL STATE FIX: Prevents controlled input lag with async store
+  // ═══════════════════════════════════════════════════════════════
+  // Problem: Controlled inputs (value={}) with async Zustand updates
+  //          cause React to reset input value before store update completes
+  // Solution: Local state for immediate UI update + debounced store update
+  // ═══════════════════════════════════════════════════════════════
+
+  // Local state mirrors component.props for immediate input feedback
+  const [localProps, setLocalProps] = useState<Record<string, unknown>>(component?.props || {});
+
+  // Debounce timer reference
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync local state when component changes (selection or external update)
+  useEffect(() => {
+    if (component) {
+      setLocalProps(component.props);
+      console.log('📝 PropertiesPanel SYNC:', {
+        componentId: component.id,
+        componentType: component.type,
+        propsKeys: Object.keys(component.props),
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }, [component?.id, component?.props]); // Only sync on component change, not every render
+
+  // Debounced update to store (300ms delay)
+  const debouncedUpdate = useCallback((key: string, value: unknown) => {
+    // Clear existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Set new timer
+    debounceTimerRef.current = setTimeout(() => {
+      console.log('💾 Debounced store update:', { key, value });
+      onUpdate({ [key]: value });
+    }, 300);
+  }, [onUpdate]);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
   // Debug logging with useEffect to track changes
   useEffect(() => {
     console.log('📝 PropertiesPanel UPDATE:', {
@@ -45,8 +97,13 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
     );
   }
 
+  // Handle input change: Update local state immediately + debounce store update
   const handleChange = (key: string, value: unknown) => {
-    onUpdate({ [key]: value });
+    // 1. Update local state immediately (instant UI feedback)
+    setLocalProps((prev) => ({ ...prev, [key]: value }));
+
+    // 2. Debounce store update (reduce re-renders, batch changes)
+    debouncedUpdate(key, value);
   };
 
   /**
@@ -62,7 +119,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Title</label>
               <input
                 type="text"
-                value={(component.props.text as string) || ''}
+                value={(localProps.text as string) || ''}
                 onChange={(e) => handleChange('text', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="Welcome to Your Website"
@@ -71,7 +128,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Subtitle</label>
               <textarea
-                value={(component.props.subtitle as string) || ''}
+                value={(localProps.subtitle as string) || ''}
                 onChange={(e) => handleChange('subtitle', e.target.value)}
                 rows={3}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
@@ -82,7 +139,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">CTA Text</label>
               <input
                 type="text"
-                value={(component.props.ctaText as string) || ''}
+                value={(localProps.ctaText as string) || ''}
                 onChange={(e) => handleChange('ctaText', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="Get Started"
@@ -94,7 +151,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               </label>
               <input
                 type="text"
-                value={(component.props.ctaLink as string) || ''}
+                value={(localProps.ctaLink as string) || ''}
                 onChange={(e) => handleChange('ctaLink', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="#"
@@ -111,7 +168,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Content</label>
               <textarea
-                value={(component.props.text as string) || ''}
+                value={(localProps.text as string) || ''}
                 onChange={(e) => handleChange('text', e.target.value)}
                 rows={5}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
@@ -121,7 +178,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
               <select
-                value={(component.props.variant as string) || 'paragraph'}
+                value={(localProps.variant as string) || 'paragraph'}
                 onChange={(e) => handleChange('variant', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -142,7 +199,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Image URL</label>
               <input
                 type="text"
-                value={(component.props.src as string) || ''}
+                value={(localProps.src as string) || ''}
                 onChange={(e) => handleChange('src', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="https://..."
@@ -152,7 +209,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Alt Text</label>
               <input
                 type="text"
-                value={(component.props.alt as string) || ''}
+                value={(localProps.alt as string) || ''}
                 onChange={(e) => handleChange('alt', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="Describe the image"
@@ -169,7 +226,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Button Text</label>
               <input
                 type="text"
-                value={(component.props.text as string) || ''}
+                value={(localProps.text as string) || ''}
                 onChange={(e) => handleChange('text', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="Click me"
@@ -179,7 +236,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Link</label>
               <input
                 type="text"
-                value={(component.props.href as string) || ''}
+                value={(localProps.href as string) || ''}
                 onChange={(e) => handleChange('href', e.target.value)}
                 placeholder="#"
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
@@ -188,7 +245,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
               <select
-                value={(component.props.variant as string) || 'primary'}
+                value={(localProps.variant as string) || 'primary'}
                 onChange={(e) => handleChange('variant', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -208,7 +265,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Placeholder</label>
               <input
                 type="text"
-                value={(component.props.placeholder as string) || ''}
+                value={(localProps.placeholder as string) || ''}
                 onChange={(e) => handleChange('placeholder', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="Enter text..."
@@ -217,7 +274,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Type</label>
               <select
-                value={(component.props.type as string) || 'text'}
+                value={(localProps.type as string) || 'text'}
                 onChange={(e) => handleChange('type', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -240,7 +297,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               </label>
               <input
                 type="text"
-                value={(component.props.submitText as string) || ''}
+                value={(localProps.submitText as string) || ''}
                 onChange={(e) => handleChange('submitText', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="Submit"
@@ -269,7 +326,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Max Width</label>
               <select
-                value={(component.props.maxWidth as string) || '100%'}
+                value={(localProps.maxWidth as string) || '100%'}
                 onChange={(e) => handleChange('maxWidth', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -283,7 +340,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Padding</label>
               <select
-                value={(component.props.padding as string) || '1rem'}
+                value={(localProps.padding as string) || '1rem'}
                 onChange={(e) => handleChange('padding', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -298,7 +355,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Alignment</label>
               <select
-                value={(component.props.alignment as string) || 'left'}
+                value={(localProps.alignment as string) || 'left'}
                 onChange={(e) => handleChange('alignment', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -312,7 +369,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Background Color</label>
               <input
                 type="text"
-                value={(component.props.backgroundColor as string) || ''}
+                value={(localProps.backgroundColor as string) || ''}
                 onChange={(e) => handleChange('backgroundColor', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="#ffffff or transparent"
@@ -335,7 +392,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Columns</label>
               <select
-                value={(component.props.columns as number) || 3}
+                value={(localProps.columns as number) || 3}
                 onChange={(e) => handleChange('columns', parseInt(e.target.value))}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -349,7 +406,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Gap</label>
               <select
-                value={(component.props.gap as string) || '1rem'}
+                value={(localProps.gap as string) || '1rem'}
                 onChange={(e) => handleChange('gap', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -364,7 +421,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Align Items</label>
               <select
-                value={(component.props.alignItems as string) || 'start'}
+                value={(localProps.alignItems as string) || 'start'}
                 onChange={(e) => handleChange('alignItems', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -392,7 +449,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Title</label>
               <input
                 type="text"
-                value={(component.props.title as string) || ''}
+                value={(localProps.title as string) || ''}
                 onChange={(e) => handleChange('title', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="Card title"
@@ -402,7 +459,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Description</label>
               <textarea
-                value={(component.props.description as string) || ''}
+                value={(localProps.description as string) || ''}
                 onChange={(e) => handleChange('description', e.target.value)}
                 rows={3}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
@@ -414,7 +471,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Image URL</label>
               <input
                 type="text"
-                value={(component.props.image as string) || ''}
+                value={(localProps.image as string) || ''}
                 onChange={(e) => handleChange('image', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="https://..."
@@ -425,7 +482,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Link (Optional)</label>
               <input
                 type="text"
-                value={(component.props.href as string) || ''}
+                value={(localProps.href as string) || ''}
                 onChange={(e) => handleChange('href', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
                 placeholder="#"
@@ -435,7 +492,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
               <select
-                value={(component.props.variant as string) || 'default'}
+                value={(localProps.variant as string) || 'default'}
                 onChange={(e) => handleChange('variant', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
