@@ -83,9 +83,28 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
     if (dropData?.accepts && dropData.accepts.includes(draggedType)) {
       const parentId = dropData.parentId;
       const index = dropData.index ?? 0;
+      const columnIndex = dropData.columnIndex;
 
-      console.log('➕ Adding component to parent:', { draggedType, parentId, index });
+      console.log('➕ Adding component to parent:', { draggedType, parentId, index, columnIndex });
+
+      // Add the component
       addComponent(draggedType, parentId, index);
+
+      // If dropped into a Grid column, update the newly added component with columnIndex
+      if (columnIndex !== undefined) {
+        // Get the last added component (the one we just added)
+        const state = useCanvasStore.getState();
+        const parent = state.components.find((c) => c.id === parentId);
+        if (parent && parent.children) {
+          const newComponent = parent.children[parent.children.length - 1];
+          if (newComponent) {
+            const updateComponent = state.updateComponent;
+            updateComponent(newComponent.id, {
+              props: { ...newComponent.props, columnIndex },
+            });
+          }
+        }
+      }
     } else if (droppedOn === 'canvas') {
       // Dropped on main canvas
       console.log('➕ Adding component to canvas');

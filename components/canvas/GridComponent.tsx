@@ -1,8 +1,12 @@
 // ═══════════════════════════════════════════════════════════════
-// GRID COMPONENT
+// GRID COMPONENT (ADVANCED)
 // ═══════════════════════════════════════════════════════════════
-// NEW system: Responsive grid layout with children support
-// Features: 3-column grid (default), responsive
+// Version: 2.0.0 - Advanced column management
+// Features:
+// - Per-column drop zones
+// - Customizable column count (1-6)
+// - Custom column widths (columnWidths array)
+// - Drag components to specific columns
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
@@ -15,46 +19,109 @@ interface GridComponentProps {
   component: CanvasComponent;
 }
 
-export function GridComponent({ component }: GridComponentProps) {
-  const { style, children } = component;
+/**
+ * Grid Column Drop Zone
+ * Each column is a separate droppable zone
+ */
+function GridColumn({
+  gridId,
+  columnIndex,
+  columnChildren,
+  columnWidth,
+}: {
+  gridId: string;
+  columnIndex: number;
+  columnChildren: CanvasComponent[];
+  columnWidth?: string;
+}) {
   const selectedComponentId = useCanvasStore((state) => state.selectedComponentId);
 
-  // Make grid droppable
   const { setNodeRef, isOver } = useDroppable({
-    id: `grid-${component.id}`,
+    id: `grid-${gridId}-col-${columnIndex}`,
     data: {
-      parentId: component.id,
+      parentId: gridId,
+      columnIndex,
       accepts: ['Text', 'Heading', 'Button', 'Image', 'Link', 'Icon', 'Card', 'Form', 'Input', 'Textarea', 'Checkbox', 'Submit'],
-      index: children?.length || 0,
     },
   });
 
-  // Remove Tailwind spacing classes if custom spacing is set
-  const baseClassName = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 border-2 border-dashed rounded-lg min-h-[200px]';
-  const stateClassName = isOver
-    ? 'border-blue-500 bg-blue-50'
-    : 'border-slate-300 bg-slate-50';
-
-  const wrapperClassName = mergeClassNameWithSpacing(
-    `${baseClassName} ${stateClassName} transition-colors`,
-    style
-  );
+  const isEmpty = columnChildren.length === 0;
 
   return (
-    <div ref={setNodeRef} className={wrapperClassName} style={style as React.CSSProperties}>
-      {children && children.length > 0 ? (
-        children.map((child) => (
+    <div
+      ref={setNodeRef}
+      className={`flex flex-col gap-2 p-3 rounded border-2 border-dashed min-h-[150px] transition-colors ${
+        isOver
+          ? 'border-blue-500 bg-blue-50'
+          : 'border-slate-200 bg-white'
+      }`}
+      style={{ width: columnWidth }}
+    >
+      {isEmpty ? (
+        <div className="flex items-center justify-center h-full text-xs text-slate-400">
+          {isOver ? 'Drop here' : `Column ${columnIndex + 1}`}
+        </div>
+      ) : (
+        columnChildren.map((child) => (
           <RenderComponent
             key={child.id}
             component={child}
             isSelected={child.id === selectedComponentId}
           />
         ))
-      ) : (
-        <div className="col-span-full flex items-center justify-center text-sm text-slate-400 py-8">
-          {isOver ? 'Drop here for grid layout' : 'Drag components here for grid layout'}
-        </div>
       )}
+    </div>
+  );
+}
+
+export function GridComponent({ component }: GridComponentProps) {
+  const { props, style, children } = component;
+
+  // Get column configuration from props
+  const columns = (props.columns as number) || 3;
+  const columnWidths = (props.columnWidths as string[]) || [];
+  const gap = (props.gap as string) || '1.5rem';
+
+  // Organize children by column
+  // If children have columnIndex, use it; otherwise distribute evenly
+  const childrenByColumn: CanvasComponent[][] = Array.from({ length: columns }, () => []);
+
+  children?.forEach((child, index) => {
+    const columnIndex = (child.props?.columnIndex as number | undefined) ?? (index % columns);
+    if (columnIndex >= 0 && columnIndex < columns) {
+      childrenByColumn[columnIndex]?.push(child);
+    }
+  });
+
+  // Generate grid template columns based on columnWidths or equal distribution
+  const gridTemplateColumns =
+    columnWidths.length > 0
+      ? columnWidths.slice(0, columns).join(' ')
+      : `repeat(${columns}, 1fr)`;
+
+  // Remove Tailwind spacing classes if custom spacing is set
+  const baseClassName = 'grid p-6 border-2 border-solid rounded-lg min-h-[200px] bg-slate-50';
+
+  const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+
+  return (
+    <div
+      className={wrapperClassName}
+      style={{
+        ...(style as React.CSSProperties),
+        gridTemplateColumns,
+        gap,
+      }}
+    >
+      {Array.from({ length: columns }).map((_, columnIndex) => (
+        <GridColumn
+          key={columnIndex}
+          gridId={component.id}
+          columnIndex={columnIndex}
+          columnChildren={childrenByColumn[columnIndex] || []}
+          columnWidth={columnWidths[columnIndex]}
+        />
+      ))}
     </div>
   );
 }

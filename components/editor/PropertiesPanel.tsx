@@ -403,33 +403,71 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       // Grid
       case 'Grid':
       case 'GridComponent':
+        const columns = (localProps.columns as number) || 3;
+        const columnWidths = (localProps.columnWidths as string[]) || Array.from({ length: columns }, () => '1fr');
+
         return (
           <>
             <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
-              <p className="text-xs text-blue-900 font-medium mb-1">🔲 Grid Component</p>
+              <p className="text-xs text-blue-900 font-medium mb-1">🔲 Grid Component (Advanced)</p>
               <p className="text-xs text-blue-700">
-                Responsive grid layout • Children: {component.children?.length || 0}
+                Per-column drop zones • {component.children?.length || 0} items
               </p>
             </div>
 
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Columns</label>
               <select
-                value={(localProps.columns as number) || 3}
-                onChange={(e) => handleChange('columns', parseInt(e.target.value))}
+                value={columns}
+                onChange={(e) => {
+                  const newColumns = parseInt(e.target.value);
+                  const newWidths = Array.from({ length: newColumns }, () => '1fr');
+                  handleChange('columns', newColumns);
+                  handleChange('columnWidths', newWidths);
+                }}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
                 <option value="1">1 Column</option>
                 <option value="2">2 Columns</option>
                 <option value="3">3 Columns</option>
                 <option value="4">4 Columns</option>
+                <option value="5">5 Columns</option>
+                <option value="6">6 Columns</option>
               </select>
+            </div>
+
+            <div className="rounded-md bg-slate-50 p-3 border border-slate-200">
+              <label className="mb-2 block text-xs font-medium text-slate-700">Column Widths</label>
+              <p className="text-xs text-slate-600 mb-3">
+                Drag components to specific columns. Adjust widths using CSS units (1fr, 200px, auto, etc.)
+              </p>
+              <div className="space-y-2">
+                {Array.from({ length: columns }).map((_, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <span className="text-xs text-slate-600 w-12">Col {index + 1}:</span>
+                    <input
+                      type="text"
+                      value={columnWidths[index] || '1fr'}
+                      onChange={(e) => {
+                        const newWidths = [...columnWidths];
+                        newWidths[index] = e.target.value;
+                        handleChange('columnWidths', newWidths);
+                      }}
+                      placeholder="1fr"
+                      className="flex-1 rounded border border-slate-300 px-2 py-1 text-xs focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-slate-500 mt-2">
+                Examples: 1fr (equal), 2fr (double), 200px (fixed), auto (content)
+              </p>
             </div>
 
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Gap</label>
               <select
-                value={(localProps.gap as string) || '1rem'}
+                value={(localProps.gap as string) || '1.5rem'}
                 onChange={(e) => handleChange('gap', e.target.value)}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
@@ -438,20 +476,6 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <option value="1rem">Medium (1rem)</option>
                 <option value="1.5rem">Large (1.5rem)</option>
                 <option value="2rem">Extra Large (2rem)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Align Items</label>
-              <select
-                value={(localProps.alignItems as string) || 'start'}
-                onChange={(e) => handleChange('alignItems', e.target.value)}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
-              >
-                <option value="start">Start</option>
-                <option value="center">Center</option>
-                <option value="end">End</option>
-                <option value="stretch">Stretch</option>
               </select>
             </div>
           </>
