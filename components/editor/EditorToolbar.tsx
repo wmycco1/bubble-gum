@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
 import { SaveIndicator } from '@/components/editor/SaveIndicator';
-import { KeyboardShortcutsHelp, KeyboardShortcutsTrigger } from '@/components/editor/KeyboardShortcutsHelp';
+import { KeyboardShortcutsHelp } from '@/components/editor/KeyboardShortcutsHelp';
 import type { SaveStatus } from '@/lib/hooks/useAutoSave';
 
 interface EditorToolbarProps {
@@ -169,11 +169,6 @@ export function EditorToolbar({
 
         <div className="mx-2 h-6 w-px bg-slate-200" />
 
-        {/* Keyboard Shortcuts Button */}
-        <KeyboardShortcutsTrigger onClick={() => setShowShortcutsHelp(true)} />
-
-        <div className="mx-2 h-6 w-px bg-slate-200" />
-
         <Button
           variant="outline"
           size="sm"
@@ -181,7 +176,7 @@ export function EditorToolbar({
           disabled={isSaving}
           aria-label="Save now (Ctrl+S)"
         >
-          {isSaving ? '💾 Saving...' : '💾 Save Now'}
+          💾 Save Now
         </Button>
 
         <Button

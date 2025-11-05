@@ -532,16 +532,26 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       {/* Properties Form */}
       <div className="space-y-4">{renderProperties()}</div>
 
-      {/* Tips */}
+      {/* Keyboard Shortcuts Button */}
       <div className="mt-6 pt-6 border-t border-slate-200">
-        <p className="text-xs text-slate-600 mb-2">
-          💡 <span className="font-medium">Keyboard Shortcuts:</span>
-        </p>
-        <div className="text-xs text-slate-600 space-y-1 ml-4">
-          <div>• <kbd className="px-1 py-0.5 bg-slate-100 rounded">Ctrl+Z</kbd> Undo</div>
-          <div>• <kbd className="px-1 py-0.5 bg-slate-100 rounded">Ctrl+Y</kbd> Redo</div>
-          <div>• <kbd className="px-1 py-0.5 bg-slate-100 rounded">Delete</kbd> Remove component</div>
-        </div>
+        <button
+          onClick={() => {
+            // Trigger keyboard shortcuts modal via existing Shift+? handler
+            const event = new KeyboardEvent('keydown', {
+              key: '?',
+              shiftKey: true,
+              bubbles: true,
+            });
+            window.dispatchEvent(event);
+          }}
+          className="w-full flex items-center justify-between rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow-sm active:scale-[0.98]"
+        >
+          <span className="flex items-center gap-2">
+            <span>⌨️</span>
+            <span className="font-medium">View All Keyboard Shortcuts</span>
+          </span>
+          <kbd className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-600">?</kbd>
+        </button>
       </div>
     </div>
   );
