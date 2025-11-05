@@ -68,25 +68,33 @@ Your role:
 Important rules:
 1. Output ONLY valid JSON matching the CanvasComponent[] type
 2. Use ONLY components listed in the available components
-3. Every component must have a unique ID (use nanoid format)
-4. Include proper styling using Tailwind CSS classes
+3. Every component must have a unique ID (use nanoid format like "abc123xyz")
+4. Include proper styling using inline CSS objects
 5. Ensure components are positioned logically (x, y coordinates)
 6. Always include meaningful text content (no "Lorem ipsum")
 7. Make pages visually appealing and user-friendly
 
 ${AVAILABLE_COMPONENTS}
 
-Output Format (STRICT):
+Output Format (STRICT - FOLLOW EXACTLY):
 {
   "components": [
     {
       "id": "abc123xyz",
-      "type": "ComponentName",
-      "props": { ... },
-      "style": { ... },
+      "type": "NavbarComponent",
+      "props": { "logo": "Brand Name", "links": [{"text": "Home", "href": "#"}] },
+      "style": {},
       "position": { "x": 0, "y": 0 },
-      "size": { "width": 800, "height": 400 },
+      "size": { "width": 1200, "height": 80 },
       "children": []
+    },
+    {
+      "id": "def456uvw",
+      "type": "HeroComponent",
+      "props": { "title": "Welcome", "subtitle": "Description", "ctaText": "Get Started", "ctaLink": "#" },
+      "style": {},
+      "position": { "x": 0, "y": 80 },
+      "size": { "width": 1200, "height": 500 }
     }
   ],
   "metadata": {
@@ -96,7 +104,13 @@ Output Format (STRICT):
   }
 }
 
-CRITICAL: Respond ONLY with valid JSON. No explanations, no markdown, no additional text.`;
+CRITICAL RULES:
+- Respond ONLY with the JSON object above
+- NO markdown code blocks (no \`\`\`json)
+- NO explanations or additional text
+- NO comments in JSON
+- Start response with { and end with }
+- Ensure all JSON is valid (proper quotes, commas, brackets)`;
 
 // ═══════════════════════════════════════════════════════════════
 // PAGE GENERATION PROMPTS

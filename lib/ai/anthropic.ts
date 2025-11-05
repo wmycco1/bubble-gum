@@ -162,17 +162,88 @@ async function withRetry<T>(
 // ═══════════════════════════════════════════════════════════════
 
 function extractJSON(text: string): unknown {
-  // Try to find JSON in the response (might be wrapped in markdown)
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  console.log('[AI Service] Raw AI response length:', text.length);
+  console.log('[AI Service] First 500 chars:', text.substring(0, 500));
 
-  if (!jsonMatch) {
-    throw new AIValidationError('AI response does not contain valid JSON');
+  // Remove markdown code blocks if present
+  let cleanText = text.trim();
+
+  // Remove various markdown patterns
+  cleanText = cleanText.replace(/^```json?\s*/i, '');
+  cleanText = cleanText.replace(/^```\s*/i, '');
+  cleanText = cleanText.replace(/```\s*$/i, '');
+
+  // Remove any leading text before the JSON
+  const jsonStartMatch = cleanText.match(/^\s*\{/);
+  if (!jsonStartMatch) {
+    // Try to find where JSON starts
+    const bracketIndex = cleanText.indexOf('{');
+    if (bracketIndex > 0) {
+      console.log('[AI Service] Found JSON at position:', bracketIndex);
+      cleanText = cleanText.substring(bracketIndex);
+    }
   }
 
+  cleanText = cleanText.trim();
+
+  // Try to find JSON object in the response (greedy match to get the full object)
+  const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
+
+  if (!jsonMatch) {
+    console.error('[AI Service] No JSON found in response');
+    console.error('[AI Service] Full cleaned text:', cleanText);
+    throw new AIValidationError('AI response does not contain valid JSON. Please try again.');
+  }
+
+  let jsonString = jsonMatch[0];
+
+  // Try to fix common JSON issues
   try {
-    return JSON.parse(jsonMatch[0]);
-  } catch (error) {
-    throw new AIValidationError('Failed to parse AI response as JSON', error);
+    // First attempt: parse as-is
+    const parsed = JSON.parse(jsonString);
+    console.log('[AI Service] Successfully parsed JSON:', {
+      hasComponents: 'components' in parsed,
+      componentsCount: Array.isArray(parsed.components) ? parsed.components.length : 0,
+      hasMetadata: 'metadata' in parsed,
+    });
+    return parsed;
+  } catch (firstError) {
+    console.warn('[AI Service] First parse attempt failed, trying fixes...');
+
+    // Try fixing common issues
+    // 1. Remove trailing commas
+    jsonString = jsonString.replace(/,(\s*[}\]])/g, '$1');
+
+    // 2. Remove comments (// or /* */)
+    jsonString = jsonString.replace(/\/\/.*$/gm, '');
+    jsonString = jsonString.replace(/\/\*[\s\S]*?\*\//g, '');
+
+    try {
+      const parsed = JSON.parse(jsonString);
+      console.log('[AI Service] Successfully parsed JSON after fixes');
+      return parsed;
+    } catch (secondError) {
+      console.error('[AI Service] JSON parse error (after fixes):', secondError);
+      console.error('[AI Service] Attempted to parse:', jsonString.substring(0, 500));
+
+      // Last resort: try to extract just the components array
+      const componentsMatch = jsonString.match(/"components"\s*:\s*\[[\s\S]*?\]/);
+      if (componentsMatch) {
+        try {
+          const componentsOnly = `{${componentsMatch[0]}}`;
+          const parsed = JSON.parse(componentsOnly);
+          console.log('[AI Service] Extracted components array as fallback');
+          return parsed;
+        } catch {
+          // Give up
+        }
+      }
+
+      throw new AIValidationError(
+        'Failed to parse AI response as valid JSON. The AI may have returned malformed data. Please try again.',
+        secondError
+      );
+    }
   }
 }
 
