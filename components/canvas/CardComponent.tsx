@@ -67,11 +67,11 @@ export function CardComponent({ component }: CardComponentProps) {
       {/* Image (if provided) */}
       {cardProps.image && (
         <div className="relative w-full h-48 bg-slate-100">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={cardProps.image}
             alt={cardProps.title || 'Card image'}
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
       )}
