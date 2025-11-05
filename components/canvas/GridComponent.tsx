@@ -6,6 +6,8 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
+// @ts-ignore - Will be used when spacing controls are applied
+import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { RenderComponent } from '@/components/editor/RenderComponent';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 

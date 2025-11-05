@@ -88,10 +88,39 @@ export function ImageLibraryModal({
 
         {/* Content */}
         <div className="p-6 space-y-6">
+          {/* Upload from Local Disk */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Upload from Computer
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      const base64 = reader.result as string;
+                      setImageUrl(base64);
+                      setPreviewUrl(base64);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm file:mr-4 file:py-1 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-slate-900 file:text-white hover:file:bg-slate-700"
+              />
+            </div>
+            <p className="mt-1 text-xs text-slate-500">
+              Select JPG, PNG, GIF, WebP from your computer
+            </p>
+          </div>
+
           {/* URL Input Section */}
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">
-              Image URL
+              Or Enter Image URL
             </label>
             <div className="flex gap-2">
               <input

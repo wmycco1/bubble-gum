@@ -7,6 +7,8 @@
 
 import type { CanvasComponent } from '@/lib/editor/types';
 import { Button } from '@/components/ui/button';
+// @ts-ignore - Will be used when spacing controls are applied
+import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface ButtonComponentProps {
   component: CanvasComponent;
@@ -31,11 +33,13 @@ export function ButtonComponent({ component }: ButtonComponentProps) {
     }
   };
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-8 text-center', style);
+
   return (
-    <div className="px-6 py-8 text-center">
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
       <Button
         variant={variantMap[variant as keyof typeof variantMap] || 'default'}
-        style={style as React.CSSProperties}
         onClick={handleClick}
       >
         {text}

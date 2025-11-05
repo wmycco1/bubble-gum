@@ -36,8 +36,7 @@ export function BreakpointTabs() {
               )}
               title={`${config.label} (${config.min}px+)`}
             >
-              <span className="text-base">{config.icon}</span>
-              <span className="hidden sm:inline">{config.label}</span>
+              <span>{config.label}</span>
             </button>
           );
         })}

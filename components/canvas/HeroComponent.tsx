@@ -5,6 +5,8 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
+// @ts-ignore - Will be used when spacing controls are applied
+import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface HeroComponentProps {
   component: CanvasComponent;
