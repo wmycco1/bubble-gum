@@ -3,13 +3,15 @@
 // ═══════════════════════════════════════════════════════════════
 // BUBBLE GUM - PROPERTIES PANEL (UPDATED FOR NEW TYPES)
 // ═══════════════════════════════════════════════════════════════
-// Version: 2.0.0 - Now works with NEW CanvasComponent types
+// Version: 2.1.0 - Enhanced debug logging
 // Changes:
 // - Accepts CanvasComponent instead of PageComponent
 // - Handles both OLD and NEW component types
 // - Uses adapter for backward compatibility
+// - Enhanced debug logging with useEffect
 // ═══════════════════════════════════════════════════════════════
 
+import { useEffect } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
 
 interface PropertiesPanelProps {
@@ -18,12 +20,16 @@ interface PropertiesPanelProps {
 }
 
 export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
-  // Debug logging
-  console.log('PropertiesPanel received:', {
-    hasComponent: !!component,
-    componentType: component?.type,
-    componentProps: component?.props,
-  });
+  // Debug logging with useEffect to track changes
+  useEffect(() => {
+    console.log('📝 PropertiesPanel UPDATE:', {
+      hasComponent: !!component,
+      componentId: component?.id,
+      componentType: component?.type,
+      componentPropsKeys: component ? Object.keys(component.props) : [],
+      timestamp: new Date().toISOString(),
+    });
+  }, [component]);
 
   if (!component) {
     return (

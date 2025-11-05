@@ -14,6 +14,7 @@ import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { cn } from '@/lib/utils/cn';
 import type { CanvasComponent } from '@/lib/editor/types';
+import toast from 'react-hot-toast';
 
 // Import NEW visual components
 import { SectionComponent } from '@/components/canvas/SectionComponent';
@@ -32,7 +33,8 @@ interface RenderComponentProps {
 }
 
 export function RenderComponent({ component, isSelected }: RenderComponentProps) {
-  const { selectComponent, setHoveredComponent, hoveredComponentId } = useCanvasStore();
+  const { selectComponent, setHoveredComponent, hoveredComponentId, deleteComponent } =
+    useCanvasStore();
 
   const isHovered = hoveredComponentId === component.id;
   const canHaveChildren = ['Container', 'Section', 'Grid', 'Card', 'Form'].includes(
@@ -66,11 +68,36 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
     transform: transform
       ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
       : undefined,
+    zIndex: isSelected ? 10 : 1, // Selected components on top
+    pointerEvents: 'auto', // CRITICAL: Ensure clickable
   };
 
   const handleClick = (e: React.MouseEvent) => {
+    console.log('🖱️ Component clicked:', {
+      id: component.id,
+      type: component.type,
+      currentSelectedId: useCanvasStore.getState().selectedComponentId,
+      timestamp: new Date().toISOString(),
+    });
+
     e.stopPropagation();
     selectComponent(component.id);
+
+    // Visual feedback
+    toast.success(`Selected ${component.type}`, {
+      duration: 1500,
+      icon: '👆',
+      position: 'bottom-right',
+    });
+
+    // Verify selection happened (debug)
+    setTimeout(() => {
+      const store = useCanvasStore.getState();
+      console.log('✅ Selection updated:', {
+        selectedComponentId: store.selectedComponentId,
+        success: store.selectedComponentId === component.id,
+      });
+    }, 50);
   };
 
   const handleMouseEnter = () => {
@@ -133,16 +160,34 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
       onMouseLeave={handleMouseLeave}
       style={style}
       className={cn(
-        'relative cursor-move transition-all',
-        isSelected && 'ring-2 ring-blue-500 ring-offset-2',
-        isHovered && !isSelected && 'ring-1 ring-slate-300',
-        isOver && 'ring-2 ring-blue-400'
+        'relative cursor-pointer transition-all', // cursor-pointer instead of cursor-move
+        isSelected && 'ring-2 ring-blue-500 ring-offset-2 bg-blue-50/10',
+        isHovered && !isSelected && 'ring-1 ring-slate-300 bg-slate-50',
+        isOver && 'ring-2 ring-blue-400 bg-blue-50'
       )}
     >
-      {/* Selection Label */}
+      {/* Selection Label & Actions */}
       {isSelected && (
-        <div className="absolute -top-6 left-0 z-10 rounded bg-blue-500 px-2 py-1 text-xs font-medium text-white shadow-sm">
-          {component.type}
+        <div className="absolute -top-6 left-0 right-0 z-20 flex items-center justify-between gap-2">
+          <div className="rounded bg-blue-500 px-2 py-1 text-xs font-medium text-white shadow-sm">
+            {component.type}
+          </div>
+          <div className="flex gap-1">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteComponent(component.id);
+                toast.success(`Deleted ${component.type}`, {
+                  duration: 1500,
+                  icon: '🗑️',
+                });
+              }}
+              className="rounded bg-red-500 px-2 py-1 text-xs font-medium text-white shadow-sm hover:bg-red-600 transition-colors"
+              title="Delete component (Del)"
+            >
+              🗑️
+            </button>
+          </div>
         </div>
       )}
 

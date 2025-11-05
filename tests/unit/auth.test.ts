@@ -160,7 +160,7 @@ describe('Authentication Helpers', () => {
     });
 
     it('should return false when userId is undefined', async () => {
-      vi.mocked(auth).mockResolvedValue({ userId: undefined } as Awaited<ReturnType<typeof auth>>);
+      vi.mocked(auth).mockResolvedValue({ userId: undefined } as unknown as Awaited<ReturnType<typeof auth>>);
 
       const result = await isAuthenticated();
 
