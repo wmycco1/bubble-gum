@@ -82,6 +82,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' blob: data: https: https://*.clerk.com https://*.clerk.accounts.dev",
               "font-src 'self' data: https://fonts.gstatic.com",
               "connect-src 'self' https://*.clerk.com https://*.clerk.accounts.dev https://api.clerk.com wss://*.clerk.com wss://*.clerk.accounts.dev",
+              "worker-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",

@@ -11,7 +11,15 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
+import {
+  DndContext,
+  closestCenter,
+  type DragEndEvent,
+  useSensor,
+  useSensors,
+  MouseSensor,
+  TouchSensor,
+} from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { RenderComponent } from './RenderComponent';
 
@@ -33,6 +41,24 @@ export function Canvas({
   // Suppress unused variable warnings - these are here for API consistency
   void onSelectComponent;
   void onDeleteComponent;
+
+  // Configure sensors to allow clicks while enabling drag
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      // Require the mouse to move by 10 pixels before activating drag
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      // Press delay of 250ms for touch, with tolerance of 5px of movement
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  );
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -81,7 +107,7 @@ export function Canvas({
 
   return (
     <div className="min-h-[600px] rounded-lg border border-slate-200 bg-white shadow-sm">
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={components.map((c) => c.id)}
           strategy={verticalListSortingStrategy}
