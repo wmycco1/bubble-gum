@@ -1,16 +1,30 @@
 'use client';
 
 // ═══════════════════════════════════════════════════════════════
-// BUBBLE GUM - COMPONENT RENDERER
+// BUBBLE GUM - RENDER COMPONENT (100% NEW SYSTEM)
 // ═══════════════════════════════════════════════════════════════
-// Version: 1.0.0
-// Renders canvas components with selection and hover states
+// Version: 3.0.0 - Full migration to NEW visual components
+// Changes:
+// - Now uses visual components from components/canvas/
+// - Removed inline HTML rendering
+// - Enterprise-grade visual components with proper styling
 // ═══════════════════════════════════════════════════════════════
 
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { cn } from '@/lib/utils/cn';
 import type { CanvasComponent } from '@/lib/editor/types';
+
+// Import NEW visual components
+import { SectionComponent } from '@/components/canvas/SectionComponent';
+import { TextComponent } from '@/components/canvas/TextComponent';
+import { ImageComponent } from '@/components/canvas/ImageComponent';
+import { ButtonComponent } from '@/components/canvas/ButtonComponent';
+import { FormComponent } from '@/components/canvas/FormComponent';
+import { ContainerComponent } from '@/components/canvas/ContainerComponent';
+import { GridComponent } from '@/components/canvas/GridComponent';
+import { CardComponent } from '@/components/canvas/CardComponent';
+import { InputComponent } from '@/components/canvas/InputComponent';
 
 interface RenderComponentProps {
   component: CanvasComponent;
@@ -49,7 +63,6 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
   });
 
   const style: React.CSSProperties = {
-    ...(component.style as React.CSSProperties),
     transform: transform
       ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
       : undefined,
@@ -68,71 +81,45 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
     setHoveredComponent(null);
   };
 
-  // Render component based on type
-  const renderContent = () => {
+  // Render visual component based on type
+  const renderVisualComponent = () => {
     switch (component.type) {
-      case 'Button':
-        return (
-          <button style={style} type="button">
-            {component.props.text || 'Button'}
-          </button>
-        );
+      case 'Section':
+        return <SectionComponent component={component} />;
 
       case 'Text':
-        return <p style={style}>{component.props.text || 'Text'}</p>;
-
       case 'Heading':
-        const HeadingTag = (component.props.variant || 'h2') as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-        const HeadingElement = HeadingTag;
-        return <HeadingElement style={style}>{component.props.text || 'Heading'}</HeadingElement>;
+        return <TextComponent component={component} />;
 
       case 'Image':
-        return (
-          <img
-            src={component.props.src || 'https://via.placeholder.com/400x300'}
-            alt={component.props.alt || 'Image'}
-            style={style}
-          />
-        );
+        return <ImageComponent component={component} />;
+
+      case 'Button':
+        return <ButtonComponent component={component} />;
 
       case 'Input':
-        return (
-          <input
-            type={component.props.type || 'text'}
-            placeholder={component.props.placeholder || 'Enter text...'}
-            style={style}
-          />
-        );
+        return <InputComponent component={component} />;
+
+      case 'Form':
+        return <FormComponent component={component} />;
 
       case 'Container':
-      case 'Section':
+        return <ContainerComponent component={component} />;
+
       case 'Grid':
+        return <GridComponent component={component} />;
+
       case 'Card':
-      case 'Form':
-        return (
-          <div
-            ref={setDropRef}
-            style={style}
-            className={cn(isOver && 'bg-blue-50 ring-2 ring-blue-400')}
-          >
-            {component.children && component.children.length > 0 ? (
-              component.children.map((child) => (
-                <RenderComponent
-                  key={child.id}
-                  component={child}
-                  isSelected={child.id === useCanvasStore.getState().selectedComponentId}
-                />
-              ))
-            ) : (
-              <div className="flex min-h-[100px] items-center justify-center text-sm text-slate-400">
-                Drop components here
-              </div>
-            )}
-          </div>
-        );
+        return <CardComponent component={component} />;
 
       default:
-        return <div style={style}>Unknown Component</div>;
+        return (
+          <div className="p-6 bg-yellow-50 border border-yellow-200 rounded">
+            <p className="text-sm text-yellow-900">
+              ⚠️ Unknown component type: {component.type}
+            </p>
+          </div>
+        );
     }
   };
 
@@ -144,20 +131,25 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      style={style}
       className={cn(
         'relative cursor-move transition-all',
         isSelected && 'ring-2 ring-blue-500 ring-offset-2',
-        isHovered && !isSelected && 'ring-1 ring-slate-300'
+        isHovered && !isSelected && 'ring-1 ring-slate-300',
+        isOver && 'ring-2 ring-blue-400'
       )}
     >
       {/* Selection Label */}
       {isSelected && (
-        <div className="absolute -top-6 left-0 rounded bg-blue-500 px-2 py-1 text-xs font-medium text-white">
+        <div className="absolute -top-6 left-0 z-10 rounded bg-blue-500 px-2 py-1 text-xs font-medium text-white shadow-sm">
           {component.type}
         </div>
       )}
 
-      {renderContent()}
+      {/* Visual Component */}
+      <div ref={canHaveChildren ? setDropRef : undefined}>
+        {renderVisualComponent()}
+      </div>
     </div>
   );
 }

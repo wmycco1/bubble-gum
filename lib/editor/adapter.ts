@@ -1,12 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
-// BUBBLE GUM - TYPE ADAPTER
+// BUBBLE GUM - DB ADAPTER
 // ═══════════════════════════════════════════════════════════════
-// Version: 1.0.0
-// Bridge between OLD system (types/components.ts) and NEW system (lib/editor/types.ts)
-// Allows gradual migration without breaking existing components
+// Version: 2.0.0 - Simplified for DB compatibility only
+// Purpose: Convert between canvas-store format and DB JSON format
+// Note: Only needed for database backwards compatibility
 // ═══════════════════════════════════════════════════════════════
 
-import type { PageComponent, ComponentType as OldComponentType } from '@/types/components';
 import type {
   CanvasComponent,
   ComponentType as NewComponentType,
@@ -15,142 +14,141 @@ import type {
 } from './types';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Database Types (simplified, for compatibility)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+type DbComponentType = 'hero' | 'text' | 'image' | 'button' | 'form';
+
+interface DbComponent {
+  id: string;
+  type: DbComponentType;
+  props: Record<string, unknown>;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Type Mappings
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 /**
- * Maps OLD component types to NEW component types
- * OLD: lowercase ('hero', 'text', etc.)
- * NEW: PascalCase ('Button', 'Text', etc.)
+ * Maps NEW component types to DB types (for backwards compatibility)
  */
-const typeMapping: Record<OldComponentType, NewComponentType> = {
-  hero: 'Section', // Hero → Section with special styling
+const newToDbTypeMap: Partial<Record<NewComponentType, DbComponentType>> = {
+  Section: 'hero',
+  Text: 'text',
+  Heading: 'text',
+  Image: 'image',
+  Button: 'button',
+  Form: 'form',
+  // Note: Container, Grid, Card, Input don't have DB equivalents yet
+  // They will be stored as 'text' placeholder until DB schema is updated
+};
+
+/**
+ * Maps DB types to NEW component types
+ */
+const dbToNewTypeMap: Record<DbComponentType, NewComponentType> = {
+  hero: 'Section',
   text: 'Text',
   image: 'Image',
   button: 'Button',
   form: 'Form',
 };
 
-/**
- * Reverse mapping for converting NEW → OLD
- */
-const reverseTypeMapping: Partial<Record<NewComponentType, OldComponentType>> = {
-  Section: 'hero', // Section can be hero if has special props
-  Text: 'text',
-  Image: 'image',
-  Button: 'button',
-  Form: 'form',
-};
-
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Converters: OLD → NEW
+// Converters: DB → Store (Loading)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 /**
- * Converts OLD PageComponent to NEW CanvasComponent
- * This allows OLD components to work with NEW canvas-store
+ * Converts DB component to Store component
+ * Used when loading from database
  */
-export function convertOldToNew(oldComponent: PageComponent): CanvasComponent {
-  const newType = typeMapping[oldComponent.type] || 'Text';
+export function convertOldToNew(dbComponent: DbComponent): CanvasComponent {
+  const newType = dbToNewTypeMap[dbComponent.type] || 'Text';
 
-  // Convert props based on component type
-  const newProps: ComponentProps = convertPropsOldToNew(oldComponent);
+  // Convert props based on type
+  const newProps: ComponentProps = convertPropsDbToStore(dbComponent);
 
-  // Generate default style based on component type
-  const style: ComponentStyle = generateDefaultStyle(newType, oldComponent);
+  // Generate default style
+  const style: ComponentStyle = generateDefaultStyle(newType, dbComponent);
 
   return {
-    id: oldComponent.id,
+    id: dbComponent.id,
     type: newType,
     props: newProps,
     style,
-    children: [], // OLD system doesn't have children
+    children: [], // DB format doesn't support children yet
   };
 }
 
 /**
- * Converts props from OLD format to NEW format
+ * Converts props from DB format to Store format
  */
-function convertPropsOldToNew(oldComponent: PageComponent): ComponentProps {
-  switch (oldComponent.type) {
+function convertPropsDbToStore(dbComponent: DbComponent): ComponentProps {
+  const props = dbComponent.props;
+
+  switch (dbComponent.type) {
     case 'hero':
       return {
-        text: oldComponent.props.title || '',
-        // Store subtitle and CTA in custom props
-        subtitle: oldComponent.props.subtitle,
-        ctaText: oldComponent.props.ctaText,
-        ctaLink: oldComponent.props.ctaLink,
+        text: (props.title as string) || '',
+        subtitle: props.subtitle,
+        ctaText: props.ctaText,
+        ctaLink: props.ctaLink,
       };
 
     case 'text':
       return {
-        text: oldComponent.props.content || '',
-        variant: oldComponent.props.variant,
-        align: oldComponent.props.align,
+        text: (props.content as string) || '',
+        variant: (props.variant as string) || 'paragraph',
       };
 
     case 'image':
       return {
-        src: oldComponent.props.src || '',
-        alt: oldComponent.props.alt || '',
-        width: oldComponent.props.width?.toString(),
-        height: oldComponent.props.height?.toString(),
+        src: (props.src as string) || '',
+        alt: (props.alt as string) || '',
       };
 
     case 'button':
       return {
-        text: oldComponent.props.text || '',
-        href: oldComponent.props.href,
-        variant: oldComponent.props.variant,
-        size: oldComponent.props.size,
+        text: (props.text as string) || '',
+        href: (props.href as string) || '#',
+        variant: (props.variant as string) || 'primary',
       };
 
     case 'form':
       return {
-        submitText: oldComponent.props.submitText || 'Submit',
-        fields: oldComponent.props.fields,
+        submitText: (props.submitText as string) || 'Submit',
+        fields: props.fields as any,
       };
 
     default:
-      return {};
+      return { text: 'Text' };
   }
 }
 
 /**
- * Generates default style based on component type and OLD props
+ * Generates default style based on component type
  */
-function generateDefaultStyle(
-  type: NewComponentType,
-  oldComponent: PageComponent
-): ComponentStyle {
+function generateDefaultStyle(type: NewComponentType, dbComponent: DbComponent): ComponentStyle {
   const baseStyle: ComponentStyle = {};
 
   switch (type) {
-    case 'Section': // Hero
+    case 'Section':
       return {
         ...baseStyle,
         padding: '4rem 2rem',
         minHeight: '400px',
         backgroundColor: '#f8f9fa',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        backgroundImage: oldComponent.type === 'hero' ? oldComponent.props.backgroundImage : undefined,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
       };
 
     case 'Text':
-      const variant = oldComponent.type === 'text' ? oldComponent.props.variant : 'paragraph';
+    case 'Heading':
+      const variant = dbComponent.props.variant as string;
       return {
         ...baseStyle,
         fontSize:
           variant === 'h1' ? '2.5rem' : variant === 'h2' ? '2rem' : variant === 'h3' ? '1.5rem' : '1rem',
-        fontWeight: variant !== 'paragraph' ? '700' : '400',
-        lineHeight: variant !== 'paragraph' ? '1.2' : '1.5',
-        textAlign: oldComponent.type === 'text' ? oldComponent.props.align : 'left',
+        fontWeight: variant && variant !== 'paragraph' ? '700' : '400',
+        lineHeight: variant && variant !== 'paragraph' ? '1.2' : '1.5',
       };
 
     case 'Image':
@@ -162,25 +160,15 @@ function generateDefaultStyle(
       };
 
     case 'Button':
-      const btnVariant = oldComponent.type === 'button' ? oldComponent.props.variant : 'primary';
       return {
         ...baseStyle,
         padding: '0.5rem 1rem',
-        backgroundColor: btnVariant === 'primary' ? '#000000' : btnVariant === 'secondary' ? '#6c757d' : 'transparent',
-        color: btnVariant === 'outline' ? '#000000' : '#ffffff',
-        border: btnVariant === 'outline' ? '1px solid #000000' : 'none',
         borderRadius: '0.375rem',
-        cursor: 'pointer',
-        fontSize: '0.875rem',
-        fontWeight: '500',
       };
 
     case 'Form':
       return {
         ...baseStyle,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem',
         padding: '1rem',
         minHeight: '150px',
       };
@@ -191,82 +179,78 @@ function generateDefaultStyle(
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Converters: NEW → OLD
+// Converters: Store → DB (Saving)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 /**
- * Converts NEW CanvasComponent to OLD PageComponent
- * This allows NEW components to be saved in OLD format for DB compatibility
+ * Converts Store component to DB component
+ * Used when saving to database
  */
-export function convertNewToOld(newComponent: CanvasComponent): PageComponent | null {
-  const oldType = reverseTypeMapping[newComponent.type];
-  if (!oldType) {
-    console.warn(`Cannot convert component type ${newComponent.type} to OLD format`);
+export function convertNewToOld(storeComponent: CanvasComponent): DbComponent | null {
+  const dbType = newToDbTypeMap[storeComponent.type];
+
+  // If component type not supported in DB yet, skip it
+  if (!dbType) {
+    console.warn(`Component type ${storeComponent.type} not supported in DB format yet - skipping`);
     return null;
   }
 
-  const oldProps = convertPropsNewToOld(newComponent, oldType);
+  const dbProps = convertPropsStoreToDb(storeComponent, dbType);
 
   return {
-    id: newComponent.id,
-    type: oldType,
-    props: oldProps,
-  } as PageComponent;
+    id: storeComponent.id,
+    type: dbType,
+    props: dbProps,
+  };
 }
 
 /**
- * Converts props from NEW format to OLD format
+ * Converts props from Store format to DB format
  */
-function convertPropsNewToOld(
-  newComponent: CanvasComponent,
-  oldType: OldComponentType
-): PageComponent['props'] {
-  switch (oldType) {
+function convertPropsStoreToDb(
+  storeComponent: CanvasComponent,
+  dbType: DbComponentType
+): Record<string, unknown> {
+  switch (dbType) {
     case 'hero':
       return {
-        title: newComponent.props.text || '',
-        subtitle: (newComponent.props.subtitle as string) || '',
-        ctaText: (newComponent.props.ctaText as string) || '',
-        ctaLink: (newComponent.props.ctaLink as string) || '#',
-        backgroundImage: newComponent.style.backgroundImage,
+        title: storeComponent.props.text || '',
+        subtitle: storeComponent.props.subtitle || '',
+        ctaText: storeComponent.props.ctaText || '',
+        ctaLink: storeComponent.props.ctaLink || '#',
       };
 
     case 'text':
       return {
-        content: newComponent.props.text || '',
-        variant: (newComponent.props.variant as 'h1' | 'h2' | 'h3' | 'paragraph') || 'paragraph',
-        align: (newComponent.style.textAlign as 'left' | 'center' | 'right') || 'left',
+        content: storeComponent.props.text || '',
+        variant: storeComponent.props.variant || 'paragraph',
+        align: 'left', // Default
       };
 
     case 'image':
       return {
-        src: newComponent.props.src || '',
-        alt: newComponent.props.alt || '',
-        width: newComponent.props.width ? parseInt(newComponent.props.width as string) : undefined,
-        height: newComponent.props.height ? parseInt(newComponent.props.height as string) : undefined,
+        src: storeComponent.props.src || '',
+        alt: storeComponent.props.alt || '',
+        width: 800,
+        height: 600,
       };
 
     case 'button':
       return {
-        text: newComponent.props.text || '',
-        href: newComponent.props.href,
-        variant: (newComponent.props.variant as 'primary' | 'secondary' | 'outline') || 'primary',
-        size: (newComponent.props.size as 'sm' | 'md' | 'lg') || 'md',
+        text: storeComponent.props.text || '',
+        href: storeComponent.props.href || '#',
+        variant: storeComponent.props.variant || 'primary',
+        size: 'md',
       };
 
     case 'form':
       return {
-        fields: (newComponent.props.fields as any) || [],
-        submitText: newComponent.props.submitText as string || 'Submit',
+        fields: storeComponent.props.fields || [],
+        submitText: storeComponent.props.submitText || 'Submit',
       };
 
     default:
-      // Fallback to text component props
-      return {
-        content: '',
-        variant: 'paragraph' as const,
-        align: 'left' as const,
-      };
+      return {};
   }
 }
 
@@ -275,49 +259,20 @@ function convertPropsNewToOld(
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 /**
- * Converts array of OLD components to NEW components
+ * Converts array of DB components to Store components
+ * Used when loading page from database
  */
-export function convertArrayOldToNew(oldComponents: PageComponent[]): CanvasComponent[] {
-  return oldComponents.map(convertOldToNew);
+export function convertArrayOldToNew(dbComponents: DbComponent[]): CanvasComponent[] {
+  return dbComponents.map(convertOldToNew);
 }
 
 /**
- * Converts array of NEW components to OLD components
- * Filters out components that can't be converted
+ * Converts array of Store components to DB components
+ * Filters out components that can't be stored in current DB format
+ * Used when saving page to database
  */
-export function convertArrayNewToOld(newComponents: CanvasComponent[]): PageComponent[] {
-  return newComponents
+export function convertArrayNewToOld(storeComponents: CanvasComponent[]): DbComponent[] {
+  return storeComponents
     .map(convertNewToOld)
-    .filter((comp): comp is PageComponent => comp !== null);
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Type Guards
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-/**
- * Checks if component is from OLD system
- */
-export function isOldComponent(component: any): component is PageComponent {
-  return (
-    typeof component === 'object' &&
-    component !== null &&
-    'type' in component &&
-    typeof component.type === 'string' &&
-    component.type === component.type.toLowerCase() // OLD types are lowercase
-  );
-}
-
-/**
- * Checks if component is from NEW system
- */
-export function isNewComponent(component: any): component is CanvasComponent {
-  return (
-    typeof component === 'object' &&
-    component !== null &&
-    'type' in component &&
-    'style' in component &&
-    typeof component.type === 'string' &&
-    component.type[0] === component.type[0].toUpperCase() // NEW types are PascalCase
-  );
+    .filter((comp): comp is DbComponent => comp !== null);
 }

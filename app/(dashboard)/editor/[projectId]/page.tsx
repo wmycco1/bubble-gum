@@ -21,7 +21,6 @@ import { ComponentPalette } from '@/components/editor/ComponentPalette';
 import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
 import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
 import { convertArrayOldToNew, convertArrayNewToOld } from '@/lib/editor/adapter';
-import type { PageComponent } from '@/types/components';
 
 interface EditorPageProps {
   params: Promise<{ projectId: string }>;
@@ -78,8 +77,8 @@ export default function EditorPage(props: EditorPageProps) {
 
         if (content.length > 0) {
           console.log('📥 Loading components from DB:', content);
-          // Convert OLD PageComponents to NEW CanvasComponents
-          const canvasComponents = convertArrayOldToNew(content as PageComponent[]);
+          // Convert DB components to Store components
+          const canvasComponents = convertArrayOldToNew(content as any[]);
           loadComponents(canvasComponents);
           console.log('✅ Loaded', canvasComponents.length, 'components into canvas-store');
         }
