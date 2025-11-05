@@ -108,7 +108,7 @@ describe('useAutoSave', () => {
         enabled: true,
       };
 
-      const { result } = renderHook(() => useAutoSave(options));
+      renderHook(() => useAutoSave(options));
 
       expect(saveFn).not.toHaveBeenCalled();
 
@@ -290,7 +290,7 @@ describe('useAutoSave', () => {
   describe('AbortController', () => {
     it('should cancel save on unmount', async () => {
       const saveFn = vi.fn(
-        (_data: any, signal: AbortSignal) =>
+        (_data: { value: string }, signal: AbortSignal): Promise<void> =>
           new Promise((resolve, reject) => {
             signal.addEventListener('abort', () => {
               reject(new Error('AbortError'));
@@ -320,14 +320,14 @@ describe('useAutoSave', () => {
       expect(saveFn).toHaveBeenCalled();
 
       // Verify AbortSignal was aborted
-      const signal = saveFn.mock.calls[0][1] as AbortSignal;
-      expect(signal.aborted).toBe(true);
+      const signal = saveFn.mock.calls[0]?.[1] as AbortSignal;
+      expect(signal?.aborted).toBe(true);
     });
 
     it('should abort previous save when new save starts', async () => {
       let abortedCount = 0;
       const saveFn = vi.fn(
-        (_data: any, signal: AbortSignal) =>
+        (_data: { count: number }, signal: AbortSignal): Promise<void> =>
           new Promise((resolve) => {
             signal.addEventListener('abort', () => {
               abortedCount++;

@@ -45,7 +45,7 @@ global.IntersectionObserver = class IntersectionObserver {
     return [];
   }
   unobserve() {}
-} as any;
+} as unknown as typeof IntersectionObserver;
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
@@ -53,7 +53,7 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-} as any;
+} as unknown as typeof ResizeObserver;
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -159,7 +159,7 @@ vi.mock('@/lib/trpc/client', () => ({
 // Suppress console.error in tests (optional - remove if you want to see errors)
 const originalError = console.error;
 beforeAll(() => {
-  console.error = (...args: any[]) => {
+  console.error = (...args: unknown[]) => {
     // Suppress React 18 warnings in tests
     if (
       typeof args[0] === 'string' &&

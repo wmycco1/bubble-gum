@@ -23,8 +23,8 @@ describe('canvas-store', () => {
 
       const { components } = useCanvasStore.getState();
       expect(components).toHaveLength(1);
-      expect(components[0].type).toBe('Button');
-      expect(components[0].id).toBeDefined();
+      expect(components[0]?.type).toBe('Button');
+      expect(components[0]?.id).toBeDefined();
     });
 
     it('should add component with initial props', () => {
@@ -32,50 +32,54 @@ describe('canvas-store', () => {
       store.addComponent('Button' as ComponentType);
 
       const { components } = useCanvasStore.getState();
-      expect(components[0].props).toHaveProperty('text');
-      expect(components[0].props.text).toBe('Click Me');
+      expect(components[0]?.props).toHaveProperty('text');
+      expect(components[0]?.props.text).toBe('Click Me');
     });
 
     it('should add nested component', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Container' as ComponentType);
-      const containerId = useCanvasStore.getState().components[0].id;
+      const containerId = useCanvasStore.getState().components[0]?.id;
+      expect(containerId).toBeDefined();
 
-      store.addComponent('Button' as ComponentType, containerId);
+      store.addComponent('Button' as ComponentType, containerId!);
 
       const { components } = useCanvasStore.getState();
-      expect(components[0].children).toHaveLength(1);
-      expect(components[0].children![0].type).toBe('Button');
+      expect(components[0]?.children).toHaveLength(1);
+      expect(components[0]?.children![0]?.type).toBe('Button');
     });
 
     it('should update component props', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Text' as ComponentType);
-      const componentId = useCanvasStore.getState().components[0].id;
+      const componentId = useCanvasStore.getState().components[0]?.id;
+      expect(componentId).toBeDefined();
 
-      store.updateComponentProps(componentId, { text: 'Updated Text' });
+      store.updateComponentProps(componentId!, { text: 'Updated Text' });
 
       const { components } = useCanvasStore.getState();
-      expect(components[0].props.text).toBe('Updated Text');
+      expect(components[0]?.props.text).toBe('Updated Text');
     });
 
     it('should update component style', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Button' as ComponentType);
-      const componentId = useCanvasStore.getState().components[0].id;
+      const componentId = useCanvasStore.getState().components[0]?.id;
+      expect(componentId).toBeDefined();
 
-      store.updateComponentStyle(componentId, { backgroundColor: '#ff0000' });
+      store.updateComponentStyle(componentId!, { backgroundColor: '#ff0000' });
 
       const { components } = useCanvasStore.getState();
-      expect(components[0].style.backgroundColor).toBe('#ff0000');
+      expect(components[0]?.style.backgroundColor).toBe('#ff0000');
     });
 
     it('should delete component', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Button' as ComponentType);
-      const componentId = useCanvasStore.getState().components[0].id;
+      const componentId = useCanvasStore.getState().components[0]?.id;
+      expect(componentId).toBeDefined();
 
-      store.deleteComponent(componentId);
+      store.deleteComponent(componentId!);
 
       const { components } = useCanvasStore.getState();
       expect(components).toHaveLength(0);
@@ -84,48 +88,53 @@ describe('canvas-store', () => {
     it('should delete nested component', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Container' as ComponentType);
-      const containerId = useCanvasStore.getState().components[0].id;
-      store.addComponent('Button' as ComponentType, containerId);
-      const buttonId = useCanvasStore.getState().components[0].children![0].id;
+      const containerId = useCanvasStore.getState().components[0]?.id;
+      expect(containerId).toBeDefined();
+      store.addComponent('Button' as ComponentType, containerId!);
+      const buttonId = useCanvasStore.getState().components[0]?.children![0]?.id;
+      expect(buttonId).toBeDefined();
 
-      store.deleteComponent(buttonId);
+      store.deleteComponent(buttonId!);
 
       const { components } = useCanvasStore.getState();
-      expect(components[0].children).toHaveLength(0);
+      expect(components[0]?.children).toHaveLength(0);
     });
 
     it('should duplicate component', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Button' as ComponentType);
-      const originalId = useCanvasStore.getState().components[0].id;
+      const originalId = useCanvasStore.getState().components[0]?.id;
+      expect(originalId).toBeDefined();
 
-      store.duplicateComponent(originalId);
+      store.duplicateComponent(originalId!);
 
       const { components } = useCanvasStore.getState();
       expect(components).toHaveLength(2);
-      expect(components[1].type).toBe('Button');
-      expect(components[1].id).not.toBe(originalId);
-      expect(components[1].props).toEqual(components[0].props);
+      expect(components[1]?.type).toBe('Button');
+      expect(components[1]?.id).not.toBe(originalId);
+      expect(components[1]?.props).toEqual(components[0]?.props);
     });
 
     it('should move component', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Button' as ComponentType);
       store.addComponent('Text' as ComponentType);
-      const buttonId = useCanvasStore.getState().components[0].id;
+      const buttonId = useCanvasStore.getState().components[0]?.id;
+      expect(buttonId).toBeDefined();
 
-      store.moveComponent(buttonId, null, 1);
+      store.moveComponent(buttonId!, null, 1);
 
       const { components } = useCanvasStore.getState();
-      expect(components[1].type).toBe('Button');
+      expect(components[1]?.type).toBe('Button');
     });
 
     it('should getComponentById', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Button' as ComponentType);
-      const componentId = useCanvasStore.getState().components[0].id;
+      const componentId = useCanvasStore.getState().components[0]?.id;
+      expect(componentId).toBeDefined();
 
-      const component = store.getComponentById(componentId);
+      const component = store.getComponentById(componentId!);
 
       expect(component).toBeDefined();
       expect(component?.type).toBe('Button');
@@ -184,9 +193,10 @@ describe('canvas-store', () => {
     it('should select component', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Button' as ComponentType);
-      const componentId = useCanvasStore.getState().components[0].id;
+      const componentId = useCanvasStore.getState().components[0]?.id;
+      expect(componentId).toBeDefined();
 
-      store.selectComponent(componentId);
+      store.selectComponent(componentId!);
 
       const { selectedComponentId } = useCanvasStore.getState();
       expect(selectedComponentId).toBe(componentId);
@@ -195,8 +205,10 @@ describe('canvas-store', () => {
     it('should deselect component', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Button' as ComponentType);
-      const componentId = useCanvasStore.getState().components[0].id;
-      store.selectComponent(componentId);
+      const componentId = useCanvasStore.getState().components[0]?.id;
+      expect(componentId).toBeDefined();
+
+      store.selectComponent(componentId!);
 
       store.selectComponent(null);
 
@@ -207,10 +219,12 @@ describe('canvas-store', () => {
     it('should clear selection when component deleted', () => {
       const store = useCanvasStore.getState();
       store.addComponent('Button' as ComponentType);
-      const componentId = useCanvasStore.getState().components[0].id;
-      store.selectComponent(componentId);
+      const componentId = useCanvasStore.getState().components[0]?.id;
+      expect(componentId).toBeDefined();
 
-      store.deleteComponent(componentId);
+      store.selectComponent(componentId!);
+
+      store.deleteComponent(componentId!);
 
       const { selectedComponentId } = useCanvasStore.getState();
       expect(selectedComponentId).toBeNull();
@@ -274,14 +288,15 @@ describe('canvas-store', () => {
           type: 'Button' as ComponentType,
           props: { text: 'Test Button' },
           style: {},
+          children: [],
         },
       ];
 
-      store.loadComponents(mockComponents as any);
+      store.loadComponents(mockComponents);
 
       const { components } = useCanvasStore.getState();
       expect(components).toHaveLength(1);
-      expect(components[0].id).toBe('btn-1');
+      expect(components[0]?.id).toBe('btn-1');
     });
   });
 
