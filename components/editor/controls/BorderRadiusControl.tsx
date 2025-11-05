@@ -85,19 +85,19 @@ export function BorderRadiusControl({ componentId }: BorderRadiusControlProps) {
     const property = `border${corner}Radius`;
 
     if (isLinked) {
-      // Update all corners + shorthand
+      // When linked: ONLY use shorthand borderRadius, clear individual corners
       updateResponsiveStyle(componentId, deviceMode, {
         borderRadius: finalValue || undefined,
-        borderTopLeftRadius: finalValue || undefined,
-        borderTopRightRadius: finalValue || undefined,
-        borderBottomLeftRadius: finalValue || undefined,
-        borderBottomRightRadius: finalValue || undefined,
+        borderTopLeftRadius: undefined,
+        borderTopRightRadius: undefined,
+        borderBottomLeftRadius: undefined,
+        borderBottomRightRadius: undefined,
       });
     } else {
-      // Update only this corner
+      // When unlinked: ONLY use individual corners, clear shorthand
       updateResponsiveStyle(componentId, deviceMode, {
         [property]: finalValue || undefined,
-        borderRadius: undefined, // Clear shorthand when corners differ
+        borderRadius: undefined,
       });
     }
   };
