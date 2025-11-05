@@ -102,11 +102,13 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock next/link
-vi.mock('next/link', () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
-}));
+vi.mock('next/link', () => {
+  const React = require('react');
+  return {
+    default: ({ children, href }: { children: React.ReactNode; href: string }) =>
+      React.createElement('a', { href }, children),
+  };
+});
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // tRPC Mocks
@@ -148,11 +150,7 @@ vi.mock('@/lib/trpc/client', () => ({
 // Zustand Store Reset
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-beforeAll(() => {
-  // Reset all stores before tests
-  const { useCanvasStore } = require('@/lib/editor/canvas-store');
-  useCanvasStore.getState().clearCanvas();
-});
+// Note: Store reset is handled individually in each test's beforeEach hook
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Console Suppression (optional)
