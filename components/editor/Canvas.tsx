@@ -11,17 +11,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent, Breakpoint } from '@/lib/editor/types';
-import {
-  DndContext,
-  closestCenter,
-  type DragEndEvent,
-  useSensor,
-  useSensors,
-  MouseSensor,
-  TouchSensor,
-  useDroppable,
-} from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 import { RenderComponent } from './RenderComponent';
 
 // Responsive canvas widths
@@ -48,11 +38,12 @@ export function Canvas({
   zoom = 1,
   onSelectComponent, // Note: Currently unused - RenderComponent uses canvas-store directly
   onDeleteComponent, // Note: Currently unused - RenderComponent uses canvas-store directly
-  onMoveComponent,
+  onMoveComponent, // Note: Currently unused - removed nested DndContext for palette drag
 }: CanvasProps) {
   // Suppress unused variable warnings - these are here for API consistency
   void onSelectComponent;
   void onDeleteComponent;
+  void onMoveComponent;
 
   const canvasWidth = CANVAS_WIDTHS[deviceMode];
   const canvasStyle = {
@@ -60,36 +51,6 @@ export function Canvas({
     transform: `scale(${zoom})`,
     transformOrigin: 'top center',
     transition: 'width 0.3s ease, transform 0.3s ease',
-  };
-
-  // Configure sensors to allow clicks while enabling drag
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      // Require the mouse to move by 10 pixels before activating drag
-      activationConstraint: {
-        distance: 10,
-      },
-    }),
-    useSensor(TouchSensor, {
-      // Press delay of 250ms for touch, with tolerance of 5px of movement
-      activationConstraint: {
-        delay: 250,
-        tolerance: 5,
-      },
-    })
-  );
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const oldIndex = components.findIndex((c) => c.id === active.id);
-      const newIndex = components.findIndex((c) => c.id === over.id);
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        onMoveComponent(oldIndex, newIndex);
-      }
-    }
   };
 
   // Make canvas droppable for palette components
@@ -144,23 +105,16 @@ export function Canvas({
         } shadow-sm mx-auto transition-colors`}
         style={canvasStyle}
       >
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={components.map((c) => c.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-0">
-              {components.map((component) => (
-                <RenderComponent
-                  key={component.id}
-                  component={component}
-                  isSelected={selectedId === component.id}
-                  deviceMode={deviceMode}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+        <div className="space-y-0">
+          {components.map((component) => (
+            <RenderComponent
+              key={component.id}
+              component={component}
+              isSelected={selectedId === component.id}
+              deviceMode={deviceMode}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
