@@ -625,7 +625,7 @@ export const useCanvasStore = create<CanvasStore>()(
     }),
 
     // Merge strategy: override components from localStorage, keep UI state from initialState
-    merge: (persistedState: any, currentState) => {
+    merge: (persistedState: unknown, currentState) => {
       console.log('📦 localStorage: Restoring persisted state');
       return {
         ...currentState, // Keep UI state (selection, zoom, etc.)
@@ -634,7 +634,7 @@ export const useCanvasStore = create<CanvasStore>()(
     },
 
     // Migration function for version changes
-    migrate: (persistedState: any, version: number) => {
+    migrate: (persistedState: unknown, version: number) => {
       console.log(`🔄 localStorage: Migrating from version ${version} to ${STORAGE_VERSION}`);
 
       if (version === 0) {

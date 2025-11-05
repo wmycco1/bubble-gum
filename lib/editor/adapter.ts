@@ -117,7 +117,7 @@ function convertPropsDbToStore(dbComponent: DbComponent): ComponentProps {
     case 'form':
       return {
         submitText: (props.submitText as string) || 'Submit',
-        fields: props.fields as any,
+        fields: props.fields as Array<{ name: string; type: string; label: string; required?: boolean }> | undefined,
       };
 
     default:

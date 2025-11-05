@@ -140,7 +140,7 @@ export default function EditorPage(props: EditorPageProps) {
           : [];
 
       // Convert DB components to Store components
-      const dbComponents = convertArrayOldToNew(content as any[]);
+      const dbComponents = convertArrayOldToNew(content as Array<Record<string, unknown>>);
 
       // Check for localStorage conflict
       const hasConflict = hasLocalStorageConflict(dbComponents);
@@ -332,7 +332,7 @@ export default function EditorPage(props: EditorPageProps) {
           ? JSON.parse(homepage.content)
           : [];
 
-      const dbComponents = convertArrayOldToNew(content as any[]);
+      const dbComponents = convertArrayOldToNew(content as Array<Record<string, unknown>>);
       loadComponents(dbComponents);
       setShowConflictModal(false);
       setConflictResolved(true);
