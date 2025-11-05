@@ -3,13 +3,14 @@
 // ═══════════════════════════════════════════════════════════════
 // BUBBLE GUM - EDITOR PAGE (MIGRATED TO CANVAS-STORE)
 // ═══════════════════════════════════════════════════════════════
-// Version: 2.0.0 - Migrated to Zustand canvas-store
+// Version: 3.0.0 - Added keyboard shortcuts with visual feedback
 // Changes:
 // - Removed ALL local useState (components, selectedId, deviceMode, zoom)
 // - Using canvas-store for state management
 // - Enabled Undo/Redo functionality
-// - Added keyboard shortcuts (Ctrl+Z, Ctrl+Y, Delete)
+// - Added keyboard shortcuts hook (Ctrl+Z, Ctrl+Y, Delete, Ctrl+D, Ctrl+S, Escape)
 // - Using type adapter for OLD/NEW component compatibility
+// - Added toast notifications for user feedback
 // ═══════════════════════════════════════════════════════════════
 
 import { use, useEffect, useCallback, useMemo } from 'react';
@@ -23,6 +24,8 @@ import { EditorToolbar } from '@/components/editor/EditorToolbar';
 import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
 import { convertArrayOldToNew, convertArrayNewToOld } from '@/lib/editor/adapter';
 import { useAutoSave } from '@/lib/hooks/useAutoSave';
+import { useKeyboardShortcuts } from '@/lib/hooks/useKeyboardShortcuts';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface EditorPageProps {
   params: Promise<{ projectId: string }>;
@@ -131,49 +134,129 @@ export default function EditorPage(props: EditorPageProps) {
   }, [homepage?.content, components.length, loadComponents]);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Keyboard Shortcuts (NEW!)
+  // Keyboard Shortcuts (Using useKeyboardShortcuts hook)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Undo: Ctrl+Z (Windows/Linux) or Cmd+Z (Mac)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey && canUndo) {
-        e.preventDefault();
-        undo();
-        console.log('⎌ Undo');
-        return;
-      }
-
-      // Redo: Ctrl+Y (Windows/Linux) or Cmd+Shift+Z (Mac)
-      if (
-        ((e.ctrlKey || e.metaKey) && e.key === 'y') ||
-        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z')
-      ) {
-        if (canRedo) {
-          e.preventDefault();
+  useKeyboardShortcuts({
+    shortcuts: [
+      // Undo
+      {
+        key: 'z',
+        ctrl: true,
+        handler: () => {
+          undo();
+          toast.success('Undone', { duration: 1500, icon: '↶' });
+        },
+        description: 'Undo last action',
+        enabled: canUndo,
+      },
+      // Redo (Ctrl+Y)
+      {
+        key: 'y',
+        ctrl: true,
+        handler: () => {
           redo();
-          console.log('⎌ Redo');
-        }
-        return;
-      }
-
-      // Delete: Delete or Backspace
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedComponentId) {
-        // Don't delete if user is typing in an input
-        const target = e.target as HTMLElement;
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-          return;
-        }
-
-        e.preventDefault();
-        deleteComponent(selectedComponentId);
-        console.log('🗑️ Deleted component:', selectedComponentId);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [canUndo, canRedo, selectedComponentId, undo, redo, deleteComponent]);
+          toast.success('Redone', { duration: 1500, icon: '↷' });
+        },
+        description: 'Redo last action',
+        enabled: canRedo,
+      },
+      // Redo (Ctrl+Shift+Z for Mac users)
+      {
+        key: 'z',
+        ctrl: true,
+        shift: true,
+        handler: () => {
+          redo();
+          toast.success('Redone', { duration: 1500, icon: '↷' });
+        },
+        description: 'Redo last action',
+        enabled: canRedo,
+      },
+      // Delete component
+      {
+        key: 'Delete',
+        handler: () => {
+          if (selectedComponentId) {
+            const component = getComponentById(selectedComponentId);
+            deleteComponent(selectedComponentId);
+            toast.success(`Deleted ${component?.type || 'component'}`, {
+              duration: 2000,
+              icon: '🗑️',
+            });
+          }
+        },
+        description: 'Delete selected component',
+        enabled: !!selectedComponentId,
+      },
+      // Delete component (Backspace alternative)
+      {
+        key: 'Backspace',
+        handler: () => {
+          if (selectedComponentId) {
+            const component = getComponentById(selectedComponentId);
+            deleteComponent(selectedComponentId);
+            toast.success(`Deleted ${component?.type || 'component'}`, {
+              duration: 2000,
+              icon: '🗑️',
+            });
+          }
+        },
+        description: 'Delete selected component',
+        enabled: !!selectedComponentId,
+      },
+      // Duplicate component
+      {
+        key: 'd',
+        ctrl: true,
+        handler: () => {
+          if (selectedComponentId) {
+            const component = getComponentById(selectedComponentId);
+            if (component) {
+              // Use duplicateComponent action from store
+              useCanvasStore.getState().duplicateComponent(selectedComponentId);
+              toast.success(`Duplicated ${component.type}`, {
+                duration: 2000,
+                icon: '📋',
+              });
+            }
+          }
+        },
+        description: 'Duplicate selected component',
+        enabled: !!selectedComponentId,
+      },
+      // Save
+      {
+        key: 's',
+        ctrl: true,
+        handler: () => {
+          saveNow();
+          toast.promise(
+            saveNow(),
+            {
+              loading: 'Saving...',
+              success: 'Saved successfully!',
+              error: 'Failed to save',
+            },
+            { duration: 2000 }
+          );
+        },
+        description: 'Save changes',
+      },
+      // Deselect
+      {
+        key: 'Escape',
+        handler: () => {
+          if (selectedComponentId) {
+            selectComponent(null);
+            toast('Deselected', { duration: 1000, icon: '✓' });
+          }
+        },
+        description: 'Deselect component',
+        enabled: !!selectedComponentId,
+      },
+    ],
+  });
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // Handlers
@@ -259,6 +342,33 @@ export default function EditorPage(props: EditorPageProps) {
 
   return (
     <div className="flex h-screen flex-col bg-slate-50">
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 2000,
+          style: {
+            background: '#fff',
+            color: '#0f172a',
+            border: '1px solid #e2e8f0',
+            borderRadius: '0.5rem',
+            fontSize: '0.875rem',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
+
       {/* EditorToolbar - Replaces custom header */}
       <EditorToolbar
         projectId={params.projectId}
