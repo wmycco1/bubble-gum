@@ -24,6 +24,8 @@ interface EditorToolbarProps {
   retryCount?: number;
   isOnline?: boolean;
   onSaveNow?: () => Promise<void>;
+  isAIChatOpen?: boolean;
+  onToggleAIChat?: () => void;
 }
 
 export function EditorToolbar({
@@ -34,7 +36,9 @@ export function EditorToolbar({
   saveError = null,
   retryCount = 0,
   isOnline = true,
-  onSaveNow
+  onSaveNow,
+  isAIChatOpen = false,
+  onToggleAIChat
 }: EditorToolbarProps) {
   const isSaving = status === 'saving' || status === 'retrying';
   const { deviceMode, setDeviceMode, zoom, setZoom } = useCanvasStore();
@@ -191,6 +195,15 @@ export function EditorToolbar({
           aria-label="Save now (Ctrl+S)"
         >
           💾 Save Now
+        </Button>
+
+        <Button
+          size="sm"
+          variant={isAIChatOpen ? 'default' : 'outline'}
+          onClick={onToggleAIChat}
+          aria-label="Toggle AI Assistant (Ctrl+K)"
+        >
+          🤖 AI Assistant
         </Button>
 
         <Button

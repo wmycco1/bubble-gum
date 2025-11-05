@@ -22,6 +22,7 @@ import { ComponentPalette } from '@/components/editor/ComponentPalette';
 import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
 import { EditorToolbar } from '@/components/editor/EditorToolbar';
 import { ConflictResolutionModal } from '@/components/editor/ConflictResolutionModal';
+import { AIChat } from '@/components/editor/AIChat';
 import {
   useCanvasStore,
   useUndo,
@@ -69,6 +70,7 @@ export default function EditorPage(props: EditorPageProps) {
 
   const [showConflictModal, setShowConflictModal] = useState(false);
   const [conflictResolved, setConflictResolved] = useState(false);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // Data Fetching
@@ -270,6 +272,19 @@ export default function EditorPage(props: EditorPageProps) {
           );
         },
         description: 'Save changes',
+      },
+      // Toggle AI Chat
+      {
+        key: 'k',
+        ctrl: true,
+        handler: () => {
+          setIsAIChatOpen((prev) => !prev);
+          toast(isAIChatOpen ? 'AI Chat closed' : 'AI Chat opened', {
+            duration: 1000,
+            icon: '🤖',
+          });
+        },
+        description: 'Toggle AI Assistant',
       },
       // Deselect
       {
@@ -476,6 +491,8 @@ export default function EditorPage(props: EditorPageProps) {
         retryCount={retryCount}
         isOnline={isOnline}
         onSaveNow={saveNow}
+        isAIChatOpen={isAIChatOpen}
+        onToggleAIChat={() => setIsAIChatOpen((prev) => !prev)}
       />
 
       {/* Editor Layout */}
@@ -520,6 +537,14 @@ export default function EditorPage(props: EditorPageProps) {
           />
         </div>
       </div>
+
+      {/* AI Chat Panel */}
+      <AIChat
+        projectId={params.projectId}
+        pageId={homepage?.id || ''}
+        isOpen={isAIChatOpen}
+        onClose={() => setIsAIChatOpen(false)}
+      />
     </div>
   );
 }
