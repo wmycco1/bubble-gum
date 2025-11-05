@@ -13,7 +13,7 @@
 
 import { useState } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
-import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 import { X } from 'lucide-react';
 
 interface TabsComponentProps {
@@ -65,11 +65,12 @@ export function TabsComponent({ component }: TabsComponentProps) {
   // Base wrapper className
   const baseClassName = 'w-full';
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
   const activeTabContent = tabs.find((tab) => tab.id === activeTab)?.content || '';
 
   return (
-    <div className={wrapperClassName} style={style as React.CSSProperties}>
+    <div className={wrapperClassName} style={cleanedStyle as React.CSSProperties}>
       <div
         className={`flex ${
           orientation === 'horizontal' ? 'flex-row' : 'flex-col'

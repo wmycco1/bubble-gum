@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 
 interface BadgeComponentProps {
   component: CanvasComponent;
@@ -78,9 +78,10 @@ export function BadgeComponent({ component }: BadgeComponentProps) {
   // Base wrapper className
   const baseClassName = `inline-flex items-center gap-1.5 font-medium rounded-full ${variantStyles} ${sizeStyles}`;
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
   return (
-    <span className={wrapperClassName} style={style as React.CSSProperties}>
+    <span className={wrapperClassName} style={cleanedStyle as React.CSSProperties}>
       {/* Dot Indicator */}
       {dot && (
         <span className="relative flex h-2 w-2">

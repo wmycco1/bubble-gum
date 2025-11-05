@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 import { ChevronRight, ArrowRight } from 'lucide-react';
 
 interface BreadcrumbComponentProps {
@@ -53,11 +53,12 @@ export function BreadcrumbComponent({ component }: BreadcrumbComponentProps) {
   // Base wrapper className
   const baseClassName = 'flex items-center flex-wrap gap-2';
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
   return (
     <nav
       className={wrapperClassName}
-      style={style as React.CSSProperties}
+      style={cleanedStyle as React.CSSProperties}
       aria-label="Breadcrumb"
     >
       <ol className="flex items-center flex-wrap gap-2">

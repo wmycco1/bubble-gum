@@ -13,7 +13,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 
 interface ProgressComponentProps {
   component: CanvasComponent;
@@ -63,9 +63,10 @@ export function ProgressComponent({ component }: ProgressComponentProps) {
   // Base wrapper className
   const baseClassName = 'w-full';
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
   return (
-    <div className={wrapperClassName} style={style as React.CSSProperties}>
+    <div className={wrapperClassName} style={cleanedStyle as React.CSSProperties}>
       {/* Label and Value */}
       {(label || showValue) && (
         <div className="flex items-center justify-between mb-2">

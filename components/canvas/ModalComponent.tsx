@@ -14,7 +14,7 @@
 
 import { useState, useEffect } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
-import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 import { X } from 'lucide-react';
 
 interface ModalComponentProps {
@@ -76,11 +76,12 @@ export function ModalComponent({ component }: ModalComponentProps) {
   // Base wrapper className
   const baseClassName = 'inline-block';
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
   return (
     <>
       {/* Trigger Button */}
-      <div className={wrapperClassName} style={style as React.CSSProperties}>
+      <div className={wrapperClassName} style={cleanedStyle as React.CSSProperties}>
         <button
           onClick={() => setIsOpen(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"

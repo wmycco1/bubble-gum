@@ -12,7 +12,7 @@
 
 import { useState } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
-import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 import { Info, CheckCircle, AlertTriangle, XCircle, X } from 'lucide-react';
 
 interface AlertComponentProps {
@@ -67,9 +67,10 @@ export function AlertComponent({ component }: AlertComponentProps) {
   // Base wrapper className
   const baseClassName = `w-full flex items-start gap-3 p-4 rounded-lg border ${variantStyles.container}`;
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
   return (
-    <div className={wrapperClassName} style={style as React.CSSProperties} role="alert">
+    <div className={wrapperClassName} style={cleanedStyle as React.CSSProperties} role="alert">
       {/* Icon */}
       <div className="flex-shrink-0 mt-0.5">{variantStyles.icon}</div>
 

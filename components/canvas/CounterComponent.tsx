@@ -14,7 +14,7 @@
 
 import { useState, useEffect } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
-import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 import { Plus, Minus } from 'lucide-react';
 
 interface CounterComponentProps {
@@ -111,12 +111,13 @@ export function CounterComponent({ component }: CounterComponentProps) {
   // Base wrapper className
   const baseClassName = 'inline-flex flex-col items-center gap-2';
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
   const isMinReached = value <= min;
   const isMaxReached = value >= max;
 
   return (
-    <div className={wrapperClassName} style={style as React.CSSProperties}>
+    <div className={wrapperClassName} style={cleanedStyle as React.CSSProperties}>
       {/* Label */}
       {label && (
         <label className={`font-medium text-slate-700 ${sizeStyles.label}`}>

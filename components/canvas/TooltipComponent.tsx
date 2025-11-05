@@ -12,7 +12,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
-import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 
 interface TooltipComponentProps {
   component: CanvasComponent;
@@ -107,9 +107,10 @@ export function TooltipComponent({ component }: TooltipComponentProps) {
   // Base wrapper className
   const baseClassName = 'relative inline-block';
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
   return (
-    <div className={wrapperClassName} style={style as React.CSSProperties}>
+    <div className={wrapperClassName} style={cleanedStyle as React.CSSProperties}>
       {/* Trigger Element */}
       <span
         className="cursor-pointer text-blue-600 hover:text-blue-800 border-b border-dashed border-blue-600"

@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 
 interface DividerComponentProps {
   component: CanvasComponent;
@@ -51,6 +51,7 @@ export function DividerComponent({ component }: DividerComponentProps) {
   // Base wrapper className
   const baseClassName = orientation === 'horizontal' ? 'w-full' : 'h-full';
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
   // With label
   if (label) {
@@ -65,7 +66,7 @@ export function DividerComponent({ component }: DividerComponentProps) {
       return (
         <div
           className={`${wrapperClassName} flex items-center ${justifyClass} gap-4`}
-          style={style as React.CSSProperties}
+          style={cleanedStyle as React.CSSProperties}
         >
           {labelPosition !== 'left' && (
             <div className="flex-1" style={dividerStyles} />
@@ -82,7 +83,7 @@ export function DividerComponent({ component }: DividerComponentProps) {
     return (
       <div
         className={`${wrapperClassName} flex flex-col items-center ${justifyClass} gap-4`}
-        style={style as React.CSSProperties}
+        style={cleanedStyle as React.CSSProperties}
       >
         {labelPosition !== 'left' && (
           <div className="flex-1" style={dividerStyles} />

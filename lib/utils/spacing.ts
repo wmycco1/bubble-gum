@@ -155,3 +155,32 @@ export function mergeClassNameWithSpacing(
   }
   return baseClassName;
 }
+
+/**
+ * Clean up style object to avoid React borderRadius conflicts
+ * React doesn't allow mixing shorthand (borderRadius) with longhand properties
+ * (borderTopLeftRadius, etc.) in the same style object
+ *
+ * Strategy:
+ * - If borderRadius (shorthand) is set, remove all individual corner properties
+ * - If any individual corner is set, keep them and remove borderRadius
+ */
+export function cleanBorderRadiusStyle(
+  style: Record<string, unknown>
+): Record<string, unknown> {
+  const cleaned = { ...style };
+
+  const hasShorthand = 'borderRadius' in cleaned && cleaned.borderRadius != null;
+  const hasIndividual =
+    ('borderTopLeftRadius' in cleaned && cleaned.borderTopLeftRadius != null) ||
+    ('borderTopRightRadius' in cleaned && cleaned.borderTopRightRadius != null) ||
+    ('borderBottomLeftRadius' in cleaned && cleaned.borderBottomLeftRadius != null) ||
+    ('borderBottomRightRadius' in cleaned && cleaned.borderBottomRightRadius != null);
+
+  // If BOTH are present (conflict), prefer individual corners and remove shorthand
+  if (hasShorthand && hasIndividual) {
+    delete cleaned.borderRadius;
+  }
+
+  return cleaned;
+}
