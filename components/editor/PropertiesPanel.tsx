@@ -113,6 +113,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
     switch (component.type) {
       // Section (Hero)
       case 'Section':
+      case 'SectionComponent':
         return (
           <>
             <div>
@@ -163,6 +164,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       // Text & Heading
       case 'Text':
       case 'Heading':
+      case 'TextComponent':
         return (
           <>
             <div>
@@ -193,6 +195,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       // Image
       case 'Image':
+      case 'ImageComponent':
         return (
           <>
             <div>
@@ -220,6 +223,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       // Button
       case 'Button':
+      case 'ButtonComponent':
         return (
           <>
             <div>
@@ -259,6 +263,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       // Input
       case 'Input':
+      case 'InputComponent':
         return (
           <>
             <div>
@@ -289,6 +294,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       // Form
       case 'Form':
+      case 'FormComponent':
         return (
           <>
             <div>
@@ -314,6 +320,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       // Container
       case 'Container':
+      case 'ContainerComponent':
         return (
           <>
             <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
@@ -380,6 +387,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       // Grid
       case 'Grid':
+      case 'GridComponent':
         return (
           <>
             <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
@@ -436,6 +444,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       // Card
       case 'Card':
+      case 'CardComponent':
         return (
           <>
             <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
