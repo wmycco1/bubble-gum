@@ -10,11 +10,16 @@ export type ComponentType =
   | 'Text'
   | 'Heading'
   | 'Image'
+  | 'Link'
+  | 'Icon'
   | 'Container'
   | 'Section'
   | 'Grid'
   | 'Card'
   | 'Input'
+  | 'Textarea'
+  | 'Checkbox'
+  | 'Submit'
   | 'Form'
   | 'Navbar'
   | 'NavbarComponent'
@@ -34,7 +39,13 @@ export type ComponentType =
   | 'FormComponent'
   | 'ContainerComponent'
   | 'GridComponent'
-  | 'CardComponent';
+  | 'CardComponent'
+  | 'HeadingComponent'
+  | 'LinkComponent'
+  | 'IconComponent'
+  | 'TextareaComponent'
+  | 'CheckboxComponent'
+  | 'SubmitComponent';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Specific Component Props Interfaces
@@ -114,6 +125,54 @@ export interface CardProps {
   image?: string;
   href?: string;
   variant?: 'default' | 'bordered' | 'elevated';
+}
+
+/** Heading component props */
+export interface HeadingProps {
+  text?: string;
+  level?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  align?: 'left' | 'center' | 'right';
+}
+
+/** Link component props */
+export interface LinkProps {
+  text?: string;
+  href?: string;
+  variant?: 'default' | 'primary' | 'secondary';
+  underline?: boolean;
+  external?: boolean;
+}
+
+/** Icon component props */
+export interface IconProps {
+  icon?: string;
+  size?: number;
+  color?: string;
+}
+
+/** Textarea component props */
+export interface TextareaProps {
+  label?: string;
+  placeholder?: string;
+  name?: string;
+  required?: boolean;
+  rows?: number;
+}
+
+/** Checkbox component props */
+export interface CheckboxProps {
+  label?: string;
+  name?: string;
+  required?: boolean;
+  defaultChecked?: boolean;
+}
+
+/** Submit button component props */
+export interface SubmitProps {
+  text?: string;
+  variant?: 'primary' | 'secondary' | 'success';
+  size?: 'sm' | 'md' | 'lg';
+  fullWidth?: boolean;
 }
 
 export interface ComponentStyle {

@@ -272,6 +272,61 @@ const getDefaultComponent = (type: ComponentType): Omit<CanvasComponent, 'id'> =
       style: {},
       children: [],
     },
+    Link: {
+      type: 'Link',
+      props: { text: 'Click here', href: '#' },
+      style: {},
+    },
+    LinkComponent: {
+      type: 'LinkComponent',
+      props: { text: 'Click here', href: '#' },
+      style: {},
+    },
+    Icon: {
+      type: 'Icon',
+      props: { icon: 'star', size: '24' },
+      style: {},
+    },
+    IconComponent: {
+      type: 'IconComponent',
+      props: { icon: 'star', size: '24' },
+      style: {},
+    },
+    Textarea: {
+      type: 'Textarea',
+      props: { label: 'Message', placeholder: 'Enter your message...' },
+      style: {},
+    },
+    TextareaComponent: {
+      type: 'TextareaComponent',
+      props: { label: 'Message', placeholder: 'Enter your message...' },
+      style: {},
+    },
+    Checkbox: {
+      type: 'Checkbox',
+      props: { label: 'Accept terms and conditions' },
+      style: {},
+    },
+    CheckboxComponent: {
+      type: 'CheckboxComponent',
+      props: { label: 'Accept terms and conditions' },
+      style: {},
+    },
+    Submit: {
+      type: 'Submit',
+      props: { text: 'Submit' },
+      style: {},
+    },
+    SubmitComponent: {
+      type: 'SubmitComponent',
+      props: { text: 'Submit' },
+      style: {},
+    },
+    HeadingComponent: {
+      type: 'HeadingComponent',
+      props: { text: 'Heading', level: 'h2' },
+      style: {},
+    },
   };
 
   return defaults[type] || defaults.Text;

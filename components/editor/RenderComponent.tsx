@@ -31,6 +31,12 @@ import { HeroComponent } from '@/components/canvas/HeroComponent';
 import { FooterComponent } from '@/components/canvas/FooterComponent';
 import { FeaturesComponent } from '@/components/canvas/FeaturesComponent';
 import { CTAComponent } from '@/components/canvas/CTAComponent';
+import { HeadingComponent } from '@/components/canvas/HeadingComponent';
+import { LinkComponent } from '@/components/canvas/LinkComponent';
+import { IconComponent } from '@/components/canvas/IconComponent';
+import { TextareaComponent } from '@/components/canvas/TextareaComponent';
+import { CheckboxComponent } from '@/components/canvas/CheckboxComponent';
+import { SubmitComponent } from '@/components/canvas/SubmitComponent';
 
 interface RenderComponentProps {
   component: CanvasComponent;
@@ -172,6 +178,30 @@ export function RenderComponent({ component, isSelected }: RenderComponentProps)
       case 'CTA':
       case 'CTAComponent':
         return <CTAComponent component={component} />;
+
+      case 'Heading':
+      case 'HeadingComponent':
+        return <HeadingComponent component={component} />;
+
+      case 'Link':
+      case 'LinkComponent':
+        return <LinkComponent component={component} />;
+
+      case 'Icon':
+      case 'IconComponent':
+        return <IconComponent component={component} />;
+
+      case 'Textarea':
+      case 'TextareaComponent':
+        return <TextareaComponent component={component} />;
+
+      case 'Checkbox':
+      case 'CheckboxComponent':
+        return <CheckboxComponent component={component} />;
+
+      case 'Submit':
+      case 'SubmitComponent':
+        return <SubmitComponent component={component} />;
 
       default:
         return (

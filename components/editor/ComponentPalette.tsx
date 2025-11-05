@@ -14,18 +14,28 @@ import { useCanvasStore } from '@/lib/editor/canvas-store';
 import type { ComponentType } from '@/lib/editor/types';
 
 const componentTypes: Array<{ type: ComponentType; label: string; icon: string; description: string }> = [
-  // OLD system components (5)
-  { type: 'Text', label: 'Text', icon: '📝', description: 'Paragraph or heading text' },
-  { type: 'Image', label: 'Image', icon: '🖼️', description: 'Image with alt text' },
-  { type: 'Button', label: 'Button', icon: '🔘', description: 'Call-to-action button' },
-  { type: 'Form', label: 'Form', icon: '📋', description: 'Contact or signup form' },
-  { type: 'Section', label: 'Hero Section', icon: '🎭', description: 'Full-width hero banner' },
-
-  // NEW system components (4 more = 9 total)
+  // Layout components (3)
   { type: 'Container', label: 'Container', icon: '📦', description: 'Content wrapper' },
+  { type: 'Section', label: 'Hero Section', icon: '🎭', description: 'Full-width hero banner' },
   { type: 'Grid', label: 'Grid', icon: '🔲', description: 'Responsive grid layout' },
   { type: 'Card', label: 'Card', icon: '🃏', description: 'Content card' },
+
+  // Content components (4)
+  { type: 'Text', label: 'Text', icon: '📝', description: 'Paragraph or heading text' },
+  { type: 'Heading', label: 'Heading', icon: '📄', description: 'h1-h6 headings' },
+  { type: 'Image', label: 'Image', icon: '🖼️', description: 'Image with alt text' },
+  { type: 'Link', label: 'Link', icon: '🔗', description: 'Hyperlink' },
+  { type: 'Icon', label: 'Icon', icon: '⭐', description: 'Lucide icons' },
+
+  // Interactive components (2)
+  { type: 'Button', label: 'Button', icon: '🔘', description: 'Call-to-action button' },
+
+  // Form components (5)
+  { type: 'Form', label: 'Form', icon: '📋', description: 'Contact or signup form' },
   { type: 'Input', label: 'Input', icon: '✏️', description: 'Text input field' },
+  { type: 'Textarea', label: 'Textarea', icon: '📝', description: 'Multiline text input' },
+  { type: 'Checkbox', label: 'Checkbox', icon: '☑️', description: 'Checkbox with label' },
+  { type: 'Submit', label: 'Submit Button', icon: '📤', description: 'Form submit button' },
 ];
 
 export function ComponentPalette() {
