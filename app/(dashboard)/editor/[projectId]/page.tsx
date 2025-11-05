@@ -21,6 +21,7 @@ import { ComponentPalette } from '@/components/editor/ComponentPalette';
 import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
 import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
 import { convertArrayOldToNew, convertArrayNewToOld } from '@/lib/editor/adapter';
+import { useAutoSave } from '@/lib/hooks/useAutoSave';
 
 interface EditorPageProps {
   params: Promise<{ projectId: string }>;
@@ -64,6 +65,32 @@ export default function EditorPage(props: EditorPageProps) {
   const updatePageContent = trpc.page.updateContent.useMutation();
 
   const homepage = project?.pages.find((p) => p.slug === 'index');
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Auto-Save Integration (NEW!)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  const { isSaving, lastSaved, error: autoSaveError, saveNow } = useAutoSave({
+    data: components,
+    onSave: async (data) => {
+      if (!homepage) {
+        console.warn('💾 Auto-save: No homepage found, skipping save');
+        return;
+      }
+
+      // Convert NEW components to OLD format for DB
+      const oldComponents = convertArrayNewToOld(data);
+
+      await updatePageContent.mutateAsync({
+        id: homepage.id,
+        content: oldComponents,
+      });
+
+      console.log('💾 Auto-save: Saved', oldComponents.length, 'components to database');
+    },
+    delay: 10000, // 10 seconds
+    enabled: !!homepage, // Only enable when homepage is available
+  });
 
   // Load page content from DB when homepage is available
   useEffect(() => {
@@ -138,26 +165,22 @@ export default function EditorPage(props: EditorPageProps) {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   /**
-   * Save current state to database
-   * Converts NEW CanvasComponents back to OLD PageComponents for DB compatibility
+   * Format last saved time for display
    */
-  const handleSave = useCallback(async () => {
-    if (!homepage) return;
+  const formatLastSaved = useCallback((date: Date | null): string => {
+    if (!date) return 'Never';
 
-    try {
-      // Convert NEW components to OLD format for DB
-      const oldComponents = convertArrayNewToOld(components);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
 
-      await updatePageContent.mutateAsync({
-        id: homepage.id,
-        content: oldComponents,
-      });
+    if (diffSecs < 10) return 'Just now';
+    if (diffSecs < 60) return `${diffSecs}s ago`;
+    if (diffMins < 60) return `${diffMins}m ago`;
 
-      console.log('💾 Saved', oldComponents.length, 'components to database');
-    } catch (error) {
-      console.error('❌ Save failed:', error);
-    }
-  }, [homepage, components, updatePageContent]);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }, []);
 
   /**
    * Handle component property updates from PropertiesPanel
@@ -295,14 +318,28 @@ export default function EditorPage(props: EditorPageProps) {
             <div className="mx-2 h-6 w-px bg-slate-200" />
 
             {/* Save */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSave}
-              disabled={updatePageContent.isPending}
-            >
-              {updatePageContent.isPending ? 'Saving...' : '💾 Save'}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => saveNow()}
+                disabled={isSaving}
+              >
+                {isSaving ? '💾 Saving...' : '💾 Save Now'}
+              </Button>
+
+              {/* Last Saved Indicator */}
+              <div className="flex flex-col text-xs">
+                <span className="text-slate-600">
+                  {isSaving ? 'Saving...' : `Saved ${formatLastSaved(lastSaved)}`}
+                </span>
+                {autoSaveError && (
+                  <span className="text-red-600" title={autoSaveError.message}>
+                    ⚠️ Save failed
+                  </span>
+                )}
+              </div>
+            </div>
 
             {/* Future actions */}
             <Button size="sm" disabled>
