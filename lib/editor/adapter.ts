@@ -17,9 +17,9 @@ import type {
 // Database Types (simplified, for compatibility)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-type DbComponentType = 'hero' | 'text' | 'image' | 'button' | 'form';
+export type DbComponentType = 'hero' | 'text' | 'image' | 'button' | 'form';
 
-interface DbComponent {
+export interface DbComponent {
   id: string;
   type: DbComponentType;
   props: Record<string, unknown>;
