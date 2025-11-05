@@ -15,6 +15,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
+import { LinksEditor, type Link } from './LinksEditor';
 
 interface PropertiesPanelProps {
   component: CanvasComponent | undefined;
@@ -537,24 +538,12 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Links (JSON)</label>
-              <textarea
-                value={JSON.stringify((localProps.links as Array<{ text: string; href: string }>) || [], null, 2)}
-                onChange={(e) => {
-                  try {
-                    const parsed = JSON.parse(e.target.value);
-                    handleChange('links', parsed);
-                  } catch {
-                    // Invalid JSON, don't update
-                  }
-                }}
-                rows={6}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-mono focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
-                placeholder='[{"text": "Home", "href": "#"}]'
+              <label className="mb-1 block text-sm font-medium text-slate-700">Links</label>
+              <LinksEditor
+                value={(localProps.links as Link[]) || []}
+                onChange={(newLinks) => handleChange('links', newLinks)}
+                maxLinks={10}
               />
-              <p className="mt-1 text-xs text-slate-500">
-                Format: [{"{"}"text": "Link", "href": "#"{"}"}]
-              </p>
             </div>
           </>
         );
@@ -641,24 +630,12 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Links (JSON)</label>
-              <textarea
-                value={JSON.stringify((localProps.links as Array<{ text: string; href: string }>) || [], null, 2)}
-                onChange={(e) => {
-                  try {
-                    const parsed = JSON.parse(e.target.value);
-                    handleChange('links', parsed);
-                  } catch {
-                    // Invalid JSON, don't update
-                  }
-                }}
-                rows={6}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-mono focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
-                placeholder='[{"text": "Privacy", "href": "#"}]'
+              <label className="mb-1 block text-sm font-medium text-slate-700">Links</label>
+              <LinksEditor
+                value={(localProps.links as Link[]) || []}
+                onChange={(newLinks) => handleChange('links', newLinks)}
+                maxLinks={10}
               />
-              <p className="mt-1 text-xs text-slate-500">
-                Format: [{"{"}"text": "Link", "href": "#"{"}"}]
-              </p>
             </div>
           </>
         );

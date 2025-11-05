@@ -182,7 +182,8 @@ export function getMigrationStatus() {
 
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   // Make migration status available in browser console for debugging
-  (window as Record<string, unknown>).__BUBBLE_GUM_MIGRATION__ = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).__BUBBLE_GUM_MIGRATION__ = {
     status: getMigrationStatus(),
     convertOldToNew: convertOldToNewType,
     convertNewToOld: convertNewToOldType,

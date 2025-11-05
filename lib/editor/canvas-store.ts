@@ -640,7 +640,7 @@ export const useCanvasStore = create<CanvasStore>()(
       if (version === 0) {
         // Migrate from v0 to v1 (if needed in future)
         return {
-          ...persistedState,
+          ...(persistedState as Record<string, unknown>),
           version: 1,
         };
       }
