@@ -421,7 +421,10 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 value={columns}
                 onChange={(e) => {
                   const newColumns = parseInt(e.target.value);
-                  const newWidths = Array.from({ length: newColumns }, () => '1fr');
+                  // Preserve existing widths if reducing columns, or add '1fr' for new columns
+                  const newWidths = Array.from({ length: newColumns }, (_, i) =>
+                    columnWidths[i] || '1fr'
+                  );
                   handleChange('columns', newColumns);
                   handleChange('columnWidths', newWidths);
                 }}
@@ -433,6 +436,12 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <option value="4">4 Columns</option>
                 <option value="5">5 Columns</option>
                 <option value="6">6 Columns</option>
+                <option value="7">7 Columns</option>
+                <option value="8">8 Columns</option>
+                <option value="9">9 Columns</option>
+                <option value="10">10 Columns</option>
+                <option value="11">11 Columns</option>
+                <option value="12">12 Columns</option>
               </select>
             </div>
 
