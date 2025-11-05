@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 // BUBBLE GUM - EDITOR TOOLBAR
 // ═══════════════════════════════════════════════════════════════
-// Version: 1.0.0
+// Version: 2.0.0 - Integrated with auto-save
 // Top toolbar with undo/redo, device modes, and actions
 // ═══════════════════════════════════════════════════════════════
 
@@ -13,16 +13,29 @@ import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
 
 interface EditorToolbarProps {
   projectId: string;
+  projectName?: string;
+  isSaving?: boolean;
+  lastSaved?: Date | null;
+  saveError?: Error | null;
+  onSaveNow?: () => Promise<void>;
 }
 
-export function EditorToolbar({ projectId }: EditorToolbarProps) {
+export function EditorToolbar({
+  projectId: _projectId, // Keep for future use (e.g., project-specific settings)
+  projectName = 'Untitled Project',
+  isSaving = false,
+  lastSaved = null,
+  saveError = null,
+  onSaveNow
+}: EditorToolbarProps) {
   const { deviceMode, setDeviceMode, zoom, setZoom } = useCanvasStore();
   const { undo, canUndo } = useUndo();
   const { redo, canRedo } = useRedo();
 
   const handleSave = async () => {
-    // TODO: Implement save functionality
-    alert('Save functionality coming soon!');
+    if (onSaveNow) {
+      await onSaveNow();
+    }
   };
 
   const handlePreview = () => {
@@ -30,17 +43,36 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
     alert('Preview functionality coming soon!');
   };
 
+  // Format last saved time
+  const formatLastSaved = (date: Date | null): string => {
+    if (!date) return 'Never';
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
+
+    if (diffSecs < 10) return 'Just now';
+    if (diffSecs < 60) return `${diffSecs}s ago`;
+    if (diffMins < 60) return `${diffMins}m ago`;
+
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   return (
     <div className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4">
-      {/* Left: Back button */}
+      {/* Left: Back button and project info */}
       <div className="flex items-center gap-4">
         <Link href="/projects">
           <Button variant="ghost" size="sm">
-            ← Back to Projects
+            ← Back
           </Button>
         </Link>
         <div className="h-6 w-px bg-slate-200" />
-        <span className="text-sm font-medium text-slate-700">Project #{projectId}</span>
+        <div className="flex flex-col">
+          <span className="text-sm font-semibold text-slate-900">{projectName}</span>
+          <span className="text-xs text-slate-600">Editing: Home Page</span>
+        </div>
       </div>
 
       {/* Center: Tools */}
@@ -123,11 +155,43 @@ export function EditorToolbar({ projectId }: EditorToolbarProps) {
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={handlePreview}>
-          👁️ Preview
+        {/* Auto-save status */}
+        <div className="flex flex-col text-xs">
+          <span className="text-slate-600">
+            {isSaving ? 'Saving...' : `Saved ${formatLastSaved(lastSaved)}`}
+          </span>
+          {saveError && (
+            <span className="text-red-600" title={saveError.message}>
+              ⚠️ Save failed
+            </span>
+          )}
+        </div>
+
+        <div className="mx-2 h-6 w-px bg-slate-200" />
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleSave}
+          disabled={isSaving}
+        >
+          {isSaving ? '💾 Saving...' : '💾 Save Now'}
         </Button>
-        <Button size="sm" onClick={handleSave}>
-          💾 Save
+
+        <Button
+          size="sm"
+          onClick={handlePreview}
+          disabled
+        >
+          Preview
+        </Button>
+
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled
+        >
+          Publish
         </Button>
       </div>
     </div>

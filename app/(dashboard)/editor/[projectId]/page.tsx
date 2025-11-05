@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { Canvas } from '@/components/editor/Canvas';
 import { ComponentPalette } from '@/components/editor/ComponentPalette';
 import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
+import { EditorToolbar } from '@/components/editor/EditorToolbar';
 import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
 import { convertArrayOldToNew, convertArrayNewToOld } from '@/lib/editor/adapter';
 import { useAutoSave } from '@/lib/hooks/useAutoSave';
@@ -46,11 +47,9 @@ export default function EditorPage(props: EditorPageProps) {
   const deleteComponent = useCanvasStore((state) => state.deleteComponent);
   const moveComponent = useCanvasStore((state) => state.moveComponent);
   const selectComponent = useCanvasStore((state) => state.selectComponent);
-  const setDeviceMode = useCanvasStore((state) => state.setDeviceMode);
-  const setZoom = useCanvasStore((state) => state.setZoom);
   const getComponentById = useCanvasStore((state) => state.getComponentById);
 
-  // Undo/Redo hooks
+  // Undo/Redo hooks (only for keyboard shortcuts)
   const { undo, canUndo } = useUndo();
   const { redo, canRedo } = useRedo();
 
@@ -165,24 +164,6 @@ export default function EditorPage(props: EditorPageProps) {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   /**
-   * Format last saved time for display
-   */
-  const formatLastSaved = useCallback((date: Date | null): string => {
-    if (!date) return 'Never';
-
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffSecs = Math.floor(diffMs / 1000);
-    const diffMins = Math.floor(diffSecs / 60);
-
-    if (diffSecs < 10) return 'Just now';
-    if (diffSecs < 60) return `${diffSecs}s ago`;
-    if (diffMins < 60) return `${diffMins}m ago`;
-
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }, []);
-
-  /**
    * Handle component property updates from PropertiesPanel
    */
   const handleUpdateComponent = useCallback(
@@ -227,21 +208,6 @@ export default function EditorPage(props: EditorPageProps) {
     }
   }, [deviceMode]);
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Debug Logging
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  useEffect(() => {
-    console.log('📊 EditorPage State:', {
-      componentsCount: components.length,
-      selectedComponentId,
-      selectedComponent: selectedComponent?.type,
-      deviceMode,
-      zoom,
-      canUndo,
-      canRedo,
-    });
-  }, [components.length, selectedComponentId, selectedComponent, deviceMode, zoom, canUndo, canRedo]);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // Loading & Error States
@@ -277,144 +243,15 @@ export default function EditorPage(props: EditorPageProps) {
 
   return (
     <div className="flex h-screen flex-col bg-slate-50">
-      {/* Header with Toolbar */}
-      <header className="border-b border-slate-200 bg-white">
-        {/* Top bar - Project info and actions */}
-        <div className="flex items-center justify-between px-6 py-3">
-          <div className="flex items-center gap-4">
-            <Link href="/projects">
-              <Button variant="ghost" size="sm">
-                ← Back
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-lg font-semibold text-slate-900">{project.name}</h1>
-              <p className="text-sm text-slate-600">Editing: Home Page</p>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            {/* Undo/Redo */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => undo()}
-              disabled={!canUndo}
-              title="Undo (Ctrl+Z)"
-            >
-              ↶ Undo
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => redo()}
-              disabled={!canRedo}
-              title="Redo (Ctrl+Y)"
-            >
-              ↷ Redo
-            </Button>
-
-            <div className="mx-2 h-6 w-px bg-slate-200" />
-
-            {/* Save */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => saveNow()}
-                disabled={isSaving}
-              >
-                {isSaving ? '💾 Saving...' : '💾 Save Now'}
-              </Button>
-
-              {/* Last Saved Indicator */}
-              <div className="flex flex-col text-xs">
-                <span className="text-slate-600">
-                  {isSaving ? 'Saving...' : `Saved ${formatLastSaved(lastSaved)}`}
-                </span>
-                {autoSaveError && (
-                  <span className="text-red-600" title={autoSaveError.message}>
-                    ⚠️ Save failed
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Future actions */}
-            <Button size="sm" disabled>
-              Preview
-            </Button>
-            <Button size="sm" variant="secondary" disabled>
-              Publish
-            </Button>
-          </div>
-        </div>
-
-        {/* Toolbar - Device modes and zoom */}
-        <div className="flex items-center justify-center gap-4 border-t border-slate-100 px-6 py-2">
-          {/* Device Mode */}
-          <div className="flex items-center gap-1 rounded-lg border border-slate-200 p-1">
-            <Button
-              variant={deviceMode === 'desktop' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setDeviceMode('desktop')}
-              title="Desktop (1440px)"
-              className="h-8"
-            >
-              🖥️ Desktop
-            </Button>
-            <Button
-              variant={deviceMode === 'tablet' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setDeviceMode('tablet')}
-              title="Tablet (768px)"
-              className="h-8"
-            >
-              📱 Tablet
-            </Button>
-            <Button
-              variant={deviceMode === 'mobile' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setDeviceMode('mobile')}
-              title="Mobile (375px)"
-              className="h-8"
-            >
-              📱 Mobile
-            </Button>
-          </div>
-
-          {/* Zoom */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-              disabled={zoom <= 0.5}
-              className="h-8 w-8 p-0"
-            >
-              −
-            </Button>
-            <span className="w-16 text-center text-sm text-slate-700">
-              {Math.round(zoom * 100)}%
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setZoom(Math.min(2, zoom + 0.25))}
-              disabled={zoom >= 2}
-              className="h-8 w-8 p-0"
-            >
-              +
-            </Button>
-          </div>
-
-          {/* Status indicators */}
-          <div className="ml-4 flex items-center gap-2 text-xs text-slate-600">
-            {canUndo && <span title="History available">📝 {components.length} components</span>}
-          </div>
-        </div>
-      </header>
+      {/* EditorToolbar - Replaces custom header */}
+      <EditorToolbar
+        projectId={params.projectId}
+        projectName={project.name}
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        saveError={autoSaveError}
+        onSaveNow={saveNow}
+      />
 
       {/* Editor Layout */}
       <div className="flex flex-1 overflow-hidden">
