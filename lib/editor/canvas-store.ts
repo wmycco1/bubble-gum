@@ -532,9 +532,9 @@ const getDefaultComponent = (type: ComponentType): Omit<CanvasComponent, 'id'> =
       type: 'Breadcrumb',
       props: {
         items: [
-          { label: 'Home', href: '/' },
-          { label: 'Products', href: '/products' },
-          { label: 'Current Page', href: '#' },
+          { id: '1', label: 'Home', href: '/' },
+          { id: '2', label: 'Products', href: '/products' },
+          { id: '3', label: 'Current Page', href: '#' },
         ],
         separator: 'slash',
       },
@@ -544,9 +544,9 @@ const getDefaultComponent = (type: ComponentType): Omit<CanvasComponent, 'id'> =
       type: 'BreadcrumbComponent',
       props: {
         items: [
-          { label: 'Home', href: '/' },
-          { label: 'Products', href: '/products' },
-          { label: 'Current Page', href: '#' },
+          { id: '1', label: 'Home', href: '/' },
+          { id: '2', label: 'Products', href: '/products' },
+          { id: '3', label: 'Current Page', href: '#' },
         ],
         separator: 'slash',
       },
