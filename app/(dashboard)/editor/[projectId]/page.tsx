@@ -375,6 +375,27 @@ export default function EditorPage(props: EditorPageProps) {
 
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Conflict Modal Data (must be before early returns - Rules of Hooks)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  // Get persisted state for conflict modal
+  const persistedState = getPersistedCanvasState();
+  const localCount = persistedState?.components?.length || 0;
+  const dbCount = useMemo(() => {
+    if (!homepage?.content) return 0;
+    try {
+      const content = Array.isArray(homepage.content)
+        ? homepage.content
+        : typeof homepage.content === 'string'
+          ? JSON.parse(homepage.content)
+          : [];
+      return content.length;
+    } catch {
+      return 0;
+    }
+  }, [homepage?.content]);
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // Loading & Error States
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -405,23 +426,6 @@ export default function EditorPage(props: EditorPageProps) {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // Render
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  // Get persisted state for conflict modal
-  const persistedState = getPersistedCanvasState();
-  const localCount = persistedState?.components?.length || 0;
-  const dbCount = useMemo(() => {
-    if (!homepage?.content) return 0;
-    try {
-      const content = Array.isArray(homepage.content)
-        ? homepage.content
-        : typeof homepage.content === 'string'
-          ? JSON.parse(homepage.content)
-          : [];
-      return content.length;
-    } catch {
-      return 0;
-    }
-  }, [homepage?.content]);
 
   return (
     <div className="flex h-screen flex-col bg-slate-50">
