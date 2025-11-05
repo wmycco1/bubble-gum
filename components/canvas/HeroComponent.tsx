@@ -5,7 +5,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface HeroComponentProps {
@@ -20,11 +19,14 @@ export function HeroComponent({ component }: HeroComponentProps) {
   const ctaText = (props.ctaText as string) || 'Get Started';
   const ctaLink = (props.ctaLink as string) || '#';
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing(
+    'flex min-h-[500px] items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 px-8 py-20',
+    style
+  );
+
   return (
-    <section
-      className="flex min-h-[500px] items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 px-8 py-20"
-      style={style as React.CSSProperties}
-    >
+    <section className={wrapperClassName} style={style as React.CSSProperties}>
       <div className="max-w-4xl text-center">
         {/* Title */}
         <h1 className="mb-6 text-5xl font-bold text-slate-900">{title}</h1>

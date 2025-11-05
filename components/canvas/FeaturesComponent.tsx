@@ -5,7 +5,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface FeaturesComponentProps {
@@ -40,11 +39,11 @@ export function FeaturesComponent({ component }: FeaturesComponentProps) {
     },
   ];
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('bg-white px-8 py-16', style);
+
   return (
-    <section
-      className="bg-white px-8 py-16"
-      style={style as React.CSSProperties}
-    >
+    <section className={wrapperClassName} style={style as React.CSSProperties}>
       <div className="mx-auto max-w-7xl">
         {/* Section Title */}
         <h2 className="mb-12 text-center text-3xl font-bold text-slate-900">

@@ -7,7 +7,6 @@
 
 import type { CanvasComponent } from '@/lib/editor/types';
 import { Button } from '@/components/ui/button';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface ButtonComponentProps {

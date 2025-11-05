@@ -5,7 +5,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface NavbarComponentProps {
@@ -22,11 +21,14 @@ export function NavbarComponent({ component }: NavbarComponentProps) {
     { text: 'Contact', href: '#contact' },
   ];
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing(
+    'flex items-center justify-between border-b border-slate-200 bg-white px-8 py-4 shadow-sm',
+    style
+  );
+
   return (
-    <nav
-      className="flex items-center justify-between border-b border-slate-200 bg-white px-8 py-4 shadow-sm"
-      style={style as React.CSSProperties}
-    >
+    <nav className={wrapperClassName} style={style as React.CSSProperties}>
       {/* Logo */}
       <div className="text-xl font-bold text-slate-900">{logo}</div>
 

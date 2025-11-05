@@ -33,7 +33,6 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface IconComponentProps {
@@ -76,12 +75,14 @@ export function IconComponent({ component }: IconComponentProps) {
 
   const Icon = ICON_MAP[iconName] || Star;
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-3 inline-flex items-center justify-center', style);
+
   return (
-    <div className="px-6 py-3 inline-flex items-center justify-center">
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
       <Icon
         size={size}
         color={color}
-        style={style as React.CSSProperties}
         aria-hidden="true"
       />
     </div>

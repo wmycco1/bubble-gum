@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { Button } from '@/components/ui/button';
 
@@ -22,11 +21,14 @@ export function SectionComponent({ component }: SectionComponentProps) {
   const ctaText = (props.ctaText as string) || '';
   const ctaLink = (props.ctaLink as string) || '#';
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing(
+    'relative bg-gradient-to-r from-slate-900 to-slate-700 px-6 py-24 sm:py-32 lg:px-8',
+    style
+  );
+
   return (
-    <div
-      className="relative bg-gradient-to-r from-slate-900 to-slate-700 px-6 py-24 sm:py-32 lg:px-8"
-      style={style as React.CSSProperties}
-    >
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
       <div className="mx-auto max-w-2xl text-center">
         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
           {title}

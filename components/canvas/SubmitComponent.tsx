@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface SubmitComponentProps {
@@ -37,12 +36,14 @@ export function SubmitComponent({ component }: SubmitComponentProps) {
   const variantClass = variantClasses[variant];
   const sizeClass = sizeClasses[size];
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-3', style);
+
   return (
-    <div className="px-6 py-3">
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
       <button
         type="submit"
         className={`${variantClass} ${sizeClass} ${widthClass} font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
-        style={style as React.CSSProperties}
       >
         {text}
       </button>

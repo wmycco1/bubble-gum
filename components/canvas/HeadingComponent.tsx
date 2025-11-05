@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface HeadingComponentProps {
@@ -39,12 +38,12 @@ export function HeadingComponent({ component }: HeadingComponentProps) {
   const levelClass = levelClasses[level];
   const alignClass = alignClasses[align];
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-4', style);
+
   return (
-    <div className="px-6 py-4">
-      <Tag
-        className={`${levelClass} ${alignClass} text-slate-900`}
-        style={style as React.CSSProperties}
-      >
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
+      <Tag className={`${levelClass} ${alignClass} text-slate-900`}>
         {text}
       </Tag>
     </div>

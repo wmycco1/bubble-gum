@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface TextareaComponentProps {
@@ -22,8 +21,11 @@ export function TextareaComponent({ component }: TextareaComponentProps) {
   const required = (props.required as boolean) ?? false;
   const rows = (props.rows as number) || 4;
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-3 w-full', style);
+
   return (
-    <div className="px-6 py-3 w-full">
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
       {label && (
         <label
           htmlFor={component.id}
@@ -40,7 +42,6 @@ export function TextareaComponent({ component }: TextareaComponentProps) {
         required={required}
         rows={rows}
         className="w-full px-4 py-2 text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
-        style={style as React.CSSProperties}
       />
     </div>
   );

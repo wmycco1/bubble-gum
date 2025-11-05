@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { RenderComponent } from '@/components/editor/RenderComponent';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
@@ -19,11 +18,14 @@ export function GridComponent({ component }: GridComponentProps) {
   const { style, children } = component;
   const selectedComponentId = useCanvasStore((state) => state.selectedComponentId);
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing(
+    'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 border-2 border-dashed border-slate-300 rounded-lg min-h-[200px] bg-slate-50',
+    style
+  );
+
   return (
-    <div
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 border-2 border-dashed border-slate-300 rounded-lg min-h-[200px] bg-slate-50"
-      style={style as React.CSSProperties}
-    >
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
       {children && children.length > 0 ? (
         children.map((child) => (
           <RenderComponent

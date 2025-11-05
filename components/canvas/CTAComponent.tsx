@@ -5,7 +5,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface CTAComponentProps {
@@ -20,11 +19,14 @@ export function CTAComponent({ component }: CTAComponentProps) {
   const buttonText = (props.buttonText as string) || 'Sign Up Now';
   const buttonLink = (props.buttonLink as string) || '#';
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing(
+    'bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-16',
+    style
+  );
+
   return (
-    <section
-      className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-16"
-      style={style as React.CSSProperties}
-    >
+    <section className={wrapperClassName} style={style as React.CSSProperties}>
       <div className="mx-auto max-w-4xl text-center">
         {/* Title */}
         <h2 className="mb-4 text-4xl font-bold text-white">{title}</h2>

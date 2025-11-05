@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,12 +36,14 @@ export function FormComponent({ component }: FormComponentProps) {
     console.log('Form submitted');
   };
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-8', style);
+
   return (
-    <div className="px-6 py-8">
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
       <form
         onSubmit={handleSubmit}
         className="max-w-md mx-auto space-y-4"
-        style={style as React.CSSProperties}
       >
         {fields.map((field) => (
           <div key={field.id} className="space-y-2">

@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import Image from 'next/image';
 
@@ -20,9 +19,12 @@ export function ImageComponent({ component }: ImageComponentProps) {
   const src = (props.src as string) || 'https://images.unsplash.com/photo-1557683316-973673baf926';
   const alt = (props.alt as string) || 'Image';
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-8', style);
+
   return (
-    <div className="px-6 py-8">
-      <div className="relative w-full" style={style as React.CSSProperties}>
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
+      <div className="relative w-full">
         <Image
           src={src}
           alt={alt}

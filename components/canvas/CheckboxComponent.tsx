@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface CheckboxComponentProps {
@@ -21,8 +20,11 @@ export function CheckboxComponent({ component }: CheckboxComponentProps) {
   const required = (props.required as boolean) ?? false;
   const defaultChecked = (props.defaultChecked as boolean) ?? false;
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-3 w-full', style);
+
   return (
-    <div className="px-6 py-3 w-full">
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
       <div className="flex items-start">
         <div className="flex items-center h-5">
           <input
@@ -32,7 +34,6 @@ export function CheckboxComponent({ component }: CheckboxComponentProps) {
             required={required}
             defaultChecked={defaultChecked}
             className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
-            style={style as React.CSSProperties}
           />
         </div>
         <div className="ml-3 text-sm">

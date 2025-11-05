@@ -8,7 +8,6 @@
 
 import { useEffect } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface TextComponentProps {
@@ -36,12 +35,12 @@ export function TextComponent({ component }: TextComponentProps) {
   const Tag = variant === 'paragraph' ? 'p' : (variant as 'h1' | 'h2' | 'h3');
   const variantClass = variantClasses[variant as keyof typeof variantClasses] || variantClasses.paragraph;
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-8', style);
+
   return (
-    <div className="px-6 py-8">
-      <Tag
-        className={`${variantClass} text-slate-900`}
-        style={style as React.CSSProperties}
-      >
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
+      <Tag className={`${variantClass} text-slate-900`}>
         {text}
       </Tag>
     </div>

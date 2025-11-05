@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface LinkComponentProps {
@@ -31,12 +30,14 @@ export function LinkComponent({ component }: LinkComponentProps) {
   const underlineClass = underline ? 'underline' : 'no-underline hover:underline';
   const variantClass = variantClasses[variant];
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-2', style);
+
   return (
-    <div className="px-6 py-2">
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
       <a
         href={href}
         className={`${variantClass} ${underlineClass} transition-colors duration-200 cursor-pointer`}
-        style={style as React.CSSProperties}
         target={external ? '_blank' : undefined}
         rel={external ? 'noopener noreferrer' : undefined}
       >

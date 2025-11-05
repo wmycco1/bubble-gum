@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,9 +21,12 @@ export function InputComponent({ component }: InputComponentProps) {
   const placeholder = (props.placeholder as string) || 'Enter text...';
   const label = (props.label as string) || '';
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing('px-6 py-8', style);
+
   return (
-    <div className="px-6 py-8">
-      <div className="max-w-md mx-auto space-y-2" style={style as React.CSSProperties}>
+    <div className={wrapperClassName} style={style as React.CSSProperties}>
+      <div className="max-w-md mx-auto space-y-2">
         {label && (
           <Label htmlFor={`input-${component.id}`}>
             {label}

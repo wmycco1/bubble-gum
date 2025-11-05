@@ -9,6 +9,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent, CardProps } from '@/lib/editor/types';
+import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { RenderComponent } from '@/components/editor/RenderComponent';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 
@@ -37,13 +38,21 @@ export function CardComponent({ component }: CardComponentProps) {
   const hasChildren = children && children.length > 0;
   const hasContent = cardProps.title || cardProps.description || cardProps.image;
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const containerClassName = mergeClassNameWithSpacing(
+    `${baseClasses} ${variantClass} p-6 min-h-[150px]`,
+    style
+  );
+
+  const contentClassName = mergeClassNameWithSpacing(
+    `${baseClasses} ${variantClass} overflow-hidden ${cardProps.href ? 'cursor-pointer' : ''}`,
+    style
+  );
+
   // MODE 2: Container Card (has children)
   if (hasChildren) {
     return (
-      <div
-        className={`${baseClasses} ${variantClass} p-6 min-h-[150px]`}
-        style={style as React.CSSProperties}
-      >
+      <div className={containerClassName} style={style as React.CSSProperties}>
         <div className="space-y-4">
           {children.map((child) => (
             <RenderComponent
@@ -59,10 +68,7 @@ export function CardComponent({ component }: CardComponentProps) {
 
   // MODE 1: Content Card (no children, display props)
   const CardContent = (
-    <div
-      className={`${baseClasses} ${variantClass} overflow-hidden ${cardProps.href ? 'cursor-pointer' : ''}`}
-      style={style as React.CSSProperties}
-    >
+    <div className={contentClassName} style={style as React.CSSProperties}>
       {/* Image (if provided) */}
       {cardProps.image && (
         <div className="relative w-full h-48 bg-slate-100">

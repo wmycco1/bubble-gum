@@ -5,7 +5,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import type { CanvasComponent } from '@/lib/editor/types';
-// @ts-ignore - Will be used when spacing controls are applied
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface FooterComponentProps {
@@ -22,11 +21,14 @@ export function FooterComponent({ component }: FooterComponentProps) {
     { text: 'Contact', href: '#contact' },
   ];
 
+  // Remove Tailwind spacing classes if custom spacing is set
+  const wrapperClassName = mergeClassNameWithSpacing(
+    'border-t border-slate-200 bg-slate-50 px-8 py-8',
+    style
+  );
+
   return (
-    <footer
-      className="border-t border-slate-200 bg-slate-50 px-8 py-8"
-      style={style as React.CSSProperties}
-    >
+    <footer className={wrapperClassName} style={style as React.CSSProperties}>
       <div className="mx-auto max-w-7xl">
         {/* Links */}
         {links && links.length > 0 && (
