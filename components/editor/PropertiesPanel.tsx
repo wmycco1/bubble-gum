@@ -26,6 +26,7 @@ import { ImageLibraryModal } from './ImageLibraryModal';
 import { SpacingControls } from './SpacingControls';
 import { BorderRadiusControl } from './controls/BorderRadiusControl';
 import { BackgroundControl } from './controls/BackgroundControl';
+import { BoxShadowControl } from './controls/BoxShadowControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 
 interface PropertiesPanelProps {
@@ -2077,6 +2078,15 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
         defaultExpanded={false}
       >
         <BorderRadiusControl componentId={component.id} />
+      </PropertyGroup>
+
+      {/* Box Shadow Control (ALL components) */}
+      <PropertyGroup
+        title="Box Shadow"
+        storageKey="box-shadow-group"
+        defaultExpanded={false}
+      >
+        <BoxShadowControl componentId={component.id} />
       </PropertyGroup>
 
       {/* Background Control (Layout components only) */}
