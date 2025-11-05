@@ -27,6 +27,7 @@ import { SpacingControls } from './SpacingControls';
 import { BorderRadiusControl } from './controls/BorderRadiusControl';
 import { BackgroundControl } from './controls/BackgroundControl';
 import { BoxShadowControl } from './controls/BoxShadowControl';
+import { OpacityControl } from './controls/OpacityControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 
 interface PropertiesPanelProps {
@@ -2087,6 +2088,15 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
         defaultExpanded={false}
       >
         <BoxShadowControl componentId={component.id} />
+      </PropertyGroup>
+
+      {/* Opacity Control (ALL components) */}
+      <PropertyGroup
+        title="Opacity"
+        storageKey="opacity-group"
+        defaultExpanded={false}
+      >
+        <OpacityControl componentId={component.id} />
       </PropertyGroup>
 
       {/* Background Control (Layout components only) */}
