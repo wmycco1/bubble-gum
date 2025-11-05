@@ -30,6 +30,8 @@ import { BoxShadowControl } from './controls/BoxShadowControl';
 import { OpacityControl } from './controls/OpacityControl';
 import { TransformControl } from './controls/TransformControl';
 import { TextShadowControl } from './controls/TextShadowControl';
+import { ZIndexControl } from './controls/ZIndexControl';
+import { BorderControl } from './controls/BorderControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 
 interface PropertiesPanelProps {
@@ -2074,6 +2076,15 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       {/* Spacing Controls (Margin/Padding) */}
       <SpacingControls componentId={component.id} />
 
+      {/* Border Control (ALL components) */}
+      <PropertyGroup
+        title="Border"
+        storageKey="border-group"
+        defaultExpanded={false}
+      >
+        <BorderControl componentId={component.id} />
+      </PropertyGroup>
+
       {/* Border Radius Control (ALL components) */}
       <PropertyGroup
         title="Border Radius"
@@ -2108,6 +2119,15 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
         defaultExpanded={false}
       >
         <TransformControl componentId={component.id} />
+      </PropertyGroup>
+
+      {/* Z-Index Control (ALL components) */}
+      <PropertyGroup
+        title="Z-Index"
+        storageKey="z-index-group"
+        defaultExpanded={false}
+      >
+        <ZIndexControl componentId={component.id} />
       </PropertyGroup>
 
       {/* Text Shadow Control (Text-based components) */}
