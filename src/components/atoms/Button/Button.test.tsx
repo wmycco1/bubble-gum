@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { Button } from './Button';
@@ -124,11 +124,8 @@ describe('Button Component', () => {
       const handleClick = jest.fn();
       render(<Button text="Click" disabled onClick={handleClick} />);
 
-      const event = new MouseEvent('click', { bubbles: true, cancelable: true });
-      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
-
       fireEvent.click(screen.getByText('Click'));
-      // Note: This tests the logic, actual preventDefault is called in handleClick
+      // Disabled button prevents onClick from being called
     });
 
     it('supports keyboard interaction (Enter)', async () => {
@@ -231,7 +228,7 @@ describe('Button Component', () => {
 
     it('renders React components as icons', () => {
       const LeftIcon = () => <svg data-testid="left-svg">←</svg>;
-      const { container } = render(<Button text="Test" leftIcon={<LeftIcon />} />);
+      render(<Button text="Test" leftIcon={<LeftIcon />} />);
       expect(screen.getByTestId('left-svg')).toBeInTheDocument();
     });
   });
