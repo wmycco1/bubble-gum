@@ -1657,20 +1657,35 @@ export const useCanvasStore = create<CanvasStore>()(
                 if (comp.id === id) {
                   if (breakpoint === 'desktop') {
                     // Desktop is base style, update directly
+                    // IMPORTANT: Remove properties with undefined values (explicit deletion)
+                    const mergedStyle = { ...comp.style, ...style };
+                    Object.keys(style).forEach((key) => {
+                      if (style[key as keyof typeof style] === undefined) {
+                        delete mergedStyle[key as keyof typeof mergedStyle];
+                      }
+                    });
+
                     return {
                       ...comp,
-                      style: { ...comp.style, ...style },
+                      style: mergedStyle,
                     };
                   } else {
                     // Tablet/Mobile are nested overrides
+                    const currentBreakpointStyle = comp.style[breakpoint] || {};
+                    const mergedBreakpointStyle = { ...currentBreakpointStyle, ...style };
+
+                    // Remove properties with undefined values
+                    Object.keys(style).forEach((key) => {
+                      if (style[key as keyof typeof style] === undefined) {
+                        delete mergedBreakpointStyle[key as keyof typeof mergedBreakpointStyle];
+                      }
+                    });
+
                     return {
                       ...comp,
                       style: {
                         ...comp.style,
-                        [breakpoint]: {
-                          ...(comp.style[breakpoint] || {}),
-                          ...style,
-                        },
+                        [breakpoint]: mergedBreakpointStyle,
                       },
                     };
                   }
