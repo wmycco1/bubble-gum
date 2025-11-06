@@ -19,36 +19,99 @@ interface GranularStylesControlProps {
 }
 
 // Define which elements are available for each component type
+// God-Tier 2025: Comprehensive mapping for ALL complex components
 const ELEMENT_MAP: Record<string, Array<keyof ComponentStyles>> = {
-  // Hero/Banner components
+  // ═══════════════════════════════════════════════════════════════
+  // HERO & BANNER COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
   HeroComponent: ['wrapper', 'title', 'subtitle', 'button'],
   Hero: ['wrapper', 'title', 'subtitle', 'button'],
-  BannerComponent: ['wrapper', 'title', 'subtitle', 'description', 'button'],
+  BannerComponent: ['wrapper', 'title', 'subtitle', 'description', 'button', 'image'],
+  Banner: ['wrapper', 'title', 'subtitle', 'description', 'button', 'image'],
 
-  // Pricing components
+  // ═══════════════════════════════════════════════════════════════
+  // PRICING COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
   PricingTableComponent: ['wrapper', 'card', 'title', 'description', 'price', 'badge', 'button', 'feature'],
   PricingTable: ['wrapper', 'card', 'title', 'description', 'price', 'badge', 'button', 'feature'],
 
-  // Features components
+  // ═══════════════════════════════════════════════════════════════
+  // FEATURES COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
   FeaturesComponent: ['wrapper', 'header', 'title', 'description', 'icon', 'feature'],
   Features: ['wrapper', 'header', 'title', 'description', 'icon', 'feature'],
 
-  // CTA components
+  // ═══════════════════════════════════════════════════════════════
+  // CTA COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
   CTAComponent: ['wrapper', 'title', 'description', 'button'],
   CTA: ['wrapper', 'title', 'description', 'button'],
 
-  // Card components
+  // ═══════════════════════════════════════════════════════════════
+  // CARD COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
   CardComponent: ['wrapper', 'header', 'title', 'description', 'footer', 'image'],
   Card: ['wrapper', 'header', 'title', 'description', 'footer', 'image'],
 
-  // Form components
+  // ═══════════════════════════════════════════════════════════════
+  // NAVIGATION COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
+  NavbarComponent: ['wrapper', 'title', 'link', 'button'],
+  Navbar: ['wrapper', 'title', 'link', 'button'],
+  FooterComponent: ['wrapper', 'title', 'link', 'description'],
+  Footer: ['wrapper', 'title', 'link', 'description'],
+
+  // ═══════════════════════════════════════════════════════════════
+  // TESTIMONIAL & SOCIAL PROOF
+  // ═══════════════════════════════════════════════════════════════
+  TestimonialComponent: ['wrapper', 'title', 'subtitle', 'description', 'image'],
+  Testimonial: ['wrapper', 'title', 'subtitle', 'description', 'image'],
+
+  // ═══════════════════════════════════════════════════════════════
+  // ALERT & NOTIFICATION COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
+  AlertComponent: ['wrapper', 'title', 'description', 'icon', 'button'],
+  Alert: ['wrapper', 'title', 'description', 'icon', 'button'],
+  ModalComponent: ['wrapper', 'header', 'title', 'description', 'footer', 'button'],
+  Modal: ['wrapper', 'header', 'title', 'description', 'footer', 'button'],
+
+  // ═══════════════════════════════════════════════════════════════
+  // INTERACTIVE COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
+  AccordionComponent: ['wrapper', 'title', 'description', 'icon'],
+  Accordion: ['wrapper', 'title', 'description', 'icon'],
+  TabsComponent: ['wrapper', 'title', 'description'],
+  Tabs: ['wrapper', 'title', 'description'],
+  CarouselComponent: ['wrapper', 'title', 'description', 'image', 'button'],
+  Carousel: ['wrapper', 'title', 'description', 'image', 'button'],
+
+  // ═══════════════════════════════════════════════════════════════
+  // ICON & IMAGE BOXES
+  // ═══════════════════════════════════════════════════════════════
+  IconBoxComponent: ['wrapper', 'icon', 'title', 'description'],
+  IconBox: ['wrapper', 'icon', 'title', 'description'],
+  ImageBoxComponent: ['wrapper', 'image', 'title', 'description', 'button'],
+  ImageBox: ['wrapper', 'image', 'title', 'description', 'button'],
+
+  // ═══════════════════════════════════════════════════════════════
+  // E-COMMERCE COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
+  ProductListComponent: ['wrapper', 'card', 'image', 'title', 'description', 'price', 'badge', 'button'],
+  ProductList: ['wrapper', 'card', 'image', 'title', 'description', 'price', 'badge', 'button'],
+  ProductSliderComponent: ['wrapper', 'card', 'image', 'title', 'description', 'price', 'badge', 'button'],
+  ProductSlider: ['wrapper', 'card', 'image', 'title', 'description', 'price', 'badge', 'button'],
+  AddToCartComponent: ['wrapper', 'button', 'price', 'label'],
+  AddToCart: ['wrapper', 'button', 'price', 'label'],
+
+  // ═══════════════════════════════════════════════════════════════
+  // FORM COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
   FormComponent: ['wrapper', 'label', 'input', 'textarea', 'button'],
   Form: ['wrapper', 'label', 'input', 'textarea', 'button'],
-  FormBuilderComponent: ['wrapper', 'label', 'input', 'textarea', 'button'],
-
-  // Testimonial
-  TestimonialComponent: ['wrapper', 'title', 'description', 'image'],
-  Testimonial: ['wrapper', 'title', 'description', 'image'],
+  FormBuilderComponent: ['wrapper', 'header', 'label', 'input', 'textarea', 'checkbox', 'button'],
+  FormBuilder: ['wrapper', 'header', 'label', 'input', 'textarea', 'checkbox', 'button'],
+  MultistepFormBuilderComponent: ['wrapper', 'header', 'title', 'label', 'input', 'button'],
+  MultistepFormBuilder: ['wrapper', 'header', 'title', 'label', 'input', 'button'],
 };
 
 // Element labels for UI

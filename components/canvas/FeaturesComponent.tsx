@@ -1,10 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
-// FEATURES COMPONENT
+// FEATURES COMPONENT - God-Tier 2025
 // ═══════════════════════════════════════════════════════════════
-// Features grid section
+// Version: 2.0.0 - Granular Styles Support
+// NEW (v2.0.0): Element-level styling (wrapper, header, title, description, icon, feature)
 // ═══════════════════════════════════════════════════════════════
 
-import type { CanvasComponent } from '@/lib/editor/types';
+import type { CanvasComponent, ComponentStyles } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 
 interface FeaturesComponentProps {
@@ -39,14 +40,25 @@ export function FeaturesComponent({ component }: FeaturesComponentProps) {
     },
   ];
 
+  // Get granular styles (God-Tier 2025)
+  const styles = (props.styles as ComponentStyles | undefined) || {};
+
   // Remove Tailwind spacing classes if custom spacing is set
   const wrapperClassName = mergeClassNameWithSpacing('bg-white px-8 py-16', style);
 
+  const wrapperStyle = {
+    ...(style as React.CSSProperties),
+    ...styles.wrapper,
+  };
+
   return (
-    <section className={wrapperClassName} style={style as React.CSSProperties}>
+    <section className={wrapperClassName} style={wrapperStyle}>
       <div className="mx-auto max-w-7xl">
         {/* Section Title */}
-        <h2 className="mb-12 text-center text-3xl font-bold text-slate-900">
+        <h2
+          className="mb-12 text-center text-3xl font-bold text-slate-900"
+          style={styles.header}
+        >
           {title}
         </h2>
 
@@ -56,19 +68,27 @@ export function FeaturesComponent({ component }: FeaturesComponentProps) {
             <div
               key={index}
               className="rounded-lg border border-slate-200 bg-white p-6 transition-shadow hover:shadow-lg"
+              style={styles.feature}
             >
               {/* Icon */}
               {feature.icon && (
-                <div className="mb-4 text-4xl">{feature.icon}</div>
+                <div className="mb-4 text-4xl" style={styles.icon}>
+                  {feature.icon}
+                </div>
               )}
 
               {/* Title */}
-              <h3 className="mb-2 text-xl font-semibold text-slate-900">
+              <h3
+                className="mb-2 text-xl font-semibold text-slate-900"
+                style={styles.title}
+              >
                 {feature.title}
               </h3>
 
               {/* Description */}
-              <p className="text-slate-600">{feature.description}</p>
+              <p className="text-slate-600" style={styles.description}>
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>
