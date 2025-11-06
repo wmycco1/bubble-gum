@@ -140,9 +140,12 @@ export function TestimonialComponent({ component }: { component: CanvasComponent
 
   // Single layout
   if (layout === 'single') {
+    const firstTestimonial = testimonials[0];
+    if (!firstTestimonial) return null;
+
     return (
       <div className="max-w-2xl mx-auto">
-        {renderTestimonialCard(testimonials[0])}
+        {renderTestimonialCard(firstTestimonial)}
       </div>
     );
   }

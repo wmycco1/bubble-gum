@@ -116,7 +116,7 @@ export function SocialIconsComponent({ component }: { component: CanvasComponent
       other: 'bg-slate-600 hover:bg-slate-700'
     };
 
-    return colorMap[platform.toLowerCase()] || colorMap.other;
+    return (colorMap[platform.toLowerCase()] ?? colorMap.other) as string;
   };
 
   // Size classes

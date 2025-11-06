@@ -24,12 +24,9 @@ export function GoogleMapsComponent({ component }: { component: CanvasComponent 
   const zoom = (props.zoom as number) || 14;
   const mapType = (props.mapType as 'roadmap' | 'satellite' | 'hybrid' | 'terrain') || 'roadmap';
   const height = (props.height as string) || '450px';
-  const showControls = (props.showControls as boolean) ?? true;
 
   // Build Google Maps embed URL
   const getEmbedUrl = (): string => {
-    const baseUrl = 'https://www.google.com/maps/embed/v1/place';
-
     // Note: For production, you should use a proper Google Maps API key
     // For demo purposes, we'll use the iframe embed which doesn't require API key
     // but has limited features

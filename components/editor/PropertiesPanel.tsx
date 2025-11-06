@@ -2304,7 +2304,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 max="6"
                 value={(component.props.slidesToShow as number) || 4}
                 onChange={(e) =>
-                  updateComponentProps(component.id, {
+                  onUpdate({
                     slidesToShow: parseInt(e.target.value) || 4,
                   })
                 }

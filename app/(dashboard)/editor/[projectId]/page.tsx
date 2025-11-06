@@ -32,7 +32,7 @@ import {
   hasLocalStorageConflict,
   getPersistedCanvasState,
 } from '@/lib/editor/canvas-store';
-import { convertArrayOldToNew, convertArrayNewToOld, type DbComponent } from '@/lib/editor/adapter';
+import { convertArrayOldToNew, type DbComponent } from '@/lib/editor/adapter';
 import { useAutoSave } from '@/lib/hooks/useAutoSave';
 import { useKeyboardShortcuts } from '@/lib/hooks/useKeyboardShortcuts';
 import toast, { Toaster } from 'react-hot-toast';

@@ -95,8 +95,6 @@ export function MultistepFormBuilderComponent({ component }: { component: Canvas
   const currentStepData = steps[currentStep];
   if (!currentStepData) return null;
 
-  const progress = ((currentStep + 1) / steps.length) * 100;
-
   return (
     <div className="max-w-3xl mx-auto p-8">
       {/* Header */}
