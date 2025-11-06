@@ -25,6 +25,7 @@ import type {
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import type { ComponentType } from '@/lib/editor/types';
 import { logger } from '@/lib/utils/logger';
+import { RenderComponent } from './RenderComponent';
 
 interface DragDropContextProviderProps {
   children: ReactNode;
@@ -210,29 +211,35 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
     >
       {children}
 
-      {/* Drag Overlay - instant drop, no delay (GPU accelerated) */}
+      {/* Drag Overlay - shows full component preview while dragging */}
       <DragOverlay dropAnimation={null}>
-        {activeType || activeComponent ? (
+        {activeComponent ? (
+          // Dragging existing component - show full visual preview
+          <div
+            className="rounded-lg border-2 border-blue-500 bg-white shadow-xl opacity-90 cursor-grabbing"
+            style={{
+              willChange: 'transform',
+              transform: 'translateZ(0)',
+              pointerEvents: 'none', // Prevent interactions during drag
+            }}
+          >
+            <RenderComponent
+              component={activeComponent}
+              isSelected={false}
+              deviceMode="desktop"
+            />
+          </div>
+        ) : activeType ? (
+          // Dragging from palette - show component type badge
           <div
             className="rounded-lg border-2 border-blue-500 bg-blue-50 px-4 py-3 shadow-lg opacity-95 cursor-grabbing"
             style={{
-              willChange: 'transform', // GPU acceleration hint
-              transform: 'translateZ(0)', // Force GPU layer
+              willChange: 'transform',
+              transform: 'translateZ(0)',
             }}
           >
             <div className="text-sm font-medium text-blue-900">
-              {activeComponent ? (
-                <>
-                  <span className="font-bold">{activeComponent.type}</span>
-                  {activeComponent.props.text && (
-                    <span className="ml-2 text-xs text-slate-600">
-                      ({String(activeComponent.props.text).substring(0, 20)}...)
-                    </span>
-                  )}
-                </>
-              ) : (
-                <span className="font-bold">{activeType}</span>
-              )}
+              <span className="font-bold">{activeType}</span>
             </div>
           </div>
         ) : null}

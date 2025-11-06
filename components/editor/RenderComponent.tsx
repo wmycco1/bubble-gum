@@ -132,14 +132,12 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
   });
 
   const style: React.CSSProperties = {
-    // Keep component ALWAYS visible (no opacity changes)
-    opacity: 1, // Always fully visible - no ghost effect
+    // Ghost effect while dragging - make original semi-transparent
+    opacity: isDragging ? 0.3 : 1, // Ghost during drag, full when not
     zIndex: isSelected ? 10 : 1, // Selected components on top
     pointerEvents: isDragging ? 'none' : 'auto', // Disable clicks while dragging
-    // Minimal visual feedback - only if needed
-    filter: isDragging ? 'brightness(0.95)' : 'brightness(1)', // Subtle dim instead of opacity
-    willChange: isDragging ? 'filter' : 'auto', // GPU hint
-    transition: 'filter 150ms ease-out', // Smooth brightness transition
+    willChange: isDragging ? 'opacity' : 'auto', // GPU hint
+    transition: 'opacity 100ms ease-out', // Quick fade
   };
 
   const handleClick = (e: React.MouseEvent) => {
