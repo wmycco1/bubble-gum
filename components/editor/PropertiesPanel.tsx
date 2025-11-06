@@ -2574,6 +2574,201 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           </>
         );
 
+      // M3: CMS - CMSBlock
+      case 'CMSBlock':
+      case 'CMSBlockComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">📝 CMS Block</p>
+              <p className="text-xs text-green-700">
+                Flexible content block with HTML
+              </p>
+            </div>
+
+            {/* Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Title</label>
+              <input
+                type="text"
+                value={(component.props.title as string) || ''}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { title: e.target.value })
+                }
+                placeholder="Block title..."
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Content */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Content (HTML)</label>
+              <textarea
+                value={(component.props.content as string) || ''}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { content: e.target.value })
+                }
+                placeholder="<p>Your HTML content...</p>"
+                rows={8}
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs resize-y"
+              />
+            </div>
+
+            {/* Layout */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Layout Style</label>
+              <select
+                value={(component.props.layout as string) || 'default'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { layout: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="default">Default</option>
+                <option value="boxed">Boxed</option>
+                <option value="banner">Banner</option>
+              </select>
+            </div>
+
+            {/* Background Color */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Background Color</label>
+              <input
+                type="color"
+                value={(component.props.backgroundColor as string) || '#ffffff'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { backgroundColor: e.target.value })
+                }
+                className="w-full h-10 rounded-md border border-slate-200 cursor-pointer"
+              />
+            </div>
+          </>
+        );
+
+      // M3: CMS - CMSPage
+      case 'CMSPage':
+      case 'CMSPageComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">📄 CMS Page</p>
+              <p className="text-xs text-green-700">
+                Full page layout with hero and content
+              </p>
+            </div>
+
+            {/* Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Page Title</label>
+              <input
+                type="text"
+                value={(component.props.title as string) || 'Page Title'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { title: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Subtitle */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Subtitle</label>
+              <input
+                type="text"
+                value={(component.props.subtitle as string) || ''}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { subtitle: e.target.value })
+                }
+                placeholder="Page subtitle..."
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Content */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Content (HTML)</label>
+              <textarea
+                value={(component.props.content as string) || ''}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { content: e.target.value })
+                }
+                placeholder="<p>Your HTML content...</p>"
+                rows={8}
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-xs resize-y"
+              />
+            </div>
+
+            {/* Show Sidebar */}
+            <div className="flex items-center gap-2 mt-3">
+              <input
+                type="checkbox"
+                id="showSidebar"
+                checked={(component.props.showSidebar as boolean) ?? false}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { showSidebar: e.target.checked })
+                }
+                className="rounded border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+              />
+              <label htmlFor="showSidebar" className="text-xs font-medium text-slate-700">
+                Show Sidebar
+              </label>
+            </div>
+          </>
+        );
+
+      // M3: CMS/E-commerce - OrdersAndReturns
+      case 'OrdersAndReturns':
+      case 'OrdersAndReturnsComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">📦 Orders & Returns</p>
+              <p className="text-xs text-green-700">
+                Customer service page for tracking and returns
+              </p>
+            </div>
+
+            {/* Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Title</label>
+              <input
+                type="text"
+                value={(component.props.title as string) || 'Orders & Returns'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { title: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Subtitle */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Subtitle</label>
+              <input
+                type="text"
+                value={(component.props.subtitle as string) || 'Track your order or initiate a return'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { subtitle: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Return Policy */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Return Policy</label>
+              <textarea
+                value={(component.props.returnPolicy as string) || 'We offer a 30-day return policy on all items. Items must be unused and in original packaging.'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { returnPolicy: e.target.value })
+                }
+                rows={4}
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+              />
+            </div>
+          </>
+        );
+
       // M3: Other components (controls coming soon)
       case 'Testimonial':
       case 'TestimonialComponent':
@@ -2581,22 +2776,10 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       case 'StarRatingComponent':
       case 'Menu':
       case 'MenuComponent':
-      case 'RecentlyViewed':
-      case 'RecentlyViewedComponent':
-      case 'RecentlyCompared':
-      case 'RecentlyComparedComponent':
-      case 'NewProducts':
-      case 'NewProductsComponent':
       case 'FormBuilder':
       case 'FormBuilderComponent':
       case 'MultistepFormBuilder':
       case 'MultistepFormBuilderComponent':
-      case 'CMSBlock':
-      case 'CMSBlockComponent':
-      case 'CMSPage':
-      case 'CMSPageComponent':
-      case 'OrdersAndReturns':
-      case 'OrdersAndReturnsComponent':
         return (
           <div className="rounded-md bg-green-50 p-3 border border-green-200">
             <p className="text-xs text-green-900 font-medium mb-1">✨ M3 Component</p>
