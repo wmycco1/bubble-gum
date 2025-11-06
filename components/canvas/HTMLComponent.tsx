@@ -32,13 +32,14 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
   const allowedAttributes = props.allowedAttributes as string[] | undefined;
 
   // Client-side DOMPurify instance
-  const [DOMPurify, setDOMPurify] = useState<typeof import('dompurify') | null>(null);
+  const [purify, setPurify] = useState<{ sanitize: (source: string, config?: Record<string, unknown>) => string } | null>(null);
 
   // Load DOMPurify client-side only
   useEffect(() => {
     if (typeof window !== 'undefined') {
       import('dompurify').then((module) => {
-        setDOMPurify(module.default);
+        const DOMPurify = module.default;
+        setPurify(DOMPurify);
       });
     }
   }, []);
@@ -51,7 +52,7 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
     }
 
     // Wait for DOMPurify to load
-    if (!DOMPurify) {
+    if (!purify) {
       return '<p>Loading...</p>';
     }
 
@@ -67,8 +68,8 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
     }
 
     // Sanitize with DOMPurify
-    return DOMPurify.sanitize(content, config);
-  }, [content, sanitize, allowedTags, allowedAttributes, DOMPurify]);
+    return purify.sanitize(content, config);
+  }, [content, sanitize, allowedTags, allowedAttributes, purify]);
 
   // Build className
   const baseClassName = 'html-content';
