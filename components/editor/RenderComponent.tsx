@@ -112,7 +112,6 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     attributes: dragAttributes,
     listeners: dragListeners,
     setNodeRef: setDragRef,
-    transform,
     isDragging,
   } = useDraggable({
     id: component.id,

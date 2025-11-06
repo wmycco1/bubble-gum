@@ -2338,7 +2338,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.buttonText as string) || 'Add to Cart'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { buttonText: e.target.value })
+                  onUpdate({ buttonText: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2350,7 +2350,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <select
                 value={(component.props.buttonColor as string) || 'blue'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { buttonColor: e.target.value })
+                  onUpdate({ buttonColor: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
@@ -2369,7 +2369,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 id="showQuantity"
                 checked={(component.props.showQuantity as boolean) ?? true}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { showQuantity: e.target.checked })
+                  onUpdate({ showQuantity: e.target.checked })
                 }
                 className="rounded border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
               />
@@ -2387,7 +2387,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 max="999"
                 value={(component.props.maxQuantity as number) || 99}
                 onChange={(e) =>
-                  updateComponentProps(component.id, {
+                  onUpdate({
                     maxQuantity: parseInt(e.target.value) || 99,
                   })
                 }
@@ -2401,7 +2401,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <select
                 value={(component.props.stockStatus as string) || 'in-stock'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { stockStatus: e.target.value })
+                  onUpdate({ stockStatus: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
@@ -2451,7 +2451,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.title as string) || 'Recently Viewed'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { title: e.target.value })
+                  onUpdate({ title: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2466,7 +2466,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 max="6"
                 value={(component.props.columns as number) || 4}
                 onChange={(e) =>
-                  updateComponentProps(component.id, {
+                  onUpdate({
                     columns: parseInt(e.target.value) || 4,
                   })
                 }
@@ -2500,7 +2500,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.title as string) || 'Recently Compared'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { title: e.target.value })
+                  onUpdate({ title: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2515,7 +2515,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 max="6"
                 value={(component.props.columns as number) || 4}
                 onChange={(e) =>
-                  updateComponentProps(component.id, {
+                  onUpdate({
                     columns: parseInt(e.target.value) || 4,
                   })
                 }
@@ -2549,7 +2549,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.title as string) || 'New Arrivals'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { title: e.target.value })
+                  onUpdate({ title: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2564,7 +2564,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 max="6"
                 value={(component.props.columns as number) || 4}
                 onChange={(e) =>
-                  updateComponentProps(component.id, {
+                  onUpdate({
                     columns: parseInt(e.target.value) || 4,
                   })
                 }
@@ -2598,7 +2598,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.title as string) || ''}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { title: e.target.value })
+                  onUpdate({ title: e.target.value })
                 }
                 placeholder="Block title..."
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -2611,7 +2611,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <textarea
                 value={(component.props.content as string) || ''}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { content: e.target.value })
+                  onUpdate({ content: e.target.value })
                 }
                 placeholder="<p>Your HTML content...</p>"
                 rows={8}
@@ -2625,7 +2625,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <select
                 value={(component.props.layout as string) || 'default'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { layout: e.target.value })
+                  onUpdate({ layout: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
@@ -2642,7 +2642,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="color"
                 value={(component.props.backgroundColor as string) || '#ffffff'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { backgroundColor: e.target.value })
+                  onUpdate({ backgroundColor: e.target.value })
                 }
                 className="w-full h-10 rounded-md border border-slate-200 cursor-pointer"
               />
@@ -2669,7 +2669,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.title as string) || 'Page Title'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { title: e.target.value })
+                  onUpdate({ title: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2682,7 +2682,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.subtitle as string) || ''}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { subtitle: e.target.value })
+                  onUpdate({ subtitle: e.target.value })
                 }
                 placeholder="Page subtitle..."
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -2695,7 +2695,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <textarea
                 value={(component.props.content as string) || ''}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { content: e.target.value })
+                  onUpdate({ content: e.target.value })
                 }
                 placeholder="<p>Your HTML content...</p>"
                 rows={8}
@@ -2710,7 +2710,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 id="showSidebar"
                 checked={(component.props.showSidebar as boolean) ?? false}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { showSidebar: e.target.checked })
+                  onUpdate({ showSidebar: e.target.checked })
                 }
                 className="rounded border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
               />
@@ -2740,7 +2740,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.title as string) || 'Orders & Returns'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { title: e.target.value })
+                  onUpdate({ title: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2753,7 +2753,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.subtitle as string) || 'Track your order or initiate a return'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { subtitle: e.target.value })
+                  onUpdate({ subtitle: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2765,7 +2765,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <textarea
                 value={(component.props.returnPolicy as string) || 'We offer a 30-day return policy on all items. Items must be unused and in original packaging.'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { returnPolicy: e.target.value })
+                  onUpdate({ returnPolicy: e.target.value })
                 }
                 rows={4}
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
@@ -2793,7 +2793,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.formTitle as string) || 'Contact Form'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { formTitle: e.target.value })
+                  onUpdate({ formTitle: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2806,7 +2806,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.submitButtonText as string) || 'Submit'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { submitButtonText: e.target.value })
+                  onUpdate({ submitButtonText: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2818,7 +2818,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <textarea
                 value={(component.props.successMessage as string) || 'Thank you! Your form has been submitted.'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { successMessage: e.target.value })
+                  onUpdate({ successMessage: e.target.value })
                 }
                 rows={2}
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
@@ -2851,7 +2851,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="text"
                 value={(component.props.formTitle as string) || 'Multi-Step Form'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { formTitle: e.target.value })
+                  onUpdate({ formTitle: e.target.value })
                 }
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2863,7 +2863,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <textarea
                 value={(component.props.successMessage as string) || 'Thank you! Your submission has been received.'}
                 onChange={(e) =>
-                  updateComponentProps(component.id, { successMessage: e.target.value })
+                  onUpdate({ successMessage: e.target.value })
                 }
                 rows={2}
                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
@@ -2895,7 +2895,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Layout Mode</label>
                 <select
                   value={(component.props.layout as string) || 'grid'}
-                  onChange={(e) => handleInputChange('layout', e.target.value)}
+                  onChange={(e) => onUpdate({ layout: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="grid">Grid (3 columns)</option>
@@ -2910,7 +2910,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                   <input
                     type="checkbox"
                     checked={(component.props.showRating as boolean) ?? true}
-                    onChange={(e) => handleInputChange('showRating', e.target.checked)}
+                    onChange={(e) => onUpdate({ showRating: e.target.checked })}
                     className="rounded border-slate-300 text-blue-600"
                   />
                   <span className="text-xs text-slate-700">Show star ratings</span>
@@ -2919,7 +2919,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                   <input
                     type="checkbox"
                     checked={(component.props.showAvatar as boolean) ?? true}
-                    onChange={(e) => handleInputChange('showAvatar', e.target.checked)}
+                    onChange={(e) => onUpdate({ showAvatar: e.target.checked })}
                     className="rounded border-slate-300 text-blue-600"
                   />
                   <span className="text-xs text-slate-700">Show avatars</span>
@@ -2928,7 +2928,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                   <input
                     type="checkbox"
                     checked={(component.props.showCompany as boolean) ?? true}
-                    onChange={(e) => handleInputChange('showCompany', e.target.checked)}
+                    onChange={(e) => onUpdate({ showCompany: e.target.checked })}
                     className="rounded border-slate-300 text-blue-600"
                   />
                   <span className="text-xs text-slate-700">Show company names</span>
@@ -2961,7 +2961,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Icon Size</label>
                 <select
                   value={(component.props.size as string) || 'md'}
-                  onChange={(e) => handleInputChange('size', e.target.value)}
+                  onChange={(e) => onUpdate({ size: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="sm">Small (32px)</option>
@@ -2976,7 +2976,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Style Variant</label>
                 <select
                   value={(component.props.variant as string) || 'rounded'}
-                  onChange={(e) => handleInputChange('variant', e.target.value)}
+                  onChange={(e) => onUpdate({ variant: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="rounded">Rounded (Circle)</option>
@@ -2991,7 +2991,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Color Mode</label>
                 <select
                   value={(component.props.colorMode as string) || 'brand'}
-                  onChange={(e) => handleInputChange('colorMode', e.target.value)}
+                  onChange={(e) => onUpdate({ colorMode: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="brand">Brand Colors (platform specific)</option>
@@ -3025,7 +3025,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Separator Style</label>
                 <select
                   value={(component.props.separator as string) || 'chevron'}
-                  onChange={(e) => handleInputChange('separator', e.target.value)}
+                  onChange={(e) => onUpdate({ separator: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="chevron">Chevron ( › )</option>
@@ -3061,7 +3061,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <input
                   type="text"
                   value={(component.props.address as string) || ''}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  onChange={(e) => onUpdate({ address: e.target.value })}
                   placeholder="New York, NY, USA"
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -3080,7 +3080,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                   min="1"
                   max="20"
                   value={(component.props.zoom as number) || 14}
-                  onChange={(e) => handleInputChange('zoom', parseInt(e.target.value))}
+                  onChange={(e) => onUpdate({ zoom: parseInt(e.target.value) })}
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-slate-500 mt-1">
@@ -3094,7 +3094,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Map Type</label>
                 <select
                   value={(component.props.mapType as string) || 'roadmap'}
-                  onChange={(e) => handleInputChange('mapType', e.target.value)}
+                  onChange={(e) => onUpdate({ mapType: e.target.value })}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="roadmap">Roadmap</option>
@@ -3110,7 +3110,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <input
                   type="text"
                   value={(component.props.height as string) || '450px'}
-                  onChange={(e) => handleInputChange('height', e.target.value)}
+                  onChange={(e) => onUpdate({ height: e.target.value })}
                   placeholder="450px"
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
