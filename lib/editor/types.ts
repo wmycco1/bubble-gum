@@ -386,6 +386,12 @@ export interface ComponentProps {
   type?: string;
   required?: boolean;
 
+  // Custom styling (PHASE 1: Custom CSS/Tailwind Editor)
+  id?: string;
+  className?: string;
+  customCSS?: string;
+  customTailwind?: string;
+
   // Custom HTML attributes
   [key: string]: unknown;
 }

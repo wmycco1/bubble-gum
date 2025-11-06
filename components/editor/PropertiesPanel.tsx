@@ -32,6 +32,7 @@ import { TransformControl } from './controls/TransformControl';
 import { TextShadowControl } from './controls/TextShadowControl';
 import { ZIndexControl } from './controls/ZIndexControl';
 import { BorderControl } from './controls/BorderControl';
+import { CustomStyleControl } from './controls/CustomStyleControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 
 interface PropertiesPanelProps {
@@ -2072,6 +2073,15 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
       {/* Properties Form */}
       <div className="space-y-4">{renderProperties()}</div>
+
+      {/* Custom Style Control (CSS/Tailwind Editor - ALL components) */}
+      <PropertyGroup
+        title="Custom Styling"
+        storageKey="custom-style-group"
+        defaultExpanded={false}
+      >
+        <CustomStyleControl componentId={component.id} />
+      </PropertyGroup>
 
       {/* Spacing Controls (Margin/Padding) */}
       <SpacingControls componentId={component.id} />
