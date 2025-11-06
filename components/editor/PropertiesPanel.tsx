@@ -35,6 +35,7 @@ import { BorderControl } from './controls/BorderControl';
 import { CustomStyleControl } from './controls/CustomStyleControl';
 import { TypographyControl } from './controls/TypographyControl';
 import { AdvancedPropertiesControl } from './controls/AdvancedPropertiesControl';
+import { VisibilityControl } from './controls/VisibilityControl';
 import { AccordionItemsControl } from './controls/AccordionItemsControl';
 import { TabsItemsControl } from './controls/TabsItemsControl';
 import { CarouselItemsControl } from './controls/CarouselItemsControl';
@@ -3187,6 +3188,17 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
         <CustomStyleControl componentId={component.id} />
       </PropertyGroup>
 
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* UNIVERSAL CONTROLS (God-Tier 2025) - Available for ALL Components */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+
+      {/* Visibility & Display Control (NEW - God-Tier 2025) */}
+      <VisibilityControl
+        componentId={component.id}
+        currentVisibility={component.props.visibility as 'visible' | 'hidden'}
+        currentDisplay={component.props.display as string}
+      />
+
       {/* Typography Control (ALL text-based components) */}
       <PropertyGroup
         title="Typography"
@@ -3273,16 +3285,14 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
         </PropertyGroup>
       )}
 
-      {/* Background Control (Layout components only) */}
-      {['Container', 'ContainerComponent', 'Section', 'SectionComponent', 'Card', 'CardComponent', 'Grid', 'GridComponent'].includes(component.type) && (
-        <PropertyGroup
-          title="Background"
-          storageKey="background-group"
-          defaultExpanded={false}
-        >
-          <BackgroundControl componentId={component.id} />
-        </PropertyGroup>
-      )}
+      {/* Background Control (ALL components - God-Tier 2025) */}
+      <PropertyGroup
+        title="Background"
+        storageKey="background-group"
+        defaultExpanded={false}
+      >
+        <BackgroundControl componentId={component.id} />
+      </PropertyGroup>
 
       {/* Image Library Modal */}
       <ImageLibraryModal

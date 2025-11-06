@@ -41,6 +41,11 @@ interface CanvasStore extends CanvasState {
   setZoom: (zoom: number) => void;
   setDeviceMode: (mode: 'desktop' | 'tablet' | 'mobile') => void;
 
+  // ═══════════════════════════════════════════════════════════════
+  // NEW: EDITOR MODE ACTIONS (God-Tier 2025)
+  // ═══════════════════════════════════════════════════════════════
+  setEditorMode: (mode: 'simple' | 'advanced') => void;
+
   // Utility actions
   clearCanvas: () => void;
   loadComponents: (components: CanvasComponent[]) => void;
@@ -1390,6 +1395,7 @@ const initialState: CanvasState = {
   isResizing: false,
   zoom: 1,
   deviceMode: 'desktop',
+  editorMode: 'advanced', // Default to advanced mode (full properties panel)
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1744,6 +1750,11 @@ export const useCanvasStore = create<CanvasStore>()(
         setIsResizing: (isResizing) => set({ isResizing }),
         setZoom: (zoom) => set({ zoom }),
         setDeviceMode: (deviceMode) => set({ deviceMode }),
+
+        // ═══════════════════════════════════════════════════════════════
+        // NEW: EDITOR MODE (God-Tier 2025)
+        // ═══════════════════════════════════════════════════════════════
+        setEditorMode: (editorMode) => set({ editorMode }),
 
         // Utility
         clearCanvas: () => set({ ...initialState }),

@@ -84,6 +84,7 @@ import { CMSBlockComponent } from '@/components/canvas/CMSBlockComponent';
 import { CMSPageComponent } from '@/components/canvas/CMSPageComponent';
 import { OrdersAndReturnsComponent } from '@/components/canvas/OrdersAndReturnsComponent';
 import { logger } from '@/lib/utils/logger';
+import { ComponentToolbar } from './ComponentToolbar';
 
 interface RenderComponentProps {
   component: CanvasComponent;
@@ -130,6 +131,12 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     },
   });
 
+  // ═══════════════════════════════════════════════════════════════
+  // Apply visibility and display props (God-Tier 2025)
+  // ═══════════════════════════════════════════════════════════════
+  const visibility = component.props.visibility as 'visible' | 'hidden' | undefined;
+  const display = component.props.display as string | undefined;
+
   const style: React.CSSProperties = {
     // Ghost effect while dragging - make original semi-transparent
     opacity: isDragging ? 0.3 : 1, // Ghost during drag, full when not
@@ -137,6 +144,10 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     pointerEvents: isDragging ? 'none' : 'auto', // Disable clicks while dragging
     willChange: isDragging ? 'opacity' : 'auto', // GPU hint
     transition: 'opacity 100ms ease-out', // Quick fade
+
+    // NEW: Apply visibility and display from props (God-Tier 2025)
+    ...(visibility && { visibility }),
+    ...(display && { display }),
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -460,10 +471,10 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
         isOver && 'ring-2 ring-blue-400 bg-blue-50'
       )}
     >
-      {/* Selection Label & Actions */}
+      {/* Selection Label, Drag Handle & Quick Actions Toolbar */}
       {isSelected && (
-        <div className="absolute -top-6 left-0 right-0 z-20 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1">
+        <>
+          <div className="absolute -top-6 left-0 z-20 flex items-center gap-1">
             {/* Drag Handle */}
             <button
               {...dragListeners}
@@ -478,23 +489,15 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
               {component.type}
             </div>
           </div>
-          <div className="flex gap-1">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteComponent(component.id);
-                toast.success(`Deleted ${component.type}`, {
-                  duration: 1500,
-                  icon: '🗑️',
-                });
-              }}
-              className="rounded bg-red-500 px-2 py-1 text-xs font-medium text-white shadow-sm hover:bg-red-600 transition-colors"
-              title="Delete component (Del)"
-            >
-              🗑️
-            </button>
-          </div>
-        </div>
+
+          {/* Quick Actions Toolbar (God-Tier 2025) */}
+          <ComponentToolbar componentId={component.id} position="top-right" />
+        </>
+      )}
+
+      {/* Show toolbar on hover (without selection label) */}
+      {isHovered && !isSelected && (
+        <ComponentToolbar componentId={component.id} position="top-right" />
       )}
 
       {/* Visual Component */}

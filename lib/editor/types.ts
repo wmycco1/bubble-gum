@@ -445,6 +445,53 @@ export interface ComponentStyle extends StyleProperties {
   mobile?: Partial<StyleProperties>;
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// GRANULAR STYLES SYSTEM (God-Tier 2025)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Allows styling individual elements within complex components
+// Example: PricingTable → title, price, description, button separately
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Granular styles for individual elements within a component
+ * Each property is optional and can target specific sub-elements
+ */
+export interface ComponentStyles {
+  // Wrapper/Container level (applies to whole component)
+  wrapper?: React.CSSProperties;
+
+  // Common text elements
+  title?: React.CSSProperties;         // Main heading
+  subtitle?: React.CSSProperties;      // Secondary heading
+  description?: React.CSSProperties;   // Body text/paragraph
+  label?: React.CSSProperties;         // Form labels, badges
+
+  // Interactive elements
+  button?: React.CSSProperties;        // CTA buttons, action buttons
+  link?: React.CSSProperties;          // Links, anchors
+
+  // Media elements
+  image?: React.CSSProperties;         // Images
+  icon?: React.CSSProperties;          // Icons, SVGs
+  video?: React.CSSProperties;         // Video containers
+
+  // Specialized elements (component-specific)
+  price?: React.CSSProperties;         // Pricing (PricingTable, Products)
+  badge?: React.CSSProperties;         // Badges (highlighted tier, new product)
+  feature?: React.CSSProperties;       // Feature list items
+  card?: React.CSSProperties;          // Card containers (PricingTable tiers)
+  header?: React.CSSProperties;        // Section headers
+  footer?: React.CSSProperties;        // Section footers
+
+  // Form elements
+  input?: React.CSSProperties;         // Input fields
+  textarea?: React.CSSProperties;      // Text areas
+  checkbox?: React.CSSProperties;      // Checkboxes/radios
+
+  // Allow custom element targeting
+  [key: string]: React.CSSProperties | undefined;
+}
+
 export interface ComponentProps {
   // Common props
   text?: string;
@@ -493,6 +540,25 @@ export interface ComponentProps {
   overflow?: string;
   cursor?: string;
 
+  // ═══════════════════════════════════════════════════════════════
+  // NEW: GRANULAR STYLES (God-Tier 2025)
+  // ═══════════════════════════════════════════════════════════════
+  /**
+   * Granular styles for individual elements within the component
+   * Allows styling title, subtitle, button, price, etc. separately
+   */
+  styles?: ComponentStyles;
+
+  /**
+   * Visibility control (display: none vs visibility: hidden)
+   */
+  visibility?: 'visible' | 'hidden';
+
+  /**
+   * Display mode control
+   */
+  display?: 'block' | 'flex' | 'grid' | 'inline-block' | 'inline-flex' | 'none';
+
   // Custom HTML attributes
   [key: string]: unknown;
 }
@@ -525,6 +591,16 @@ export interface CanvasState {
   // Viewport
   zoom: number;
   deviceMode: 'desktop' | 'tablet' | 'mobile';
+
+  // ═══════════════════════════════════════════════════════════════
+  // NEW: EDITOR MODE (God-Tier 2025)
+  // ═══════════════════════════════════════════════════════════════
+  /**
+   * Editor mode: simple (inline editing) or advanced (full properties panel)
+   * Simple: contentEditable text, quick actions, no properties panel
+   * Advanced: full control, properties panel, granular styling
+   */
+  editorMode: 'simple' | 'advanced';
 }
 
 export interface DragItem {
