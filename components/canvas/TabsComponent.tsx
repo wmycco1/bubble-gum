@@ -26,6 +26,7 @@ interface TabItem {
   label: string;
   content: string;
   icon?: string;
+  [key: string]: unknown;
 }
 
 export function TabsComponent({ component }: TabsComponentProps) {

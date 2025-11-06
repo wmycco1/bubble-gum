@@ -27,6 +27,7 @@ interface CarouselSlide {
   image: string;
   title?: string;
   description?: string;
+  [key: string]: unknown;
 }
 
 export function CarouselComponent({ component }: CarouselComponentProps) {

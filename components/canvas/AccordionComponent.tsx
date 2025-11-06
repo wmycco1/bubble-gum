@@ -25,6 +25,7 @@ interface AccordionItem {
   id: string;
   title: string;
   content: string;
+  [key: string]: unknown;
 }
 
 export function AccordionComponent({ component }: AccordionComponentProps) {
