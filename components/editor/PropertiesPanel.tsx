@@ -38,6 +38,7 @@ import { AdvancedPropertiesControl } from './controls/AdvancedPropertiesControl'
 import { AccordionItemsControl } from './controls/AccordionItemsControl';
 import { TabsItemsControl } from './controls/TabsItemsControl';
 import { CarouselItemsControl } from './controls/CarouselItemsControl';
+import { ProductItemsControl } from './controls/ProductItemsControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 import { logger } from '@/lib/utils/logger';
 
@@ -2257,14 +2258,162 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       case 'SliderComponent':
       case 'Toggle':
       case 'ToggleComponent':
+      // M3: E-commerce - ProductList (with CRUD control)
+      case 'ProductList':
+      case 'ProductListComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">🛒 Product List</p>
+              <p className="text-xs text-green-700">
+                Grid layout for displaying product cards
+              </p>
+            </div>
+
+            {/* Product Items CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <ProductItemsControl componentId={component.id} />
+            </div>
+          </>
+        );
+
+      // M3: E-commerce - ProductSlider (with CRUD control)
+      case 'ProductSlider':
+      case 'ProductSliderComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">🎠 Product Slider</p>
+              <p className="text-xs text-green-700">
+                Horizontal carousel slider for products
+              </p>
+            </div>
+
+            {/* Slides to Show */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Slides to Show</label>
+              <input
+                type="number"
+                min="1"
+                max="6"
+                value={(component.props.slidesToShow as number) || 4}
+                onChange={(e) =>
+                  updateComponentProps(component.id, {
+                    slidesToShow: parseInt(e.target.value) || 4,
+                  })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Product Items CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <ProductItemsControl componentId={component.id} />
+            </div>
+          </>
+        );
+
+      // M3: E-commerce - AddToCart (with full controls)
+      case 'AddToCart':
+      case 'AddToCartComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">🛒 Add to Cart</p>
+              <p className="text-xs text-green-700">
+                Button with quantity selector and stock status
+              </p>
+            </div>
+
+            {/* Button Text */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Button Text</label>
+              <input
+                type="text"
+                value={(component.props.buttonText as string) || 'Add to Cart'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { buttonText: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Button Color */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Button Color</label>
+              <select
+                value={(component.props.buttonColor as string) || 'blue'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { buttonColor: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+                <option value="red">Red</option>
+                <option value="purple">Purple</option>
+                <option value="black">Black</option>
+              </select>
+            </div>
+
+            {/* Show Quantity */}
+            <div className="flex items-center gap-2 mt-3">
+              <input
+                type="checkbox"
+                id="showQuantity"
+                checked={(component.props.showQuantity as boolean) ?? true}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { showQuantity: e.target.checked })
+                }
+                className="rounded border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+              />
+              <label htmlFor="showQuantity" className="text-xs font-medium text-slate-700">
+                Show Quantity Selector
+              </label>
+            </div>
+
+            {/* Max Quantity */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Max Quantity</label>
+              <input
+                type="number"
+                min="1"
+                max="999"
+                value={(component.props.maxQuantity as number) || 99}
+                onChange={(e) =>
+                  updateComponentProps(component.id, {
+                    maxQuantity: parseInt(e.target.value) || 99,
+                  })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Stock Status */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Stock Status</label>
+              <select
+                value={(component.props.stockStatus as string) || 'in-stock'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { stockStatus: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="in-stock">In Stock</option>
+                <option value="low-stock">Low Stock</option>
+                <option value="out-of-stock">Out of Stock</option>
+              </select>
+            </div>
+          </>
+        );
+
+      // M3: Other components (controls coming soon)
       case 'Testimonial':
       case 'TestimonialComponent':
       case 'StarRating':
       case 'StarRatingComponent':
       case 'Menu':
       case 'MenuComponent':
-      case 'ProductList':
-      case 'ProductListComponent':
       case 'ProductSlider':
       case 'ProductSliderComponent':
       case 'AddToCart':
