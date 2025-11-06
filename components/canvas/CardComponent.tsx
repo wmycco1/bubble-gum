@@ -12,6 +12,7 @@ import type { CanvasComponent, CardProps } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { RenderComponent } from '@/components/editor/RenderComponent';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
+import { useDroppable } from '@dnd-kit/core';
 
 interface CardComponentProps {
   component: CanvasComponent;
@@ -20,6 +21,23 @@ interface CardComponentProps {
 export function CardComponent({ component }: CardComponentProps) {
   const { props, style, children } = component;
   const selectedComponentId = useCanvasStore((state) => state.selectedComponentId);
+
+  // Make card droppable (when used as container)
+  const { setNodeRef, isOver } = useDroppable({
+    id: `card-${component.id}`,
+    data: {
+      parentId: component.id,
+      accepts: [
+        // Basic components
+        'Text', 'Heading', 'Button', 'Image', 'Link', 'Icon',
+        // Form components
+        'Input', 'Textarea', 'Checkbox', 'Submit',
+        // Other components
+        'Spacer', 'Divider', 'HTML', 'Video'
+      ],
+      index: children?.length || 0,
+    },
+  });
 
   // Cast props to CardProps for type safety
   const cardProps = props as CardProps;
@@ -51,8 +69,14 @@ export function CardComponent({ component }: CardComponentProps) {
 
   // MODE 2: Container Card (has children)
   if (hasChildren) {
+    const dropStateClass = isOver ? 'ring-2 ring-blue-500 ring-offset-2' : '';
+
     return (
-      <div className={containerClassName} style={style as React.CSSProperties}>
+      <div
+        ref={setNodeRef}
+        className={`${containerClassName} ${dropStateClass} transition-all`}
+        style={style as React.CSSProperties}
+      >
         <div className="space-y-4">
           {children.map((child) => (
             <RenderComponent
