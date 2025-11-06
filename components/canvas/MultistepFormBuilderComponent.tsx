@@ -60,6 +60,7 @@ export function MultistepFormBuilderComponent({ component }: { component: Canvas
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // eslint-disable-next-line no-console
     console.log('Multistep form submitted:', formData);
     setCompleted(true);
   };

@@ -181,7 +181,7 @@ export function MultistepFormStepsControl({ componentId }: MultistepFormStepsCon
                 if (Array.isArray(parsed)) {
                   onChange({ fields: parsed });
                 }
-              } catch (err) {
+              } catch {
                 // Invalid JSON, ignore
               }
             }}

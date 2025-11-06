@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 // Dynamic import for client-side only (Next.js 16 compatibility)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let DOMPurify: any = null;
 
 if (typeof window !== 'undefined') {
