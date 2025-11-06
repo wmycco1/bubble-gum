@@ -39,6 +39,7 @@ import { AccordionItemsControl } from './controls/AccordionItemsControl';
 import { TabsItemsControl } from './controls/TabsItemsControl';
 import { CarouselItemsControl } from './controls/CarouselItemsControl';
 import { ProductItemsControl } from './controls/ProductItemsControl';
+import { PricingTiersControl } from './controls/PricingTiersControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 import { logger } from '@/lib/utils/logger';
 
@@ -2407,6 +2408,172 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           </>
         );
 
+      // M3: E-commerce - PricingTable (with CRUD control)
+      case 'PricingTable':
+      case 'PricingTableComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">💰 Pricing Table</p>
+              <p className="text-xs text-green-700">
+                Display pricing tiers with features
+              </p>
+            </div>
+
+            {/* Pricing Tiers CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <PricingTiersControl componentId={component.id} />
+            </div>
+          </>
+        );
+
+      // M3: E-commerce - RecentlyViewed
+      case 'RecentlyViewed':
+      case 'RecentlyViewedComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">👁️ Recently Viewed</p>
+              <p className="text-xs text-green-700">
+                Display recently viewed products
+              </p>
+            </div>
+
+            {/* Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Section Title</label>
+              <input
+                type="text"
+                value={(component.props.title as string) || 'Recently Viewed'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { title: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Columns */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Columns</label>
+              <input
+                type="number"
+                min="1"
+                max="6"
+                value={(component.props.columns as number) || 4}
+                onChange={(e) =>
+                  updateComponentProps(component.id, {
+                    columns: parseInt(e.target.value) || 4,
+                  })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Product Items CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <ProductItemsControl componentId={component.id} />
+            </div>
+          </>
+        );
+
+      // M3: E-commerce - RecentlyCompared
+      case 'RecentlyCompared':
+      case 'RecentlyComparedComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">⚖️ Recently Compared</p>
+              <p className="text-xs text-green-700">
+                Display recently compared products
+              </p>
+            </div>
+
+            {/* Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Section Title</label>
+              <input
+                type="text"
+                value={(component.props.title as string) || 'Recently Compared'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { title: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Columns */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Columns</label>
+              <input
+                type="number"
+                min="1"
+                max="6"
+                value={(component.props.columns as number) || 4}
+                onChange={(e) =>
+                  updateComponentProps(component.id, {
+                    columns: parseInt(e.target.value) || 4,
+                  })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Product Items CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <ProductItemsControl componentId={component.id} />
+            </div>
+          </>
+        );
+
+      // M3: E-commerce - NewProducts
+      case 'NewProducts':
+      case 'NewProductsComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">✨ New Products</p>
+              <p className="text-xs text-green-700">
+                Display newly added products
+              </p>
+            </div>
+
+            {/* Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Section Title</label>
+              <input
+                type="text"
+                value={(component.props.title as string) || 'New Arrivals'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { title: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Columns */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Columns</label>
+              <input
+                type="number"
+                min="1"
+                max="6"
+                value={(component.props.columns as number) || 4}
+                onChange={(e) =>
+                  updateComponentProps(component.id, {
+                    columns: parseInt(e.target.value) || 4,
+                  })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Product Items CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <ProductItemsControl componentId={component.id} />
+            </div>
+          </>
+        );
+
       // M3: Other components (controls coming soon)
       case 'Testimonial':
       case 'TestimonialComponent':
@@ -2414,12 +2581,6 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       case 'StarRatingComponent':
       case 'Menu':
       case 'MenuComponent':
-      case 'ProductSlider':
-      case 'ProductSliderComponent':
-      case 'AddToCart':
-      case 'AddToCartComponent':
-      case 'PricingTable':
-      case 'PricingTableComponent':
       case 'RecentlyViewed':
       case 'RecentlyViewedComponent':
       case 'RecentlyCompared':
