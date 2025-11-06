@@ -13,10 +13,11 @@
 // - Real-time preview
 // ═══════════════════════════════════════════════════════════════
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { ColorPicker } from './ColorPicker';
+import { extractBoxShadowFromCSS } from '@/lib/utils/css-property-parser';
 
 interface BoxShadowControlProps {
   componentId: string;
@@ -89,10 +90,23 @@ export function BoxShadowControl({ componentId }: BoxShadowControlProps) {
     }
   };
 
-  // Get current box-shadow value
+  // Get current box-shadow value (with bidirectional sync from Custom CSS)
   const getCurrentBoxShadow = (): string | undefined => {
     if (!component) return undefined;
 
+    // 🔥 BIDIRECTIONAL SYNC: First try to extract from Custom CSS
+    const customCSS = (component.props.customCSS as string) || '';
+    if (customCSS) {
+      const extractedShadow = extractBoxShadowFromCSS(customCSS);
+      if (extractedShadow) {
+        console.log('🔄 BoxShadowControl: Syncing from Custom CSS', extractedShadow);
+        // Convert parsed shadow to CSS string
+        const insetPrefix = extractedShadow.inset ? 'inset ' : '';
+        return `${insetPrefix}${extractedShadow.x}px ${extractedShadow.y}px ${extractedShadow.blur}px ${extractedShadow.spread}px ${extractedShadow.color}`;
+      }
+    }
+
+    // Fallback: Parse from style properties (existing logic)
     const style = component.style;
 
     // Check responsive overrides
@@ -108,6 +122,12 @@ export function BoxShadowControl({ componentId }: BoxShadowControlProps) {
 
   const currentBoxShadow = getCurrentBoxShadow();
   const [shadows, setShadows] = useState<Shadow[]>(() => parseBoxShadow(currentBoxShadow));
+
+  // Sync with Custom CSS changes
+  useEffect(() => {
+    const newBoxShadow = getCurrentBoxShadow();
+    setShadows(parseBoxShadow(newBoxShadow));
+  }, [component, deviceMode, component?.props.customCSS]);
 
   // Convert Shadow array to CSS box-shadow string
   const shadowsToCSS = (shadowList: Shadow[]): string => {

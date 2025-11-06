@@ -17,6 +17,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { ColorPicker } from './ColorPicker';
+import { extractTextShadowFromCSS } from '@/lib/utils/css-property-parser';
 
 interface TextShadowControlProps {
   componentId: string;
@@ -83,10 +84,22 @@ export function TextShadowControl({ componentId }: TextShadowControlProps) {
     }
   };
 
-  // Get current text-shadow value
+  // Get current text-shadow value (with bidirectional sync from Custom CSS)
   const getCurrentTextShadow = (): string | undefined => {
     if (!component) return undefined;
 
+    // 🔥 BIDIRECTIONAL SYNC: First try to extract from Custom CSS
+    const customCSS = (component.props.customCSS as string) || '';
+    if (customCSS) {
+      const extractedShadow = extractTextShadowFromCSS(customCSS);
+      if (extractedShadow) {
+        console.log('🔄 TextShadowControl: Syncing from Custom CSS', extractedShadow);
+        // Convert parsed shadow to CSS string
+        return `${extractedShadow.x}px ${extractedShadow.y}px ${extractedShadow.blur}px ${extractedShadow.color}`;
+      }
+    }
+
+    // Fallback: Parse from style properties (existing logic)
     const style = component.style;
 
     // Check responsive overrides
@@ -103,10 +116,10 @@ export function TextShadowControl({ componentId }: TextShadowControlProps) {
   const currentTextShadow = getCurrentTextShadow();
   const [shadows, setShadows] = useState<TextShadow[]>(() => parseTextShadow(currentTextShadow));
 
-  // Sync with external changes
+  // Sync with external changes (including Custom CSS)
   useEffect(() => {
     setShadows(parseTextShadow(getCurrentTextShadow()));
-  }, [component, deviceMode]);
+  }, [component, deviceMode, component?.props.customCSS]);
 
   // Convert TextShadow array to CSS text-shadow string
   const shadowsToCSS = (shadowList: TextShadow[]): string => {

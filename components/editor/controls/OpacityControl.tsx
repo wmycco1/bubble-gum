@@ -14,6 +14,7 @@
 
 import { useState, useEffect } from 'react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
+import { extractOpacityFromCSS } from '@/lib/utils/css-property-parser';
 
 interface OpacityControlProps {
   componentId: string;
@@ -38,10 +39,21 @@ export function OpacityControl({ componentId }: OpacityControlProps) {
 
   const component = findComponent(components, componentId);
 
-  // Get current opacity value
+  // Get current opacity value (with bidirectional sync from Custom CSS)
   const getCurrentOpacity = (): number => {
     if (!component) return 100;
 
+    // 🔥 BIDIRECTIONAL SYNC: First try to extract from Custom CSS
+    const customCSS = (component.props.customCSS as string) || '';
+    if (customCSS) {
+      const extractedOpacity = extractOpacityFromCSS(customCSS);
+      if (extractedOpacity !== null) {
+        console.log('🔄 OpacityControl: Syncing from Custom CSS', extractedOpacity);
+        return Math.round(extractedOpacity * 100); // Convert 0-1 to 0-100
+      }
+    }
+
+    // Fallback: Parse from style properties (existing logic)
     const style = component.style;
 
     // Check responsive overrides
@@ -62,10 +74,10 @@ export function OpacityControl({ componentId }: OpacityControlProps) {
 
   const [opacity, setOpacity] = useState<number>(getCurrentOpacity());
 
-  // Sync with external changes
+  // Sync with external changes (including Custom CSS)
   useEffect(() => {
     setOpacity(getCurrentOpacity());
-  }, [component, deviceMode]);
+  }, [component, deviceMode, component?.props.customCSS]);
 
   // Handle opacity change
   const handleOpacityChange = (newOpacity: number) => {
