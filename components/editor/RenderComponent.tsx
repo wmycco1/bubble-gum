@@ -113,6 +113,7 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     listeners: dragListeners,
     setNodeRef: setDragRef,
     transform,
+    isDragging,
   } = useDraggable({
     id: component.id,
     data: {
@@ -131,11 +132,11 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
   });
 
   const style: React.CSSProperties = {
-    transform: transform
-      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-      : undefined,
+    // Remove transform - DragOverlay handles positioning
+    opacity: isDragging ? 0.3 : 1, // Fade out original while dragging
     zIndex: isSelected ? 10 : 1, // Selected components on top
     pointerEvents: 'auto', // CRITICAL: Ensure clickable
+    transition: 'opacity 0.2s ease', // Smooth fade
   };
 
   const handleClick = (e: React.MouseEvent) => {

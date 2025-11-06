@@ -32,12 +32,14 @@ interface DragDropContextProviderProps {
 
 export function DragDropContextProvider({ children }: DragDropContextProviderProps) {
   const [activeType, setActiveType] = useState<ComponentType | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const addComponent = useCanvasStore((state) => state.addComponent);
+  const getComponentById = useCanvasStore((state) => state.getComponentById);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // 8px movement required to start drag
+        distance: 3, // Reduced from 8px to 3px for more responsive drag
       },
     })
   );
@@ -48,6 +50,13 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
     // Extract component type from drag data
     if (active.data.current?.type) {
       setActiveType(active.data.current.type as ComponentType);
+    }
+
+    // Store active component ID for existing components
+    if (active.data.current?.dragType === 'canvas-component') {
+      setActiveId(active.id as string);
+    } else {
+      setActiveId(null);
     }
 
     logger.debug('🎯 Drag started:', { id: active.id, type: active.data.current?.type });
@@ -185,7 +194,11 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
     }
 
     setActiveType(null);
+    setActiveId(null);
   };
+
+  // Get the active component for overlay
+  const activeComponent = activeId ? getComponentById(activeId) : null;
 
   return (
     <DndContext
@@ -197,12 +210,23 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
     >
       {children}
 
-      {/* Drag Overlay - shows ghost preview while dragging */}
-      <DragOverlay>
-        {activeType ? (
-          <div className="rounded-lg border-2 border-blue-500 bg-blue-50 px-4 py-3 shadow-lg opacity-80">
+      {/* Drag Overlay - follows cursor precisely */}
+      <DragOverlay dropAnimation={null}>
+        {activeType || activeComponent ? (
+          <div className="rounded-lg border-2 border-blue-500 bg-blue-50 px-4 py-3 shadow-xl opacity-90 cursor-grabbing">
             <div className="text-sm font-medium text-blue-900">
-              {activeType}
+              {activeComponent ? (
+                <>
+                  <span className="font-bold">{activeComponent.type}</span>
+                  {activeComponent.props.text && (
+                    <span className="ml-2 text-xs text-slate-600">
+                      ({String(activeComponent.props.text).substring(0, 20)}...)
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="font-bold">{activeType}</span>
+              )}
             </div>
           </div>
         ) : null}
