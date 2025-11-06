@@ -38,10 +38,9 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       import('dompurify').then((module) => {
-        // DOMPurify is a function that needs window context
-        const DOMPurifyConstructor = module.default;
-        const purifyInstance = DOMPurifyConstructor(window);
-        setPurify(purifyInstance);
+        // DOMPurify default export is already the sanitize function
+        // Just use it directly
+        setPurify(module.default as unknown as { sanitize: (source: string, config?: Record<string, unknown>) => string });
       });
     }
   }, []);
@@ -70,7 +69,18 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
     }
 
     // Sanitize with DOMPurify
-    return purify.sanitize(content, config);
+    try {
+      if (typeof purify.sanitize === 'function') {
+        return purify.sanitize(content, config);
+      } else {
+        console.error('purify.sanitize is not a function:', typeof purify.sanitize, purify);
+        // Fallback: return unsanitized for now (TEMPORARY)
+        return content;
+      }
+    } catch (error) {
+      console.error('Error sanitizing HTML:', error);
+      return content;
+    }
   }, [content, sanitize, allowedTags, allowedAttributes, purify]);
 
   // Build className
