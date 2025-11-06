@@ -40,6 +40,8 @@ import { TabsItemsControl } from './controls/TabsItemsControl';
 import { CarouselItemsControl } from './controls/CarouselItemsControl';
 import { ProductItemsControl } from './controls/ProductItemsControl';
 import { PricingTiersControl } from './controls/PricingTiersControl';
+import { FormFieldsControl } from './controls/FormFieldsControl';
+import { MultistepFormStepsControl } from './controls/MultistepFormStepsControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 import { logger } from '@/lib/utils/logger';
 
@@ -2769,6 +2771,109 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           </>
         );
 
+      // M3: Forms - FormBuilder
+      case 'FormBuilder':
+      case 'FormBuilderComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">📝 Form Builder</p>
+              <p className="text-xs text-green-700">
+                Dynamic form with configurable fields
+              </p>
+            </div>
+
+            {/* Form Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Form Title</label>
+              <input
+                type="text"
+                value={(component.props.formTitle as string) || 'Contact Form'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { formTitle: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Submit Button Text */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Submit Button Text</label>
+              <input
+                type="text"
+                value={(component.props.submitButtonText as string) || 'Submit'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { submitButtonText: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Success Message */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Success Message</label>
+              <textarea
+                value={(component.props.successMessage as string) || 'Thank you! Your form has been submitted.'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { successMessage: e.target.value })
+                }
+                rows={2}
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+              />
+            </div>
+
+            {/* Form Fields CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <FormFieldsControl componentId={component.id} />
+            </div>
+          </>
+        );
+
+      // M3: Forms - MultistepFormBuilder
+      case 'MultistepFormBuilder':
+      case 'MultistepFormBuilderComponent':
+        return (
+          <>
+            <div className="rounded-md bg-green-50 p-3 border border-green-200 mb-4">
+              <p className="text-xs text-green-900 font-medium mb-1">📋 Multi-Step Form</p>
+              <p className="text-xs text-green-700">
+                Wizard-style form with multiple steps
+              </p>
+            </div>
+
+            {/* Form Title */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700">Form Title</label>
+              <input
+                type="text"
+                value={(component.props.formTitle as string) || 'Multi-Step Form'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { formTitle: e.target.value })
+                }
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Success Message */}
+            <div className="space-y-2 mt-3">
+              <label className="text-xs font-medium text-slate-700">Success Message</label>
+              <textarea
+                value={(component.props.successMessage as string) || 'Thank you! Your submission has been received.'}
+                onChange={(e) =>
+                  updateComponentProps(component.id, { successMessage: e.target.value })
+                }
+                rows={2}
+                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+              />
+            </div>
+
+            {/* Form Steps CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <MultistepFormStepsControl componentId={component.id} />
+            </div>
+          </>
+        );
+
       // M3: Other components (controls coming soon)
       case 'Testimonial':
       case 'TestimonialComponent':
@@ -2776,10 +2881,6 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       case 'StarRatingComponent':
       case 'Menu':
       case 'MenuComponent':
-      case 'FormBuilder':
-      case 'FormBuilderComponent':
-      case 'MultistepFormBuilder':
-      case 'MultistepFormBuilderComponent':
         return (
           <div className="rounded-md bg-green-50 p-3 border border-green-200">
             <p className="text-xs text-green-900 font-medium mb-1">✨ M3 Component</p>
