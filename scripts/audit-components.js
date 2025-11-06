@@ -82,7 +82,7 @@ function classifyComponentAtomic(componentName) {
   const atoms = ['Button', 'Input', 'Icon', 'Link', 'Image', 'Text', 'Badge', 'Divider', 'Checkbox', 'Submit', 'Heading', 'Spacer', 'HTML', 'Video', 'Textarea'];
 
   // Molecules - simple groups
-  const molecules = ['IconBox', 'ImageBox', 'IconList', 'Alert', 'Tooltip', 'Progress', 'Counter', 'Breadcrumb', 'Toggle', 'StarRating'];
+  const molecules = ['IconBox', 'ImageBox', 'IconList', 'Alert', 'Tooltip', 'Progress', 'Counter', 'Breadcrumb', 'Toggle', 'StarRating', 'Modal'];
 
   // Organisms - complex sections
   const organisms = ['Hero', 'Banner', 'PricingTable', 'Accordion', 'Tabs', 'Navbar', 'Menu', 'ProductList', 'ProductSlider', 'Form', 'FormBuilder', 'MultistepFormBuilder', 'Carousel', 'BannerSlider', 'Slider', 'Features', 'CTA', 'Testimonial', 'Footer', 'Card', 'GoogleMaps', 'FacebookLike', 'FacebookContent', 'SoundCloud', 'SocialIcons', 'AddToCart', 'RecentlyViewed', 'RecentlyCompared', 'NewProducts', 'CMSBlock', 'CMSPage', 'OrdersAndReturns', 'TextEditor'];
