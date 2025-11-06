@@ -2067,6 +2067,238 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           </>
         );
 
+      // M3: Extended Component Library
+      case 'Banner':
+      case 'BannerComponent':
+        return (
+          <>
+            <div className="rounded-md bg-blue-50 p-3 border border-blue-200 mb-4">
+              <p className="text-xs text-blue-900 font-medium mb-1">🎪 Banner Component</p>
+              <p className="text-xs text-blue-700">Hero banner with CTA buttons</p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Title</label>
+              <input
+                type="text"
+                value={(localProps.title as string) || 'Welcome to Our Site'}
+                onChange={(e) => handleChange('title', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Subtitle</label>
+              <input
+                type="text"
+                value={(localProps.subtitle as string) || ''}
+                onChange={(e) => handleChange('subtitle', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Description</label>
+              <textarea
+                value={(localProps.description as string) || ''}
+                onChange={(e) => handleChange('description', e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Background Image URL</label>
+              <input
+                type="text"
+                value={(localProps.backgroundImage as string) || ''}
+                onChange={(e) => handleChange('backgroundImage', e.target.value)}
+                placeholder="https://images.unsplash.com/..."
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">CTA Button Text</label>
+              <input
+                type="text"
+                value={(localProps.ctaText as string) || ''}
+                onChange={(e) => handleChange('ctaText', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">CTA Button Link</label>
+              <input
+                type="text"
+                value={(localProps.ctaLink as string) || '#'}
+                onChange={(e) => handleChange('ctaLink', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+          </>
+        );
+
+      case 'Video':
+      case 'VideoComponent':
+        return (
+          <>
+            <div className="rounded-md bg-red-50 p-3 border border-red-200 mb-4">
+              <p className="text-xs text-red-900 font-medium mb-1">🎥 Video Component</p>
+              <p className="text-xs text-red-700">YouTube/Vimeo/HTML5 video player</p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Video Provider</label>
+              <select
+                value={(localProps.provider as string) || 'youtube'}
+                onChange={(e) => handleChange('provider', e.target.value)}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value="youtube">YouTube</option>
+                <option value="vimeo">Vimeo</option>
+                <option value="html5">HTML5</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Video URL</label>
+              <input
+                type="text"
+                value={(localProps.url as string) || ''}
+                onChange={(e) => handleChange('url', e.target.value)}
+                placeholder="https://youtube.com/watch?v=..."
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="video-autoPlay"
+                checked={(localProps.autoPlay as boolean) ?? false}
+                onChange={(e) => handleChange('autoPlay', e.target.checked)}
+                className="h-4 w-4 rounded"
+              />
+              <label htmlFor="video-autoPlay" className="text-sm font-medium text-slate-700">
+                Auto Play
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="video-controls"
+                checked={(localProps.controls as boolean) ?? true}
+                onChange={(e) => handleChange('controls', e.target.checked)}
+                className="h-4 w-4 rounded"
+              />
+              <label htmlFor="video-controls" className="text-sm font-medium text-slate-700">
+                Show Controls
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="video-loop"
+                checked={(localProps.loop as boolean) ?? false}
+                onChange={(e) => handleChange('loop', e.target.checked)}
+                className="h-4 w-4 rounded"
+              />
+              <label htmlFor="video-loop" className="text-sm font-medium text-slate-700">
+                Loop
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="video-muted"
+                checked={(localProps.muted as boolean) ?? false}
+                onChange={(e) => handleChange('muted', e.target.checked)}
+                className="h-4 w-4 rounded"
+              />
+              <label htmlFor="video-muted" className="text-sm font-medium text-slate-700">
+                Muted
+              </label>
+            </div>
+          </>
+        );
+
+      case 'InnerSection':
+      case 'InnerSectionComponent':
+      case 'Spacer':
+      case 'SpacerComponent':
+      case 'HTML':
+      case 'HTMLComponent':
+      case 'TextEditor':
+      case 'TextEditorComponent':
+      case 'IconBox':
+      case 'IconBoxComponent':
+      case 'ImageBox':
+      case 'ImageBoxComponent':
+      case 'IconList':
+      case 'IconListComponent':
+      case 'GoogleMaps':
+      case 'GoogleMapsComponent':
+      case 'SoundCloud':
+      case 'SoundCloudComponent':
+      case 'SocialIcons':
+      case 'SocialIconsComponent':
+      case 'FacebookLike':
+      case 'FacebookLikeComponent':
+      case 'FacebookContent':
+      case 'FacebookContentComponent':
+      case 'BannerSlider':
+      case 'BannerSliderComponent':
+      case 'Slider':
+      case 'SliderComponent':
+      case 'Toggle':
+      case 'ToggleComponent':
+      case 'Testimonial':
+      case 'TestimonialComponent':
+      case 'StarRating':
+      case 'StarRatingComponent':
+      case 'Menu':
+      case 'MenuComponent':
+      case 'ProductList':
+      case 'ProductListComponent':
+      case 'ProductSlider':
+      case 'ProductSliderComponent':
+      case 'AddToCart':
+      case 'AddToCartComponent':
+      case 'PricingTable':
+      case 'PricingTableComponent':
+      case 'RecentlyViewed':
+      case 'RecentlyViewedComponent':
+      case 'RecentlyCompared':
+      case 'RecentlyComparedComponent':
+      case 'NewProducts':
+      case 'NewProductsComponent':
+      case 'FormBuilder':
+      case 'FormBuilderComponent':
+      case 'MultistepFormBuilder':
+      case 'MultistepFormBuilderComponent':
+      case 'CMSBlock':
+      case 'CMSBlockComponent':
+      case 'CMSPage':
+      case 'CMSPageComponent':
+      case 'OrdersAndReturns':
+      case 'OrdersAndReturnsComponent':
+        return (
+          <div className="rounded-md bg-green-50 p-3 border border-green-200">
+            <p className="text-xs text-green-900 font-medium mb-1">✨ M3 Component</p>
+            <p className="text-xs text-green-700">
+              {component.type} - Properties coming soon!
+            </p>
+            <p className="text-[10px] text-green-600 mt-2">
+              This component is part of the M3 Extended Library. Detailed property controls will be added in the next phase.
+            </p>
+          </div>
+        );
+
       default:
         return (
           <div className="rounded-md bg-yellow-50 p-3 border border-yellow-200">

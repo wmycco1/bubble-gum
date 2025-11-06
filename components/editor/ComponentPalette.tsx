@@ -29,35 +29,47 @@ interface ComponentItem {
   label: string;
   icon: string;
   description: string;
-  category: 'layout' | 'content' | 'forms' | 'navigation' | 'feedback' | 'overlay' | 'interactive';
+  category: 'layout' | 'content' | 'forms' | 'navigation' | 'feedback' | 'overlay' | 'interactive' | 'integrations' | 'sliders' | 'reviews' | 'ecommerce' | 'cms';
 }
 
 const componentTypes: ComponentItem[] = [
-  // Layout (4)
+  // Layout (6 - added 2 M3)
   { type: 'Container', label: 'Container', icon: '📦', description: 'Content wrapper', category: 'layout' },
   { type: 'Section', label: 'Hero Section', icon: '🎭', description: 'Full-width hero banner', category: 'layout' },
   { type: 'Grid', label: 'Grid', icon: '🔲', description: 'Responsive grid layout', category: 'layout' },
   { type: 'Card', label: 'Card', icon: '🃏', description: 'Content card', category: 'layout' },
+  { type: 'InnerSection', label: 'Inner Section', icon: '🔳', description: 'Nested layout container', category: 'layout' },
+  { type: 'Spacer', label: 'Spacer', icon: '↕️', description: 'Vertical spacing', category: 'layout' },
 
-  // Content (5)
+  // Content (12 - added 7 M3)
   { type: 'Text', label: 'Text', icon: '📝', description: 'Paragraph or heading text', category: 'content' },
   { type: 'Heading', label: 'Heading', icon: '📄', description: 'h1-h6 headings', category: 'content' },
   { type: 'Image', label: 'Image', icon: '🖼️', description: 'Image with alt text', category: 'content' },
   { type: 'Link', label: 'Link', icon: '🔗', description: 'Hyperlink', category: 'content' },
   { type: 'Icon', label: 'Icon', icon: '⭐', description: 'Lucide icons', category: 'content' },
+  { type: 'Banner', label: 'Banner', icon: '🎪', description: 'Hero banner with CTA', category: 'content' },
+  { type: 'HTML', label: 'HTML Block', icon: '🔧', description: 'Custom HTML content', category: 'content' },
+  { type: 'Video', label: 'Video', icon: '🎥', description: 'YouTube/Vimeo/HTML5 video', category: 'content' },
+  { type: 'TextEditor', label: 'Rich Text Editor', icon: '✍️', description: 'WYSIWYG editor', category: 'content' },
+  { type: 'IconBox', label: 'Icon Box', icon: '💎', description: 'Icon with heading/text', category: 'content' },
+  { type: 'ImageBox', label: 'Image Box', icon: '🖼️', description: 'Image with caption', category: 'content' },
+  { type: 'IconList', label: 'Icon List', icon: '📋', description: 'List with icons', category: 'content' },
 
-  // Forms (5)
+  // Forms (7 - added 2 M3)
   { type: 'Form', label: 'Form', icon: '📋', description: 'Contact or signup form', category: 'forms' },
   { type: 'Input', label: 'Input', icon: '✏️', description: 'Text input field', category: 'forms' },
   { type: 'Textarea', label: 'Textarea', icon: '📝', description: 'Multiline text input', category: 'forms' },
   { type: 'Checkbox', label: 'Checkbox', icon: '☑️', description: 'Checkbox with label', category: 'forms' },
   { type: 'Submit', label: 'Submit Button', icon: '📤', description: 'Form submit button', category: 'forms' },
+  { type: 'FormBuilder', label: 'Form Builder', icon: '🏗️', description: 'Dynamic form builder', category: 'forms' },
+  { type: 'MultistepFormBuilder', label: 'Multi-step Form', icon: '🪜', description: 'Multi-step form wizard', category: 'forms' },
 
-  // Navigation (4)
+  // Navigation (5 - added 1 M3)
   { type: 'Tabs', label: 'Tabs', icon: '📑', description: 'Tabbed navigation', category: 'navigation' },
   { type: 'Accordion', label: 'Accordion', icon: '🎵', description: 'Collapsible panels', category: 'navigation' },
   { type: 'Breadcrumb', label: 'Breadcrumb', icon: '🗺️', description: 'Navigation trail', category: 'navigation' },
   { type: 'Carousel', label: 'Carousel', icon: '🎠', description: 'Image carousel', category: 'navigation' },
+  { type: 'Menu', label: 'Navigation Menu', icon: '🍔', description: 'Site navigation menu', category: 'navigation' },
 
   // Feedback (5)
   { type: 'Alert', label: 'Alert', icon: '🚨', description: 'Alert message', category: 'feedback' },
@@ -72,6 +84,36 @@ const componentTypes: ComponentItem[] = [
 
   // Interactive (1)
   { type: 'Button', label: 'Button', icon: '🔘', description: 'Call-to-action button', category: 'interactive' },
+
+  // Integrations (5 - NEW M3)
+  { type: 'GoogleMaps', label: 'Google Maps', icon: '🗺️', description: 'Embedded Google Maps', category: 'integrations' },
+  { type: 'SoundCloud', label: 'SoundCloud', icon: '🎵', description: 'Audio player embed', category: 'integrations' },
+  { type: 'SocialIcons', label: 'Social Icons', icon: '🌐', description: 'Social media links', category: 'integrations' },
+  { type: 'FacebookLike', label: 'Facebook Like', icon: '👍', description: 'Facebook Like button', category: 'integrations' },
+  { type: 'FacebookContent', label: 'Facebook Embed', icon: '📘', description: 'Facebook post/page embed', category: 'integrations' },
+
+  // Sliders (3 - NEW M3)
+  { type: 'BannerSlider', label: 'Banner Slider', icon: '🎬', description: 'Full-width banner carousel', category: 'sliders' },
+  { type: 'Slider', label: 'Content Slider', icon: '🎞️', description: 'Generic content slider', category: 'sliders' },
+  { type: 'Toggle', label: 'Toggle', icon: '🔀', description: 'Content toggle/accordion', category: 'sliders' },
+
+  // Reviews (2 - NEW M3)
+  { type: 'Testimonial', label: 'Testimonial', icon: '💬', description: 'Customer testimonial', category: 'reviews' },
+  { type: 'StarRating', label: 'Star Rating', icon: '⭐', description: 'Rating display', category: 'reviews' },
+
+  // E-commerce (7 - NEW M3)
+  { type: 'ProductList', label: 'Product List', icon: '📦', description: 'Product grid/list', category: 'ecommerce' },
+  { type: 'ProductSlider', label: 'Product Slider', icon: '🛒', description: 'Product carousel', category: 'ecommerce' },
+  { type: 'AddToCart', label: 'Add to Cart', icon: '🛍️', description: 'Add to cart button', category: 'ecommerce' },
+  { type: 'PricingTable', label: 'Pricing Table', icon: '💰', description: 'Pricing comparison', category: 'ecommerce' },
+  { type: 'RecentlyViewed', label: 'Recently Viewed', icon: '👁️', description: 'Recently viewed products', category: 'ecommerce' },
+  { type: 'RecentlyCompared', label: 'Recently Compared', icon: '⚖️', description: 'Product comparison', category: 'ecommerce' },
+  { type: 'NewProducts', label: 'New Products', icon: '🆕', description: 'New products showcase', category: 'ecommerce' },
+
+  // CMS (3 - NEW M3)
+  { type: 'CMSBlock', label: 'CMS Block', icon: '📄', description: 'CMS content block', category: 'cms' },
+  { type: 'CMSPage', label: 'CMS Page', icon: '📃', description: 'CMS page embed', category: 'cms' },
+  { type: 'OrdersAndReturns', label: 'Orders & Returns', icon: '📋', description: 'Order lookup form', category: 'cms' },
 ];
 
 const categories = [
@@ -82,6 +124,11 @@ const categories = [
   { id: 'feedback', label: 'Feedback', icon: '💬', description: 'User feedback' },
   { id: 'overlay', label: 'Overlay', icon: '🪟', description: 'Modals and popovers' },
   { id: 'interactive', label: 'Interactive', icon: '🎯', description: 'Action components' },
+  { id: 'integrations', label: 'Integrations', icon: '🔌', description: 'Third-party integrations' },
+  { id: 'sliders', label: 'Sliders', icon: '🎬', description: 'Carousels and sliders' },
+  { id: 'reviews', label: 'Reviews', icon: '⭐', description: 'Testimonials and ratings' },
+  { id: 'ecommerce', label: 'E-commerce', icon: '🛒', description: 'Product and shopping' },
+  { id: 'cms', label: 'CMS', icon: '📰', description: 'Content management' },
 ] as const;
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
