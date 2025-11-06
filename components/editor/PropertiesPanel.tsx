@@ -134,6 +134,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
   // Handle input change: Update local state immediately + debounce store update
   const handleChange = (key: string, value: unknown) => {
+    console.log('🔧 handleChange CALLED:', { key, value, componentId: component.id });
+
     // 1. Update local state immediately (instant UI feedback)
     setLocalProps((prev) => ({ ...prev, [key]: value }));
 
@@ -1318,7 +1320,10 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Variant</label>
               <select
                 value={(localProps.variant as string) || 'default'}
-                onChange={(e) => handleChange('variant', e.target.value)}
+                onChange={(e) => {
+                  console.log('🔥 Accordion variant onChange FIRED:', e.target.value);
+                  handleChange('variant', e.target.value);
+                }}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
                 <option value="default">Default</option>
@@ -1331,7 +1336,10 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Icon Type</label>
               <select
                 value={(localProps.iconType as string) || 'chevron'}
-                onChange={(e) => handleChange('iconType', e.target.value)}
+                onChange={(e) => {
+                  console.log('🔥 Accordion iconType onChange FIRED:', e.target.value);
+                  handleChange('iconType', e.target.value);
+                }}
                 className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               >
                 <option value="chevron">Chevron</option>
@@ -1344,7 +1352,10 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 type="checkbox"
                 id="accordion-allowMultiple"
                 checked={(localProps.allowMultiple as boolean) ?? false}
-                onChange={(e) => handleChange('allowMultiple', e.target.checked)}
+                onChange={(e) => {
+                  console.log('🔥 Accordion allowMultiple onChange FIRED:', e.target.checked);
+                  handleChange('allowMultiple', e.target.checked);
+                }}
                 className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
               />
               <label htmlFor="accordion-allowMultiple" className="text-sm font-medium text-slate-700">

@@ -53,6 +53,7 @@ interface ItemsEditorProps<T extends BaseItem> {
 // Sortable Item Component
 function SortableItem<T extends BaseItem>({
   item,
+  editingItem,
   isEditing,
   onEdit,
   onSave,
@@ -62,6 +63,7 @@ function SortableItem<T extends BaseItem>({
   onChange,
 }: {
   item: T;
+  editingItem: T | null;
   isEditing: boolean;
   onEdit: () => void;
   onSave: () => void;
@@ -156,9 +158,12 @@ function SortableItem<T extends BaseItem>({
       </div>
 
       {/* Item Editor (when editing) */}
-      {isEditing && (
+      {isEditing && editingItem && (
         <div className="p-3 bg-slate-50">
-          {renderEditor(item, onChange)}
+          {renderEditor(editingItem, (updates) => {
+            console.log('🔥 Input onChange fired in SortableItem!', updates);
+            onChange(updates);
+          })}
         </div>
       )}
     </div>
@@ -198,6 +203,7 @@ export function ItemsEditor<T extends BaseItem>({
 
   // Start editing
   const handleEdit = (item: T) => {
+    console.log('✏️ ItemsEditor: handleEdit called', { itemId: item.id });
     setEditingId(item.id);
     setEditingItem({ ...item });
   };
@@ -228,6 +234,7 @@ export function ItemsEditor<T extends BaseItem>({
 
   // Update editing item
   const handleEditingChange = (updates: Partial<T>) => {
+    console.log('📝 ItemsEditor: handleEditingChange called', { updates, editingItem });
     if (!editingItem) return;
     setEditingItem({ ...editingItem, ...updates });
   };
@@ -294,6 +301,7 @@ export function ItemsEditor<T extends BaseItem>({
                 <SortableItem
                   key={item.id}
                   item={item}
+                  editingItem={editingId === item.id ? editingItem : null}
                   isEditing={editingId === item.id}
                   onEdit={() => handleEdit(item)}
                   onSave={handleSave}
