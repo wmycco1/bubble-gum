@@ -22,6 +22,11 @@ interface HTMLComponentProps {
   component: CanvasComponent;
 }
 
+// DOMPurify types
+interface DOMPurifyI {
+  sanitize(dirty: string, config?: any): string;
+}
+
 export function HTMLComponent({ component }: HTMLComponentProps) {
   const { style, props } = component;
 
@@ -31,15 +36,19 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
   const allowedTags = props.allowedTags as string[] | undefined;
   const allowedAttributes = props.allowedAttributes as string[] | undefined;
 
-  // TEMPORARY: Disable DOMPurify due to import issues with Next.js 16 Turbopack
-  // TODO: Re-enable with proper server-side sanitization or alternative library
-  const [DOMPurify] = useState<any>({
-    sanitize: (html: string) => {
-      // ⚠️ WARNING: Using unsanitized HTML
-      // For security, only allow trusted HTML content
-      return html;
+  // Load DOMPurify dynamically on client-side only
+  const [DOMPurify, setDOMPurify] = useState<DOMPurifyI | null>(null);
+
+  useEffect(() => {
+    // Only load in browser environment
+    if (typeof window !== 'undefined') {
+      import('dompurify').then((module) => {
+        setDOMPurify(module.default);
+      }).catch((error) => {
+        console.error('Failed to load DOMPurify:', error);
+      });
     }
-  });
+  }, []);
 
   // Sanitize HTML content
   const sanitizedContent = useMemo(() => {

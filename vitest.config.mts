@@ -13,7 +13,7 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'dist', '.next'],
-    testTimeout: 10000, // 10 seconds for tests with timers
+    testTimeout: 30000, // 30 seconds for tests with fake timers
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],

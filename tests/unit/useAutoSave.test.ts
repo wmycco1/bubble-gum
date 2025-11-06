@@ -5,6 +5,10 @@
 // Coverage: Debouncing, Retry, Offline, Abort, Manual Save
 // ═══════════════════════════════════════════════════════════════
 
+/**
+ * @vitest-environment happy-dom
+ */
+
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useAutoSave } from '@/lib/hooks/useAutoSave';
@@ -544,15 +548,14 @@ describe('useAutoSave', () => {
         rerender({ ...options, enabled: true });
       });
 
-      // Wait for debounce
+      // Wait for debounce and all promises
       await act(async () => {
         vi.advanceTimersByTime(1000);
+        await Promise.resolve(); // Allow promises to resolve
       });
 
       // Should have saved
-      await waitFor(() => {
-        expect(saveFn).toHaveBeenCalledTimes(1);
-      });
+      expect(saveFn).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -574,14 +577,13 @@ describe('useAutoSave', () => {
 
       renderHook(() => useAutoSave(options));
 
-      // Trigger save
+      // Trigger save and wait for promises
       await act(async () => {
         vi.advanceTimersByTime(1000);
+        await Promise.resolve();
       });
 
-      await waitFor(() => {
-        expect(onSaveStart).toHaveBeenCalled();
-      });
+      expect(onSaveStart).toHaveBeenCalled();
     });
 
     it('should call onSaveSuccess callback', async () => {
@@ -597,14 +599,13 @@ describe('useAutoSave', () => {
 
       renderHook(() => useAutoSave(options));
 
-      // Trigger save
+      // Trigger save and wait for promises
       await act(async () => {
         vi.advanceTimersByTime(1000);
+        await Promise.resolve();
       });
 
-      await waitFor(() => {
-        expect(onSaveSuccess).toHaveBeenCalled();
-      });
+      expect(onSaveSuccess).toHaveBeenCalled();
     });
 
     it('should call onSaveError callback on failure', async () => {
@@ -621,14 +622,13 @@ describe('useAutoSave', () => {
 
       renderHook(() => useAutoSave(options));
 
-      // Trigger save
+      // Trigger save and wait for promises
       await act(async () => {
         vi.advanceTimersByTime(1000);
+        await Promise.resolve();
       });
 
-      await waitFor(() => {
-        expect(onSaveError).toHaveBeenCalledWith(new Error('Save failed'));
-      });
+      expect(onSaveError).toHaveBeenCalledWith(new Error('Save failed'));
     });
   });
 
@@ -651,15 +651,14 @@ describe('useAutoSave', () => {
       // Initial state
       expect(result.current.status).toBe('idle');
 
-      // Trigger save
+      // Trigger save and wait for promises
       await act(async () => {
         vi.advanceTimersByTime(1000);
+        await Promise.resolve();
       });
 
-      // Should be saving
-      await waitFor(() => {
-        expect(result.current.status).toBe('saved');
-      });
+      // Should be saved
+      expect(result.current.status).toBe('saved');
 
       // Wait for auto-transition to idle (3 seconds)
       await act(async () => {
@@ -682,14 +681,13 @@ describe('useAutoSave', () => {
 
       expect(result.current.lastSaved).toBeNull();
 
-      // Trigger save
+      // Trigger save and wait for promises
       await act(async () => {
         vi.advanceTimersByTime(1000);
+        await Promise.resolve();
       });
 
-      await waitFor(() => {
-        expect(result.current.lastSaved).toBeInstanceOf(Date);
-      });
+      expect(result.current.lastSaved).toBeInstanceOf(Date);
     });
   });
 });

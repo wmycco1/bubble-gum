@@ -5,7 +5,15 @@
 // Prevents XSS attacks by removing malicious scripts
 // ═══════════════════════════════════════════════════════════════
 
-import DOMPurify from 'isomorphic-dompurify';
+// Dynamic import for client-side only (Next.js 16 compatibility)
+let DOMPurify: any = null;
+
+if (typeof window !== 'undefined') {
+  // Client-side only
+  import('dompurify').then((module) => {
+    DOMPurify = module.default;
+  });
+}
 
 /**
  * Sanitize HTML to prevent XSS attacks
@@ -14,6 +22,11 @@ import DOMPurify from 'isomorphic-dompurify';
  * @returns Sanitized HTML string
  */
 export function sanitizeHTML(dirty: string): string {
+  if (!DOMPurify) {
+    // Fallback: strip all HTML tags if DOMPurify not loaded
+    return dirty.replace(/<[^>]*>/g, '').trim();
+  }
+
   return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: [
       'b',
@@ -52,6 +65,11 @@ export function sanitizeHTML(dirty: string): string {
  * @returns Sanitized HTML string
  */
 export function sanitizeRichText(dirty: string): string {
+  if (!DOMPurify) {
+    // Fallback: strip all HTML tags if DOMPurify not loaded
+    return dirty.replace(/<[^>]*>/g, '').trim();
+  }
+
   return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: [
       'b',
@@ -94,6 +112,11 @@ export function sanitizeRichText(dirty: string): string {
  * @returns Sanitized HTML string
  */
 export function sanitizeMarketing(dirty: string): string {
+  if (!DOMPurify) {
+    // Fallback: strip all HTML tags if DOMPurify not loaded
+    return dirty.replace(/<[^>]*>/g, '').trim();
+  }
+
   return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: ['a', 'br', 'p', 'strong', 'em', 'u', 'b', 'i'],
     ALLOWED_ATTR: ['href', 'target', 'rel'],
@@ -108,6 +131,12 @@ export function sanitizeMarketing(dirty: string): string {
  * @returns Plain text (no HTML)
  */
 export function stripHTML(dirty: string): string {
+  if (!DOMPurify) {
+    // Fallback: strip all HTML tags with regex
+    const stripped = dirty.replace(/<[^>]*>/g, '');
+    return stripped.replace(/\s+/g, ' ').trim();
+  }
+
   // First sanitize with DOMPurify to prevent XSS
   const sanitized = DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: [],

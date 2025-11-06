@@ -55,7 +55,6 @@
     "clsx": "^2.1.1",
     "dompurify": "^3.2.5",
     "fastify": "^5.3.1",
-    "isomorphic-dompurify": "^2.20.0",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.469.0",
     "nanoid": "^5.1.6",
