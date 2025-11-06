@@ -236,7 +236,17 @@ export function ItemsEditor<T extends BaseItem>({
   const handleEditingChange = (updates: Partial<T>) => {
     console.log('📝 ItemsEditor: handleEditingChange called', { updates, editingItem });
     if (!editingItem) return;
-    setEditingItem({ ...editingItem, ...updates });
+
+    // Update local editing state
+    const updatedEditingItem = { ...editingItem, ...updates };
+    setEditingItem(updatedEditingItem);
+
+    // 🔥 REAL-TIME UPDATE: Apply changes to canvas immediately
+    const updatedItems = items.map((item) =>
+      item.id === editingId ? updatedEditingItem : item
+    );
+    onItemsChange(updatedItems);
+    console.log('✅ ItemsEditor: Real-time update applied to canvas');
   };
 
   // Handle drag end
