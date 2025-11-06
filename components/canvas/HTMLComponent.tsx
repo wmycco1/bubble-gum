@@ -13,11 +13,10 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { mergeAllStyles, buildClassNameFromProps } from '@/lib/utils/apply-custom-props';
-import DOMPurify from 'isomorphic-dompurify';
 
 interface HTMLComponentProps {
   component: CanvasComponent;
@@ -32,11 +31,28 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
   const allowedTags = props.allowedTags as string[] | undefined;
   const allowedAttributes = props.allowedAttributes as string[] | undefined;
 
+  // Client-side DOMPurify instance
+  const [DOMPurify, setDOMPurify] = useState<typeof import('dompurify') | null>(null);
+
+  // Load DOMPurify client-side only
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      import('dompurify').then((module) => {
+        setDOMPurify(module.default);
+      });
+    }
+  }, []);
+
   // Sanitize HTML content
   const sanitizedContent = useMemo(() => {
     if (!sanitize) {
       // WARNING: Only use unsanitized HTML from trusted sources
       return content;
+    }
+
+    // Wait for DOMPurify to load
+    if (!DOMPurify) {
+      return '<p>Loading...</p>';
     }
 
     // Configure DOMPurify
@@ -52,7 +68,7 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
 
     // Sanitize with DOMPurify
     return DOMPurify.sanitize(content, config);
-  }, [content, sanitize, allowedTags, allowedAttributes]);
+  }, [content, sanitize, allowedTags, allowedAttributes, DOMPurify]);
 
   // Build className
   const baseClassName = 'html-content';
