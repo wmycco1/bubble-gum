@@ -19,14 +19,19 @@ const PARAMETER_CATEGORIES = {
     keywords: [
       'font', 'text', 'heading', 'title', 'subtitle', 'fontSize', 'fontWeight',
       'fontFamily', 'lineHeight', 'letterSpacing', 'textAlign', 'textTransform',
-      'textDecoration', 'textColor', 'color', 'textShadow', 'fontStyle'
+      'textDecoration', 'textColor', 'color', 'textShadow', 'fontStyle',
+      'buttonText', 'submitText', 'ctaText', 'formTitle', 'dividerColor',
+      'overlayColor', 'secondaryCtaText', 'label', 'message', 'author',
+      'role', 'company', 'review', 'description', 'buttonColor'
     ]
   },
   spacing: {
     name: 'Layout & Spacing',
     keywords: [
       'padding', 'margin', 'gap', 'spacing', 'width', 'height', 'maxWidth',
-      'minWidth', 'maxHeight', 'minHeight', 'size', 'fullWidth', 'fullHeight'
+      'minWidth', 'maxHeight', 'minHeight', 'size', 'fullWidth', 'fullHeight',
+      'mobileHeight', 'tabletHeight', 'columnWidths', 'backgroundSize', 'maxQuantity',
+      'columns', 'rows'
     ]
   },
   colors: {
@@ -34,7 +39,8 @@ const PARAMETER_CATEGORIES = {
     keywords: [
       'background', 'backgroundColor', 'backgroundImage', 'gradient',
       'overlay', 'overlayColor', 'overlayOpacity', 'color', 'bgColor',
-      'primaryColor', 'secondaryColor', 'accentColor'
+      'primaryColor', 'secondaryColor', 'accentColor', 'backgroundPosition',
+      'backgroundRepeat', 'colorMode'
     ]
   },
   borders: {
@@ -48,7 +54,10 @@ const PARAMETER_CATEGORIES = {
     name: 'Responsive & Visibility',
     keywords: [
       'responsive', 'mobile', 'tablet', 'desktop', 'breakpoint', 'hide',
-      'show', 'visible', 'hidden', 'display', 'mediaQuery'
+      'show', 'visible', 'hidden', 'display', 'mediaQuery', 'showArrow',
+      'showAvatar', 'showCaptions', 'showCompany', 'showControls',
+      'showDivider', 'showIndicators', 'showQuantity', 'showRating',
+      'showSidebar', 'showThumbnail', 'showValue', 'slidesToShow'
     ]
   },
   interactions: {
@@ -56,21 +65,25 @@ const PARAMETER_CATEGORIES = {
     keywords: [
       'animation', 'transition', 'hover', 'active', 'focus', 'disabled',
       'animate', 'duration', 'delay', 'easing', 'transform', 'rotate',
-      'scale', 'translate', 'skew'
+      'scale', 'translate', 'skew', 'dismissible', 'infinite', 'speed',
+      'pauseOnHover', 'swipeable', 'draggable', 'autoAdvance', 'pulse', 'dot'
     ]
   },
   content: {
     name: 'Content & Data',
     keywords: [
       'content', 'text', 'description', 'label', 'placeholder', 'value',
-      'data', 'items', 'options', 'children', 'html', 'markdown'
+      'data', 'items', 'options', 'children', 'html', 'markdown',
+      'title', 'subtitle', 'message', 'heading', 'defaultOpen', 'allowMultiple',
+      'variant', 'slides', 'separator', 'sku', 'stock', 'price'
     ]
   },
   navigation: {
     name: 'Navigation & Links',
     keywords: [
       'link', 'href', 'url', 'target', 'onClick', 'onPress', 'action',
-      'navigate', 'route', 'path', 'anchor', 'scroll'
+      'navigate', 'route', 'path', 'anchor', 'scroll', 'ctaLink',
+      'secondaryCtaLink', 'buttonLink'
     ]
   },
   forms: {
@@ -86,7 +99,7 @@ const PARAMETER_CATEGORIES = {
     keywords: [
       'image', 'img', 'src', 'alt', 'video', 'audio', 'embed', 'iframe',
       'icon', 'iconType', 'iconName', 'iconSize', 'poster', 'thumbnail',
-      'lazy', 'loading'
+      'lazy', 'loading', 'autoplay', 'loop', 'muted', 'controls'
     ]
   },
   advanced: {
