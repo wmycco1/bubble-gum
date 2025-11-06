@@ -68,8 +68,14 @@ export function AccordionItemsControl({ componentId }: AccordionItemsControlProp
 
   // Handle items change
   const handleItemsChange = (newItems: AccordionItem[]) => {
+    console.log('🔄 AccordionItemsControl: Updating items', {
+      componentId,
+      newItems,
+      itemsCount: newItems.length
+    });
     setItems(newItems);
     updateComponentProps(componentId, { items: newItems });
+    console.log('✅ AccordionItemsControl: updateComponentProps called');
   };
 
   // Render item editor

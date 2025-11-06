@@ -640,6 +640,736 @@ const getDefaultComponent = (type: ComponentType): Omit<CanvasComponent, 'id'> =
       },
       style: {},
     },
+    // M3: Extended Component Library (God-Tier 2025)
+    // Layout Components
+    InnerSection: {
+      type: 'InnerSection',
+      props: { maxWidth: '1200px', padding: '2rem' },
+      style: { backgroundColor: '#f9fafb', borderRadius: '0.5rem' },
+      children: [],
+    },
+    InnerSectionComponent: {
+      type: 'InnerSectionComponent',
+      props: { maxWidth: '1200px', padding: '2rem' },
+      style: { backgroundColor: '#f9fafb', borderRadius: '0.5rem' },
+      children: [],
+    },
+    Spacer: {
+      type: 'Spacer',
+      props: { height: '2rem' },
+      style: {},
+    },
+    SpacerComponent: {
+      type: 'SpacerComponent',
+      props: { height: '2rem' },
+      style: {},
+    },
+    // Content Components
+    Banner: {
+      type: 'Banner',
+      props: {
+        title: 'Welcome to Our Site',
+        subtitle: 'Discover amazing features',
+        ctaText: 'Get Started',
+        ctaLink: '#',
+        backgroundImage: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200',
+        overlay: true,
+        overlayOpacity: 0.5,
+        textAlign: 'center',
+        height: '500px',
+      },
+      style: {},
+    },
+    BannerComponent: {
+      type: 'BannerComponent',
+      props: {
+        title: 'Welcome to Our Site',
+        subtitle: 'Discover amazing features',
+        ctaText: 'Get Started',
+        ctaLink: '#',
+        backgroundImage: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200',
+        overlay: true,
+        overlayOpacity: 0.5,
+        textAlign: 'center',
+        height: '500px',
+      },
+      style: {},
+    },
+    HTML: {
+      type: 'HTML',
+      props: { content: '<p>Custom HTML content</p>', sanitize: true },
+      style: {},
+    },
+    HTMLComponent: {
+      type: 'HTMLComponent',
+      props: { content: '<p>Custom HTML content</p>', sanitize: true },
+      style: {},
+    },
+    Video: {
+      type: 'Video',
+      props: {
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        provider: 'youtube',
+        controls: true,
+        aspectRatio: '16:9',
+      },
+      style: {},
+    },
+    VideoComponent: {
+      type: 'VideoComponent',
+      props: {
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        provider: 'youtube',
+        controls: true,
+        aspectRatio: '16:9',
+      },
+      style: {},
+    },
+    TextEditor: {
+      type: 'TextEditor',
+      props: { content: '<p>Rich text content here...</p>', toolbar: true },
+      style: {},
+    },
+    TextEditorComponent: {
+      type: 'TextEditorComponent',
+      props: { content: '<p>Rich text content here...</p>', toolbar: true },
+      style: {},
+    },
+    IconBox: {
+      type: 'IconBox',
+      props: {
+        icon: '⭐',
+        heading: 'Feature Title',
+        description: 'Description of the feature',
+        variant: 'default',
+        alignment: 'center',
+      },
+      style: {},
+    },
+    IconBoxComponent: {
+      type: 'IconBoxComponent',
+      props: {
+        icon: '⭐',
+        heading: 'Feature Title',
+        description: 'Description of the feature',
+        variant: 'default',
+        alignment: 'center',
+      },
+      style: {},
+    },
+    ImageBox: {
+      type: 'ImageBox',
+      props: {
+        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
+        alt: 'Image',
+        caption: 'Image caption',
+        aspectRatio: 'landscape',
+      },
+      style: {},
+    },
+    ImageBoxComponent: {
+      type: 'ImageBoxComponent',
+      props: {
+        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
+        alt: 'Image',
+        caption: 'Image caption',
+        aspectRatio: 'landscape',
+      },
+      style: {},
+    },
+    IconList: {
+      type: 'IconList',
+      props: {
+        items: [
+          { id: '1', icon: '✓', text: 'First item' },
+          { id: '2', icon: '✓', text: 'Second item' },
+          { id: '3', icon: '✓', text: 'Third item' },
+        ],
+        variant: 'checkmarks',
+        spacing: 'normal',
+      },
+      style: {},
+    },
+    IconListComponent: {
+      type: 'IconListComponent',
+      props: {
+        items: [
+          { id: '1', icon: '✓', text: 'First item' },
+          { id: '2', icon: '✓', text: 'Second item' },
+          { id: '3', icon: '✓', text: 'Third item' },
+        ],
+        variant: 'checkmarks',
+        spacing: 'normal',
+      },
+      style: {},
+    },
+    // Integration Components
+    GoogleMaps: {
+      type: 'GoogleMaps',
+      props: {
+        address: 'New York, NY',
+        zoom: 12,
+        height: '400px',
+        mapType: 'roadmap',
+        showControls: true,
+      },
+      style: {},
+    },
+    GoogleMapsComponent: {
+      type: 'GoogleMapsComponent',
+      props: {
+        address: 'New York, NY',
+        zoom: 12,
+        height: '400px',
+        mapType: 'roadmap',
+        showControls: true,
+      },
+      style: {},
+    },
+    SoundCloud: {
+      type: 'SoundCloud',
+      props: { url: '', autoPlay: false, visual: true },
+      style: {},
+    },
+    SoundCloudComponent: {
+      type: 'SoundCloudComponent',
+      props: { url: '', autoPlay: false, visual: true },
+      style: {},
+    },
+    SocialIcons: {
+      type: 'SocialIcons',
+      props: {
+        icons: [
+          { id: '1', platform: 'facebook', url: 'https://facebook.com' },
+          { id: '2', platform: 'twitter', url: 'https://twitter.com' },
+          { id: '3', platform: 'instagram', url: 'https://instagram.com' },
+        ],
+        size: 'md',
+        variant: 'filled',
+        shape: 'circle',
+      },
+      style: {},
+    },
+    SocialIconsComponent: {
+      type: 'SocialIconsComponent',
+      props: {
+        icons: [
+          { id: '1', platform: 'facebook', url: 'https://facebook.com' },
+          { id: '2', platform: 'twitter', url: 'https://twitter.com' },
+          { id: '3', platform: 'instagram', url: 'https://instagram.com' },
+        ],
+        size: 'md',
+        variant: 'filled',
+        shape: 'circle',
+      },
+      style: {},
+    },
+    FacebookLike: {
+      type: 'FacebookLike',
+      props: { url: '', layout: 'standard', action: 'like', size: 'small' },
+      style: {},
+    },
+    FacebookLikeComponent: {
+      type: 'FacebookLikeComponent',
+      props: { url: '', layout: 'standard', action: 'like', size: 'small' },
+      style: {},
+    },
+    FacebookContent: {
+      type: 'FacebookContent',
+      props: { url: '', type: 'post', showText: true },
+      style: {},
+    },
+    FacebookContentComponent: {
+      type: 'FacebookContentComponent',
+      props: { url: '', type: 'post', showText: true },
+      style: {},
+    },
+    // Slider Components
+    BannerSlider: {
+      type: 'BannerSlider',
+      props: {
+        slides: [
+          {
+            id: '1',
+            image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200',
+            title: 'Slide 1',
+            ctaText: 'Learn More',
+            ctaLink: '#',
+          },
+          {
+            id: '2',
+            image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200',
+            title: 'Slide 2',
+            ctaText: 'Get Started',
+            ctaLink: '#',
+          },
+        ],
+        autoPlay: true,
+        interval: 5000,
+        showControls: true,
+        height: '500px',
+      },
+      style: {},
+    },
+    BannerSliderComponent: {
+      type: 'BannerSliderComponent',
+      props: {
+        slides: [
+          {
+            id: '1',
+            image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200',
+            title: 'Slide 1',
+            ctaText: 'Learn More',
+            ctaLink: '#',
+          },
+          {
+            id: '2',
+            image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200',
+            title: 'Slide 2',
+            ctaText: 'Get Started',
+            ctaLink: '#',
+          },
+        ],
+        autoPlay: true,
+        interval: 5000,
+        showControls: true,
+        height: '500px',
+      },
+      style: {},
+    },
+    Slider: {
+      type: 'Slider',
+      props: {
+        items: [
+          { id: '1', content: 'Item 1', title: 'First' },
+          { id: '2', content: 'Item 2', title: 'Second' },
+          { id: '3', content: 'Item 3', title: 'Third' },
+        ],
+        itemsPerView: 3,
+        autoPlay: false,
+        showControls: true,
+      },
+      style: {},
+    },
+    SliderComponent: {
+      type: 'SliderComponent',
+      props: {
+        items: [
+          { id: '1', content: 'Item 1', title: 'First' },
+          { id: '2', content: 'Item 2', title: 'Second' },
+          { id: '3', content: 'Item 3', title: 'Third' },
+        ],
+        itemsPerView: 3,
+        autoPlay: false,
+        showControls: true,
+      },
+      style: {},
+    },
+    Toggle: {
+      type: 'Toggle',
+      props: {
+        items: [
+          { id: '1', trigger: 'Toggle 1', content: 'Content 1' },
+          { id: '2', trigger: 'Toggle 2', content: 'Content 2' },
+        ],
+        variant: 'default',
+        animated: true,
+      },
+      style: {},
+    },
+    ToggleComponent: {
+      type: 'ToggleComponent',
+      props: {
+        items: [
+          { id: '1', trigger: 'Toggle 1', content: 'Content 1' },
+          { id: '2', trigger: 'Toggle 2', content: 'Content 2' },
+        ],
+        variant: 'default',
+        animated: true,
+      },
+      style: {},
+    },
+    // Review Components
+    Testimonial: {
+      type: 'Testimonial',
+      props: {
+        quote: 'This is an amazing product!',
+        author: 'John Doe',
+        role: 'CEO',
+        company: 'Company Inc.',
+        rating: 5,
+        showRating: true,
+        variant: 'card',
+      },
+      style: {},
+    },
+    TestimonialComponent: {
+      type: 'TestimonialComponent',
+      props: {
+        quote: 'This is an amazing product!',
+        author: 'John Doe',
+        role: 'CEO',
+        company: 'Company Inc.',
+        rating: 5,
+        showRating: true,
+        variant: 'card',
+      },
+      style: {},
+    },
+    StarRating: {
+      type: 'StarRating',
+      props: {
+        rating: 4.5,
+        maxRating: 5,
+        size: 'md',
+        interactive: false,
+        showValue: true,
+        halfStars: true,
+      },
+      style: {},
+    },
+    StarRatingComponent: {
+      type: 'StarRatingComponent',
+      props: {
+        rating: 4.5,
+        maxRating: 5,
+        size: 'md',
+        interactive: false,
+        showValue: true,
+        halfStars: true,
+      },
+      style: {},
+    },
+    // Navigation Components
+    Menu: {
+      type: 'Menu',
+      props: {
+        items: [
+          { id: '1', label: 'Home', href: '/' },
+          { id: '2', label: 'About', href: '/about' },
+          { id: '3', label: 'Contact', href: '/contact' },
+        ],
+        orientation: 'horizontal',
+        variant: 'default',
+      },
+      style: {},
+    },
+    MenuComponent: {
+      type: 'MenuComponent',
+      props: {
+        items: [
+          { id: '1', label: 'Home', href: '/' },
+          { id: '2', label: 'About', href: '/about' },
+          { id: '3', label: 'Contact', href: '/contact' },
+        ],
+        orientation: 'horizontal',
+        variant: 'default',
+      },
+      style: {},
+    },
+    // E-commerce Components
+    ProductList: {
+      type: 'ProductList',
+      props: {
+        products: [
+          {
+            id: '1',
+            name: 'Product 1',
+            price: 99.99,
+            image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+            rating: 4.5,
+            inStock: true,
+          },
+        ],
+        layout: 'grid',
+        columns: 3,
+        showAddToCart: true,
+      },
+      style: {},
+    },
+    ProductListComponent: {
+      type: 'ProductListComponent',
+      props: {
+        products: [
+          {
+            id: '1',
+            name: 'Product 1',
+            price: 99.99,
+            image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+            rating: 4.5,
+            inStock: true,
+          },
+        ],
+        layout: 'grid',
+        columns: 3,
+        showAddToCart: true,
+      },
+      style: {},
+    },
+    ProductSlider: {
+      type: 'ProductSlider',
+      props: {
+        products: [
+          {
+            id: '1',
+            name: 'Product 1',
+            price: 99.99,
+            image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+            rating: 4.5,
+          },
+        ],
+        itemsPerView: 4,
+        autoPlay: false,
+        showControls: true,
+      },
+      style: {},
+    },
+    ProductSliderComponent: {
+      type: 'ProductSliderComponent',
+      props: {
+        products: [
+          {
+            id: '1',
+            name: 'Product 1',
+            price: 99.99,
+            image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+            rating: 4.5,
+          },
+        ],
+        itemsPerView: 4,
+        autoPlay: false,
+        showControls: true,
+      },
+      style: {},
+    },
+    AddToCart: {
+      type: 'AddToCart',
+      props: {
+        productId: '1',
+        variant: 'button',
+        size: 'md',
+        buttonText: 'Add to Cart',
+        showQuantity: true,
+      },
+      style: {},
+    },
+    AddToCartComponent: {
+      type: 'AddToCartComponent',
+      props: {
+        productId: '1',
+        variant: 'button',
+        size: 'md',
+        buttonText: 'Add to Cart',
+        showQuantity: true,
+      },
+      style: {},
+    },
+    PricingTable: {
+      type: 'PricingTable',
+      props: {
+        plans: [
+          {
+            id: '1',
+            name: 'Basic',
+            price: 9.99,
+            period: 'month',
+            features: ['Feature 1', 'Feature 2'],
+            ctaText: 'Choose Plan',
+          },
+        ],
+        columns: 3,
+        variant: 'cards',
+      },
+      style: {},
+    },
+    PricingTableComponent: {
+      type: 'PricingTableComponent',
+      props: {
+        plans: [
+          {
+            id: '1',
+            name: 'Basic',
+            price: 9.99,
+            period: 'month',
+            features: ['Feature 1', 'Feature 2'],
+            ctaText: 'Choose Plan',
+          },
+        ],
+        columns: 3,
+        variant: 'cards',
+      },
+      style: {},
+    },
+    RecentlyViewed: {
+      type: 'RecentlyViewed',
+      props: {
+        maxItems: 8,
+        layout: 'slider',
+        title: 'Recently Viewed',
+        showAddToCart: true,
+      },
+      style: {},
+    },
+    RecentlyViewedComponent: {
+      type: 'RecentlyViewedComponent',
+      props: {
+        maxItems: 8,
+        layout: 'slider',
+        title: 'Recently Viewed',
+        showAddToCart: true,
+      },
+      style: {},
+    },
+    RecentlyCompared: {
+      type: 'RecentlyCompared',
+      props: {
+        maxItems: 4,
+        showDifferencesOnly: false,
+        title: 'Recently Compared',
+      },
+      style: {},
+    },
+    RecentlyComparedComponent: {
+      type: 'RecentlyComparedComponent',
+      props: {
+        maxItems: 4,
+        showDifferencesOnly: false,
+        title: 'Recently Compared',
+      },
+      style: {},
+    },
+    NewProducts: {
+      type: 'NewProducts',
+      props: {
+        maxItems: 8,
+        layout: 'grid',
+        columns: 4,
+        showBadge: true,
+        badgeText: 'New',
+        daysThreshold: 30,
+      },
+      style: {},
+    },
+    NewProductsComponent: {
+      type: 'NewProductsComponent',
+      props: {
+        maxItems: 8,
+        layout: 'grid',
+        columns: 4,
+        showBadge: true,
+        badgeText: 'New',
+        daysThreshold: 30,
+      },
+      style: {},
+    },
+    // Form Components
+    FormBuilder: {
+      type: 'FormBuilder',
+      props: {
+        fields: [
+          { id: '1', type: 'text', label: 'Name', required: true },
+          { id: '2', type: 'email', label: 'Email', required: true },
+        ],
+        submitText: 'Submit',
+        layout: 'vertical',
+        showLabels: true,
+      },
+      style: {},
+    },
+    FormBuilderComponent: {
+      type: 'FormBuilderComponent',
+      props: {
+        fields: [
+          { id: '1', type: 'text', label: 'Name', required: true },
+          { id: '2', type: 'email', label: 'Email', required: true },
+        ],
+        submitText: 'Submit',
+        layout: 'vertical',
+        showLabels: true,
+      },
+      style: {},
+    },
+    MultistepFormBuilder: {
+      type: 'MultistepFormBuilder',
+      props: {
+        steps: [
+          {
+            id: '1',
+            title: 'Step 1',
+            fields: [{ id: '1', type: 'text', label: 'Name', required: true }],
+          },
+          {
+            id: '2',
+            title: 'Step 2',
+            fields: [{ id: '2', type: 'email', label: 'Email', required: true }],
+          },
+        ],
+        showProgress: true,
+        progressStyle: 'steps',
+      },
+      style: {},
+    },
+    MultistepFormBuilderComponent: {
+      type: 'MultistepFormBuilderComponent',
+      props: {
+        steps: [
+          {
+            id: '1',
+            title: 'Step 1',
+            fields: [{ id: '1', type: 'text', label: 'Name', required: true }],
+          },
+          {
+            id: '2',
+            title: 'Step 2',
+            fields: [{ id: '2', type: 'email', label: 'Email', required: true }],
+          },
+        ],
+        showProgress: true,
+        progressStyle: 'steps',
+      },
+      style: {},
+    },
+    // CMS Components
+    CMSBlock: {
+      type: 'CMSBlock',
+      props: { blockIdentifier: 'footer-links', showTitle: true, cache: true },
+      style: {},
+    },
+    CMSBlockComponent: {
+      type: 'CMSBlockComponent',
+      props: { blockIdentifier: 'footer-links', showTitle: true, cache: true },
+      style: {},
+    },
+    CMSPage: {
+      type: 'CMSPage',
+      props: { pageIdentifier: 'about-us', showBreadcrumbs: true, showTitle: true },
+      style: {},
+    },
+    CMSPageComponent: {
+      type: 'CMSPageComponent',
+      props: { pageIdentifier: 'about-us', showBreadcrumbs: true, showTitle: true },
+      style: {},
+    },
+    OrdersAndReturns: {
+      type: 'OrdersAndReturns',
+      props: {
+        title: 'Orders and Returns',
+        requireEmail: true,
+        requireOrderNumber: true,
+        submitText: 'Find Order',
+      },
+      style: {},
+    },
+    OrdersAndReturnsComponent: {
+      type: 'OrdersAndReturnsComponent',
+      props: {
+        title: 'Orders and Returns',
+        requireEmail: true,
+        requireOrderNumber: true,
+        submitText: 'Find Order',
+      },
+      style: {},
+    },
   };
 
   return defaults[type] || defaults.Text;

@@ -54,6 +54,13 @@ export function CarouselComponent({ component }: CarouselComponentProps) {
       description: 'Peaceful beach sunset',
     },
   ];
+
+  console.log('🎨 CarouselComponent: Rendering with slides', {
+    componentId: component.id,
+    slidesCount: slides.length,
+    slides: slides.map(slide => ({ id: slide.id, title: slide.title }))
+  });
+
   const autoPlay = (props.autoPlay as boolean) ?? true;
   const interval = (props.interval as number) ?? 3000;
   const showControls = (props.showControls as boolean) ?? true;

@@ -77,7 +77,81 @@ export type ComponentType =
   | 'Divider'
   | 'DividerComponent'
   | 'Carousel'
-  | 'CarouselComponent';
+  | 'CarouselComponent'
+  // M3: Extended Component Library (God-Tier 2025)
+  // Layout
+  | 'InnerSection'
+  | 'InnerSectionComponent'
+  | 'Spacer'
+  | 'SpacerComponent'
+  // Content
+  | 'Banner'
+  | 'BannerComponent'
+  | 'HTML'
+  | 'HTMLComponent'
+  | 'Video'
+  | 'VideoComponent'
+  | 'TextEditor'
+  | 'TextEditorComponent'
+  | 'IconBox'
+  | 'IconBoxComponent'
+  | 'ImageBox'
+  | 'ImageBoxComponent'
+  | 'IconList'
+  | 'IconListComponent'
+  // Integrations
+  | 'GoogleMaps'
+  | 'GoogleMapsComponent'
+  | 'SoundCloud'
+  | 'SoundCloudComponent'
+  | 'SocialIcons'
+  | 'SocialIconsComponent'
+  | 'FacebookLike'
+  | 'FacebookLikeComponent'
+  | 'FacebookContent'
+  | 'FacebookContentComponent'
+  // Sliders
+  | 'BannerSlider'
+  | 'BannerSliderComponent'
+  | 'Slider'
+  | 'SliderComponent'
+  | 'Toggle'
+  | 'ToggleComponent'
+  // Reviews
+  | 'Testimonial'
+  | 'TestimonialComponent'
+  | 'StarRating'
+  | 'StarRatingComponent'
+  // Navigation
+  | 'Menu'
+  | 'MenuComponent'
+  // E-commerce
+  | 'ProductList'
+  | 'ProductListComponent'
+  | 'ProductSlider'
+  | 'ProductSliderComponent'
+  | 'AddToCart'
+  | 'AddToCartComponent'
+  | 'PricingTable'
+  | 'PricingTableComponent'
+  | 'RecentlyViewed'
+  | 'RecentlyViewedComponent'
+  | 'RecentlyCompared'
+  | 'RecentlyComparedComponent'
+  | 'NewProducts'
+  | 'NewProductsComponent'
+  // Forms
+  | 'FormBuilder'
+  | 'FormBuilderComponent'
+  | 'MultistepFormBuilder'
+  | 'MultistepFormBuilderComponent'
+  // CMS
+  | 'CMSBlock'
+  | 'CMSBlockComponent'
+  | 'CMSPage'
+  | 'CMSPageComponent'
+  | 'OrdersAndReturns'
+  | 'OrdersAndReturnsComponent';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Specific Component Props Interfaces
@@ -623,4 +697,544 @@ export interface CarouselProps {
   showControls?: boolean;
   showIndicators?: boolean;
   loop?: boolean;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// M3: Extended Component Library Props (God-Tier 2025)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ───────────────────────────────────────────────────────────────
+// Layout Components
+// ───────────────────────────────────────────────────────────────
+
+/** InnerSection component props - Nested layout container */
+export interface InnerSectionProps {
+  maxWidth?: string;
+  padding?: string;
+  backgroundColor?: string;
+  backgroundImage?: string;
+  backgroundSize?: 'cover' | 'contain' | 'auto';
+  backgroundPosition?: string;
+  backgroundRepeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
+  borderRadius?: string;
+  boxShadow?: string;
+  minHeight?: string;
+}
+
+/** Spacer component props - Empty space / divider */
+export interface SpacerProps {
+  height?: string;
+  backgroundColor?: string;
+  showDivider?: boolean;
+  dividerStyle?: 'solid' | 'dashed' | 'dotted';
+  dividerColor?: string;
+  dividerThickness?: number;
+  responsive?: boolean;
+  mobileHeight?: string;
+  tabletHeight?: string;
+}
+
+// ───────────────────────────────────────────────────────────────
+// Content Components
+// ───────────────────────────────────────────────────────────────
+
+/** Banner component props - Hero-style banner with CTA */
+export interface BannerProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  backgroundImage?: string;
+  backgroundColor?: string;
+  overlay?: boolean;
+  overlayOpacity?: number;
+  overlayColor?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  ctaVariant?: 'primary' | 'secondary' | 'outline';
+  secondaryCtaText?: string;
+  secondaryCtaLink?: string;
+  textAlign?: 'left' | 'center' | 'right';
+  height?: string;
+  parallax?: boolean;
+  showArrow?: boolean;
+}
+
+/** HTML component props - Custom HTML rendering */
+export interface HTMLProps {
+  content?: string;
+  sanitize?: boolean;
+  allowedTags?: string[];
+  allowedAttributes?: string[];
+}
+
+/** Video component props - Video player embed */
+export interface VideoProps {
+  url?: string;
+  provider?: 'youtube' | 'vimeo' | 'html5';
+  autoPlay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  controls?: boolean;
+  showThumbnail?: boolean;
+  thumbnail?: string;
+  aspectRatio?: '16:9' | '4:3' | '1:1' | '21:9';
+  startTime?: number;
+  endTime?: number;
+  showCaptions?: boolean;
+}
+
+/** TextEditor component props - Rich text WYSIWYG editor */
+export interface TextEditorProps {
+  content?: string;
+  placeholder?: string;
+  toolbar?: boolean;
+  toolbarOptions?: string[];
+  maxLength?: number;
+  showWordCount?: boolean;
+}
+
+/** IconBox component props - Icon with heading and description */
+export interface IconBoxProps {
+  icon?: string;
+  iconColor?: string;
+  iconSize?: number;
+  heading?: string;
+  description?: string;
+  link?: string;
+  variant?: 'default' | 'bordered' | 'filled' | 'minimal';
+  alignment?: 'left' | 'center' | 'right';
+  iconPosition?: 'top' | 'left' | 'right';
+  hoverEffect?: boolean;
+}
+
+/** ImageBox component props - Image with caption and description */
+export interface ImageBoxProps {
+  image?: string;
+  alt?: string;
+  caption?: string;
+  description?: string;
+  link?: string;
+  openLightbox?: boolean;
+  aspectRatio?: 'square' | 'landscape' | 'portrait' | 'auto';
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none';
+  showOverlay?: boolean;
+  overlayContent?: string;
+  hoverZoom?: boolean;
+}
+
+/** IconList component props - List with icons */
+export interface IconListProps {
+  items?: Array<{
+    id: string;
+    icon?: string;
+    text: string;
+    subtext?: string;
+  }>;
+  iconColor?: string;
+  iconSize?: number;
+  spacing?: 'compact' | 'normal' | 'relaxed';
+  variant?: 'checkmarks' | 'custom' | 'bullets';
+}
+
+// ───────────────────────────────────────────────────────────────
+// Integration Components
+// ───────────────────────────────────────────────────────────────
+
+/** GoogleMaps component props - Embedded Google Maps */
+export interface GoogleMapsProps {
+  apiKey?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  zoom?: number;
+  markers?: Array<{
+    id: string;
+    lat: number;
+    lng: number;
+    title?: string;
+    description?: string;
+  }>;
+  mapType?: 'roadmap' | 'satellite' | 'hybrid' | 'terrain';
+  height?: string;
+  showControls?: boolean;
+  draggable?: boolean;
+  scrollwheel?: boolean;
+  customStyle?: string;
+}
+
+/** SoundCloud component props - SoundCloud audio embed */
+export interface SoundCloudProps {
+  url?: string;
+  autoPlay?: boolean;
+  hideRelated?: boolean;
+  showComments?: boolean;
+  showUser?: boolean;
+  showReposts?: boolean;
+  visual?: boolean;
+  color?: string;
+}
+
+/** SocialIcons component props - Social media icon grid */
+export interface SocialIconsProps {
+  icons?: Array<{
+    id: string;
+    platform: 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'github' | 'custom';
+    url: string;
+    customIcon?: string;
+  }>;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'filled' | 'outline' | 'minimal';
+  shape?: 'square' | 'rounded' | 'circle';
+  spacing?: string;
+  color?: string;
+  hoverEffect?: boolean;
+  openInNewTab?: boolean;
+}
+
+/** FacebookLike component props - Facebook Like button */
+export interface FacebookLikeProps {
+  url?: string;
+  layout?: 'standard' | 'button_count' | 'button' | 'box_count';
+  action?: 'like' | 'recommend';
+  size?: 'small' | 'large';
+  showShare?: boolean;
+  showFaces?: boolean;
+  colorScheme?: 'light' | 'dark';
+}
+
+/** FacebookContent component props - Embed Facebook posts/videos */
+export interface FacebookContentProps {
+  url?: string;
+  type?: 'post' | 'video' | 'page';
+  width?: string;
+  showText?: boolean;
+  adaptContainerWidth?: boolean;
+}
+
+// ───────────────────────────────────────────────────────────────
+// Slider Components
+// ───────────────────────────────────────────────────────────────
+
+/** BannerSlider component props - Full-width hero slider */
+export interface BannerSliderProps {
+  slides?: Array<{
+    id: string;
+    image: string;
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    ctaText?: string;
+    ctaLink?: string;
+    textAlign?: 'left' | 'center' | 'right';
+    overlay?: boolean;
+    overlayOpacity?: number;
+  }>;
+  autoPlay?: boolean;
+  interval?: number;
+  transition?: 'fade' | 'slide' | 'zoom';
+  transitionDuration?: number;
+  showControls?: boolean;
+  showIndicators?: boolean;
+  showThumbnails?: boolean;
+  pauseOnHover?: boolean;
+  loop?: boolean;
+  height?: string;
+}
+
+/** Slider component props - Universal content slider */
+export interface SliderProps {
+  items?: Array<{
+    id: string;
+    content: string;
+    image?: string;
+    title?: string;
+  }>;
+  itemsPerView?: number;
+  spaceBetween?: number;
+  autoPlay?: boolean;
+  interval?: number;
+  loop?: boolean;
+  showControls?: boolean;
+  showPagination?: boolean;
+  centeredSlides?: boolean;
+  freeMode?: boolean;
+  breakpoints?: {
+    mobile?: number;
+    tablet?: number;
+    desktop?: number;
+  };
+}
+
+/** Toggle component props - Accordion alternative with slide animation */
+export interface ToggleProps {
+  items?: Array<{
+    id: string;
+    trigger: string;
+    content: string;
+  }>;
+  defaultOpen?: string[];
+  allowMultiple?: boolean;
+  variant?: 'default' | 'bordered' | 'filled';
+  animated?: boolean;
+  iconPosition?: 'left' | 'right';
+}
+
+// ───────────────────────────────────────────────────────────────
+// Review Components
+// ───────────────────────────────────────────────────────────────
+
+/** Testimonial component props - Customer testimonial */
+export interface TestimonialProps {
+  quote?: string;
+  author?: string;
+  role?: string;
+  company?: string;
+  avatar?: string;
+  rating?: number;
+  showRating?: boolean;
+  variant?: 'default' | 'card' | 'minimal' | 'quote-style';
+  alignment?: 'left' | 'center' | 'right';
+}
+
+/** StarRating component props - Star rating display/input */
+export interface StarRatingProps {
+  rating?: number;
+  maxRating?: number;
+  size?: 'sm' | 'md' | 'lg';
+  color?: string;
+  emptyColor?: string;
+  interactive?: boolean;
+  showValue?: boolean;
+  showCount?: boolean;
+  count?: number;
+  halfStars?: boolean;
+}
+
+// ───────────────────────────────────────────────────────────────
+// Navigation Components
+// ───────────────────────────────────────────────────────────────
+
+/** Menu component props - Multi-level navigation menu */
+export interface MenuProps {
+  items?: Array<{
+    id: string;
+    label: string;
+    href?: string;
+    icon?: string;
+    children?: Array<{
+      id: string;
+      label: string;
+      href?: string;
+      icon?: string;
+    }>;
+  }>;
+  orientation?: 'horizontal' | 'vertical';
+  variant?: 'default' | 'pills' | 'underline' | 'mega';
+  mobileBreakpoint?: number;
+  sticky?: boolean;
+  showIcons?: boolean;
+  highlightActive?: boolean;
+  dropdownAnimation?: 'fade' | 'slide' | 'none';
+}
+
+// ───────────────────────────────────────────────────────────────
+// E-commerce Components
+// ───────────────────────────────────────────────────────────────
+
+/** ProductList component props - Product grid/list view */
+export interface ProductListProps {
+  products?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    salePrice?: number;
+    image: string;
+    rating?: number;
+    badge?: string;
+    inStock?: boolean;
+  }>;
+  layout?: 'grid' | 'list';
+  columns?: number;
+  showQuickView?: boolean;
+  showAddToCart?: boolean;
+  showWishlist?: boolean;
+  showCompare?: boolean;
+  pagination?: boolean;
+  itemsPerPage?: number;
+  sortOptions?: string[];
+  filterOptions?: string[];
+}
+
+/** ProductSlider component props - Product carousel */
+export interface ProductSliderProps {
+  products?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    salePrice?: number;
+    image: string;
+    rating?: number;
+    badge?: string;
+  }>;
+  itemsPerView?: number;
+  autoPlay?: boolean;
+  showControls?: boolean;
+  showAddToCart?: boolean;
+  loop?: boolean;
+}
+
+/** AddToCart component props - Add to cart button with options */
+export interface AddToCartProps {
+  productId?: string;
+  variant?: 'button' | 'icon' | 'button-icon';
+  size?: 'sm' | 'md' | 'lg';
+  showQuantity?: boolean;
+  showVariants?: boolean;
+  variants?: Array<{
+    id: string;
+    name: string;
+    options: string[];
+  }>;
+  buttonText?: string;
+  successMessage?: string;
+  animateOnAdd?: boolean;
+}
+
+/** PricingTable component props - Pricing comparison table */
+export interface PricingTableProps {
+  plans?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    currency?: string;
+    period?: string;
+    description?: string;
+    features: string[];
+    highlighted?: boolean;
+    ctaText?: string;
+    ctaLink?: string;
+    badge?: string;
+  }>;
+  columns?: number;
+  showMostPopular?: boolean;
+  variant?: 'default' | 'bordered' | 'cards';
+  billingToggle?: boolean;
+}
+
+/** RecentlyViewed component props - Recently viewed products */
+export interface RecentlyViewedProps {
+  maxItems?: number;
+  itemsPerView?: number;
+  layout?: 'grid' | 'slider';
+  showAddToCart?: boolean;
+  title?: string;
+  emptyMessage?: string;
+}
+
+/** RecentlyCompared component props - Product comparison widget */
+export interface RecentlyComparedProps {
+  maxItems?: number;
+  showDifferencesOnly?: boolean;
+  attributes?: string[];
+  title?: string;
+  emptyMessage?: string;
+}
+
+/** NewProducts component props - Latest products showcase */
+export interface NewProductsProps {
+  maxItems?: number;
+  layout?: 'grid' | 'slider';
+  columns?: number;
+  showBadge?: boolean;
+  badgeText?: string;
+  daysThreshold?: number;
+  showAddToCart?: boolean;
+  sortBy?: 'date' | 'popularity' | 'price';
+}
+
+// ───────────────────────────────────────────────────────────────
+// Form Components
+// ───────────────────────────────────────────────────────────────
+
+/** FormBuilder component props - Dynamic form builder */
+export interface FormBuilderProps {
+  fields?: Array<{
+    id: string;
+    type: 'text' | 'email' | 'tel' | 'number' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'file' | 'date';
+    label: string;
+    placeholder?: string;
+    required?: boolean;
+    validation?: string;
+    options?: string[];
+    conditional?: {
+      field: string;
+      value: string;
+    };
+  }>;
+  submitText?: string;
+  successMessage?: string;
+  errorMessage?: string;
+  showLabels?: boolean;
+  labelPosition?: 'top' | 'left' | 'inside';
+  layout?: 'vertical' | 'horizontal' | 'inline';
+  fieldSpacing?: string;
+  autoSave?: boolean;
+  captcha?: boolean;
+}
+
+/** MultistepFormBuilder component props - Multi-step wizard form */
+export interface MultistepFormBuilderProps {
+  steps?: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    fields: Array<{
+      id: string;
+      type: string;
+      label: string;
+      required?: boolean;
+    }>;
+  }>;
+  showProgress?: boolean;
+  progressStyle?: 'bar' | 'steps' | 'dots';
+  allowBack?: boolean;
+  saveProgress?: boolean;
+  submitText?: string;
+  backText?: string;
+  nextText?: string;
+  validateOnStep?: boolean;
+}
+
+// ───────────────────────────────────────────────────────────────
+// CMS Components
+// ───────────────────────────────────────────────────────────────
+
+/** CMSBlock component props - Reusable CMS content block */
+export interface CMSBlockProps {
+  blockId?: string;
+  blockIdentifier?: string;
+  showTitle?: boolean;
+  cache?: boolean;
+  cacheDuration?: number;
+}
+
+/** CMSPage component props - Full CMS page embed */
+export interface CMSPageProps {
+  pageId?: string;
+  pageIdentifier?: string;
+  showBreadcrumbs?: boolean;
+  showTitle?: boolean;
+  showMeta?: boolean;
+}
+
+/** OrdersAndReturns component props - Order lookup form */
+export interface OrdersAndReturnsProps {
+  title?: string;
+  description?: string;
+  requireEmail?: boolean;
+  requireOrderNumber?: boolean;
+  requireZipCode?: boolean;
+  submitText?: string;
+  showFindByOrder?: boolean;
+  showFindByEmail?: boolean;
 }

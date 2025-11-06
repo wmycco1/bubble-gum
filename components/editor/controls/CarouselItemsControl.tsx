@@ -85,8 +85,14 @@ export function CarouselItemsControl({ componentId }: CarouselItemsControlProps)
 
   // Handle slides change
   const handleSlidesChange = (newSlides: CarouselSlide[]) => {
+    console.log('🔄 CarouselItemsControl: Updating slides', {
+      componentId,
+      newSlides,
+      slidesCount: newSlides.length
+    });
     setSlides(newSlides);
     updateComponentProps(componentId, { slides: newSlides });
+    console.log('✅ CarouselItemsControl: updateComponentProps called');
   };
 
   // Render slide editor

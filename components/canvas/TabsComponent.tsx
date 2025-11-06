@@ -38,6 +38,13 @@ export function TabsComponent({ component }: TabsComponentProps) {
     { id: '2', label: 'Tab 2', content: 'Content for tab 2' },
     { id: '3', label: 'Tab 3', content: 'Content for tab 3' },
   ];
+
+  console.log('🎨 TabsComponent: Rendering with tabs', {
+    componentId: component.id,
+    tabsCount: tabs.length,
+    tabs: tabs.map(tab => ({ id: tab.id, label: tab.label }))
+  });
+
   const defaultTab = (props.defaultTab as string) || tabs[0]?.id || '';
   const orientation = (props.orientation as 'horizontal' | 'vertical') || 'horizontal';
   const variant = (props.variant as 'default' | 'pills' | 'underline') || 'default';

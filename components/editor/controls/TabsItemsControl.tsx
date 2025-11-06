@@ -69,8 +69,14 @@ export function TabsItemsControl({ componentId }: TabsItemsControlProps) {
 
   // Handle tabs change
   const handleTabsChange = (newTabs: TabItem[]) => {
+    console.log('🔄 TabsItemsControl: Updating tabs', {
+      componentId,
+      newTabs,
+      tabsCount: newTabs.length
+    });
     setTabs(newTabs);
     updateComponentProps(componentId, { tabs: newTabs });
+    console.log('✅ TabsItemsControl: updateComponentProps called');
   };
 
   // Render tab editor

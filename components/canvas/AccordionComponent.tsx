@@ -37,6 +37,12 @@ export function AccordionComponent({ component }: AccordionComponentProps) {
     { id: '2', title: 'Accordion Item 2', content: 'Content for item 2' },
     { id: '3', title: 'Accordion Item 3', content: 'Content for item 3' },
   ];
+
+  console.log('🎨 AccordionComponent: Rendering with items', {
+    componentId: component.id,
+    itemsCount: items.length,
+    items: items.map(item => ({ id: item.id, title: item.title }))
+  });
   const allowMultiple = (props.allowMultiple as boolean) ?? false;
   const defaultOpen = (props.defaultOpen as string[]) || [];
   const variant = (props.variant as 'default' | 'bordered' | 'filled') || 'default';
