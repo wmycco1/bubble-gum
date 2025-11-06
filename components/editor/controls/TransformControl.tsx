@@ -17,6 +17,7 @@
 import { useState, useEffect } from 'react';
 import { RotateCw, Link, Unlink, X } from 'lucide-react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
+import { extractTransformFromCSS } from '@/lib/utils/css-property-parser';
 
 interface TransformControlProps {
   componentId: string;
@@ -109,10 +110,36 @@ export function TransformControl({ componentId }: TransformControlProps) {
     }
   };
 
-  // Get current transform value
+  // Get current transform value (with bidirectional sync from Custom CSS)
   const getCurrentTransform = (): string | undefined => {
     if (!component) return undefined;
 
+    // 🔥 BIDIRECTIONAL SYNC: First try to extract from Custom CSS
+    const customCSS = (component.props.customCSS as string) || '';
+    if (customCSS) {
+      const extractedTransform = extractTransformFromCSS(customCSS);
+      if (extractedTransform && Object.keys(extractedTransform).length > 0) {
+        console.log('🔄 TransformControl: Syncing from Custom CSS', extractedTransform);
+        // Convert parsed transform to CSS string
+        const parts: string[] = [];
+        if (extractedTransform.rotate !== undefined) parts.push(`rotate(${extractedTransform.rotate}deg)`);
+        if (extractedTransform.translateX !== undefined) parts.push(`translateX(${extractedTransform.translateX}px)`);
+        if (extractedTransform.translateY !== undefined) parts.push(`translateY(${extractedTransform.translateY}px)`);
+        if (extractedTransform.scaleX !== undefined && extractedTransform.scaleY !== undefined) {
+          if (extractedTransform.scaleX === extractedTransform.scaleY) {
+            parts.push(`scale(${extractedTransform.scaleX})`);
+          } else {
+            parts.push(`scaleX(${extractedTransform.scaleX}) scaleY(${extractedTransform.scaleY})`);
+          }
+        }
+        if (extractedTransform.skewX !== undefined) parts.push(`skewX(${extractedTransform.skewX}deg)`);
+        if (extractedTransform.skewY !== undefined) parts.push(`skewY(${extractedTransform.skewY}deg)`);
+
+        return parts.length > 0 ? parts.join(' ') : undefined;
+      }
+    }
+
+    // Fallback: Parse from style properties (existing logic)
     const style = component.style;
 
     // Check responsive overrides
@@ -130,10 +157,10 @@ export function TransformControl({ componentId }: TransformControlProps) {
   const [values, setValues] = useState<TransformValues>(() => parseTransform(currentTransform));
   const [scaleLinked, setScaleLinked] = useState(true);
 
-  // Sync with external changes
+  // Sync with external changes (including Custom CSS)
   useEffect(() => {
     setValues(parseTransform(getCurrentTransform()));
-  }, [component, deviceMode]);
+  }, [component, deviceMode, component?.props.customCSS]);
 
   // Convert values to CSS transform string
   const valuesToCSS = (v: TransformValues): string => {

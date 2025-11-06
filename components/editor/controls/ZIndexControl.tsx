@@ -15,6 +15,7 @@
 import { useState, useEffect } from 'react';
 import { Layers, X } from 'lucide-react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
+import { extractZIndexFromCSS } from '@/lib/utils/css-property-parser';
 
 interface ZIndexControlProps {
   componentId: string;
@@ -39,10 +40,21 @@ export function ZIndexControl({ componentId }: ZIndexControlProps) {
 
   const component = findComponent(components, componentId);
 
-  // Get current z-index value
+  // Get current z-index value (with bidirectional sync from Custom CSS)
   const getCurrentZIndex = (): number => {
     if (!component) return 0;
 
+    // 🔥 BIDIRECTIONAL SYNC: First try to extract from Custom CSS
+    const customCSS = (component.props.customCSS as string) || '';
+    if (customCSS) {
+      const extractedZIndex = extractZIndexFromCSS(customCSS);
+      if (extractedZIndex !== null) {
+        console.log('🔄 ZIndexControl: Syncing from Custom CSS', extractedZIndex);
+        return extractedZIndex;
+      }
+    }
+
+    // Fallback: Parse from style properties (existing logic)
     const style = component.style;
 
     // Check responsive overrides
@@ -63,10 +75,10 @@ export function ZIndexControl({ componentId }: ZIndexControlProps) {
 
   const [zIndex, setZIndex] = useState<number>(getCurrentZIndex());
 
-  // Sync with external changes
+  // Sync with external changes (including Custom CSS)
   useEffect(() => {
     setZIndex(getCurrentZIndex());
-  }, [component, deviceMode]);
+  }, [component, deviceMode, component?.props.customCSS]);
 
   // Handle z-index change
   const handleZIndexChange = (newZIndex: number) => {

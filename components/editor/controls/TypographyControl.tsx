@@ -18,6 +18,7 @@
 import { useEffect, useState } from 'react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { Type, AlignLeft, ChevronDown } from 'lucide-react';
+import { extractTypographyFromCSS } from '@/lib/utils/css-property-parser';
 
 interface TypographyControlProps {
   componentId: string;
@@ -107,9 +108,43 @@ export function TypographyControl({ componentId }: TypographyControlProps) {
     (component?.props.textTransform as string) || 'none'
   );
 
-  // Sync with component changes
+  // Sync with component changes (including Custom CSS)
   useEffect(() => {
     if (!component) return;
+
+    // 🔥 BIDIRECTIONAL SYNC: First try to extract from Custom CSS
+    const customCSS = (component.props.customCSS as string) || '';
+    if (customCSS) {
+      const extractedTypography = extractTypographyFromCSS(customCSS);
+      if (extractedTypography && Object.keys(extractedTypography).length > 0) {
+        console.log('🔄 TypographyControl: Syncing from Custom CSS', extractedTypography);
+
+        if (extractedTypography.fontFamily !== undefined) {
+          setFontFamily(extractedTypography.fontFamily);
+        }
+        if (extractedTypography.fontSize !== undefined) {
+          setFontSize(extractedTypography.fontSize);
+        }
+        if (extractedTypography.fontWeight !== undefined) {
+          setFontWeight(Number(extractedTypography.fontWeight));
+        }
+        if (extractedTypography.lineHeight !== undefined) {
+          setLineHeight(parseFloat(extractedTypography.lineHeight));
+        }
+        if (extractedTypography.letterSpacing !== undefined) {
+          setLetterSpacing(extractedTypography.letterSpacing);
+        }
+        if (extractedTypography.textDecoration !== undefined) {
+          setTextDecoration(extractedTypography.textDecoration);
+        }
+        if (extractedTypography.textTransform !== undefined) {
+          setTextTransform(extractedTypography.textTransform);
+        }
+        return; // Don't override with component props if CSS is present
+      }
+    }
+
+    // Fallback: Sync from component props (existing logic)
     if (component.props.fontFamily !== undefined) {
       setFontFamily(component.props.fontFamily as string);
     }
@@ -131,7 +166,7 @@ export function TypographyControl({ componentId }: TypographyControlProps) {
     if (component.props.textTransform !== undefined) {
       setTextTransform(component.props.textTransform as string);
     }
-  }, [component]);
+  }, [component, component?.props.customCSS]);
 
   // Handlers
   const handleFontFamilyChange = (value: string) => {
