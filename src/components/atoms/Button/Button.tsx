@@ -21,6 +21,7 @@
 import React from 'react';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
 import type { ButtonProps } from './Button.types';
+import styles from './Button.module.css';
 
 export const Button: React.FC<ButtonProps> = (props) => {
   // Get inherited parameters from Atom context
@@ -50,14 +51,14 @@ export const Button: React.FC<ButtonProps> = (props) => {
     ...rest
   } = params;
 
-  // Compute CSS classes
-  const baseClasses = 'button';
-  const variantClasses = `button--${variant}`;
-  const sizeClasses = `button--${size}`;
+  // Compute CSS classes (using CSS modules)
+  const baseClasses = styles.button;
+  const variantClasses = styles[`button--${variant}`];
+  const sizeClasses = styles[`button--${size}`];
   const stateClasses = [
-    disabled && 'button--disabled',
-    loading && 'button--loading',
-    fullWidth && 'button--full-width',
+    disabled && styles['button--disabled'],
+    loading && styles['button--loading'],
+    fullWidth && styles['button--full-width'],
   ]
     .filter(Boolean)
     .join(' ');
@@ -95,24 +96,24 @@ export const Button: React.FC<ButtonProps> = (props) => {
     >
       {/* Loading spinner */}
       {loading && (
-        <span className="button__spinner" aria-hidden="true" role="status">
-          <span className="visually-hidden">Loading...</span>
+        <span className={styles.button__spinner} aria-hidden="true" role="status">
+          <span className={styles['visually-hidden']}>Loading...</span>
         </span>
       )}
 
       {/* Left icon (hidden when loading) */}
       {leftIcon && !loading && (
-        <span className="button__icon button__icon--left" aria-hidden="true">
+        <span className={`${styles.button__icon} ${styles['button__icon--left']}`} aria-hidden="true">
           {leftIcon}
         </span>
       )}
 
       {/* Button text */}
-      <span className="button__text">{text}</span>
+      <span className={styles.button__text}>{text}</span>
 
       {/* Right icon (hidden when loading) */}
       {rightIcon && !loading && (
-        <span className="button__icon button__icon--right" aria-hidden="true">
+        <span className={`${styles.button__icon} ${styles['button__icon--right']}`} aria-hidden="true">
           {rightIcon}
         </span>
       )}

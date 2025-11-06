@@ -1,0 +1,431 @@
+/**
+ * Button Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * Features:
+ * - CSS Modules for scoped styling
+ * - CSS Variables for theming
+ * - Accessibility-first design (WCAG 2.2 AA)
+ * - Smooth transitions and animations
+ * - Responsive touch targets (44x44px minimum)
+ * - Modern CSS best practices (2025)
+ */
+
+/* ============================================
+   CSS VARIABLES (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Colors */
+  --button-primary-bg: #3b82f6;
+  --button-primary-hover: #2563eb;
+  --button-primary-active: #1d4ed8;
+  --button-primary-text: #ffffff;
+
+  --button-secondary-bg: #6b7280;
+  --button-secondary-hover: #4b5563;
+  --button-secondary-active: #374151;
+  --button-secondary-text: #ffffff;
+
+  --button-outline-border: #d1d5db;
+  --button-outline-hover-bg: #f9fafb;
+  --button-outline-active-bg: #f3f4f6;
+  --button-outline-text: #374151;
+
+  --button-ghost-hover-bg: #f9fafb;
+  --button-ghost-active-bg: #f3f4f6;
+  --button-ghost-text: #374151;
+
+  --button-danger-bg: #ef4444;
+  --button-danger-hover: #dc2626;
+  --button-danger-active: #b91c1c;
+  --button-danger-text: #ffffff;
+
+  --button-disabled-bg: #e5e7eb;
+  --button-disabled-text: #9ca3af;
+  --button-disabled-opacity: 0.6;
+
+  /* Spacing */
+  --button-padding-sm: 0.375rem 0.75rem;
+  --button-padding-md: 0.5rem 1rem;
+  --button-padding-lg: 0.75rem 1.5rem;
+  --button-padding-xl: 1rem 2rem;
+
+  /* Typography */
+  --button-font-size-sm: 0.875rem;
+  --button-font-size-md: 1rem;
+  --button-font-size-lg: 1.125rem;
+  --button-font-size-xl: 1.25rem;
+
+  --button-font-weight: 500;
+  --button-line-height: 1.5;
+
+  /* Border Radius */
+  --button-border-radius: 0.375rem;
+
+  /* Transitions */
+  --button-transition: all 0.15s ease-in-out;
+
+  /* Shadows */
+  --button-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --button-shadow-hover: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --button-shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.5);
+
+  /* Icon spacing */
+  --button-icon-gap: 0.5rem;
+
+  /* Spinner */
+  --button-spinner-size: 1rem;
+  --button-spinner-border-width: 2px;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.button {
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--button-icon-gap);
+
+  /* Typography */
+  font-family: inherit;
+  font-size: var(--button-font-size-md);
+  font-weight: var(--button-font-weight);
+  line-height: var(--button-line-height);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+
+  /* Box Model */
+  padding: var(--button-padding-md);
+  border: 1px solid transparent;
+  border-radius: var(--button-border-radius);
+
+  /* Visual */
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  box-shadow: var(--button-shadow);
+
+  /* Interaction */
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  /* Transition */
+  transition: var(--button-transition);
+
+  /* Accessibility - Minimum touch target 44x44px */
+  min-height: 44px;
+  min-width: 44px;
+
+  /* Performance */
+  will-change: transform, box-shadow;
+}
+
+/* Focus state - Accessibility */
+.button:focus {
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: var(--button-shadow-focus);
+}
+
+/* Hover state */
+.button:hover:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-primary-hover);
+  box-shadow: var(--button-shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* Active state */
+.button:active:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-primary-active);
+  transform: translateY(0);
+}
+
+/* ============================================
+   VARIANT STYLES
+   ============================================ */
+
+/* Primary (default - already styled in base) */
+.button--primary {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}
+
+.button--primary:hover:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-primary-hover);
+}
+
+.button--primary:active:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-primary-active);
+}
+
+/* Secondary */
+.button--secondary {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+}
+
+.button--secondary:hover:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-secondary-hover);
+}
+
+.button--secondary:active:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-secondary-active);
+}
+
+/* Outline */
+.button--outline {
+  background-color: transparent;
+  color: var(--button-outline-text);
+  border-color: var(--button-outline-border);
+  box-shadow: none;
+}
+
+.button--outline:hover:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-outline-hover-bg);
+  transform: translateY(-1px);
+}
+
+.button--outline:active:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-outline-active-bg);
+}
+
+/* Ghost */
+.button--ghost {
+  background-color: transparent;
+  color: var(--button-ghost-text);
+  box-shadow: none;
+}
+
+.button--ghost:hover:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-ghost-hover-bg);
+  transform: translateY(-1px);
+}
+
+.button--ghost:active:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-ghost-active-bg);
+}
+
+/* Danger */
+.button--danger {
+  background-color: var(--button-danger-bg);
+  color: var(--button-danger-text);
+}
+
+.button--danger:hover:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-danger-hover);
+}
+
+.button--danger:active:not(:disabled):not(.button--disabled):not(.button--loading) {
+  background-color: var(--button-danger-active);
+}
+
+/* ============================================
+   SIZE STYLES
+   ============================================ */
+
+.button--sm {
+  padding: var(--button-padding-sm);
+  font-size: var(--button-font-size-sm);
+  min-height: 32px;
+}
+
+.button--md {
+  padding: var(--button-padding-md);
+  font-size: var(--button-font-size-md);
+  min-height: 44px;
+}
+
+.button--lg {
+  padding: var(--button-padding-lg);
+  font-size: var(--button-font-size-lg);
+  min-height: 52px;
+}
+
+.button--xl {
+  padding: var(--button-padding-xl);
+  font-size: var(--button-font-size-xl);
+  min-height: 60px;
+}
+
+/* ============================================
+   STATE STYLES
+   ============================================ */
+
+/* Disabled */
+.button:disabled,
+.button--disabled {
+  background-color: var(--button-disabled-bg);
+  color: var(--button-disabled-text);
+  border-color: transparent;
+  cursor: not-allowed;
+  opacity: var(--button-disabled-opacity);
+  transform: none;
+  box-shadow: none;
+}
+
+.button:disabled:hover,
+.button--disabled:hover {
+  background-color: var(--button-disabled-bg);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Loading */
+.button--loading {
+  cursor: wait;
+  position: relative;
+}
+
+.button--loading .button__text {
+  opacity: 0.6;
+}
+
+/* Full Width */
+.button--full-width {
+  width: 100%;
+  display: flex;
+}
+
+/* ============================================
+   ICON STYLES
+   ============================================ */
+
+.button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.button__icon--left {
+  margin-right: calc(var(--button-icon-gap) / 2);
+}
+
+.button__icon--right {
+  margin-left: calc(var(--button-icon-gap) / 2);
+}
+
+/* Icon only button (no text) */
+.button:has(.button__icon):not(:has(.button__text)) {
+  padding: 0.5rem;
+  aspect-ratio: 1;
+}
+
+/* ============================================
+   LOADING SPINNER
+   ============================================ */
+
+.button__spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: calc(var(--button-icon-gap) / 2);
+}
+
+.button__spinner::after {
+  content: '';
+  display: block;
+  width: var(--button-spinner-size);
+  height: var(--button-spinner-size);
+  border: var(--button-spinner-border-width) solid currentColor;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spinner-rotate 0.6s linear infinite;
+}
+
+@keyframes spinner-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY HELPERS
+   ============================================ */
+
+/* Visually hidden but accessible to screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .button {
+    border: 2px solid currentColor;
+  }
+
+  .button:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .button__spinner::after {
+    transition: none;
+    animation-duration: 0.01ms;
+  }
+
+  .button:hover,
+  .button:active {
+    transform: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --button-outline-border: #4b5563;
+    --button-outline-hover-bg: #374151;
+    --button-outline-active-bg: #1f2937;
+    --button-outline-text: #f9fafb;
+
+    --button-ghost-hover-bg: #374151;
+    --button-ghost-active-bg: #1f2937;
+    --button-ghost-text: #f9fafb;
+
+    --button-disabled-bg: #374151;
+    --button-disabled-text: #6b7280;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .button {
+    background: none;
+    border: 1px solid #000;
+    color: #000;
+    box-shadow: none;
+  }
+
+  .button__spinner,
+  .button--loading {
+    display: none;
+  }
+}

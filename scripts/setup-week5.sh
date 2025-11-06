@@ -28,7 +28,7 @@ npm install --save-dev \
   @jest/globals@29 \
   @types/jest@29 \
   jest-environment-jsdom@29 \
-  @testing-library/react@14 \
+  @testing-library/react@16 \
   @testing-library/jest-dom@6 \
   @testing-library/user-event@14 \
   jest-axe@8 \
@@ -94,7 +94,7 @@ const config = {
     '!src/**/*.stories.tsx',
     '!src/**/index.ts',
   ],
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       statements: 80,
       branches: 80,
@@ -125,8 +125,8 @@ echo -e "${GREEN}✅ jest.config.js created${NC}"
 echo -e "${BLUE}⚙️  Step 4: Creating Jest Setup File...${NC}"
 
 cat > jest.setup.js << 'EOF'
-import '@testing-library/jest-dom';
-import { toHaveNoViolations } from 'jest-axe';
+require('@testing-library/jest-dom');
+const { toHaveNoViolations } = require('jest-axe');
 
 expect.extend(toHaveNoViolations);
 

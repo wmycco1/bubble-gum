@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button Component Snapshots matches snapshot for loading state 1`] = `
+<button
+  aria-busy="true"
+  aria-disabled="false"
+  aria-label="Loading"
+  class="button button--primary button--md button--loading"
+  data-testid="button"
+  disabled=""
+  type="button"
+>
+  <span
+    aria-hidden="true"
+    class="button__spinner"
+    role="status"
+  >
+    <span
+      class="visually-hidden"
+    >
+      Loading...
+    </span>
+  </span>
+  <span
+    class="button__text"
+  >
+    Loading
+  </span>
+</button>
+`;
+
+exports[`Button Component Snapshots matches snapshot for primary variant 1`] = `
+<button
+  aria-busy="false"
+  aria-disabled="false"
+  aria-label="Primary"
+  class="button button--primary button--md"
+  data-testid="button"
+  type="button"
+>
+  <span
+    class="button__text"
+  >
+    Primary
+  </span>
+</button>
+`;
+
+exports[`Button Component Snapshots matches snapshot with icons 1`] = `
+<button
+  aria-busy="false"
+  aria-disabled="false"
+  aria-label="Test"
+  class="button button--primary button--md"
+  data-testid="button"
+  type="button"
+>
+  <span
+    aria-hidden="true"
+    class="button__icon button__icon--left"
+  >
+    ←
+  </span>
+  <span
+    class="button__text"
+  >
+    Test
+  </span>
+  <span
+    aria-hidden="true"
+    class="button__icon button__icon--right"
+  >
+    →
+  </span>
+</button>
+`;
