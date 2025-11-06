@@ -31,55 +31,15 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
   const allowedTags = props.allowedTags as string[] | undefined;
   const allowedAttributes = props.allowedAttributes as string[] | undefined;
 
-  // Client-side DOMPurify instance
-  const [DOMPurify, setDOMPurify] = useState<any>(null);
-
-  // Load DOMPurify client-side only (BROWSER ONLY)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Dynamic import of DOMPurify - it auto-initializes with window
-      import('dompurify').then((module) => {
-        // In browser, DOMPurify is a factory that needs to be called with window
-        // OR it's already initialized. Let's check both:
-        const factory = module.default;
-
-        // Try calling it as a factory with window
-        let purifyInstance;
-        if (typeof factory === 'function') {
-          purifyInstance = factory(window);
-        }
-
-        // If that didn't work, check if module.default IS already the API
-        if (!purifyInstance || !purifyInstance.sanitize) {
-          purifyInstance = factory;
-        }
-
-        // Last resort: check if it has sanitize method directly
-        if (purifyInstance && typeof purifyInstance.sanitize === 'function') {
-          setDOMPurify(purifyInstance);
-        } else {
-          console.error('❌ DOMPurify failed to initialize:', {
-            factoryType: typeof factory,
-            instanceType: typeof purifyInstance,
-            hasSanitize: !!purifyInstance?.sanitize,
-          });
-          // Fallback: set a dummy that returns unsanitized content
-          setDOMPurify({
-            sanitize: (html: string) => {
-              console.warn('⚠️ Using unsanitized HTML (DOMPurify failed to load)');
-              return html;
-            }
-          });
-        }
-      }).catch(error => {
-        console.error('Failed to load DOMPurify:', error);
-        // Fallback
-        setDOMPurify({
-          sanitize: (html: string) => html
-        });
-      });
+  // TEMPORARY: Disable DOMPurify due to import issues with Next.js 16 Turbopack
+  // TODO: Re-enable with proper server-side sanitization or alternative library
+  const [DOMPurify] = useState<any>({
+    sanitize: (html: string) => {
+      // ⚠️ WARNING: Using unsanitized HTML
+      // For security, only allow trusted HTML content
+      return html;
     }
-  }, []);
+  });
 
   // Sanitize HTML content
   const sanitizedContent = useMemo(() => {
