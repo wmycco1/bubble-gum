@@ -9,6 +9,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { useCanvasStore, useUndo, useRedo } from '@/lib/editor/canvas-store';
 import { SaveIndicator } from '@/components/editor/SaveIndicator';
@@ -41,12 +42,29 @@ export function EditorToolbar({
   onToggleAIChat
 }: EditorToolbarProps) {
   const isSaving = status === 'saving' || status === 'retrying';
-  const { deviceMode, setDeviceMode, zoom, setZoom } = useCanvasStore();
+  const { deviceMode, setDeviceMode, zoom, setZoom, clearCanvas } = useCanvasStore();
   const { undo, canUndo } = useUndo();
   const { redo, canRedo } = useRedo();
 
   // Keyboard shortcuts help modal state
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+
+  // Clear canvas handler with confirmation
+  const handleClearCanvas = () => {
+    if (confirm('⚠️ Are you sure you want to delete ALL components from the canvas? This cannot be undone.')) {
+      clearCanvas();
+      toast.success('Canvas cleared! All components deleted.', {
+        duration: 3000,
+        icon: '🗑️',
+      });
+      if (onSaveNow) {
+        // Trigger save immediately to update database
+        setTimeout(() => {
+          onSaveNow();
+        }, 500);
+      }
+    }
+  };
 
   const handleSave = async () => {
     if (onSaveNow) {
@@ -116,6 +134,19 @@ export function EditorToolbar({
           title="Redo (Ctrl+Y)"
         >
           ↷
+        </Button>
+
+        <div className="mx-2 h-6 w-px bg-slate-200" />
+
+        {/* Clear All Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleClearCanvas}
+          title="Clear all components from canvas"
+          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+        >
+          🗑️ Clear All
         </Button>
 
         <div className="mx-2 h-6 w-px bg-slate-200" />
