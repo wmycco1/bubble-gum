@@ -33,6 +33,9 @@ import { TextShadowControl } from './controls/TextShadowControl';
 import { ZIndexControl } from './controls/ZIndexControl';
 import { BorderControl } from './controls/BorderControl';
 import { CustomStyleControl } from './controls/CustomStyleControl';
+import { AccordionItemsControl } from './controls/AccordionItemsControl';
+import { TabsItemsControl } from './controls/TabsItemsControl';
+import { CarouselItemsControl } from './controls/CarouselItemsControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 
 interface PropertiesPanelProps {
@@ -1338,6 +1341,11 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 Allow Multiple Open
               </label>
             </div>
+
+            {/* Accordion Items CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <AccordionItemsControl componentId={component.id} />
+            </div>
           </>
         );
 
@@ -1388,6 +1396,11 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label htmlFor="tabs-closable" className="text-sm font-medium text-slate-700">
                 Closable Tabs
               </label>
+            </div>
+
+            {/* Tabs Items CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <TabsItemsControl componentId={component.id} />
             </div>
           </>
         );
@@ -2042,6 +2055,11 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <label htmlFor="carousel-loop" className="text-sm font-medium text-slate-700">
                 Loop
               </label>
+            </div>
+
+            {/* Carousel Slides CRUD */}
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <CarouselItemsControl componentId={component.id} />
             </div>
           </>
         );
