@@ -63,7 +63,7 @@ export const aiRouter = createTRPCRouter({
         // Rate limiting: 10 requests per minute per user
         checkRateLimit(ctx.userId, 10);
 
-        console.log('[AI] Generating page:', {
+        console.warn('[AI] Generating page:', {
           userId: ctx.userId,
           prompt: input.prompt.substring(0, 50) + '...',
           pageType: input.pageType,
@@ -89,7 +89,7 @@ export const aiRouter = createTRPCRouter({
         }
 
         // Log token usage for monitoring
-        console.log('[AI] Page generated successfully:', {
+        console.warn('[AI] Page generated successfully:', {
           componentsCount: result.data?.components.length,
           tokens: result.tokens,
           duration: result.duration,
@@ -134,7 +134,7 @@ export const aiRouter = createTRPCRouter({
       try {
         checkRateLimit(ctx.userId, 20); // Higher limit for components
 
-        console.log('[AI] Generating component:', {
+        console.warn('[AI] Generating component:', {
           userId: ctx.userId,
           componentType: input.componentType,
           prompt: input.prompt.substring(0, 50) + '...',
@@ -157,7 +157,7 @@ export const aiRouter = createTRPCRouter({
           });
         }
 
-        console.log('[AI] Component generated successfully:', {
+        console.warn('[AI] Component generated successfully:', {
           type: result.data?.type,
           tokens: result.tokens,
           duration: result.duration,
@@ -202,7 +202,7 @@ export const aiRouter = createTRPCRouter({
       try {
         checkRateLimit(ctx.userId, 30); // Higher limit for text improvements
 
-        console.log('[AI] Improving text:', {
+        console.warn('[AI] Improving text:', {
           userId: ctx.userId,
           variant: input.variant,
           tone: input.tone,
@@ -224,7 +224,7 @@ export const aiRouter = createTRPCRouter({
           });
         }
 
-        console.log('[AI] Text improved successfully:', {
+        console.warn('[AI] Text improved successfully:', {
           tokens: result.tokens,
           duration: result.duration,
         });
@@ -281,7 +281,7 @@ export const aiRouter = createTRPCRouter({
       try {
         checkRateLimit(ctx.userId, 20);
 
-        console.log('[AI] Chat message:', {
+        console.warn('[AI] Chat message:', {
           userId: ctx.userId,
           message: input.message.substring(0, 50) + '...',
           historyLength: input.conversationHistory?.length || 0,

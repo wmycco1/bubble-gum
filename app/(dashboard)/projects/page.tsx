@@ -4,6 +4,7 @@ import { trpc } from '@/lib/trpc/client';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useState } from 'react';
+import { logger } from '@/lib/utils/logger';
 
 export default function ProjectsPage() {
   const [newProjectName, setNewProjectName] = useState('');
@@ -15,7 +16,7 @@ export default function ProjectsPage() {
   });
 
   // Debug logging
-  console.log('Projects Page State:', {
+  logger.debug('Projects Page State:', {
     projects,
     projectsCount: projects?.length,
     isLoading,
@@ -38,7 +39,7 @@ export default function ProjectsPage() {
     if (!newProjectName.trim()) return;
     try {
       await createProject.mutateAsync({ name: newProjectName.trim() });
-      console.log('Project created successfully, refetching list...');
+      logger.debug('Project created successfully, refetching list...');
     } catch (error) {
       console.error('Error creating project:', error);
     }

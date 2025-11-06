@@ -16,6 +16,7 @@ import { RenderComponent } from '@/components/editor/RenderComponent';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { useDroppable } from '@dnd-kit/core';
 import { useState, useRef } from 'react';
+import { logger } from '@/lib/utils/logger';
 
 interface GridComponentProps {
   component: CanvasComponent;
@@ -175,7 +176,8 @@ export function GridComponent({ component }: GridComponentProps) {
     startXRef.current = e.clientX;
     startWidthsRef.current = getPixelWidths();
 
-    console.log('🔄 Resize started for column:', columnIndex, {
+    logger.debug('🔄 Resize started for column', {
+      columnIndex,
       startX: e.clientX,
       startWidths: startWidthsRef.current,
     });
@@ -213,7 +215,7 @@ export function GridComponent({ component }: GridComponentProps) {
       setResizing(null);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
-      console.log('✅ Resize ended');
+      logger.debug('✅ Resize ended');
     };
 
     document.addEventListener('mousemove', handleMouseMove);

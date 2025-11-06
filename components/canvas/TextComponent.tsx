@@ -9,6 +9,7 @@
 import { useEffect } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
+import { logger } from '@/lib/utils/logger';
 
 interface TextComponentProps {
   component: CanvasComponent;
@@ -22,7 +23,7 @@ export function TextComponent({ component }: TextComponentProps) {
 
   // Debug: Log when props change
   useEffect(() => {
-    console.log('📄 TextComponent render:', { id: component.id, text, variant, props });
+    logger.debug('📄 TextComponent render:', { id: component.id, text, variant, props });
   }, [component.id, text, variant, props]);
 
   const variantClasses = {

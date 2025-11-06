@@ -12,6 +12,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useEffect, useCallback, useRef } from 'react';
+import { logger } from '@/lib/utils/logger';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Types
@@ -204,7 +205,7 @@ export function useKeyboardShortcuts({
           // Execute handler
           try {
             shortcut.handler();
-            console.log(`⌨️ Keyboard shortcut: ${shortcut.description}`);
+            logger.debug(`⌨️ Keyboard shortcut: ${shortcut.description}`);
           } catch (error) {
             console.error('❌ Keyboard shortcut handler failed:', error);
           }

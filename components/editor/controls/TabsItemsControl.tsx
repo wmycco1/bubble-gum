@@ -14,6 +14,7 @@
 import { useEffect, useState } from 'react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { ItemsEditor } from './ItemsEditor';
+import { logger } from '@/lib/utils/logger';
 
 interface TabsItemsControlProps {
   componentId: string;
@@ -69,14 +70,14 @@ export function TabsItemsControl({ componentId }: TabsItemsControlProps) {
 
   // Handle tabs change
   const handleTabsChange = (newTabs: TabItem[]) => {
-    console.log('🔄 TabsItemsControl: Updating tabs', {
+    logger.debug('🔄 TabsItemsControl: Updating tabs', {
       componentId,
       newTabs,
       tabsCount: newTabs.length
     });
     setTabs(newTabs);
     updateComponentProps(componentId, { tabs: newTabs });
-    console.log('✅ TabsItemsControl: updateComponentProps called');
+    logger.debug('✅ TabsItemsControl: updateComponentProps called');
   };
 
   // Render tab editor

@@ -11,6 +11,7 @@ import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { temporal } from 'zundo';
 import { nanoid } from 'nanoid';
 import type { CanvasComponent, CanvasState, ComponentType, ComponentProps, ComponentStyle } from './types';
+import { logger } from '@/lib/utils/logger';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Store Interface
@@ -1688,7 +1689,7 @@ export const useCanvasStore = create<CanvasStore>()(
         },
 
         updateComponentProps: (id, props) => {
-          console.log('🔧 updateComponentProps called:', { id, props });
+          logger.debug('🔧 updateComponentProps called:', { id, props });
 
           set((state) => {
             const updateInTree = (comps: CanvasComponent[]): CanvasComponent[] => {
@@ -1698,7 +1699,7 @@ export const useCanvasStore = create<CanvasStore>()(
                     ...comp,
                     props: { ...comp.props, ...props },
                   };
-                  console.log('✅ Component props updated:', {
+                  logger.debug('✅ Component props updated:', {
                     id,
                     oldProps: comp.props,
                     newProps: updated.props,
@@ -1767,7 +1768,7 @@ export const useCanvasStore = create<CanvasStore>()(
 
     // Merge strategy: override components from localStorage, keep UI state from initialState
     merge: (persistedState: unknown, currentState) => {
-      console.log('📦 localStorage: Restoring persisted state');
+      logger.debug('📦 localStorage: Restoring persisted state');
       return {
         ...currentState, // Keep UI state (selection, zoom, etc.)
         ...(persistedState as Partial<CanvasStore>), // Override with persisted canvas data
@@ -1776,7 +1777,7 @@ export const useCanvasStore = create<CanvasStore>()(
 
     // Migration function for version changes
     migrate: (persistedState: unknown, version: number) => {
-      console.log(`🔄 localStorage: Migrating from version ${version} to ${STORAGE_VERSION}`);
+      logger.debug(`🔄 localStorage: Migrating from version ${version} to ${STORAGE_VERSION}`);
 
       if (version === 0) {
         // Migrate from v0 to v1 (if needed in future)
@@ -1794,12 +1795,12 @@ export const useCanvasStore = create<CanvasStore>()(
 
     // Log persistence events
     onRehydrateStorage: () => {
-      console.log('💾 localStorage: Starting hydration');
+      logger.debug('💾 localStorage: Starting hydration');
       return (state, error) => {
         if (error) {
           console.error('❌ localStorage: Hydration error:', error);
         } else {
-          console.log('✅ localStorage: Hydration complete', {
+          logger.debug('✅ localStorage: Hydration complete', {
             components: state?.components.length || 0,
           });
         }
@@ -1837,7 +1838,7 @@ export const useRedo = () => {
 export const clearCanvasLocalStorage = () => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem(STORAGE_KEY);
-    console.log('🧹 localStorage: Cleared canvas backup');
+    logger.debug('🧹 localStorage: Cleared canvas backup');
   }
 };
 

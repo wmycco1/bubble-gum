@@ -17,6 +17,7 @@ import type { CanvasComponent } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 import { mergeAllStyles, buildClassNameFromProps } from '@/lib/utils/apply-custom-props';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { logger } from '@/lib/utils/logger';
 
 interface CarouselComponentProps {
   component: CanvasComponent;
@@ -55,7 +56,7 @@ export function CarouselComponent({ component }: CarouselComponentProps) {
     },
   ];
 
-  console.log('🎨 CarouselComponent: Rendering with slides', {
+  logger.debug('🎨 CarouselComponent: Rendering with slides', {
     componentId: component.id,
     slidesCount: slides.length,
     slides: slides.map(slide => ({ id: slide.id, title: slide.title }))

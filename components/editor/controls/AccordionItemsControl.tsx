@@ -14,6 +14,7 @@
 import { useEffect, useState } from 'react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { ItemsEditor } from './ItemsEditor';
+import { logger } from '@/lib/utils/logger';
 
 interface AccordionItemsControlProps {
   componentId: string;
@@ -68,14 +69,14 @@ export function AccordionItemsControl({ componentId }: AccordionItemsControlProp
 
   // Handle items change
   const handleItemsChange = (newItems: AccordionItem[]) => {
-    console.log('🔄 AccordionItemsControl: Updating items', {
+    logger.debug('🔄 AccordionItemsControl: Updating items', {
       componentId,
       newItems,
       itemsCount: newItems.length
     });
     setItems(newItems);
     updateComponentProps(componentId, { items: newItems });
-    console.log('✅ AccordionItemsControl: updateComponentProps called');
+    logger.debug('✅ AccordionItemsControl: updateComponentProps called');
   };
 
   // Render item editor

@@ -12,6 +12,7 @@
 import { useCallback } from 'react';
 import { useClerk } from '@clerk/nextjs';
 import { clearCanvasLocalStorage } from '@/lib/editor/canvas-store';
+import { logger } from '@/lib/utils/logger';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Hook Implementation
@@ -42,7 +43,7 @@ export function useLogout(): UseLogoutReturn {
 
   const logout = useCallback(async () => {
     try {
-      console.log('🚪 Logging out...');
+      logger.debug('🚪 Logging out...');
 
       // Clear canvas localStorage
       clearCanvasLocalStorage();
@@ -50,7 +51,7 @@ export function useLogout(): UseLogoutReturn {
       // Sign out from Clerk
       await signOut();
 
-      console.log('✅ Logout complete');
+      logger.debug('✅ Logout complete');
     } catch (error) {
       console.error('❌ Logout failed:', error);
       throw error;

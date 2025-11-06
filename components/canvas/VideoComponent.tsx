@@ -46,10 +46,10 @@ export function VideoComponent({ component }: VideoComponentProps) {
     if (!urlStr) return '';
     if (provider === 'youtube') {
       const match = urlStr.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-      return match ? match[1] : '';
+      return match?.[1] ?? '';
     } else if (provider === 'vimeo') {
       const match = urlStr.match(/vimeo\.com\/(\d+)/);
-      return match ? match[1] : '';
+      return match?.[1] ?? '';
     }
     return urlStr;
   };
@@ -84,7 +84,7 @@ export function VideoComponent({ component }: VideoComponentProps) {
       });
       return `https://player.vimeo.com/video/${videoId}?${params.toString()}`;
     }
-    return url;
+    return url || '';
   };
 
   // Build className

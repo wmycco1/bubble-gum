@@ -39,6 +39,7 @@ import { AccordionItemsControl } from './controls/AccordionItemsControl';
 import { TabsItemsControl } from './controls/TabsItemsControl';
 import { CarouselItemsControl } from './controls/CarouselItemsControl';
 import { PropertyGroup } from './controls/PropertyGroup';
+import { logger } from '@/lib/utils/logger';
 
 interface PropertiesPanelProps {
   component: CanvasComponent | undefined;
@@ -67,7 +68,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
   useEffect(() => {
     if (component) {
       setLocalProps(component.props);
-      console.log('📝 PropertiesPanel SYNC:', {
+      logger.debug('📝 PropertiesPanel SYNC:', {
         componentId: component.id,
         componentType: component.type,
         propsKeys: Object.keys(component.props),
@@ -85,7 +86,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
     // Set new timer
     debounceTimerRef.current = setTimeout(() => {
-      console.log('💾 Debounced store update:', { key, value });
+      logger.debug('💾 Debounced store update:', { key, value });
       onUpdate({ [key]: value });
     }, 300);
   }, [onUpdate]);
@@ -101,7 +102,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
 
   // Debug logging with useEffect to track changes
   useEffect(() => {
-    console.log('📝 PropertiesPanel UPDATE:', {
+    logger.debug('📝 PropertiesPanel UPDATE:', {
       hasComponent: !!component,
       componentId: component?.id,
       componentType: component?.type,
@@ -497,7 +498,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                     columnWidths: newWidths,
                   });
 
-                  console.log('🔄 Grid columns updated:', {
+                  logger.debug('🔄 Grid columns updated:', {
                     newColumns,
                     newWidths,
                     timestamp: new Date().toISOString(),

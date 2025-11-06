@@ -36,6 +36,7 @@ import { convertArrayOldToNew, convertArrayNewToOld, type DbComponent } from '@/
 import { useAutoSave } from '@/lib/hooks/useAutoSave';
 import { useKeyboardShortcuts } from '@/lib/hooks/useKeyboardShortcuts';
 import toast, { Toaster } from 'react-hot-toast';
+import { logger } from '@/lib/utils/logger';
 
 interface EditorPageProps {
   params: Promise<{ projectId: string }>;
@@ -114,14 +115,14 @@ export default function EditorPage(props: EditorPageProps) {
         content: oldComponents,
       });
 
-      console.log('💾 Auto-save: Saved', oldComponents.length, 'components to database');
+      logger.debug(`💾 Auto-save: Saved ${oldComponents.length} components to database`);
     },
     debounceMs: 10000, // 10 seconds
     enabled: !!homepage && !isDragging, // Disable during drag operations
     maxRetries: 3,
     retryDelayMs: 1000,
     onSaveSuccess: () => {
-      console.log('✅ Auto-save: Success callback');
+      logger.debug('✅ Auto-save: Success callback');
     },
     onSaveError: (error) => {
       console.error('❌ Auto-save: Error callback', error);
@@ -155,9 +156,9 @@ export default function EditorPage(props: EditorPageProps) {
 
       // No conflict, load from database
       if (dbComponents.length > 0) {
-        console.log('📥 Loading components from DB:', dbComponents.length);
+        logger.debug('📥 Loading components from DB', { count: dbComponents.length });
         loadComponents(dbComponents);
-        console.log('✅ Loaded', dbComponents.length, 'components into canvas-store');
+        logger.debug(`✅ Loaded ${dbComponents.length} components into canvas-store`);
         setConflictResolved(true);
       }
     } catch (error) {
@@ -311,7 +312,7 @@ export default function EditorPage(props: EditorPageProps) {
    * Handle restoring from localStorage backup
    */
   const handleRestoreFromLocal = useCallback(() => {
-    console.log('🔄 Restoring from localStorage backup');
+    logger.debug('🔄 Restoring from localStorage backup');
     // localStorage components are already loaded by Zustand persist middleware
     // Just need to mark conflict as resolved
     setShowConflictModal(false);
@@ -323,7 +324,7 @@ export default function EditorPage(props: EditorPageProps) {
    * Handle discarding localStorage and using database version
    */
   const handleDiscardLocal = useCallback(() => {
-    console.log('🗑️ Discarding localStorage, using database');
+    logger.debug('🗑️ Discarding localStorage, using database');
 
     if (!homepage?.content) return;
 

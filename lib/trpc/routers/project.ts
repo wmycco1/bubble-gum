@@ -19,11 +19,11 @@ export const projectRouter = createTRPCRouter({
     });
 
     if (!user) {
-      console.log('User not found for clerk ID:', ctx.userId);
+      console.warn('User not found for clerk ID:', ctx.userId);
       return [];
     }
 
-    console.log('Fetching projects for user:', { clerkId: ctx.userId, dbId: user.id });
+    console.warn('Fetching projects for user:', { clerkId: ctx.userId, dbId: user.id });
 
     const projects = await ctx.prisma.project.findMany({
       where: {

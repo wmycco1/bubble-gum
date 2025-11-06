@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { ItemsEditor } from './ItemsEditor';
 import { Image as ImageIcon } from 'lucide-react';
+import { logger } from '@/lib/utils/logger';
 
 interface CarouselItemsControlProps {
   componentId: string;
@@ -85,14 +86,14 @@ export function CarouselItemsControl({ componentId }: CarouselItemsControlProps)
 
   // Handle slides change
   const handleSlidesChange = (newSlides: CarouselSlide[]) => {
-    console.log('🔄 CarouselItemsControl: Updating slides', {
+    logger.debug('🔄 CarouselItemsControl: Updating slides', {
       componentId,
       newSlides,
       slidesCount: newSlides.length
     });
     setSlides(newSlides);
     updateComponentProps(componentId, { slides: newSlides });
-    console.log('✅ CarouselItemsControl: updateComponentProps called');
+    logger.debug('✅ CarouselItemsControl: updateComponentProps called');
   };
 
   // Render slide editor

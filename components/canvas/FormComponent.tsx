@@ -10,6 +10,7 @@ import { mergeClassNameWithSpacing } from '@/lib/utils/spacing';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { logger } from '@/lib/utils/logger';
 
 interface FormComponentProps {
   component: CanvasComponent;
@@ -33,7 +34,7 @@ export function FormComponent({ component }: FormComponentProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted');
+    logger.debug('Form submitted');
   };
 
   // Remove Tailwind spacing classes if custom spacing is set

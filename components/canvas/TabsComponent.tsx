@@ -16,6 +16,7 @@ import type { CanvasComponent } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 import { mergeAllStyles, buildClassNameFromProps } from '@/lib/utils/apply-custom-props';
 import { X } from 'lucide-react';
+import { logger } from '@/lib/utils/logger';
 
 interface TabsComponentProps {
   component: CanvasComponent;
@@ -39,7 +40,7 @@ export function TabsComponent({ component }: TabsComponentProps) {
     { id: '3', label: 'Tab 3', content: 'Content for tab 3' },
   ];
 
-  console.log('🎨 TabsComponent: Rendering with tabs', {
+  logger.debug('🎨 TabsComponent: Rendering with tabs', {
     componentId: component.id,
     tabsCount: tabs.length,
     tabs: tabs.map(tab => ({ id: tab.id, label: tab.label }))

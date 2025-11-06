@@ -13,6 +13,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import debounce from 'lodash.debounce';
+import { logger } from '@/lib/utils/logger';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Types
@@ -58,7 +59,7 @@ export interface AutoSaveReturn {
  *   debounceMs: 10000,
  *   enabled: !isEditingText && !isDragging,
  *   maxRetries: 3,
- *   onSaveSuccess: () => console.log('Saved!'),
+ *   onSaveSuccess: () => logger.debug('Saved!'),
  *   onSaveError: (error) => console.error('Failed:', error),
  * });
  * ```
@@ -99,20 +100,20 @@ export function useAutoSave<T>({
 
   useEffect(() => {
     const handleOnline = () => {
-      console.log('🌐 Network online');
+      logger.debug('🌐 Network online');
       setIsOnline(true);
       setStatus('idle');
 
       // Execute queued save
       if (queuedSaveRef.current) {
-        console.log('📤 Executing queued save');
+        logger.debug('📤 Executing queued save');
         queuedSaveRef.current = false;
         performSaveWithRetry();
       }
     };
 
     const handleOffline = () => {
-      console.log('📡 Network offline');
+      logger.debug('📡 Network offline');
       setIsOnline(false);
       setStatus('offline');
     };
@@ -148,14 +149,14 @@ export function useAutoSave<T>({
   const performSaveWithRetry = useCallback(async (attempt: number = 0) => {
     // Check if save is needed
     if (!hasDataChanged() && lastSaved !== null) {
-      console.log('💾 Auto-save: No changes detected, skipping save');
+      logger.debug('💾 Auto-save: No changes detected, skipping save');
       setStatus('idle');
       return;
     }
 
     // Check online status
     if (!isOnline) {
-      console.log('📡 Auto-save: Offline, queueing save for later');
+      logger.debug('📡 Auto-save: Offline, queueing save for later');
       queuedSaveRef.current = true;
       setStatus('offline');
       return;
@@ -183,7 +184,7 @@ export function useAutoSave<T>({
 
       // Check if save was aborted
       if (abortController.signal.aborted) {
-        console.log('💾 Auto-save: Aborted');
+        logger.debug('💾 Auto-save: Aborted');
         return;
       }
 
@@ -196,7 +197,7 @@ export function useAutoSave<T>({
       saveCountRef.current++;
       queuedSaveRef.current = false;
 
-      console.log(`✅ Auto-save: Saved successfully (#${saveCountRef.current})`);
+      logger.debug(`✅ Auto-save: Saved successfully (#${saveCountRef.current})`);
 
       // Call onSaveSuccess callback
       onSaveSuccess?.();
@@ -208,7 +209,7 @@ export function useAutoSave<T>({
     } catch (err) {
       // Handle abort (not an error)
       if (err instanceof Error && err.name === 'AbortError') {
-        console.log('💾 Auto-save: Aborted');
+        logger.debug('💾 Auto-save: Aborted');
         return;
       }
 
@@ -219,7 +220,7 @@ export function useAutoSave<T>({
       // Check if we should retry
       if (attempt < maxRetries) {
         const delay = retryDelayMs * Math.pow(2, attempt); // Exponential backoff
-        console.log(`🔄 Auto-save: Retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
+        logger.debug(`🔄 Auto-save: Retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
 
         setTimeout(() => {
           performSaveWithRetry(attempt + 1);
@@ -243,7 +244,7 @@ export function useAutoSave<T>({
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   const saveNow = useCallback(async () => {
-    console.log('💾 Manual save triggered');
+    logger.debug('💾 Manual save triggered');
     await performSaveWithRetry(0);
   }, [performSaveWithRetry]);
 
@@ -262,7 +263,7 @@ export function useAutoSave<T>({
   // Trigger debounced save when data changes
   useEffect(() => {
     if (!enabled) {
-      console.log('💾 Auto-save: Disabled');
+      logger.debug('💾 Auto-save: Disabled');
       return;
     }
 

@@ -16,6 +16,7 @@ import type { CanvasComponent } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 import { mergeAllStyles, buildClassNameFromProps } from '@/lib/utils/apply-custom-props';
 import { ChevronDown, Plus, Minus } from 'lucide-react';
+import { logger } from '@/lib/utils/logger';
 
 interface AccordionComponentProps {
   component: CanvasComponent;
@@ -38,7 +39,7 @@ export function AccordionComponent({ component }: AccordionComponentProps) {
     { id: '3', title: 'Accordion Item 3', content: 'Content for item 3' },
   ];
 
-  console.log('🎨 AccordionComponent: Rendering with items', {
+  logger.debug('AccordionComponent: Rendering with items', {
     componentId: component.id,
     itemsCount: items.length,
     items: items.map(item => ({ id: item.id, title: item.title }))

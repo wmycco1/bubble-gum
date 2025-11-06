@@ -50,6 +50,7 @@ import { BadgeComponent } from '@/components/canvas/BadgeComponent';
 import { BreadcrumbComponent } from '@/components/canvas/BreadcrumbComponent';
 import { DividerComponent } from '@/components/canvas/DividerComponent';
 import { CarouselComponent } from '@/components/canvas/CarouselComponent';
+import { logger } from '@/lib/utils/logger';
 
 interface RenderComponentProps {
   component: CanvasComponent;
@@ -105,7 +106,7 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    console.log('🖱️ Component clicked:', {
+    logger.debug('🖱️ Component clicked:', {
       id: component.id,
       type: component.type,
       currentSelectedId: useCanvasStore.getState().selectedComponentId,
@@ -125,7 +126,7 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     // Verify selection happened (debug)
     setTimeout(() => {
       const store = useCanvasStore.getState();
-      console.log('✅ Selection updated:', {
+      logger.debug('✅ Selection updated:', {
         selectedComponentId: store.selectedComponentId,
         success: store.selectedComponentId === component.id,
       });

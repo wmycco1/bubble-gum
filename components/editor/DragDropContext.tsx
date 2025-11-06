@@ -24,6 +24,7 @@ import type {
 } from '@dnd-kit/core';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import type { ComponentType } from '@/lib/editor/types';
+import { logger } from '@/lib/utils/logger';
 
 interface DragDropContextProviderProps {
   children: ReactNode;
@@ -49,14 +50,14 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
       setActiveType(active.data.current.type as ComponentType);
     }
 
-    console.log('🎯 Drag started:', { id: active.id, type: active.data.current?.type });
+    logger.debug('🎯 Drag started:', { id: active.id, type: active.data.current?.type });
   };
 
   const handleDragOver = (event: DragOverEvent) => {
     const { over } = event;
 
     if (over) {
-      console.log('📍 Dragging over:', over.id);
+      logger.debug('📍 Dragging over', { id: over.id });
     }
   };
 
@@ -64,7 +65,7 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
     const { active, over } = event;
 
     if (!over) {
-      console.log('❌ Dropped outside valid area');
+      logger.debug('❌ Dropped outside valid area');
       setActiveType(null);
       return;
     }
@@ -73,7 +74,7 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
     const droppedOn = over.id as string;
     const dropData = over.data.current;
 
-    console.log('✅ Drag ended:', {
+    logger.debug('✅ Drag ended:', {
       dragType,
       activeId: active.id,
       droppedOn,
@@ -90,7 +91,7 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
         const index = dropData.index ?? 0;
         const columnIndex = dropData.columnIndex;
 
-        console.log('➕ Adding component to parent:', { componentType, parentId, index, columnIndex });
+        logger.debug('➕ Adding component to parent:', { componentType, parentId, index, columnIndex });
 
         // Add the component
         addComponent(componentType, parentId, index);
@@ -111,7 +112,7 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
         }
       } else if (droppedOn === 'canvas') {
         // Dropped on main canvas
-        console.log('➕ Adding component to canvas');
+        logger.debug('➕ Adding component to canvas');
         addComponent(componentType);
       }
     }
@@ -128,7 +129,7 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
         const newIndex = components.findIndex((c) => c.id === droppedOn);
 
         if (oldIndex !== -1 && newIndex !== -1) {
-          console.log('🔄 Reordering components:', { from: oldIndex, to: newIndex });
+          logger.debug('🔄 Reordering components:', { from: oldIndex, to: newIndex });
 
           // Reorder components array
           const newComponents = [...components];

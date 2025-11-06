@@ -148,7 +148,7 @@ async function withRetry<T>(
       // Retry on network errors or API errors
       if (attempt < retries - 1) {
         const delay = RETRY_DELAYS[attempt] || RETRY_DELAYS[RETRY_DELAYS.length - 1];
-        console.log(`[AI Service] Retry attempt ${attempt + 1}/${retries} after ${delay}ms`);
+        console.warn(`[AI Service] Retry attempt ${attempt + 1}/${retries} after ${delay}ms`);
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
@@ -162,8 +162,8 @@ async function withRetry<T>(
 // ═══════════════════════════════════════════════════════════════
 
 function extractJSON(text: string): unknown {
-  console.log('[AI Service] Raw AI response length:', text.length);
-  console.log('[AI Service] First 500 chars:', text.substring(0, 500));
+  console.warn('[AI Service] Raw AI response length:', text.length);
+  console.warn('[AI Service] First 500 chars:', text.substring(0, 500));
 
   // Remove markdown code blocks if present
   let cleanText = text.trim();
@@ -179,7 +179,7 @@ function extractJSON(text: string): unknown {
     // Try to find where JSON starts
     const bracketIndex = cleanText.indexOf('{');
     if (bracketIndex > 0) {
-      console.log('[AI Service] Found JSON at position:', bracketIndex);
+      console.warn('[AI Service] Found JSON at position:', bracketIndex);
       cleanText = cleanText.substring(bracketIndex);
     }
   }
@@ -201,7 +201,7 @@ function extractJSON(text: string): unknown {
   try {
     // First attempt: parse as-is
     const parsed = JSON.parse(jsonString);
-    console.log('[AI Service] Successfully parsed JSON:', {
+    console.warn('[AI Service] Successfully parsed JSON:', {
       hasComponents: 'components' in parsed,
       componentsCount: Array.isArray(parsed.components) ? parsed.components.length : 0,
       hasMetadata: 'metadata' in parsed,
@@ -220,7 +220,7 @@ function extractJSON(text: string): unknown {
 
     try {
       const parsed = JSON.parse(jsonString);
-      console.log('[AI Service] Successfully parsed JSON after fixes');
+      console.warn('[AI Service] Successfully parsed JSON after fixes');
       return parsed;
     } catch (secondError) {
       console.error('[AI Service] JSON parse error (after fixes):', secondError);
@@ -232,7 +232,7 @@ function extractJSON(text: string): unknown {
         try {
           const componentsOnly = `{${componentsMatch[0]}}`;
           const parsed = JSON.parse(componentsOnly);
-          console.log('[AI Service] Extracted components array as fallback');
+          console.warn('[AI Service] Extracted components array as fallback');
           return parsed;
         } catch {
           // Give up

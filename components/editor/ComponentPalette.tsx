@@ -18,6 +18,7 @@ import type { ComponentType } from '@/lib/editor/types';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { ChevronDown, ChevronRight, Search, X } from 'lucide-react';
+import { logger } from '@/lib/utils/logger';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Component Data with Categories
@@ -277,7 +278,7 @@ export function ComponentPalette() {
       return [type, ...filtered].slice(0, 5);
     });
 
-    console.log('➕ Added component:', type);
+    logger.debug('➕ Added component:', { value: type });
   };
 
   // Filter components by search query

@@ -14,6 +14,7 @@
 
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight, GripVertical } from 'lucide-react';
+import { logger } from '@/lib/utils/logger';
 
 interface ResizablePanelProps {
   /** Unique ID for localStorage persistence */
@@ -113,7 +114,7 @@ export function ResizablePanel({
     startXRef.current = e.clientX;
     startWidthRef.current = width;
 
-    console.log('📏 Resize started:', { startX: e.clientX, startWidth: width });
+    logger.debug('📏 Resize started:', { startX: e.clientX, startWidth: width });
   }, [width]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -134,7 +135,7 @@ export function ResizablePanel({
   const handleMouseUp = useCallback(() => {
     if (!isResizing) return;
     setIsResizing(false);
-    console.log('✅ Resize ended:', width);
+    logger.debug('✅ Resize ended:', { value: width });
   }, [isResizing, width]);
 
   // Add/remove global mouse event listeners
@@ -162,7 +163,7 @@ export function ResizablePanel({
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
-    console.log('🔄 Panel collapsed:', !isCollapsed);
+    logger.debug('🔄 Panel collapsed', { collapsed: !isCollapsed });
   };
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
