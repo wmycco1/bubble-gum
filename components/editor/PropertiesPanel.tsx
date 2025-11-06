@@ -36,6 +36,7 @@ import { CustomStyleControl } from './controls/CustomStyleControl';
 import { TypographyControl } from './controls/TypographyControl';
 import { AdvancedPropertiesControl } from './controls/AdvancedPropertiesControl';
 import { VisibilityControl } from './controls/VisibilityControl';
+import { GranularStylesControl } from './controls/GranularStylesControl';
 import { AccordionItemsControl } from './controls/AccordionItemsControl';
 import { TabsItemsControl } from './controls/TabsItemsControl';
 import { CarouselItemsControl } from './controls/CarouselItemsControl';
@@ -3191,6 +3192,12 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* UNIVERSAL CONTROLS (God-Tier 2025) - Available for ALL Components */}
       {/* ═══════════════════════════════════════════════════════════════ */}
+
+      {/* Granular Styles Control (Complex Components) - God-Tier 2025 */}
+      <GranularStylesControl
+        componentId={component.id}
+        componentType={component.type}
+      />
 
       {/* Visibility & Display Control (NEW - God-Tier 2025) */}
       <VisibilityControl

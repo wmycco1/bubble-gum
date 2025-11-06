@@ -93,8 +93,7 @@ interface RenderComponentProps {
 }
 
 export function RenderComponent({ component, isSelected, deviceMode = 'desktop' }: RenderComponentProps) {
-  const { selectComponent, setHoveredComponent, hoveredComponentId, deleteComponent } =
-    useCanvasStore();
+  const { selectComponent, setHoveredComponent, hoveredComponentId } = useCanvasStore();
 
   const isHovered = hoveredComponentId === component.id;
   const canHaveChildren = ['Container', 'Section', 'Grid', 'Card', 'Form'].includes(

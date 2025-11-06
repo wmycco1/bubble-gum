@@ -28,12 +28,12 @@ export function VisibilityControl({
     updateComponentProps(componentId, { visibility: value });
   };
 
-  const handleDisplayChange = (value: string) => {
+  const handleDisplayChange = (value: 'block' | 'flex' | 'grid' | 'inline-block' | 'inline-flex' | 'none') => {
     updateComponentProps(componentId, { display: value });
   };
 
   return (
-    <PropertyGroup id="visibility" title="Visibility & Display" defaultOpen={false}>
+    <PropertyGroup title="Visibility & Display" storageKey="visibility" defaultExpanded={false}>
       <div className="space-y-4">
         {/* Visibility */}
         <div>
@@ -78,7 +78,7 @@ export function VisibilityControl({
           </label>
           <select
             value={currentDisplay}
-            onChange={(e) => handleDisplayChange(e.target.value)}
+            onChange={(e) => handleDisplayChange(e.target.value as 'block' | 'flex' | 'grid' | 'inline-block' | 'inline-flex' | 'none')}
             className="w-full px-3 py-2 text-sm border border-slate-200 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
           >
             <option value="block">Block</option>

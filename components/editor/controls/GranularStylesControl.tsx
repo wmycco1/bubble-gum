@@ -124,7 +124,7 @@ export function GranularStylesControl({ componentId, componentType }: GranularSt
   };
 
   return (
-    <PropertyGroup id="granular-styles" title="Element Styles" defaultOpen={false}>
+    <PropertyGroup title="Element Styles" storageKey="granular-styles" defaultExpanded={false}>
       <div className="space-y-4">
         {/* Element Selector */}
         <div>

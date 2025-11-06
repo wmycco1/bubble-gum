@@ -1,8 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
 // PRICING TABLE COMPONENT - M3 E-commerce
 // ═══════════════════════════════════════════════════════════════
-// Version: 2.0.0 - Professional pricing tiers display
-// Features:
+// Version: 3.0.0 - God-Tier 2025 with Granular Styles Support
+// NEW Features (v3.0.0):
+// - ✅ Granular styles support (title, price, description, button, etc.)
+// - ✅ Element-level customization via properties panel
+// Previous Features (v2.0.0):
 // - Multiple pricing tiers (Free/Starter/Pro/Enterprise)
 // - Featured/Popular tier highlighting
 // - Feature lists with checkmarks
@@ -11,7 +14,7 @@
 // - High-conversion 2025 design
 // ═══════════════════════════════════════════════════════════════
 
-import type { CanvasComponent } from '@/lib/editor/types';
+import type { CanvasComponent, ComponentStyles } from '@/lib/editor/types';
 
 interface PricingTier {
   id: string;
@@ -31,6 +34,9 @@ export function PricingTableComponent({ component }: { component: CanvasComponen
   // Get pricing tiers from props
   const tiers = (props.tiers as PricingTier[] | undefined) || [];
 
+  // Get granular styles (God-Tier 2025)
+  const styles = (props.styles as ComponentStyles | undefined) || {};
+
   // Empty state
   if (tiers.length === 0) {
     return (
@@ -45,7 +51,7 @@ export function PricingTableComponent({ component }: { component: CanvasComponen
   }
 
   return (
-    <div className="py-12 px-4">
+    <div className="py-12 px-4" style={styles.wrapper}>
       {/* Grid layout - responsive */}
       <div className={`
         grid gap-6 mx-auto max-w-7xl
@@ -64,30 +70,43 @@ export function PricingTableComponent({ component }: { component: CanvasComponen
                 : 'border-slate-200 bg-white hover:shadow-lg'
               }
             `}
+            style={styles.card}
           >
             {/* Popular Badge */}
             {tier.highlighted && (
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <span className="bg-blue-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow-md">
+                <span
+                  className="bg-blue-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow-md"
+                  style={styles.badge}
+                >
                   MOST POPULAR
                 </span>
               </div>
             )}
 
             {/* Tier Name */}
-            <h3 className={`text-xl font-bold mb-2 ${tier.highlighted ? 'text-blue-900' : 'text-slate-900'}`}>
+            <h3
+              className={`text-xl font-bold mb-2 ${tier.highlighted ? 'text-blue-900' : 'text-slate-900'}`}
+              style={styles.title}
+            >
               {tier.name}
             </h3>
 
             {/* Description */}
-            <p className="text-sm text-slate-600 mb-6">
+            <p
+              className="text-sm text-slate-600 mb-6"
+              style={styles.description}
+            >
               {tier.description}
             </p>
 
             {/* Price */}
             <div className="mb-6">
               <div className="flex items-baseline gap-1">
-                <span className={`text-5xl font-bold ${tier.highlighted ? 'text-blue-900' : 'text-slate-900'}`}>
+                <span
+                  className={`text-5xl font-bold ${tier.highlighted ? 'text-blue-900' : 'text-slate-900'}`}
+                  style={styles.price}
+                >
                   {tier.price}
                 </span>
                 {tier.period && (
@@ -105,6 +124,7 @@ export function PricingTableComponent({ component }: { component: CanvasComponen
                   : 'bg-slate-900 hover:bg-slate-800 text-white hover:scale-105'
                 }
               `}
+              style={styles.button}
             >
               {tier.buttonText}
             </button>
@@ -126,7 +146,10 @@ export function PricingTableComponent({ component }: { component: CanvasComponen
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span className="text-sm text-slate-700">
+                  <span
+                    className="text-sm text-slate-700"
+                    style={styles.feature}
+                  >
                     {feature}
                   </span>
                 </li>
