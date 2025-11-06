@@ -210,16 +210,17 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
     >
       {children}
 
-      {/* Drag Overlay - smooth mechanical animation (GPU accelerated) */}
+      {/* Drag Overlay - elastic magnetic stick animation (GPU accelerated) */}
       <DragOverlay
         dropAnimation={{
-          duration: 250, // Smooth but not slow
-          easing: 'cubic-bezier(0.34, 1.26, 0.64, 1)', // Slight elastic bounce
-          // Smooth fade + scale animation on drop
+          duration: 350, // Slower for elastic feel
+          easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', // Strong elastic bounce
+          // Magnetic stick: pull → overshoot → settle
           keyframes: ({ transform }) => [
-            { opacity: 1, transform: transform.initial },
-            { opacity: 0.8, transform: transform.final + ' scale(0.98)' },
-            { opacity: 1, transform: transform.final + ' scale(1)' },
+            { transform: transform.initial },                    // Start position
+            { transform: transform.final + ' scale(1.03)' },    // Overshoot (magnetic pull)
+            { transform: transform.final + ' scale(0.97)' },    // Compress (stick)
+            { transform: transform.final + ' scale(1)' },       // Settle
           ],
         }}
       >
