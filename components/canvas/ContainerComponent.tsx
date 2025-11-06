@@ -51,11 +51,11 @@ export function ContainerComponent({ component }: ContainerComponentProps) {
   // Remove Tailwind spacing classes if custom spacing is set
   const baseClassName = 'flex flex-col gap-4 p-6 border-2 border-dashed rounded-lg min-h-[150px]';
   const stateClassName = isOver
-    ? 'border-blue-500 bg-blue-50 scale-[1.02]'
-    : 'border-slate-300 bg-slate-50 scale-100';
+    ? 'border-blue-500 bg-blue-50'
+    : 'border-slate-300 bg-slate-50';
 
   const wrapperClassName = mergeClassNameWithSpacing(
-    `${baseClassName} ${stateClassName} transition-all duration-200 ease-out`,
+    `${baseClassName} ${stateClassName} transition-colors duration-150`,
     style
   );
 

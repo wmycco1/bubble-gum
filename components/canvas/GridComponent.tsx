@@ -68,11 +68,14 @@ function GridColumn({
     <div className="relative">
       <div
         ref={setNodeRef}
-        className={`flex flex-col gap-2 p-3 rounded border-2 border-dashed min-h-[150px] transition-all duration-200 ease-out ${
+        className={`flex flex-col gap-2 p-3 rounded border-2 border-dashed min-h-[150px] transition-colors duration-150 ${
           isOver
-            ? 'border-blue-500 bg-blue-50 scale-[1.02] shadow-md'
-            : 'border-slate-200 bg-white scale-100'
+            ? 'border-blue-500 bg-blue-50'
+            : 'border-slate-200 bg-white'
         }`}
+        style={{
+          willChange: isOver ? 'border-color, background-color' : 'auto',
+        }}
       >
         {isEmpty ? (
           <div className="flex items-center justify-center h-full text-xs text-slate-400">

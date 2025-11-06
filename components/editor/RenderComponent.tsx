@@ -132,11 +132,12 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
   });
 
   const style: React.CSSProperties = {
-    // Remove transform - DragOverlay handles positioning
-    opacity: isDragging ? 0.3 : 1, // Fade out original while dragging
+    // GPU-accelerated properties only
+    opacity: isDragging ? 0.4 : 1, // Subtle fade while dragging
     zIndex: isSelected ? 10 : 1, // Selected components on top
     pointerEvents: 'auto', // CRITICAL: Ensure clickable
-    transition: 'opacity 0.2s ease', // Smooth fade
+    willChange: isDragging ? 'opacity' : 'auto', // GPU hint only when needed
+    transition: 'opacity 150ms ease-out', // Fast, natural fade
   };
 
   const handleClick = (e: React.MouseEvent) => {
