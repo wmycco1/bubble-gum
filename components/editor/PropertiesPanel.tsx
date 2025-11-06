@@ -42,6 +42,9 @@ import { ProductItemsControl } from './controls/ProductItemsControl';
 import { PricingTiersControl } from './controls/PricingTiersControl';
 import { FormFieldsControl } from './controls/FormFieldsControl';
 import { MultistepFormStepsControl } from './controls/MultistepFormStepsControl';
+import { TestimonialsControl } from './controls/TestimonialsControl';
+import { SocialIconsControl } from './controls/SocialIconsControl';
+import { BreadcrumbItemsControl } from './controls/BreadcrumbItemsControl';
 import { PropertyGroup } from './controls/PropertyGroup';
 import { logger } from '@/lib/utils/logger';
 
@@ -2874,9 +2877,252 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
           </>
         );
 
-      // M3: Other components (controls coming soon)
+      // ═══════════════════════════════════════════════════════════
+      // TESTIMONIAL COMPONENT
+      // ═══════════════════════════════════════════════════════════
       case 'Testimonial':
       case 'TestimonialComponent':
+        return (
+          <>
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+              <span className="text-2xl">💬</span>
+              <h3 className="text-sm font-semibold text-slate-900">Testimonial Component</h3>
+            </div>
+
+            <div className="space-y-4">
+              {/* Layout Mode */}
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-2 block">Layout Mode</label>
+                <select
+                  value={(component.props.layout as string) || 'grid'}
+                  onChange={(e) => handleInputChange('layout', e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="grid">Grid (3 columns)</option>
+                  <option value="carousel">Carousel (horizontal scroll)</option>
+                  <option value="single">Single (one testimonial)</option>
+                </select>
+              </div>
+
+              {/* Display Options */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={(component.props.showRating as boolean) ?? true}
+                    onChange={(e) => handleInputChange('showRating', e.target.checked)}
+                    className="rounded border-slate-300 text-blue-600"
+                  />
+                  <span className="text-xs text-slate-700">Show star ratings</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={(component.props.showAvatar as boolean) ?? true}
+                    onChange={(e) => handleInputChange('showAvatar', e.target.checked)}
+                    className="rounded border-slate-300 text-blue-600"
+                  />
+                  <span className="text-xs text-slate-700">Show avatars</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={(component.props.showCompany as boolean) ?? true}
+                    onChange={(e) => handleInputChange('showCompany', e.target.checked)}
+                    className="rounded border-slate-300 text-blue-600"
+                  />
+                  <span className="text-xs text-slate-700">Show company names</span>
+                </label>
+              </div>
+
+              {/* Testimonials CRUD */}
+              <div className="pt-4 border-t border-slate-200">
+                <TestimonialsControl componentId={component.id} />
+              </div>
+            </div>
+          </>
+        );
+
+      // ═══════════════════════════════════════════════════════════
+      // SOCIAL ICONS COMPONENT
+      // ═══════════════════════════════════════════════════════════
+      case 'SocialIcons':
+      case 'SocialIconsComponent':
+        return (
+          <>
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+              <span className="text-2xl">🔗</span>
+              <h3 className="text-sm font-semibold text-slate-900">Social Icons Component</h3>
+            </div>
+
+            <div className="space-y-4">
+              {/* Size */}
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-2 block">Icon Size</label>
+                <select
+                  value={(component.props.size as string) || 'md'}
+                  onChange={(e) => handleInputChange('size', e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="sm">Small (32px)</option>
+                  <option value="md">Medium (40px)</option>
+                  <option value="lg">Large (48px)</option>
+                  <option value="xl">Extra Large (64px)</option>
+                </select>
+              </div>
+
+              {/* Variant */}
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-2 block">Style Variant</label>
+                <select
+                  value={(component.props.variant as string) || 'rounded'}
+                  onChange={(e) => handleInputChange('variant', e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="rounded">Rounded (Circle)</option>
+                  <option value="solid">Solid (Square with rounded corners)</option>
+                  <option value="outline">Outline</option>
+                  <option value="square">Square (No rounded corners)</option>
+                </select>
+              </div>
+
+              {/* Color Mode */}
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-2 block">Color Mode</label>
+                <select
+                  value={(component.props.colorMode as string) || 'brand'}
+                  onChange={(e) => handleInputChange('colorMode', e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="brand">Brand Colors (platform specific)</option>
+                  <option value="monochrome">Monochrome (all same color)</option>
+                </select>
+              </div>
+
+              {/* Social Icons CRUD */}
+              <div className="pt-4 border-t border-slate-200">
+                <SocialIconsControl componentId={component.id} />
+              </div>
+            </div>
+          </>
+        );
+
+      // ═══════════════════════════════════════════════════════════
+      // BREADCRUMB COMPONENT
+      // ═══════════════════════════════════════════════════════════
+      case 'Breadcrumb':
+      case 'BreadcrumbComponent':
+        return (
+          <>
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+              <span className="text-2xl">🧭</span>
+              <h3 className="text-sm font-semibold text-slate-900">Breadcrumb Component</h3>
+            </div>
+
+            <div className="space-y-4">
+              {/* Separator */}
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-2 block">Separator Style</label>
+                <select
+                  value={(component.props.separator as string) || 'chevron'}
+                  onChange={(e) => handleInputChange('separator', e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="chevron">Chevron ( › )</option>
+                  <option value="slash">Slash ( / )</option>
+                  <option value="arrow">Arrow ( → )</option>
+                </select>
+              </div>
+
+              {/* Breadcrumb Items CRUD */}
+              <div className="pt-4 border-t border-slate-200">
+                <BreadcrumbItemsControl componentId={component.id} />
+              </div>
+            </div>
+          </>
+        );
+
+      // ═══════════════════════════════════════════════════════════
+      // GOOGLE MAPS COMPONENT
+      // ═══════════════════════════════════════════════════════════
+      case 'GoogleMaps':
+      case 'GoogleMapsComponent':
+        return (
+          <>
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+              <span className="text-2xl">📍</span>
+              <h3 className="text-sm font-semibold text-slate-900">Google Maps Component</h3>
+            </div>
+
+            <div className="space-y-4">
+              {/* Address */}
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-2 block">Location Address</label>
+                <input
+                  type="text"
+                  value={(component.props.address as string) || ''}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  placeholder="New York, NY, USA"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  Enter a full address, city, or landmark
+                </p>
+              </div>
+
+              {/* Zoom Level */}
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-2 block">
+                  Zoom Level: {(component.props.zoom as number) || 14}
+                </label>
+                <input
+                  type="range"
+                  min="1"
+                  max="20"
+                  value={(component.props.zoom as number) || 14}
+                  onChange={(e) => handleInputChange('zoom', parseInt(e.target.value))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                  <span>World (1)</span>
+                  <span>Street (20)</span>
+                </div>
+              </div>
+
+              {/* Map Type */}
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-2 block">Map Type</label>
+                <select
+                  value={(component.props.mapType as string) || 'roadmap'}
+                  onChange={(e) => handleInputChange('mapType', e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="roadmap">Roadmap</option>
+                  <option value="satellite">Satellite</option>
+                  <option value="hybrid">Hybrid</option>
+                  <option value="terrain">Terrain</option>
+                </select>
+              </div>
+
+              {/* Height */}
+              <div>
+                <label className="text-xs font-medium text-slate-700 mb-2 block">Map Height</label>
+                <input
+                  type="text"
+                  value={(component.props.height as string) || '450px'}
+                  onChange={(e) => handleInputChange('height', e.target.value)}
+                  placeholder="450px"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  e.g., 400px, 50vh, 500px
+                </p>
+              </div>
+            </div>
+          </>
+        );
+
+      // M3: Other components (controls coming soon)
       case 'StarRating':
       case 'StarRatingComponent':
       case 'Menu':
