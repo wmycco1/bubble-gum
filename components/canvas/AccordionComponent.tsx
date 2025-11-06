@@ -14,6 +14,7 @@
 import { useState } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
+import { mergeAllStyles, buildClassNameFromProps } from '@/lib/utils/apply-custom-props';
 import { ChevronDown, Plus, Minus } from 'lucide-react';
 
 interface AccordionComponentProps {
@@ -87,13 +88,20 @@ export function AccordionComponent({ component }: AccordionComponentProps) {
   // Base wrapper className
   const baseClassName = 'w-full';
   const wrapperClassName = mergeClassNameWithSpacing(
-    `${baseClassName} ${variantStyles.container}`,
+    buildClassNameFromProps(props, `${baseClassName} ${variantStyles.container}`),
     style
   );
   const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
+  // Merge all custom styles (typography, filters, transitions, custom CSS)
+  const finalStyle = mergeAllStyles(cleanedStyle as React.CSSProperties, props);
+
   return (
-    <div className={wrapperClassName} style={cleanedStyle as React.CSSProperties}>
+    <div
+      id={props.id as string | undefined}
+      className={wrapperClassName}
+      style={finalStyle}
+    >
       {items.map((item) => {
         const isOpen = openPanels.has(item.id);
 

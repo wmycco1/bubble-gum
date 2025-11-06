@@ -15,6 +15,7 @@
 import { useState, useEffect, useRef } from 'react';
 import type { CanvasComponent } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
+import { mergeAllStyles, buildClassNameFromProps } from '@/lib/utils/apply-custom-props';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CarouselComponentProps {
@@ -114,14 +115,21 @@ export function CarouselComponent({ component }: CarouselComponentProps) {
 
   // Base wrapper className
   const baseClassName = 'w-full max-w-4xl mx-auto';
-  const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const wrapperClassName = mergeClassNameWithSpacing(
+    buildClassNameFromProps(props, baseClassName),
+    style
+  );
   // Clean up borderRadius conflicts (React doesn't allow mixing shorthand + longhand)
   const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
+  // Merge all custom styles (typography, filters, transitions, custom CSS)
+  const finalStyle = mergeAllStyles(cleanedStyle as React.CSSProperties, props);
+
   return (
     <div
+      id={props.id as string | undefined}
       className={wrapperClassName}
-      style={cleanedStyle as React.CSSProperties}
+      style={finalStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onKeyDown={handleKeyDown}
