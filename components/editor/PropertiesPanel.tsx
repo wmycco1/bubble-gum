@@ -33,6 +33,7 @@ import { TextShadowControl } from './controls/TextShadowControl';
 import { ZIndexControl } from './controls/ZIndexControl';
 import { BorderControl } from './controls/BorderControl';
 import { CustomStyleControl } from './controls/CustomStyleControl';
+import { TypographyControl } from './controls/TypographyControl';
 import { AccordionItemsControl } from './controls/AccordionItemsControl';
 import { TabsItemsControl } from './controls/TabsItemsControl';
 import { CarouselItemsControl } from './controls/CarouselItemsControl';
@@ -2099,6 +2100,15 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
         defaultExpanded={false}
       >
         <CustomStyleControl componentId={component.id} />
+      </PropertyGroup>
+
+      {/* Typography Control (ALL text-based components) */}
+      <PropertyGroup
+        title="Typography"
+        storageKey="typography-group"
+        defaultExpanded={false}
+      >
+        <TypographyControl componentId={component.id} />
       </PropertyGroup>
 
       {/* Spacing Controls (Margin/Padding) */}

@@ -392,6 +392,15 @@ export interface ComponentProps {
   customCSS?: string;
   customTailwind?: string;
 
+  // Typography (PHASE 3: Typography Controls)
+  fontFamily?: string;
+  fontSize?: number;
+  fontWeight?: number;
+  lineHeight?: number;
+  letterSpacing?: number;
+  textDecoration?: string;
+  textTransform?: string;
+
   // Custom HTML attributes
   [key: string]: unknown;
 }
