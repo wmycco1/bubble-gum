@@ -38,8 +38,10 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       import('dompurify').then((module) => {
-        const DOMPurify = module.default;
-        setPurify(DOMPurify);
+        // DOMPurify is a function that needs window context
+        const DOMPurifyConstructor = module.default;
+        const purifyInstance = DOMPurifyConstructor(window);
+        setPurify(purifyInstance);
       });
     }
   }, []);
