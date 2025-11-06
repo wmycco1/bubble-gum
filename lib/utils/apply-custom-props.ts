@@ -101,27 +101,36 @@ export function parseCustomCSS(customCSS: string): React.CSSProperties {
 /**
  * Normalizes style object to avoid shorthand/longhand conflicts
  * React warns when mixing shorthand (border) with specific (borderBottomColor)
+ *
+ * IMPORTANT: Only remove shorthand if CONFLICTING properties exist
+ * Non-conflicting properties (borderRadius, borderCollapse) should NOT trigger removal
  */
 function normalizeStyleConflicts(style: React.CSSProperties): React.CSSProperties {
   const normalized = { ...style };
 
-  // If we have both border shorthand and specific border properties, remove shorthand
+  // Check for border shorthand and CONFLICTING specific border properties
+  // Conflicting: borderTop/Right/Bottom/Left (full side shorthand)
+  //              borderTop/Right/Bottom/LeftWidth/Style/Color (individual properties)
   const hasBorderShorthand = 'border' in normalized;
-  const hasSpecificBorder =
+  const hasConflictingBorder =
     'borderTop' in normalized ||
     'borderRight' in normalized ||
     'borderBottom' in normalized ||
     'borderLeft' in normalized ||
-    'borderTopColor' in normalized ||
-    'borderRightColor' in normalized ||
-    'borderBottomColor' in normalized ||
-    'borderLeftColor' in normalized ||
     'borderTopWidth' in normalized ||
     'borderRightWidth' in normalized ||
     'borderBottomWidth' in normalized ||
-    'borderLeftWidth' in normalized;
+    'borderLeftWidth' in normalized ||
+    'borderTopStyle' in normalized ||
+    'borderRightStyle' in normalized ||
+    'borderBottomStyle' in normalized ||
+    'borderLeftStyle' in normalized ||
+    'borderTopColor' in normalized ||
+    'borderRightColor' in normalized ||
+    'borderBottomColor' in normalized ||
+    'borderLeftColor' in normalized;
 
-  if (hasBorderShorthand && hasSpecificBorder) {
+  if (hasBorderShorthand && hasConflictingBorder) {
     delete normalized.border;
   }
 
