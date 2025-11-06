@@ -32,17 +32,51 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
   const allowedAttributes = props.allowedAttributes as string[] | undefined;
 
   // Client-side DOMPurify instance
-  const [purify, setPurify] = useState<{ sanitize: (source: string, config?: Record<string, unknown>) => string } | null>(null);
+  const [DOMPurify, setDOMPurify] = useState<any>(null);
 
-  // Load DOMPurify client-side only
+  // Load DOMPurify client-side only (BROWSER ONLY)
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // Dynamic import of DOMPurify - it auto-initializes with window
       import('dompurify').then((module) => {
-        // DOMPurify default export is a factory function
-        // Call it with window to get the DOMPurify API
-        const DOMPurifyFactory = module.default as (window: Window) => { sanitize: (source: string, config?: Record<string, unknown>) => string };
-        const purifyInstance = DOMPurifyFactory(window);
-        setPurify(purifyInstance);
+        // In browser, DOMPurify is a factory that needs to be called with window
+        // OR it's already initialized. Let's check both:
+        const factory = module.default;
+
+        // Try calling it as a factory with window
+        let purifyInstance;
+        if (typeof factory === 'function') {
+          purifyInstance = factory(window);
+        }
+
+        // If that didn't work, check if module.default IS already the API
+        if (!purifyInstance || !purifyInstance.sanitize) {
+          purifyInstance = factory;
+        }
+
+        // Last resort: check if it has sanitize method directly
+        if (purifyInstance && typeof purifyInstance.sanitize === 'function') {
+          setDOMPurify(purifyInstance);
+        } else {
+          console.error('❌ DOMPurify failed to initialize:', {
+            factoryType: typeof factory,
+            instanceType: typeof purifyInstance,
+            hasSanitize: !!purifyInstance?.sanitize,
+          });
+          // Fallback: set a dummy that returns unsanitized content
+          setDOMPurify({
+            sanitize: (html: string) => {
+              console.warn('⚠️ Using unsanitized HTML (DOMPurify failed to load)');
+              return html;
+            }
+          });
+        }
+      }).catch(error => {
+        console.error('Failed to load DOMPurify:', error);
+        // Fallback
+        setDOMPurify({
+          sanitize: (html: string) => html
+        });
       });
     }
   }, []);
@@ -55,7 +89,7 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
     }
 
     // Wait for DOMPurify to load
-    if (!purify) {
+    if (!DOMPurify) {
       return '<p>Loading...</p>';
     }
 
@@ -72,18 +106,12 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
 
     // Sanitize with DOMPurify
     try {
-      if (typeof purify.sanitize === 'function') {
-        return purify.sanitize(content, config);
-      } else {
-        console.error('purify.sanitize is not a function:', typeof purify.sanitize, purify);
-        // Fallback: return unsanitized for now (TEMPORARY)
-        return content;
-      }
+      return DOMPurify.sanitize(content, config);
     } catch (error) {
       console.error('Error sanitizing HTML:', error);
       return content;
     }
-  }, [content, sanitize, allowedTags, allowedAttributes, purify]);
+  }, [content, sanitize, allowedTags, allowedAttributes, DOMPurify]);
 
   // Build className
   const baseClassName = 'html-content';
