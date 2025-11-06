@@ -132,16 +132,14 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
   });
 
   const style: React.CSSProperties = {
-    // GPU-accelerated properties only (NO opacity changes to avoid flicker)
-    opacity: isDragging ? 0.3 : 1, // Ghost effect while dragging
+    // Keep component ALWAYS visible (no opacity changes)
+    opacity: 1, // Always fully visible - no ghost effect
     zIndex: isSelected ? 10 : 1, // Selected components on top
-    pointerEvents: 'auto', // CRITICAL: Ensure clickable
-    willChange: isDragging ? 'transform' : 'auto', // GPU hint for transform only
-    // Elastic magnetic animation on return
-    transition: isDragging
-      ? 'opacity 100ms ease-out, transform 100ms ease-out' // Quick ghost fade
-      : 'opacity 350ms ease-out, transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1)', // Elastic stick animation
-    transform: isDragging ? 'scale(1)' : 'scale(1)', // No scale during drag, elastic on return
+    pointerEvents: isDragging ? 'none' : 'auto', // Disable clicks while dragging
+    // Minimal visual feedback - only if needed
+    filter: isDragging ? 'brightness(0.95)' : 'brightness(1)', // Subtle dim instead of opacity
+    willChange: isDragging ? 'filter' : 'auto', // GPU hint
+    transition: 'filter 150ms ease-out', // Smooth brightness transition
   };
 
   const handleClick = (e: React.MouseEvent) => {
