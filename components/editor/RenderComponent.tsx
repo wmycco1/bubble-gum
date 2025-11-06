@@ -133,11 +133,15 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
 
   const style: React.CSSProperties = {
     // GPU-accelerated properties only
-    opacity: isDragging ? 0.4 : 1, // Subtle fade while dragging
+    opacity: isDragging ? 0.5 : 1, // Fade while dragging
     zIndex: isSelected ? 10 : 1, // Selected components on top
     pointerEvents: 'auto', // CRITICAL: Ensure clickable
-    willChange: isDragging ? 'opacity' : 'auto', // GPU hint only when needed
-    transition: 'opacity 150ms ease-out', // Fast, natural fade
+    willChange: isDragging ? 'opacity, transform' : 'auto', // GPU hint
+    // Smooth transitions for all states
+    transition: isDragging
+      ? 'opacity 120ms ease-out' // Fast fade when starting drag
+      : 'opacity 250ms ease-out, transform 250ms cubic-bezier(0.34, 1.26, 0.64, 1)', // Smooth return with slight bounce
+    transform: isDragging ? 'scale(0.98)' : 'scale(1)', // Subtle scale feedback
   };
 
   const handleClick = (e: React.MouseEvent) => {

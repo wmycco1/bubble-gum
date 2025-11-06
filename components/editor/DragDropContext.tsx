@@ -213,8 +213,14 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
       {/* Drag Overlay - smooth mechanical animation (GPU accelerated) */}
       <DragOverlay
         dropAnimation={{
-          duration: 200, // Faster, more snappy
-          easing: 'cubic-bezier(0.2, 0, 0, 1)', // Natural ease-out curve
+          duration: 250, // Smooth but not slow
+          easing: 'cubic-bezier(0.34, 1.26, 0.64, 1)', // Slight elastic bounce
+          // Smooth fade + scale animation on drop
+          keyframes: ({ transform }) => [
+            { opacity: 1, transform: transform.initial },
+            { opacity: 0.8, transform: transform.final + ' scale(0.98)' },
+            { opacity: 1, transform: transform.final + ' scale(1)' },
+          ],
         }}
       >
         {activeType || activeComponent ? (
