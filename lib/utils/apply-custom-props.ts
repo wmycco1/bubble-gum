@@ -99,6 +99,36 @@ export function parseCustomCSS(customCSS: string): React.CSSProperties {
 }
 
 /**
+ * Normalizes style object to avoid shorthand/longhand conflicts
+ * React warns when mixing shorthand (border) with specific (borderBottomColor)
+ */
+function normalizeStyleConflicts(style: React.CSSProperties): React.CSSProperties {
+  const normalized = { ...style };
+
+  // If we have both border shorthand and specific border properties, remove shorthand
+  const hasBorderShorthand = 'border' in normalized;
+  const hasSpecificBorder =
+    'borderTop' in normalized ||
+    'borderRight' in normalized ||
+    'borderBottom' in normalized ||
+    'borderLeft' in normalized ||
+    'borderTopColor' in normalized ||
+    'borderRightColor' in normalized ||
+    'borderBottomColor' in normalized ||
+    'borderLeftColor' in normalized ||
+    'borderTopWidth' in normalized ||
+    'borderRightWidth' in normalized ||
+    'borderBottomWidth' in normalized ||
+    'borderLeftWidth' in normalized;
+
+  if (hasBorderShorthand && hasSpecificBorder) {
+    delete normalized.border;
+  }
+
+  return normalized;
+}
+
+/**
  * Merges all custom properties into a single style object
  * Priority: customCSS > component props > base style
  */
@@ -109,11 +139,14 @@ export function mergeAllStyles(
   const propsStyle = buildStyleFromProps(props);
   const customCSSStyle = props.customCSS ? parseCustomCSS(props.customCSS) : {};
 
-  return {
+  const merged = {
     ...baseStyle,
     ...propsStyle,
     ...customCSSStyle, // Custom CSS has highest priority
   };
+
+  // Normalize to avoid React warnings about shorthand/longhand conflicts
+  return normalizeStyleConflicts(merged);
 }
 
 /**
