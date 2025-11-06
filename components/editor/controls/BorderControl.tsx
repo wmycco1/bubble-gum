@@ -17,6 +17,7 @@ import { useState, useEffect } from 'react';
 import { Link, Unlink, X } from 'lucide-react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { ColorPicker } from './ColorPicker';
+import { extractBorderFromCSS, type BorderValues as ParsedBorderValues } from '@/lib/utils/css-property-parser';
 
 interface BorderControlProps {
   componentId: string;
@@ -69,6 +70,31 @@ export function BorderControl({ componentId }: BorderControlProps) {
       };
     }
 
+    // 🔥 BIDIRECTIONAL SYNC: First try to extract from Custom CSS
+    const customCSS = (component.props.customCSS as string) || '';
+    if (customCSS) {
+      const extractedBorder = extractBorderFromCSS(customCSS);
+      if (extractedBorder && Object.keys(extractedBorder).length > 0) {
+        console.log('🔄 BorderControl: Syncing from Custom CSS', extractedBorder);
+        // Merge extracted values with defaults
+        return {
+          topWidth: extractedBorder.topWidth ?? 0,
+          rightWidth: extractedBorder.rightWidth ?? 0,
+          bottomWidth: extractedBorder.bottomWidth ?? 0,
+          leftWidth: extractedBorder.leftWidth ?? 0,
+          topStyle: (extractedBorder.topStyle as BorderStyle) ?? 'solid',
+          rightStyle: (extractedBorder.rightStyle as BorderStyle) ?? 'solid',
+          bottomStyle: (extractedBorder.bottomStyle as BorderStyle) ?? 'solid',
+          leftStyle: (extractedBorder.leftStyle as BorderStyle) ?? 'solid',
+          topColor: extractedBorder.topColor ?? '#000000',
+          rightColor: extractedBorder.rightColor ?? '#000000',
+          bottomColor: extractedBorder.bottomColor ?? '#000000',
+          leftColor: extractedBorder.leftColor ?? '#000000',
+        };
+      }
+    }
+
+    // Fallback: Parse from style properties (existing logic)
     const style = component.style;
     const responsiveStyle = deviceMode === 'mobile' ? style.mobile : deviceMode === 'tablet' ? style.tablet : {};
 
@@ -105,10 +131,10 @@ export function BorderControl({ componentId }: BorderControlProps) {
   const [values, setValues] = useState<BorderValues>(parseBorderValues());
   const [linked, setLinked] = useState(true);
 
-  // Sync with external changes
+  // Sync with external changes (including Custom CSS)
   useEffect(() => {
     setValues(parseBorderValues());
-  }, [component, deviceMode]);
+  }, [component, deviceMode, component?.props.customCSS]);
 
   // Update border
   const updateBorder = (newValues: BorderValues) => {
