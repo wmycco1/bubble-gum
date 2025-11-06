@@ -80,7 +80,7 @@ export function MultistepFormStepsControl({ componentId }: MultistepFormStepsCon
     {
       id: 'step-3',
       title: 'Additional Information',
-      description: 'Anything else you'd like to share?',
+      description: 'Anything else you would like to share?',
       fields: [
         { id: 'field-3-1', type: 'textarea', label: 'Message', placeholder: 'Your message...', required: false },
         { id: 'field-3-2', type: 'checkbox', label: 'Subscribe', placeholder: 'I want to receive updates', required: false }
