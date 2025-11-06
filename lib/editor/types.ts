@@ -401,6 +401,24 @@ export interface ComponentProps {
   textDecoration?: string;
   textTransform?: string;
 
+  // Advanced Properties (PHASE 4: Transitions, Filters, Hover States)
+  transitionDuration?: number;
+  transitionTiming?: string;
+  transitionDelay?: number;
+  filterBlur?: number;
+  filterBrightness?: number;
+  filterContrast?: number;
+  filterGrayscale?: number;
+  filterHueRotate?: number;
+  filterInvert?: number;
+  filterSaturate?: number;
+  filterSepia?: number;
+  hoverBackgroundColor?: string;
+  hoverTextColor?: string;
+  hoverScale?: number;
+  overflow?: string;
+  cursor?: string;
+
   // Custom HTML attributes
   [key: string]: unknown;
 }

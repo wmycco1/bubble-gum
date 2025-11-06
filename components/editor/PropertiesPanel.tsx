@@ -34,6 +34,7 @@ import { ZIndexControl } from './controls/ZIndexControl';
 import { BorderControl } from './controls/BorderControl';
 import { CustomStyleControl } from './controls/CustomStyleControl';
 import { TypographyControl } from './controls/TypographyControl';
+import { AdvancedPropertiesControl } from './controls/AdvancedPropertiesControl';
 import { AccordionItemsControl } from './controls/AccordionItemsControl';
 import { TabsItemsControl } from './controls/TabsItemsControl';
 import { CarouselItemsControl } from './controls/CarouselItemsControl';
@@ -2109,6 +2110,15 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
         defaultExpanded={false}
       >
         <TypographyControl componentId={component.id} />
+      </PropertyGroup>
+
+      {/* Advanced Properties Control (Transitions, Filters, Hover States) */}
+      <PropertyGroup
+        title="Advanced Properties"
+        storageKey="advanced-properties-group"
+        defaultExpanded={false}
+      >
+        <AdvancedPropertiesControl componentId={component.id} />
       </PropertyGroup>
 
       {/* Spacing Controls (Margin/Padding) */}
