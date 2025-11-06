@@ -46,7 +46,16 @@ function GridColumn({
     data: {
       parentId: gridId,
       columnIndex,
-      accepts: ['Text', 'Heading', 'Button', 'Image', 'Link', 'Icon', 'Card', 'Form', 'Input', 'Textarea', 'Checkbox', 'Submit'],
+      accepts: [
+        // Basic components
+        'Text', 'Heading', 'Button', 'Image', 'Link', 'Icon',
+        // Container/Layout components (allow nesting)
+        'Container', 'Card', 'InnerSection',
+        // Form components
+        'Form', 'Input', 'Textarea', 'Checkbox', 'Submit',
+        // Other components
+        'Spacer', 'Divider', 'Banner', 'HTML', 'Video', 'Iframe'
+      ],
     },
   });
 

@@ -24,7 +24,16 @@ export function ContainerComponent({ component }: ContainerComponentProps) {
     id: `container-${component.id}`,
     data: {
       parentId: component.id,
-      accepts: ['Text', 'Heading', 'Button', 'Image', 'Link', 'Icon', 'Card', 'Grid', 'Form', 'Input', 'Textarea', 'Checkbox', 'Submit'],
+      accepts: [
+        // Basic components
+        'Text', 'Heading', 'Button', 'Image', 'Link', 'Icon',
+        // Container/Layout components
+        'Container', 'Section', 'InnerSection', 'Card', 'Grid',
+        // Form components
+        'Form', 'Input', 'Textarea', 'Checkbox', 'Submit',
+        // Other components
+        'Spacer', 'Divider', 'Banner', 'HTML', 'Video', 'Iframe'
+      ],
       index: children?.length || 0,
     },
   });

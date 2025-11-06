@@ -117,16 +117,58 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
       }
     }
 
-    // CASE 2: Reordering existing components on canvas
+    // CASE 2: Moving existing component to a container (re-parenting)
     else if (dragType === 'canvas-component') {
       const draggedComponentId = active.id as string;
+      const state = useCanvasStore.getState();
 
-      if (active.id !== over.id) {
-        const state = useCanvasStore.getState();
+      // Get the component being dragged to check its type
+      const draggedComponent = state.getComponentById(draggedComponentId);
+
+      // Check if dropped on a container/grid drop zone
+      if (dropData?.parentId && dropData?.accepts && draggedComponent) {
+        const targetParentId = dropData.parentId;
+        const columnIndex = dropData.columnIndex;
+        const componentType = draggedComponent.type;
+
+        // Check if the target container accepts this component type
+        const isAccepted = Array.isArray(dropData.accepts) && dropData.accepts.includes(componentType);
+
+        if (isAccepted) {
+          logger.debug('🔄 Re-parenting component:', {
+            componentId: draggedComponentId,
+            componentType,
+            newParentId: targetParentId,
+            columnIndex,
+          });
+
+          // Use moveComponent to handle re-parenting
+          state.moveComponent(draggedComponentId, targetParentId, columnIndex ?? 0);
+
+          // If dropped into Grid column, update columnIndex
+          if (columnIndex !== undefined) {
+            const parent = state.getComponentById(targetParentId);
+            if (parent && parent.children) {
+              const movedComponent = parent.children.find((c) => c.id === draggedComponentId);
+              if (movedComponent) {
+                state.updateComponent(movedComponent.id, {
+                  props: { ...movedComponent.props, columnIndex },
+                });
+              }
+            }
+          }
+        } else {
+          logger.debug('⚠️ Component type not accepted by target:', {
+            componentType,
+            accepts: dropData.accepts,
+          });
+        }
+      }
+      // CASE 3: Reordering at root level (canvas)
+      else if (active.id !== over.id && droppedOn === 'canvas') {
         const components = state.components;
-
         const oldIndex = components.findIndex((c) => c.id === draggedComponentId);
-        const newIndex = components.findIndex((c) => c.id === droppedOn);
+        const newIndex = components.findIndex((c) => c.id === over.id);
 
         if (oldIndex !== -1 && newIndex !== -1) {
           logger.debug('🔄 Reordering components:', { from: oldIndex, to: newIndex });
