@@ -102,8 +102,9 @@ export default function EditorPage(props: EditorPageProps) {
         return;
       }
 
-      // Convert NEW components to OLD format for DB
-      const oldComponents = convertArrayNewToOld(data);
+      // Save components directly (no conversion needed - DB accepts JSON)
+      // Note: We used to convert to OLD format, but that filtered out new component types
+      // The database content field is JSONB and can store any component type
 
       // Note: tRPC doesn't support AbortSignal directly, but we track it
       if (signal.aborted) {
@@ -112,10 +113,10 @@ export default function EditorPage(props: EditorPageProps) {
 
       await updatePageContent.mutateAsync({
         id: homepage.id,
-        content: oldComponents,
+        content: data as unknown[], // Save components in native format
       });
 
-      logger.debug(`💾 Auto-save: Saved ${oldComponents.length} components to database`);
+      logger.debug(`💾 Auto-save: Saved ${data.length} components to database`);
     },
     debounceMs: 10000, // 10 seconds
     enabled: !!homepage && !isDragging, // Disable during drag operations
@@ -142,11 +143,23 @@ export default function EditorPage(props: EditorPageProps) {
           ? JSON.parse(homepage.content)
           : [];
 
-      // Convert DB components to Store components
-      const dbComponents = convertArrayOldToNew(content as DbComponent[]);
+      // Detect format: NEW format has 'style' property, OLD format has specific DB shape
+      let loadedComponents;
+      if (content.length > 0 && 'style' in content[0]) {
+        // NEW format - use directly
+        logger.debug('📥 Loading components in NEW format from DB', { count: content.length });
+        loadedComponents = content;
+      } else if (content.length > 0) {
+        // OLD format - convert
+        logger.debug('📥 Loading components in OLD format from DB (converting...)', { count: content.length });
+        loadedComponents = convertArrayOldToNew(content as DbComponent[]);
+      } else {
+        // Empty
+        loadedComponents = [];
+      }
 
       // Check for localStorage conflict
-      const hasConflict = hasLocalStorageConflict(dbComponents);
+      const hasConflict = hasLocalStorageConflict(loadedComponents);
 
       if (hasConflict && !conflictResolved) {
         console.warn('⚠️ Conflict detected, showing modal');
@@ -155,10 +168,9 @@ export default function EditorPage(props: EditorPageProps) {
       }
 
       // No conflict, load from database
-      if (dbComponents.length > 0) {
-        logger.debug('📥 Loading components from DB', { count: dbComponents.length });
-        loadComponents(dbComponents);
-        logger.debug(`✅ Loaded ${dbComponents.length} components into canvas-store`);
+      if (loadedComponents.length > 0) {
+        loadComponents(loadedComponents);
+        logger.debug(`✅ Loaded ${loadedComponents.length} components into canvas-store`);
         setConflictResolved(true);
       }
     } catch (error) {
