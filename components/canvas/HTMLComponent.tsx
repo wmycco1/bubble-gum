@@ -38,9 +38,11 @@ export function HTMLComponent({ component }: HTMLComponentProps) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       import('dompurify').then((module) => {
-        // DOMPurify default export is already the sanitize function
-        // Just use it directly
-        setPurify(module.default as unknown as { sanitize: (source: string, config?: Record<string, unknown>) => string });
+        // DOMPurify default export is a factory function
+        // Call it with window to get the DOMPurify API
+        const DOMPurifyFactory = module.default as (window: Window) => { sanitize: (source: string, config?: Record<string, unknown>) => string };
+        const purifyInstance = DOMPurifyFactory(window);
+        setPurify(purifyInstance);
       });
     }
   }, []);
