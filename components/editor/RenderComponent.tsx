@@ -50,6 +50,39 @@ import { BadgeComponent } from '@/components/canvas/BadgeComponent';
 import { BreadcrumbComponent } from '@/components/canvas/BreadcrumbComponent';
 import { DividerComponent } from '@/components/canvas/DividerComponent';
 import { CarouselComponent } from '@/components/canvas/CarouselComponent';
+// M3: Extended Component Library
+import { InnerSectionComponent } from '@/components/canvas/InnerSectionComponent';
+import { SpacerComponent } from '@/components/canvas/SpacerComponent';
+import { BannerComponent } from '@/components/canvas/BannerComponent';
+import { HTMLComponent } from '@/components/canvas/HTMLComponent';
+import { VideoComponent } from '@/components/canvas/VideoComponent';
+import { TextEditorComponent } from '@/components/canvas/TextEditorComponent';
+import { IconBoxComponent } from '@/components/canvas/IconBoxComponent';
+import { ImageBoxComponent } from '@/components/canvas/ImageBoxComponent';
+import { IconListComponent } from '@/components/canvas/IconListComponent';
+import { GoogleMapsComponent } from '@/components/canvas/GoogleMapsComponent';
+import { SoundCloudComponent } from '@/components/canvas/SoundCloudComponent';
+import { SocialIconsComponent } from '@/components/canvas/SocialIconsComponent';
+import { FacebookLikeComponent } from '@/components/canvas/FacebookLikeComponent';
+import { FacebookContentComponent } from '@/components/canvas/FacebookContentComponent';
+import { BannerSliderComponent } from '@/components/canvas/BannerSliderComponent';
+import { SliderComponent } from '@/components/canvas/SliderComponent';
+import { ToggleComponent } from '@/components/canvas/ToggleComponent';
+import { TestimonialComponent } from '@/components/canvas/TestimonialComponent';
+import { StarRatingComponent } from '@/components/canvas/StarRatingComponent';
+import { MenuComponent } from '@/components/canvas/MenuComponent';
+import { ProductListComponent } from '@/components/canvas/ProductListComponent';
+import { ProductSliderComponent } from '@/components/canvas/ProductSliderComponent';
+import { AddToCartComponent } from '@/components/canvas/AddToCartComponent';
+import { PricingTableComponent } from '@/components/canvas/PricingTableComponent';
+import { RecentlyViewedComponent } from '@/components/canvas/RecentlyViewedComponent';
+import { RecentlyComparedComponent } from '@/components/canvas/RecentlyComparedComponent';
+import { NewProductsComponent } from '@/components/canvas/NewProductsComponent';
+import { FormBuilderComponent } from '@/components/canvas/FormBuilderComponent';
+import { MultistepFormBuilderComponent } from '@/components/canvas/MultistepFormBuilderComponent';
+import { CMSBlockComponent } from '@/components/canvas/CMSBlockComponent';
+import { CMSPageComponent } from '@/components/canvas/CMSPageComponent';
+import { OrdersAndReturnsComponent } from '@/components/canvas/OrdersAndReturnsComponent';
 import { logger } from '@/lib/utils/logger';
 
 interface RenderComponentProps {
@@ -271,6 +304,135 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       case 'Carousel':
       case 'CarouselComponent':
         return <CarouselComponent component={comp} />;
+
+      // M3: Extended Component Library
+      case 'InnerSection':
+      case 'InnerSectionComponent':
+        return <InnerSectionComponent component={comp} />;
+
+      case 'Spacer':
+      case 'SpacerComponent':
+        return <SpacerComponent component={comp} />;
+
+      case 'Banner':
+      case 'BannerComponent':
+        return <BannerComponent component={comp} />;
+
+      case 'HTML':
+      case 'HTMLComponent':
+        return <HTMLComponent component={comp} />;
+
+      case 'Video':
+      case 'VideoComponent':
+        return <VideoComponent component={comp} />;
+
+      case 'TextEditor':
+      case 'TextEditorComponent':
+        return <TextEditorComponent component={comp} />;
+
+      case 'IconBox':
+      case 'IconBoxComponent':
+        return <IconBoxComponent component={comp} />;
+
+      case 'ImageBox':
+      case 'ImageBoxComponent':
+        return <ImageBoxComponent component={comp} />;
+
+      case 'IconList':
+      case 'IconListComponent':
+        return <IconListComponent component={comp} />;
+
+      case 'GoogleMaps':
+      case 'GoogleMapsComponent':
+        return <GoogleMapsComponent component={comp} />;
+
+      case 'SoundCloud':
+      case 'SoundCloudComponent':
+        return <SoundCloudComponent component={comp} />;
+
+      case 'SocialIcons':
+      case 'SocialIconsComponent':
+        return <SocialIconsComponent component={comp} />;
+
+      case 'FacebookLike':
+      case 'FacebookLikeComponent':
+        return <FacebookLikeComponent component={comp} />;
+
+      case 'FacebookContent':
+      case 'FacebookContentComponent':
+        return <FacebookContentComponent component={comp} />;
+
+      case 'BannerSlider':
+      case 'BannerSliderComponent':
+        return <BannerSliderComponent component={comp} />;
+
+      case 'Slider':
+      case 'SliderComponent':
+        return <SliderComponent component={comp} />;
+
+      case 'Toggle':
+      case 'ToggleComponent':
+        return <ToggleComponent component={comp} />;
+
+      case 'Testimonial':
+      case 'TestimonialComponent':
+        return <TestimonialComponent component={comp} />;
+
+      case 'StarRating':
+      case 'StarRatingComponent':
+        return <StarRatingComponent component={comp} />;
+
+      case 'Menu':
+      case 'MenuComponent':
+        return <MenuComponent component={comp} />;
+
+      case 'ProductList':
+      case 'ProductListComponent':
+        return <ProductListComponent component={comp} />;
+
+      case 'ProductSlider':
+      case 'ProductSliderComponent':
+        return <ProductSliderComponent component={comp} />;
+
+      case 'AddToCart':
+      case 'AddToCartComponent':
+        return <AddToCartComponent component={comp} />;
+
+      case 'PricingTable':
+      case 'PricingTableComponent':
+        return <PricingTableComponent component={comp} />;
+
+      case 'RecentlyViewed':
+      case 'RecentlyViewedComponent':
+        return <RecentlyViewedComponent component={comp} />;
+
+      case 'RecentlyCompared':
+      case 'RecentlyComparedComponent':
+        return <RecentlyComparedComponent component={comp} />;
+
+      case 'NewProducts':
+      case 'NewProductsComponent':
+        return <NewProductsComponent component={comp} />;
+
+      case 'FormBuilder':
+      case 'FormBuilderComponent':
+        return <FormBuilderComponent component={comp} />;
+
+      case 'MultistepFormBuilder':
+      case 'MultistepFormBuilderComponent':
+        return <MultistepFormBuilderComponent component={comp} />;
+
+      case 'CMSBlock':
+      case 'CMSBlockComponent':
+        return <CMSBlockComponent component={comp} />;
+
+      case 'CMSPage':
+      case 'CMSPageComponent':
+        return <CMSPageComponent component={comp} />;
+
+      case 'OrdersAndReturns':
+      case 'OrdersAndReturnsComponent':
+        return <OrdersAndReturnsComponent component={comp} />;
 
       default:
         return (
