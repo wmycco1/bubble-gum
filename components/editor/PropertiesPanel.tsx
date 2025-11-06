@@ -2623,7 +2623,7 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
             <div className="space-y-2 mt-3">
               <label className="text-xs font-medium text-slate-700">Layout Style</label>
               <select
-                value={(component.props.layout as string) || 'default'}
+                value={(localProps.layout as string) || 'default'}
                 onChange={(e) =>
                   onUpdate({ layout: e.target.value })
                 }
@@ -2894,8 +2894,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <div>
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Layout Mode</label>
                 <select
-                  value={(component.props.layout as string) || 'grid'}
-                  onChange={(e) => onUpdate({ layout: e.target.value })}
+                  value={(localProps.layout as string) || 'grid'}
+                  onChange={(e) => handleChange('layout', e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="grid">Grid (3 columns)</option>
@@ -2909,8 +2909,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    checked={(component.props.showRating as boolean) ?? true}
-                    onChange={(e) => onUpdate({ showRating: e.target.checked })}
+                    checked={(localProps.showRating as boolean) ?? true}
+                    onChange={(e) => handleChange('showRating', e.target.checked)}
                     className="rounded border-slate-300 text-blue-600"
                   />
                   <span className="text-xs text-slate-700">Show star ratings</span>
@@ -2918,8 +2918,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    checked={(component.props.showAvatar as boolean) ?? true}
-                    onChange={(e) => onUpdate({ showAvatar: e.target.checked })}
+                    checked={(localProps.showAvatar as boolean) ?? true}
+                    onChange={(e) => handleChange('showAvatar', e.target.checked)}
                     className="rounded border-slate-300 text-blue-600"
                   />
                   <span className="text-xs text-slate-700">Show avatars</span>
@@ -2927,8 +2927,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    checked={(component.props.showCompany as boolean) ?? true}
-                    onChange={(e) => onUpdate({ showCompany: e.target.checked })}
+                    checked={(localProps.showCompany as boolean) ?? true}
+                    onChange={(e) => handleChange('showCompany', e.target.checked)}
                     className="rounded border-slate-300 text-blue-600"
                   />
                   <span className="text-xs text-slate-700">Show company names</span>
@@ -2960,8 +2960,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <div>
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Icon Size</label>
                 <select
-                  value={(component.props.size as string) || 'md'}
-                  onChange={(e) => onUpdate({ size: e.target.value })}
+                  value={(localProps.size as string) || 'md'}
+                  onChange={(e) => handleChange('size', e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="sm">Small (32px)</option>
@@ -2975,8 +2975,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <div>
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Style Variant</label>
                 <select
-                  value={(component.props.variant as string) || 'rounded'}
-                  onChange={(e) => onUpdate({ variant: e.target.value })}
+                  value={(localProps.variant as string) || 'rounded'}
+                  onChange={(e) => handleChange('variant', e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="rounded">Rounded (Circle)</option>
@@ -2990,8 +2990,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <div>
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Color Mode</label>
                 <select
-                  value={(component.props.colorMode as string) || 'brand'}
-                  onChange={(e) => onUpdate({ colorMode: e.target.value })}
+                  value={(localProps.colorMode as string) || 'brand'}
+                  onChange={(e) => handleChange('colorMode', e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="brand">Brand Colors (platform specific)</option>
@@ -3024,8 +3024,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <div>
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Separator Style</label>
                 <select
-                  value={(component.props.separator as string) || 'chevron'}
-                  onChange={(e) => onUpdate({ separator: e.target.value })}
+                  value={(localProps.separator as string) || 'chevron'}
+                  onChange={(e) => handleChange('separator', e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="chevron">Chevron ( › )</option>
@@ -3060,8 +3060,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Location Address</label>
                 <input
                   type="text"
-                  value={(component.props.address as string) || ''}
-                  onChange={(e) => onUpdate({ address: e.target.value })}
+                  value={(localProps.address as string) || ''}
+                  onChange={(e) => handleChange('address', e.target.value)}
                   placeholder="New York, NY, USA"
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -3079,8 +3079,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                   type="range"
                   min="1"
                   max="20"
-                  value={(component.props.zoom as number) || 14}
-                  onChange={(e) => onUpdate({ zoom: parseInt(e.target.value) })}
+                  value={(localProps.zoom as number) || 14}
+                  onChange={(e) => handleChange('zoom', parseInt(e.target.value))}
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-slate-500 mt-1">
@@ -3093,8 +3093,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
               <div>
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Map Type</label>
                 <select
-                  value={(component.props.mapType as string) || 'roadmap'}
-                  onChange={(e) => onUpdate({ mapType: e.target.value })}
+                  value={(localProps.mapType as string) || 'roadmap'}
+                  onChange={(e) => handleChange('mapType', e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="roadmap">Roadmap</option>
@@ -3109,8 +3109,8 @@ export function PropertiesPanel({ component, onUpdate }: PropertiesPanelProps) {
                 <label className="text-xs font-medium text-slate-700 mb-2 block">Map Height</label>
                 <input
                   type="text"
-                  value={(component.props.height as string) || '450px'}
-                  onChange={(e) => onUpdate({ height: e.target.value })}
+                  value={(localProps.height as string) || '450px'}
+                  onChange={(e) => handleChange('height', e.target.value)}
                   placeholder="450px"
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
