@@ -210,10 +210,22 @@ export function DragDropContextProvider({ children }: DragDropContextProviderPro
     >
       {children}
 
-      {/* Drag Overlay - follows cursor precisely */}
-      <DragOverlay dropAnimation={null}>
+      {/* Drag Overlay - follows cursor with smooth magnetic animation */}
+      <DragOverlay
+        dropAnimation={{
+          duration: 300,
+          easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', // Bounce effect
+          // Magnetic "snap" animation when dropping
+          keyframes: ({ transform }) => [
+            { transform: `${transform.initial}` },
+            { transform: `${transform.final} scale(0.95)` }, // Slight shrink
+            { transform: `${transform.final} scale(1.02)` }, // Bounce back
+            { transform: `${transform.final} scale(1)` },    // Settle
+          ],
+        }}
+      >
         {activeType || activeComponent ? (
-          <div className="rounded-lg border-2 border-blue-500 bg-blue-50 px-4 py-3 shadow-xl opacity-90 cursor-grabbing">
+          <div className="rounded-lg border-2 border-blue-500 bg-blue-50 px-4 py-3 shadow-xl opacity-90 cursor-grabbing transition-transform duration-150 hover:scale-105">
             <div className="text-sm font-medium text-blue-900">
               {activeComponent ? (
                 <>

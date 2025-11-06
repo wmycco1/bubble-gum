@@ -29,10 +29,16 @@ export function ContainerComponent({ component }: ContainerComponentProps) {
         'Text', 'Heading', 'Button', 'Image', 'Link', 'Icon',
         // Container/Layout components
         'Container', 'Section', 'InnerSection', 'Card', 'Grid',
+        // Section components
+        'Hero', 'Features', 'CTA', 'Testimonial', 'Pricing', 'FAQ', 'Team',
         // Form components
         'Form', 'Input', 'Textarea', 'Checkbox', 'Submit',
         // Other components
-        'Spacer', 'Divider', 'Banner', 'HTML', 'Video', 'Iframe'
+        'Spacer', 'Divider', 'Banner', 'HTML', 'Video', 'Iframe',
+        // Navigation & Content
+        'Navbar', 'Footer', 'Breadcrumb', 'Pagination', 'Sidebar',
+        // Interactive
+        'Accordion', 'Tabs', 'Carousel', 'Modal', 'Dropdown'
       ],
       index: children?.length || 0,
     },
@@ -45,11 +51,11 @@ export function ContainerComponent({ component }: ContainerComponentProps) {
   // Remove Tailwind spacing classes if custom spacing is set
   const baseClassName = 'flex flex-col gap-4 p-6 border-2 border-dashed rounded-lg min-h-[150px]';
   const stateClassName = isOver
-    ? 'border-blue-500 bg-blue-50'
-    : 'border-slate-300 bg-slate-50';
+    ? 'border-blue-500 bg-blue-50 scale-[1.02]'
+    : 'border-slate-300 bg-slate-50 scale-100';
 
   const wrapperClassName = mergeClassNameWithSpacing(
-    `${baseClassName} ${stateClassName} transition-colors`,
+    `${baseClassName} ${stateClassName} transition-all duration-200 ease-out`,
     style
   );
 

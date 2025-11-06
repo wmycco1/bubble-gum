@@ -31,9 +31,11 @@ export function CardComponent({ component }: CardComponentProps) {
         // Basic components
         'Text', 'Heading', 'Button', 'Image', 'Link', 'Icon',
         // Form components
-        'Input', 'Textarea', 'Checkbox', 'Submit',
+        'Form', 'Input', 'Textarea', 'Checkbox', 'Submit',
         // Other components
-        'Spacer', 'Divider', 'HTML', 'Video'
+        'Spacer', 'Divider', 'HTML', 'Video', 'Iframe',
+        // Interactive (for card content)
+        'Accordion', 'Tabs'
       ],
       index: children?.length || 0,
     },

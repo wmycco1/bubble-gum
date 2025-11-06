@@ -51,6 +51,8 @@ function GridColumn({
         'Text', 'Heading', 'Button', 'Image', 'Link', 'Icon',
         // Container/Layout components (allow nesting)
         'Container', 'Card', 'InnerSection',
+        // Section components
+        'Hero', 'Features', 'CTA', 'Testimonial', 'Pricing', 'FAQ', 'Team',
         // Form components
         'Form', 'Input', 'Textarea', 'Checkbox', 'Submit',
         // Other components
@@ -66,10 +68,10 @@ function GridColumn({
     <div className="relative">
       <div
         ref={setNodeRef}
-        className={`flex flex-col gap-2 p-3 rounded border-2 border-dashed min-h-[150px] transition-colors ${
+        className={`flex flex-col gap-2 p-3 rounded border-2 border-dashed min-h-[150px] transition-all duration-200 ease-out ${
           isOver
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-slate-200 bg-white'
+            ? 'border-blue-500 bg-blue-50 scale-[1.02] shadow-md'
+            : 'border-slate-200 bg-white scale-100'
         }`}
       >
         {isEmpty ? (
