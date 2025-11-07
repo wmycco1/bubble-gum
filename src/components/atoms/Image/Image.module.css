@@ -1,0 +1,234 @@
+/**
+ * Image Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * CSS Variables for easy theming
+ * Dark mode, reduced motion, high contrast support
+ */
+
+/* ============================================
+   CSS Variables (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Image sizes */
+  --image-xs-size: 64px;
+  --image-sm-size: 128px;
+  --image-md-size: 256px;
+  --image-lg-size: 384px;
+  --image-xl-size: 512px;
+
+  /* Border radius */
+  --image-border-radius: 0.5rem;
+
+  /* Transitions */
+  --image-transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+/* ============================================
+   Image Container
+   ============================================ */
+
+.image-container {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ============================================
+   Size Variants
+   ============================================ */
+
+.image-container--xs {
+  width: var(--image-xs-size);
+  height: var(--image-xs-size);
+}
+
+.image-container--sm {
+  width: var(--image-sm-size);
+  height: var(--image-sm-size);
+}
+
+.image-container--md {
+  width: var(--image-md-size);
+  height: var(--image-md-size);
+}
+
+.image-container--lg {
+  width: var(--image-lg-size);
+  height: var(--image-lg-size);
+}
+
+.image-container--xl {
+  width: var(--image-xl-size);
+  height: var(--image-xl-size);
+}
+
+/* ============================================
+   Aspect Ratios
+   ============================================ */
+
+.image-container--square {
+  aspect-ratio: 1 / 1;
+}
+
+.image-container--video {
+  aspect-ratio: 16 / 9;
+}
+
+.image-container--4-3 {
+  aspect-ratio: 4 / 3;
+}
+
+.image-container--3-2 {
+  aspect-ratio: 3 / 2;
+}
+
+.image-container--16-9 {
+  aspect-ratio: 16 / 9;
+}
+
+.image-container--21-9 {
+  aspect-ratio: 21 / 9;
+}
+
+/* ============================================
+   Rounded Corners
+   ============================================ */
+
+.image-container--rounded {
+  border-radius: var(--image-border-radius);
+}
+
+.image-container--rounded .image {
+  border-radius: inherit;
+}
+
+/* ============================================
+   Base Image Styles
+   ============================================ */
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: var(--image-transition);
+}
+
+/* ============================================
+   Object Fit Variants
+   ============================================ */
+
+.image--contain {
+  object-fit: contain;
+}
+
+.image--cover {
+  object-fit: cover;
+}
+
+.image--fill {
+  object-fit: fill;
+}
+
+.image--none {
+  object-fit: none;
+}
+
+.image--scale-down {
+  object-fit: scale-down;
+}
+
+/* ============================================
+   Interactive States
+   ============================================ */
+
+/* Hover effect for clickable images */
+a .image,
+button .image {
+  cursor: pointer;
+}
+
+a:hover .image,
+button:hover .image {
+  transform: scale(1.05);
+}
+
+a:active .image,
+button:active .image {
+  transform: scale(0.98);
+}
+
+/* ============================================
+   Loading State
+   ============================================ */
+
+.image[loading='lazy'] {
+  opacity: 0;
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    transition: none;
+    animation: none;
+  }
+
+  a:hover .image,
+  button:hover .image,
+  a:active .image,
+  button:active .image {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .image-container--rounded {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  .image {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    page-break-inside: avoid;
+  }
+
+  /* Don't apply hover effects in print */
+  a:hover .image,
+  button:hover .image {
+    transform: none;
+  }
+}
+
+/* ============================================
+   Dark Mode
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .image {
+    /* Slightly reduce brightness in dark mode for better contrast */
+    filter: brightness(0.9);
+  }
+}

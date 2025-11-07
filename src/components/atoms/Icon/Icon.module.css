@@ -1,0 +1,186 @@
+/**
+ * Icon Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * CSS Variables for easy theming
+ * Dark mode, reduced motion, high contrast support
+ */
+
+/* ============================================
+   CSS Variables (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Icon colors */
+  --icon-default-color: #374151;
+  --icon-primary-color: #3b82f6;
+  --icon-secondary-color: #6366f1;
+  --icon-success-color: #10b981;
+  --icon-warning-color: #f59e0b;
+  --icon-error-color: #ef4444;
+  --icon-muted-color: #9ca3af;
+
+  /* Icon sizes */
+  --icon-xs-size: 12px;
+  --icon-sm-size: 16px;
+  --icon-md-size: 20px;
+  --icon-lg-size: 24px;
+  --icon-xl-size: 32px;
+
+  /* Icon transitions */
+  --icon-transition: color 0.15s ease-in-out, transform 0.15s ease-in-out;
+}
+
+/* ============================================
+   Dark Mode
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --icon-default-color: #d1d5db;
+    --icon-primary-color: #60a5fa;
+    --icon-secondary-color: #818cf8;
+    --icon-success-color: #34d399;
+    --icon-warning-color: #fbbf24;
+    --icon-error-color: #f87171;
+    --icon-muted-color: #6b7280;
+  }
+}
+
+/* ============================================
+   Base Icon Styles
+   ============================================ */
+
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  transition: var(--icon-transition);
+  color: var(--icon-default-color);
+}
+
+/* ============================================
+   Size Variants
+   ============================================ */
+
+.icon--xs {
+  width: var(--icon-xs-size);
+  height: var(--icon-xs-size);
+}
+
+.icon--sm {
+  width: var(--icon-sm-size);
+  height: var(--icon-sm-size);
+}
+
+.icon--md {
+  width: var(--icon-md-size);
+  height: var(--icon-md-size);
+}
+
+.icon--lg {
+  width: var(--icon-lg-size);
+  height: var(--icon-lg-size);
+}
+
+.icon--xl {
+  width: var(--icon-xl-size);
+  height: var(--icon-xl-size);
+}
+
+/* ============================================
+   Color Variants
+   ============================================ */
+
+.icon--default {
+  color: var(--icon-default-color);
+}
+
+.icon--primary {
+  color: var(--icon-primary-color);
+}
+
+.icon--secondary {
+  color: var(--icon-secondary-color);
+}
+
+.icon--success {
+  color: var(--icon-success-color);
+}
+
+.icon--warning {
+  color: var(--icon-warning-color);
+}
+
+.icon--error {
+  color: var(--icon-error-color);
+}
+
+.icon--muted {
+  color: var(--icon-muted-color);
+}
+
+/* ============================================
+   Interactive States
+   ============================================ */
+
+/* Hover effect for clickable icons */
+button .icon,
+a .icon {
+  cursor: pointer;
+}
+
+button:hover .icon,
+a:hover .icon {
+  transform: scale(1.1);
+}
+
+button:active .icon,
+a:active .icon {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    transition: none;
+  }
+
+  button:hover .icon,
+  a:hover .icon,
+  button:active .icon,
+  a:active .icon {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .icon {
+    --icon-default-color: #000000;
+    --icon-muted-color: #444444;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .icon {
+      --icon-default-color: #ffffff;
+      --icon-muted-color: #cccccc;
+    }
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  .icon {
+    color: #000000;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

@@ -1,0 +1,254 @@
+/**
+ * Link Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * CSS Variables for easy theming
+ * Dark mode, reduced motion, high contrast support
+ */
+
+/* ============================================
+   CSS Variables (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Link colors */
+  --link-default-color: #3b82f6;
+  --link-default-hover: #2563eb;
+  --link-primary-color: #3b82f6;
+  --link-primary-hover: #2563eb;
+  --link-secondary-color: #6366f1;
+  --link-secondary-hover: #4f46e5;
+  --link-muted-color: #6b7280;
+  --link-muted-hover: #4b5563;
+  --link-disabled-color: #9ca3af;
+
+  /* Link sizes */
+  --link-xs-size: 0.75rem;
+  --link-sm-size: 0.875rem;
+  --link-md-size: 1rem;
+  --link-lg-size: 1.125rem;
+  --link-xl-size: 1.25rem;
+
+  /* Link transitions */
+  --link-transition: color 0.15s ease-in-out, text-decoration 0.15s ease-in-out;
+
+  /* Link underline */
+  --link-underline-offset: 0.2em;
+}
+
+/* ============================================
+   Dark Mode
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --link-default-color: #60a5fa;
+    --link-default-hover: #93c5fd;
+    --link-primary-color: #60a5fa;
+    --link-primary-hover: #93c5fd;
+    --link-secondary-color: #818cf8;
+    --link-secondary-hover: #a5b4fc;
+    --link-muted-color: #9ca3af;
+    --link-muted-hover: #d1d5db;
+    --link-disabled-color: #6b7280;
+  }
+}
+
+/* ============================================
+   Base Link Styles
+   ============================================ */
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+  color: var(--link-default-color);
+  transition: var(--link-transition);
+  cursor: pointer;
+  font-size: var(--link-md-size);
+}
+
+.link:hover {
+  color: var(--link-default-hover);
+  text-decoration: underline;
+  text-underline-offset: var(--link-underline-offset);
+}
+
+.link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ============================================
+   Size Variants
+   ============================================ */
+
+.link--xs {
+  font-size: var(--link-xs-size);
+}
+
+.link--sm {
+  font-size: var(--link-sm-size);
+}
+
+.link--md {
+  font-size: var(--link-md-size);
+}
+
+.link--lg {
+  font-size: var(--link-lg-size);
+}
+
+.link--xl {
+  font-size: var(--link-xl-size);
+}
+
+/* ============================================
+   Variant Styles
+   ============================================ */
+
+.link--default {
+  color: var(--link-default-color);
+}
+
+.link--default:hover {
+  color: var(--link-default-hover);
+}
+
+.link--primary {
+  color: var(--link-primary-color);
+  font-weight: 600;
+}
+
+.link--primary:hover {
+  color: var(--link-primary-hover);
+}
+
+.link--secondary {
+  color: var(--link-secondary-color);
+}
+
+.link--secondary:hover {
+  color: var(--link-secondary-hover);
+}
+
+.link--muted {
+  color: var(--link-muted-color);
+}
+
+.link--muted:hover {
+  color: var(--link-muted-hover);
+}
+
+.link--underline {
+  text-decoration: underline;
+  text-underline-offset: var(--link-underline-offset);
+}
+
+.link--underline:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* ============================================
+   Disabled State
+   ============================================ */
+
+.link--disabled {
+  color: var(--link-disabled-color);
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+.link--disabled:hover {
+  color: var(--link-disabled-color);
+  text-decoration: none;
+}
+
+/* ============================================
+   External Link Icon
+   ============================================ */
+
+.link-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  margin-left: 0.125rem;
+  opacity: 0.7;
+  transition: var(--link-transition);
+}
+
+.link:hover .link-icon {
+  opacity: 1;
+  transform: translateX(1px) translateY(-1px);
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .link {
+    transition: none;
+  }
+
+  .link:hover .link-icon {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .link {
+    --link-default-color: #0000ee;
+    text-decoration: underline;
+  }
+
+  .link:visited {
+    color: #551a8b;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .link {
+      --link-default-color: #6699ff;
+    }
+
+    .link:visited {
+      color: #cc99ff;
+    }
+  }
+}
+
+/* Focus visible styles for keyboard navigation */
+.link:focus {
+  outline: none;
+}
+
+.link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  .link {
+    color: #000000;
+    text-decoration: underline;
+  }
+
+  /* Show URL after link text in print */
+  .link[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666666;
+  }
+
+  .link-icon {
+    display: none;
+  }
+}
