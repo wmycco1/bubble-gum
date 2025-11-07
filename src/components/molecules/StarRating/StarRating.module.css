@@ -1,0 +1,299 @@
+/**
+ * StarRating Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * Features:
+ * - CSS Variables for customization
+ * - Dark mode support
+ * - Reduced motion support
+ * - High contrast mode support
+ * - Print styles
+ * - Responsive design
+ */
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+
+.star-rating {
+  /* Colors */
+  --star-color-filled: #fbbf24; /* amber-400 */
+  --star-color-empty: #d1d5db; /* gray-300 */
+  --star-color-hover: #f59e0b; /* amber-500 */
+  --star-value-color: #6b7280; /* gray-500 */
+
+  /* Sizes */
+  --star-size-sm: 16px;
+  --star-size-md: 24px;
+  --star-size-lg: 32px;
+  --star-size-xl: 40px;
+
+  /* Spacing */
+  --star-gap: 4px;
+  --value-gap: 8px;
+
+  /* Transitions */
+  --star-transition: all 0.2s ease-in-out;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .star-rating {
+    --star-color-filled: #fbbf24; /* Keep amber in dark mode */
+    --star-color-empty: #4b5563; /* gray-600 */
+    --star-color-hover: #fcd34d; /* amber-300 */
+    --star-value-color: #9ca3af; /* gray-400 */
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .star-rating {
+    --star-color-filled: #000000;
+    --star-color-empty: #666666;
+    --star-color-hover: #333333;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .star-rating {
+    --star-transition: none;
+  }
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--value-gap);
+  font-family: inherit;
+  line-height: 1;
+}
+
+/* ============================================
+   STARS CONTAINER
+   ============================================ */
+
+.star-rating__stars {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--star-gap);
+}
+
+/* ============================================
+   INDIVIDUAL STAR
+   ============================================ */
+
+.star-rating__star {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: default;
+  transition: var(--star-transition);
+  outline-offset: 2px;
+}
+
+/* Interactive stars */
+.star-rating__star--clickable {
+  cursor: pointer;
+}
+
+.star-rating__star--clickable:hover {
+  transform: scale(1.1);
+}
+
+.star-rating__star--clickable:active {
+  transform: scale(0.95);
+}
+
+.star-rating__star--clickable:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+.star-rating__star:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================================
+   STAR ICONS
+   ============================================ */
+
+.star-rating__star-icon-filled,
+.star-rating__star-icon-empty {
+  display: block;
+  transition: var(--star-transition);
+}
+
+.star-rating__star-icon-filled {
+  color: var(--star-color-filled);
+}
+
+.star-rating__star-icon-empty {
+  color: var(--star-color-empty);
+}
+
+/* Hover effect for interactive stars */
+.star-rating--interactive .star-rating__star--clickable:hover .star-rating__star-icon-filled,
+.star-rating--interactive .star-rating__star--clickable:hover .star-rating__star-icon-empty {
+  color: var(--star-color-hover);
+}
+
+/* ============================================
+   HALF STAR
+   ============================================ */
+
+.star-rating__star-half {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star-rating__star-half .star-rating__star-icon-empty {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.star-rating__star-half .star-rating__star-icon-filled {
+  position: relative;
+  clip-path: inset(0 50% 0 0);
+}
+
+/* ============================================
+   RATING VALUE DISPLAY
+   ============================================ */
+
+.star-rating__value {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--star-value-color);
+  line-height: 1;
+  user-select: none;
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+
+.star-rating--sm {
+  --star-size: var(--star-size-sm);
+}
+
+.star-rating--sm .star-rating__star-icon-filled,
+.star-rating--sm .star-rating__star-icon-empty {
+  width: var(--star-size-sm);
+  height: var(--star-size-sm);
+}
+
+.star-rating--sm .star-rating__value {
+  font-size: 0.75rem;
+}
+
+.star-rating--md {
+  --star-size: var(--star-size-md);
+}
+
+.star-rating--md .star-rating__star-icon-filled,
+.star-rating--md .star-rating__star-icon-empty {
+  width: var(--star-size-md);
+  height: var(--star-size-md);
+}
+
+.star-rating--lg {
+  --star-size: var(--star-size-lg);
+}
+
+.star-rating--lg .star-rating__star-icon-filled,
+.star-rating--lg .star-rating__star-icon-empty {
+  width: var(--star-size-lg);
+  height: var(--star-size-lg);
+}
+
+.star-rating--lg .star-rating__value {
+  font-size: 1rem;
+}
+
+.star-rating--xl {
+  --star-size: var(--star-size-xl);
+}
+
+.star-rating--xl .star-rating__star-icon-filled,
+.star-rating--xl .star-rating__star-icon-empty {
+  width: var(--star-size-xl);
+  height: var(--star-size-xl);
+}
+
+.star-rating--xl .star-rating__value {
+  font-size: 1.125rem;
+}
+
+/* ============================================
+   STATE VARIANTS
+   ============================================ */
+
+/* Readonly state */
+.star-rating--readonly {
+  pointer-events: none;
+}
+
+/* Interactive state */
+.star-rating--interactive {
+  user-select: none;
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .star-rating {
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .star-rating__star--clickable {
+    cursor: default;
+  }
+
+  .star-rating__star:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Focus visible for keyboard navigation */
+.star-rating__star:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Hide visually but keep for screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

@@ -1,0 +1,330 @@
+/**
+ * Toggle Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * Features:
+ * - CSS Variables for customization
+ * - Dark mode support
+ * - Reduced motion support
+ * - High contrast mode support
+ * - Print styles
+ * - Responsive design
+ */
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+
+.toggle {
+  /* Colors - Light mode */
+  --toggle-bg-off: #e5e7eb; /* gray-200 */
+  --toggle-bg-on: #3b82f6; /* blue-500 */
+  --toggle-thumb-color: #ffffff;
+  --toggle-border-color: transparent;
+  --toggle-label-color: #374151; /* gray-700 */
+  --toggle-disabled-opacity: 0.5;
+  --toggle-focus-color: #3b82f6; /* blue-500 */
+
+  /* Sizes */
+  --toggle-width-sm: 32px;
+  --toggle-height-sm: 18px;
+  --toggle-thumb-sm: 14px;
+  --toggle-width-md: 44px;
+  --toggle-height-md: 24px;
+  --toggle-thumb-md: 20px;
+  --toggle-width-lg: 56px;
+  --toggle-height-lg: 30px;
+  --toggle-thumb-lg: 26px;
+
+  /* Spacing */
+  --toggle-label-gap: 12px;
+  --toggle-thumb-offset: 2px;
+
+  /* Transitions */
+  --toggle-transition: all 0.2s ease-in-out;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .toggle {
+    --toggle-bg-off: #4b5563; /* gray-600 */
+    --toggle-bg-on: #60a5fa; /* blue-400 */
+    --toggle-thumb-color: #ffffff;
+    --toggle-label-color: #d1d5db; /* gray-300 */
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .toggle {
+    --toggle-bg-off: #000000;
+    --toggle-bg-on: #0000ff;
+    --toggle-thumb-color: #ffffff;
+    --toggle-border-color: #ffffff;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .toggle {
+    --toggle-transition: none;
+  }
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--toggle-label-gap);
+  font-family: inherit;
+  user-select: none;
+}
+
+/* ============================================
+   LABEL POSITIONING
+   ============================================ */
+
+.toggle--label-left {
+  flex-direction: row;
+}
+
+.toggle--label-right {
+  flex-direction: row;
+}
+
+/* ============================================
+   TOGGLE LABEL
+   ============================================ */
+
+.toggle__label {
+  display: inline-block;
+  color: var(--toggle-label-color);
+  cursor: pointer;
+  transition: var(--toggle-transition);
+  line-height: 1.5;
+}
+
+.toggle__label:hover {
+  opacity: 0.8;
+}
+
+.toggle--disabled .toggle__label {
+  cursor: not-allowed;
+  opacity: var(--toggle-disabled-opacity);
+}
+
+/* ============================================
+   SWITCH CONTAINER
+   ============================================ */
+
+.toggle__switch-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   HIDDEN INPUT
+   ============================================ */
+
+.toggle__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   VISUAL SWITCH
+   ============================================ */
+
+.toggle__switch {
+  position: relative;
+  display: inline-block;
+  width: var(--toggle-width);
+  height: var(--toggle-height);
+  background-color: var(--toggle-bg-off);
+  border: 2px solid var(--toggle-border-color);
+  border-radius: 999px;
+  transition: var(--toggle-transition);
+  flex-shrink: 0;
+}
+
+.toggle__switch--checked {
+  background-color: var(--toggle-bg-on);
+}
+
+.toggle__switch--disabled {
+  opacity: var(--toggle-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* Focus state */
+.toggle__input:focus-visible + .toggle__switch {
+  outline: 2px solid var(--toggle-focus-color);
+  outline-offset: 2px;
+}
+
+/* Hover state (non-disabled) */
+.toggle__switch-container:not(.toggle--disabled):hover .toggle__switch {
+  opacity: 0.9;
+}
+
+/* ============================================
+   THUMB (SLIDING CIRCLE)
+   ============================================ */
+
+.toggle__thumb {
+  position: absolute;
+  top: var(--toggle-thumb-offset);
+  left: var(--toggle-thumb-offset);
+  width: var(--toggle-thumb-size);
+  height: var(--toggle-thumb-size);
+  background-color: var(--toggle-thumb-color);
+  border-radius: 50%;
+  transition: var(--toggle-transition);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggle__thumb--checked {
+  transform: translateX(calc(var(--toggle-width) - var(--toggle-thumb-size) - var(--toggle-thumb-offset) * 2));
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+
+.toggle--sm {
+  --toggle-width: var(--toggle-width-sm);
+  --toggle-height: var(--toggle-height-sm);
+  --toggle-thumb-size: var(--toggle-thumb-sm);
+}
+
+.toggle--sm .toggle__label {
+  font-size: 0.875rem;
+}
+
+.toggle--md {
+  --toggle-width: var(--toggle-width-md);
+  --toggle-height: var(--toggle-height-md);
+  --toggle-thumb-size: var(--toggle-thumb-md);
+}
+
+.toggle--md .toggle__label {
+  font-size: 1rem;
+}
+
+.toggle--lg {
+  --toggle-width: var(--toggle-width-lg);
+  --toggle-height: var(--toggle-height-lg);
+  --toggle-thumb-size: var(--toggle-thumb-lg);
+}
+
+.toggle--lg .toggle__label {
+  font-size: 1.125rem;
+}
+
+/* ============================================
+   DISABLED STATE
+   ============================================ */
+
+.toggle--disabled {
+  opacity: var(--toggle-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.toggle--disabled .toggle__switch-container {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.toggle--disabled .toggle__label {
+  cursor: not-allowed;
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .toggle {
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .toggle__switch-container {
+    cursor: default;
+  }
+
+  .toggle__thumb {
+    box-shadow: none;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Focus visible for keyboard navigation */
+.toggle__input:focus-visible + .toggle__switch {
+  outline: 2px solid var(--toggle-focus-color);
+  outline-offset: 2px;
+  border-radius: 999px;
+}
+
+/* Active state */
+.toggle__switch-container:active .toggle__switch {
+  transform: scale(0.98);
+}
+
+.toggle--disabled .toggle__switch-container:active .toggle__switch {
+  transform: none;
+}
+
+/* ============================================
+   CUSTOM ANIMATIONS
+   ============================================ */
+
+/* Smooth thumb slide animation */
+@keyframes thumbSlide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(var(--toggle-width) - var(--toggle-thumb-size) - var(--toggle-thumb-offset) * 2));
+  }
+}
+
+/* Apply animation only when motion is not reduced */
+@media (prefers-reduced-motion: no-preference) {
+  .toggle__thumb--checked {
+    animation: thumbSlide 0.2s ease-in-out;
+  }
+}
+
+/* ============================================
+   RTL SUPPORT
+   ============================================ */
+
+[dir='rtl'] .toggle--label-left {
+  flex-direction: row-reverse;
+}
+
+[dir='rtl'] .toggle--label-right {
+  flex-direction: row-reverse;
+}
+
+[dir='rtl'] .toggle__thumb--checked {
+  transform: translateX(calc(-1 * (var(--toggle-width) - var(--toggle-thumb-size) - var(--toggle-thumb-offset) * 2)));
+}
