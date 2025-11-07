@@ -1,0 +1,419 @@
+/**
+ * Hero Component Styles (Organism)
+ * God-Tier Development Protocol 2025
+ */
+
+/* ============================================
+   BASE HERO
+   ============================================ */
+
+.hero {
+  --hero-bg: var(--color-surface, #ffffff);
+  --hero-color: var(--color-text, #1f2937);
+  --hero-title-color: var(--color-heading, #111827);
+  --hero-subtitle-color: var(--color-text-muted, #6b7280);
+  --hero-overlay-color: rgba(0, 0, 0, 0.5);
+  --hero-spacing: var(--spacing-lg, 2rem);
+  --hero-max-width: var(--container-max-width, 1200px);
+  --hero-transition: all 0.3s ease;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--hero-bg);
+  color: var(--hero-color);
+  overflow: hidden;
+  padding: var(--hero-spacing);
+  min-height: 500px;
+}
+
+/* Background image styling */
+.hero--with-bg-image,
+.hero--with-gradient {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #ffffff;
+}
+
+.hero--with-bg-image .hero-title,
+.hero--with-gradient .hero-title {
+  color: #ffffff;
+}
+
+.hero--with-bg-image .hero-subtitle,
+.hero--with-gradient .hero-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ============================================
+   OVERLAY
+   ============================================ */
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--hero-overlay-color);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ============================================
+   CONTAINER & CONTENT
+   ============================================ */
+
+.hero-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: var(--hero-max-width);
+  display: flex;
+  gap: var(--hero-spacing);
+  align-items: center;
+}
+
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ============================================
+   TITLE & SUBTITLE
+   ============================================ */
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  color: var(--hero-title-color);
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  line-height: 1.6;
+  margin: 0;
+  color: var(--hero-subtitle-color);
+  max-width: 600px;
+}
+
+/* ============================================
+   ACTIONS (CTA BUTTONS)
+   ============================================ */
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.hero-cta-primary,
+.hero-cta-secondary {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   ALIGNMENT
+   ============================================ */
+
+.hero--align-left .hero-container {
+  justify-content: flex-start;
+}
+
+.hero--align-left .hero-content {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.hero--align-left .hero-subtitle {
+  margin-left: 0;
+}
+
+.hero--align-center .hero-container {
+  justify-content: center;
+}
+
+.hero--align-center .hero-content {
+  align-items: center;
+  text-align: center;
+}
+
+.hero--align-center .hero-subtitle {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero--align-center .hero-actions {
+  justify-content: center;
+}
+
+.hero--align-right .hero-container {
+  justify-content: flex-end;
+}
+
+.hero--align-right .hero-content {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.hero--align-right .hero-subtitle {
+  margin-right: 0;
+}
+
+.hero--align-right .hero-actions {
+  justify-content: flex-end;
+}
+
+/* ============================================
+   FULL HEIGHT
+   ============================================ */
+
+.hero--full-height {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+}
+
+/* ============================================
+   SPLIT LAYOUT (with side image)
+   ============================================ */
+
+.hero--split .hero-container {
+  gap: 3rem;
+}
+
+.hero--split .hero-content {
+  flex: 1;
+  max-width: 50%;
+}
+
+.hero-image {
+  flex: 1;
+  max-width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero--image-left .hero-container {
+  flex-direction: row-reverse;
+}
+
+.hero--image-right .hero-container {
+  flex-direction: row;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .hero {
+    --hero-bg: #111827;
+    --hero-color: #f9fafb;
+    --hero-title-color: #ffffff;
+    --hero-subtitle-color: #d1d5db;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .hero-title,
+  .hero-subtitle,
+  .hero-actions {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .hero {
+    border: 2px solid var(--hero-color);
+  }
+
+  .hero-title {
+    font-weight: 800;
+  }
+
+  .hero--with-bg-image .hero-overlay,
+  .hero--with-gradient .hero-overlay {
+    opacity: 0.7;
+  }
+}
+
+/* ============================================
+   PRINT
+   ============================================ */
+
+@media print {
+  .hero {
+    background: none !important;
+    color: #000000 !important;
+    min-height: auto !important;
+    padding: 1rem;
+    page-break-inside: avoid;
+  }
+
+  .hero-overlay {
+    display: none;
+  }
+
+  .hero-title {
+    color: #000000 !important;
+    font-size: 2rem !important;
+  }
+
+  .hero-subtitle {
+    color: #000000 !important;
+    font-size: 1rem !important;
+  }
+
+  .hero-actions {
+    display: none;
+  }
+
+  .hero-image {
+    max-width: 100%;
+    margin-top: 1rem;
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Mobile (< 640px) */
+@media (max-width: 640px) {
+  .hero {
+    padding: 2rem 1rem;
+    min-height: auto;
+  }
+
+  .hero--full-height {
+    min-height: auto;
+    padding: 3rem 1rem;
+  }
+
+  .hero-container {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .hero--split .hero-content,
+  .hero-image {
+    max-width: 100%;
+  }
+
+  .hero--image-left .hero-container,
+  .hero--image-right .hero-container {
+    flex-direction: column;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-cta-primary,
+  .hero-cta-secondary {
+    width: 100%;
+  }
+
+  /* Center alignment on mobile */
+  .hero--align-left .hero-content,
+  .hero--align-right .hero-content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero--align-left .hero-subtitle,
+  .hero--align-right .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero--align-left .hero-actions,
+  .hero--align-right .hero-actions {
+    justify-content: center;
+  }
+}
+
+/* Tablet (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero {
+    padding: 3rem 2rem;
+  }
+
+  .hero-container {
+    gap: 2rem;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .hero--split .hero-content {
+    max-width: 55%;
+  }
+
+  .hero-image {
+    max-width: 45%;
+  }
+}
+
+/* Desktop (> 1025px) */
+@media (min-width: 1025px) {
+  .hero {
+    padding: 4rem 2rem;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+}
+
+/* Large Desktop (> 1440px) */
+@media (min-width: 1441px) {
+  .hero {
+    padding: 5rem 2rem;
+  }
+
+  .hero-title {
+    font-size: 4rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.75rem;
+  }
+}

@@ -1,0 +1,332 @@
+/**
+ * Menu Component Styles (Organism)
+ * God-Tier Development Protocol 2025
+ */
+
+/* ============================================
+   BASE MENU
+   ============================================ */
+
+.menu {
+  --menu-bg: var(--color-surface, #ffffff);
+  --menu-color: var(--color-text, #1f2937);
+  --menu-border: var(--color-border, #e5e7eb);
+  --menu-hover-bg: var(--color-hover, #f3f4f6);
+  --menu-active-bg: var(--color-primary-light, #dbeafe);
+  --menu-active-color: var(--color-primary, #3b82f6);
+  --menu-disabled-color: var(--color-text-muted, #9ca3af);
+  --menu-spacing: var(--spacing-md, 0.5rem);
+  --menu-radius: var(--radius-md, 0.375rem);
+  --menu-transition: all 0.2s ease;
+
+  position: relative;
+  background-color: var(--menu-bg);
+  color: var(--menu-color);
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+/* ============================================
+   ORIENTATION
+   ============================================ */
+
+.menu--horizontal .menu-list {
+  flex-direction: row;
+  gap: var(--menu-spacing);
+}
+
+.menu--vertical .menu-list {
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+.menu--default {
+  /* Default styling */
+}
+
+.menu--minimal {
+  background-color: transparent;
+}
+
+.menu--bordered {
+  border: 1px solid var(--menu-border);
+  border-radius: var(--menu-radius);
+  padding: var(--menu-spacing);
+}
+
+.menu--pills .menu-item-link,
+.menu--pills .menu-item-button {
+  border-radius: var(--menu-radius);
+  background-color: var(--menu-bg);
+}
+
+.menu--pills .menu-item--active .menu-item-link,
+.menu--pills .menu-item--active .menu-item-button {
+  background-color: var(--menu-active-bg);
+  color: var(--menu-active-color);
+}
+
+/* ============================================
+   MENU ITEM
+   ============================================ */
+
+.menu-item {
+  position: relative;
+  list-style: none;
+  margin: 0;
+}
+
+.menu-item-link,
+.menu-item-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  transition: var(--menu-transition);
+  width: 100%;
+  text-align: left;
+  border-radius: var(--menu-radius);
+}
+
+.menu-item-link:hover,
+.menu-item-button:hover {
+  background-color: var(--menu-hover-bg);
+}
+
+.menu-item-link:focus,
+.menu-item-button:focus {
+  outline: 2px solid var(--menu-active-color);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   ACTIVE STATE
+   ============================================ */
+
+.menu-item--active .menu-item-link,
+.menu-item--active .menu-item-button {
+  background-color: var(--menu-active-bg);
+  color: var(--menu-active-color);
+  font-weight: 600;
+}
+
+/* ============================================
+   DISABLED STATE
+   ============================================ */
+
+.menu-item--disabled .menu-item-link,
+.menu-item--disabled .menu-item-button {
+  color: var(--menu-disabled-color);
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ============================================
+   SUBMENU
+   ============================================ */
+
+.menu-item--has-children > .menu-item-button {
+  position: relative;
+}
+
+.menu-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  padding-left: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.menu--horizontal .menu-submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background-color: var(--menu-bg);
+  border: 1px solid var(--menu-border);
+  border-radius: var(--menu-radius);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 0.5rem;
+  z-index: 1000;
+  margin-top: 0.5rem;
+  padding-left: 0;
+}
+
+.menu--vertical .menu-submenu {
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--menu-border);
+  margin-left: 1rem;
+}
+
+/* ============================================
+   SUBMENU INDICATOR
+   ============================================ */
+
+.menu-item-indicator {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+.menu-item--open .menu-item-indicator {
+  transform: rotate(180deg);
+}
+
+.menu--horizontal .menu-item-indicator {
+  transform: rotate(-90deg);
+}
+
+.menu--horizontal .menu-item--open .menu-item-indicator {
+  transform: rotate(0deg);
+}
+
+/* ============================================
+   ICON
+   ============================================ */
+
+.menu-item-icon {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   LABEL
+   ============================================ */
+
+.menu-item-label {
+  flex: 1;
+  white-space: nowrap;
+}
+
+/* ============================================
+   NESTED LEVELS
+   ============================================ */
+
+.menu-item--level-1 {
+  font-size: 0.95em;
+}
+
+.menu-item--level-2 {
+  font-size: 0.9em;
+}
+
+.menu-item--level-3 {
+  font-size: 0.85em;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .menu {
+    --menu-bg: #1f2937;
+    --menu-color: #f9fafb;
+    --menu-border: #374151;
+    --menu-hover-bg: #374151;
+    --menu-active-bg: #1e40af;
+    --menu-active-color: #60a5fa;
+    --menu-disabled-color: #6b7280;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item-link,
+  .menu-item-button,
+  .menu-item-indicator {
+    transition: none;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .menu {
+    --menu-border: #000000;
+  }
+
+  .menu-item-link:focus,
+  .menu-item-button:focus {
+    outline-width: 3px;
+  }
+
+  .menu-item--active .menu-item-link,
+  .menu-item--active .menu-item-button {
+    border: 2px solid var(--menu-active-color);
+  }
+}
+
+/* ============================================
+   PRINT
+   ============================================ */
+
+@media print {
+  .menu {
+    background: none;
+    border: none;
+  }
+
+  .menu-item-link,
+  .menu-item-button {
+    padding: 0.25rem;
+  }
+
+  .menu-submenu {
+    position: static;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .menu--horizontal .menu-list {
+    flex-direction: column;
+  }
+
+  .menu--horizontal .menu-submenu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    margin-top: 0.25rem;
+    padding-left: 1.5rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .menu-item-link,
+  .menu-item-button {
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .menu-item-link,
+  .menu-item-button {
+    padding: 0.5rem 1rem;
+  }
+}
