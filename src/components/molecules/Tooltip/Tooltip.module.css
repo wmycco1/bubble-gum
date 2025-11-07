@@ -1,0 +1,381 @@
+/**
+ * Tooltip Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * CSS Modules with CSS Variables for theming
+ * Supports dark mode, reduced motion, high contrast, and print
+ */
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+
+.tooltip {
+  --tooltip-z-index: 1000;
+  --tooltip-bg: var(--color-gray-900, #111827);
+  --tooltip-color: var(--color-white, #ffffff);
+  --tooltip-border-radius: var(--radius-md, 8px);
+  --tooltip-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --tooltip-padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+  --tooltip-font-size: var(--font-size-sm, 14px);
+  --tooltip-line-height: 1.5;
+  --tooltip-max-width: 250px;
+  --tooltip-arrow-size: 6px;
+  --tooltip-animation-duration: 150ms;
+  --tooltip-animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .tooltip {
+    --tooltip-bg: var(--color-gray-700, #374151);
+    --tooltip-color: var(--color-white, #ffffff);
+    --tooltip-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .tooltip {
+    --tooltip-shadow: 0 0 0 2px currentColor;
+    border: 2px solid currentColor;
+  }
+}
+
+/* ============================================
+   WRAPPER
+   ============================================ */
+
+.tooltip__wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+/* ============================================
+   TOOLTIP
+   ============================================ */
+
+.tooltip {
+  position: fixed;
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-color);
+  border-radius: var(--tooltip-border-radius);
+  box-shadow: var(--tooltip-shadow);
+  padding: var(--tooltip-padding);
+  font-size: var(--tooltip-font-size);
+  line-height: var(--tooltip-line-height);
+  z-index: var(--tooltip-z-index);
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity var(--tooltip-animation-duration) var(--tooltip-animation-easing),
+    transform var(--tooltip-animation-duration) var(--tooltip-animation-easing);
+  max-width: var(--tooltip-max-width);
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* Open state */
+.tooltip--open {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+.tooltip--default {
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-color);
+}
+
+.tooltip--primary {
+  --tooltip-bg: var(--color-primary, #3b82f6);
+  --tooltip-color: var(--color-white, #ffffff);
+}
+
+.tooltip--success {
+  --tooltip-bg: var(--color-success, #10b981);
+  --tooltip-color: var(--color-white, #ffffff);
+}
+
+.tooltip--warning {
+  --tooltip-bg: var(--color-warning, #f59e0b);
+  --tooltip-color: var(--color-white, #ffffff);
+}
+
+.tooltip--danger {
+  --tooltip-bg: var(--color-danger, #ef4444);
+  --tooltip-color: var(--color-white, #ffffff);
+}
+
+.tooltip--light {
+  --tooltip-bg: var(--color-white, #ffffff);
+  --tooltip-color: var(--color-gray-900, #111827);
+  --tooltip-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   INNER CONTENT
+   ============================================ */
+
+.tooltip__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.tooltip__text {
+  margin: 0;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* ============================================
+   ARROW
+   ============================================ */
+
+.tooltip__arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  z-index: 0;
+}
+
+/* Arrow - Top placement */
+.tooltip__arrow--top {
+  bottom: calc(var(--tooltip-arrow-size) * -1);
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: var(--tooltip-arrow-size) var(--tooltip-arrow-size) 0;
+  border-color: var(--tooltip-bg) transparent transparent transparent;
+}
+
+/* Arrow - Bottom placement */
+.tooltip__arrow--bottom {
+  top: calc(var(--tooltip-arrow-size) * -1);
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 var(--tooltip-arrow-size) var(--tooltip-arrow-size);
+  border-color: transparent transparent var(--tooltip-bg) transparent;
+}
+
+/* Arrow - Left placement */
+.tooltip__arrow--left {
+  right: calc(var(--tooltip-arrow-size) * -1);
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: var(--tooltip-arrow-size) 0 var(--tooltip-arrow-size) var(--tooltip-arrow-size);
+  border-color: transparent transparent transparent var(--tooltip-bg);
+}
+
+/* Arrow - Right placement */
+.tooltip__arrow--right {
+  left: calc(var(--tooltip-arrow-size) * -1);
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: var(--tooltip-arrow-size) var(--tooltip-arrow-size) var(--tooltip-arrow-size) 0;
+  border-color: transparent var(--tooltip-bg) transparent transparent;
+}
+
+/* ============================================
+   PLACEMENT ANIMATIONS
+   ============================================ */
+
+/* Top placement */
+.tooltip--top {
+  transform-origin: bottom center;
+}
+
+.tooltip--top:not(.tooltip--open) {
+  transform: scale(0.95) translateY(4px);
+}
+
+/* Bottom placement */
+.tooltip--bottom {
+  transform-origin: top center;
+}
+
+.tooltip--bottom:not(.tooltip--open) {
+  transform: scale(0.95) translateY(-4px);
+}
+
+/* Left placement */
+.tooltip--left {
+  transform-origin: right center;
+}
+
+.tooltip--left:not(.tooltip--open) {
+  transform: scale(0.95) translateX(4px);
+}
+
+/* Right placement */
+.tooltip--right {
+  transform-origin: left center;
+}
+
+.tooltip--right:not(.tooltip--open) {
+  transform: scale(0.95) translateX(-4px);
+}
+
+/* ============================================
+   REDUCE MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    transition: opacity 0.01ms, transform 0.01ms;
+  }
+
+  .tooltip--top:not(.tooltip--open),
+  .tooltip--bottom:not(.tooltip--open),
+  .tooltip--left:not(.tooltip--open),
+  .tooltip--right:not(.tooltip--open) {
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .tooltip {
+    --tooltip-max-width: calc(100vw - 32px);
+    --tooltip-font-size: var(--font-size-xs, 12px);
+    --tooltip-padding: var(--spacing-1, 4px) var(--spacing-2, 8px);
+  }
+}
+
+/* ============================================
+   PRINT
+   ============================================ */
+
+@media print {
+  .tooltip {
+    display: none !important;
+  }
+
+  .tooltip__wrapper::after {
+    content: ' (' attr(aria-describedby) ')';
+    font-size: 0.875em;
+    color: #666;
+  }
+}
+
+/* ============================================
+   FOCUS STYLES
+   ============================================ */
+
+.tooltip__wrapper:focus {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.tooltip__wrapper:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ============================================
+   INTERACTIVE TOOLTIPS
+   ============================================ */
+
+.tooltip--interactive {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.tooltip--interactive:hover {
+  transform: scale(1.02);
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+/* Visually hidden (for screen readers) */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Prevent text selection in tooltip trigger */
+.tooltip__wrapper {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Allow text selection in tooltip content when interactive */
+.tooltip--interactive .tooltip__inner {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+/* ============================================
+   LOADING STATE (for async tooltips)
+   ============================================ */
+
+.tooltip--loading {
+  min-width: 100px;
+  min-height: 30px;
+}
+
+.tooltip--loading .tooltip__inner::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: tooltip-spin 0.6s linear infinite;
+}
+
+@keyframes tooltip-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   MULTI-LINE TOOLTIPS
+   ============================================ */
+
+.tooltip--multiline {
+  white-space: normal;
+  text-align: left;
+}
+
+.tooltip--multiline .tooltip__inner {
+  display: block;
+}
+
+/* ============================================
+   RICH CONTENT TOOLTIPS
+   ============================================ */
+
+.tooltip--rich {
+  padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+  max-width: 350px;
+}
+
+.tooltip--rich .tooltip__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2, 8px);
+}
