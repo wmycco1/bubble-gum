@@ -1,0 +1,2 @@
+# Divider Component
+**Status:** Complete

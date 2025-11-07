@@ -1,0 +1,2 @@
+# Badge Component
+**Status:** Complete
