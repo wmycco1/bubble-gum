@@ -1,0 +1,209 @@
+/**
+ * Breadcrumb Component Styles (Molecule)
+ * God-Tier Development Protocol 2025
+ *
+ * CSS Variables for easy theming
+ * Dark mode, reduced motion, high contrast support
+ */
+
+/* ============================================
+   CSS Variables (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Breadcrumb colors */
+  --breadcrumb-link-color: #3b82f6;
+  --breadcrumb-link-hover: #2563eb;
+  --breadcrumb-text-color: #6b7280;
+  --breadcrumb-current-color: #111827;
+  --breadcrumb-separator-color: #9ca3af;
+
+  /* Breadcrumb spacing */
+  --breadcrumb-gap: 0.5rem;
+  --breadcrumb-item-gap: 0.25rem;
+
+  /* Breadcrumb transitions */
+  --breadcrumb-transition: color 0.15s ease-in-out;
+}
+
+/* ============================================
+   Dark Mode
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --breadcrumb-link-color: #60a5fa;
+    --breadcrumb-link-hover: #93c5fd;
+    --breadcrumb-text-color: #9ca3af;
+    --breadcrumb-current-color: #f3f4f6;
+    --breadcrumb-separator-color: #6b7280;
+  }
+}
+
+/* ============================================
+   Base Breadcrumb Styles
+   ============================================ */
+
+.breadcrumb {
+  display: block;
+  width: 100%;
+}
+
+.breadcrumb-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--breadcrumb-gap);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   Breadcrumb Item
+   ============================================ */
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: var(--breadcrumb-gap);
+}
+
+.breadcrumb-item-content {
+  display: flex;
+  align-items: center;
+  gap: var(--breadcrumb-item-gap);
+}
+
+/* ============================================
+   Breadcrumb Link
+   ============================================ */
+
+.breadcrumb-link {
+  color: var(--breadcrumb-link-color);
+  text-decoration: none;
+  transition: var(--breadcrumb-transition);
+}
+
+.breadcrumb-link:hover {
+  color: var(--breadcrumb-link-hover);
+  text-decoration: underline;
+}
+
+.breadcrumb-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ============================================
+   Breadcrumb Text
+   ============================================ */
+
+.breadcrumb-text {
+  color: var(--breadcrumb-text-color);
+}
+
+.breadcrumb-current {
+  color: var(--breadcrumb-current-color);
+  font-weight: 500;
+}
+
+/* ============================================
+   Breadcrumb Separator
+   ============================================ */
+
+.breadcrumb-separator {
+  display: flex;
+  align-items: center;
+  color: var(--breadcrumb-separator-color);
+}
+
+.breadcrumb-separator-text {
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+/* ============================================
+   Home Icon
+   ============================================ */
+
+.breadcrumb-home-icon {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumb-link {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .breadcrumb-link {
+    text-decoration: underline;
+  }
+
+  .breadcrumb-current {
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
+  .breadcrumb-separator {
+    font-weight: 700;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  .breadcrumb {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .breadcrumb-link {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  .breadcrumb-link:after {
+    content: " (" attr(href) ")";
+    font-size: 0.75rem;
+  }
+
+  .breadcrumb-separator {
+    color: #666;
+  }
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 640px) {
+  .breadcrumb-list {
+    gap: 0.375rem;
+  }
+
+  .breadcrumb-item {
+    gap: 0.375rem;
+  }
+
+  /* Truncate long labels on mobile */
+  .breadcrumb-link,
+  .breadcrumb-text,
+  .breadcrumb-current {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

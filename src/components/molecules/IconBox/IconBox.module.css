@@ -1,0 +1,422 @@
+/**
+ * IconBox Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * Features:
+ * - CSS Modules for scoped styling
+ * - CSS Variables for theming
+ * - Accessibility-first design (WCAG 2.2 AA)
+ * - Smooth transitions and animations
+ * - Responsive design
+ * - Dark mode support
+ * - Reduced motion support
+ * - High contrast mode support
+ * - Print-friendly styles
+ */
+
+/* ============================================
+   CSS VARIABLES (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Spacing */
+  --iconbox-gap-sm: 0.75rem;
+  --iconbox-gap-md: 1rem;
+  --iconbox-gap-lg: 1.5rem;
+  --iconbox-gap-xl: 2rem;
+
+  --iconbox-padding-sm: 1rem;
+  --iconbox-padding-md: 1.5rem;
+  --iconbox-padding-lg: 2rem;
+  --iconbox-padding-xl: 2.5rem;
+
+  /* Icon sizes */
+  --iconbox-icon-size-sm: 2rem;
+  --iconbox-icon-size-md: 2.5rem;
+  --iconbox-icon-size-lg: 3rem;
+  --iconbox-icon-size-xl: 4rem;
+
+  /* Colors */
+  --iconbox-bg: transparent;
+  --iconbox-bg-hover: #f9fafb;
+  --iconbox-border-color: #e5e7eb;
+  --iconbox-border-color-hover: #d1d5db;
+
+  /* Border */
+  --iconbox-border-width: 1px;
+  --iconbox-border-radius: 0.5rem;
+
+  /* Transitions */
+  --iconbox-transition: all 0.2s ease-in-out;
+
+  /* Shadows */
+  --iconbox-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --iconbox-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --iconbox-shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.iconbox {
+  /* Layout */
+  display: flex;
+  gap: var(--iconbox-gap-md);
+
+  /* Box Model */
+  padding: 0;
+  border: var(--iconbox-border-width) solid transparent;
+  border-radius: var(--iconbox-border-radius);
+
+  /* Visual */
+  background-color: var(--iconbox-bg);
+
+  /* Transition */
+  transition: var(--iconbox-transition);
+
+  /* Performance */
+  will-change: transform, box-shadow;
+}
+
+/* ============================================
+   LAYOUT VARIANTS
+   ============================================ */
+
+/* Vertical layout (default) */
+.iconbox--vertical {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.iconbox--vertical.iconbox--center {
+  align-items: center;
+}
+
+.iconbox--vertical.iconbox--right {
+  align-items: flex-end;
+}
+
+/* Horizontal layout */
+.iconbox--horizontal {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.iconbox--horizontal.iconbox--center {
+  align-items: center;
+}
+
+.iconbox--horizontal .iconbox__content {
+  flex: 1;
+}
+
+/* ============================================
+   ALIGNMENT VARIANTS
+   ============================================ */
+
+.iconbox--left {
+  text-align: left;
+}
+
+.iconbox--center {
+  text-align: center;
+}
+
+.iconbox--right {
+  text-align: right;
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+
+.iconbox--sm {
+  gap: var(--iconbox-gap-sm);
+}
+
+.iconbox--sm .iconbox__icon {
+  width: var(--iconbox-icon-size-sm);
+  height: var(--iconbox-icon-size-sm);
+}
+
+.iconbox--md {
+  gap: var(--iconbox-gap-md);
+}
+
+.iconbox--md .iconbox__icon {
+  width: var(--iconbox-icon-size-md);
+  height: var(--iconbox-icon-size-md);
+}
+
+.iconbox--lg {
+  gap: var(--iconbox-gap-lg);
+}
+
+.iconbox--lg .iconbox__icon {
+  width: var(--iconbox-icon-size-lg);
+  height: var(--iconbox-icon-size-lg);
+}
+
+.iconbox--xl {
+  gap: var(--iconbox-gap-xl);
+}
+
+.iconbox--xl .iconbox__icon {
+  width: var(--iconbox-icon-size-xl);
+  height: var(--iconbox-icon-size-xl);
+}
+
+/* ============================================
+   VISUAL VARIANTS
+   ============================================ */
+
+/* Background variant */
+.iconbox--background {
+  background-color: var(--iconbox-bg-hover);
+  padding: var(--iconbox-padding-md);
+}
+
+.iconbox--background.iconbox--sm {
+  padding: var(--iconbox-padding-sm);
+}
+
+.iconbox--background.iconbox--lg {
+  padding: var(--iconbox-padding-lg);
+}
+
+.iconbox--background.iconbox--xl {
+  padding: var(--iconbox-padding-xl);
+}
+
+/* Border variant */
+.iconbox--border {
+  border-color: var(--iconbox-border-color);
+  padding: var(--iconbox-padding-md);
+}
+
+.iconbox--border.iconbox--sm {
+  padding: var(--iconbox-padding-sm);
+}
+
+.iconbox--border.iconbox--lg {
+  padding: var(--iconbox-padding-lg);
+}
+
+.iconbox--border.iconbox--xl {
+  padding: var(--iconbox-padding-xl);
+}
+
+/* ============================================
+   INTERACTIVE STATES
+   ============================================ */
+
+/* Clickable */
+.iconbox--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Hoverable */
+.iconbox--hoverable:hover,
+.iconbox--clickable:hover {
+  background-color: var(--iconbox-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--iconbox-shadow-hover);
+}
+
+.iconbox--border.iconbox--hoverable:hover,
+.iconbox--border.iconbox--clickable:hover {
+  border-color: var(--iconbox-border-color-hover);
+}
+
+/* Focus state - Accessibility */
+.iconbox--clickable:focus {
+  outline: none;
+}
+
+.iconbox--clickable:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: var(--iconbox-shadow-focus);
+}
+
+/* Active state */
+.iconbox--clickable:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   COMPONENT PARTS
+   ============================================ */
+
+/* Icon container */
+.iconbox__icon {
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  /* Box Model */
+  width: var(--iconbox-icon-size-md);
+  height: var(--iconbox-icon-size-md);
+}
+
+/* Content container */
+.iconbox__content {
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0; /* Prevent text overflow */
+}
+
+/* Heading */
+.iconbox__heading {
+  margin: 0;
+}
+
+/* Description */
+.iconbox__description {
+  margin: 0;
+}
+
+/* Children container */
+.iconbox__children {
+  margin: 0;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Mobile (< 640px) */
+@media (max-width: 639px) {
+  .iconbox--horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .iconbox--horizontal.iconbox--center {
+    align-items: center;
+  }
+
+  .iconbox--horizontal.iconbox--right {
+    align-items: flex-end;
+  }
+
+  /* Adjust padding for mobile */
+  .iconbox--background,
+  .iconbox--border {
+    padding: var(--iconbox-padding-sm);
+  }
+}
+
+/* Tablet (640px - 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* Maintain default styles */
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  /* Maintain default styles */
+}
+
+/* ============================================
+   ACCESSIBILITY FEATURES
+   ============================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .iconbox {
+    border: 2px solid currentColor;
+  }
+
+  .iconbox--clickable:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  .iconbox--border {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .iconbox,
+  .iconbox--hoverable:hover,
+  .iconbox--clickable:hover,
+  .iconbox--clickable:active {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --iconbox-bg-hover: #1f2937;
+    --iconbox-border-color: #374151;
+    --iconbox-border-color-hover: #4b5563;
+  }
+
+  .iconbox--background {
+    background-color: #111827;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .iconbox {
+    background: none;
+    border: 1px solid #000;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  .iconbox--hoverable,
+  .iconbox--clickable {
+    cursor: default;
+  }
+
+  /* Hide interactive indicators in print */
+  .iconbox--clickable::after {
+    display: none;
+  }
+}
+
+/* ============================================
+   LOADING STATE (Optional)
+   ============================================ */
+
+.iconbox--loading {
+  opacity: 0.6;
+  cursor: wait;
+  pointer-events: none;
+}
+
+.iconbox--loading .iconbox__icon {
+  animation: iconbox-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes iconbox-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Disable pulse in reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .iconbox--loading .iconbox__icon {
+    animation: none;
+  }
+}
