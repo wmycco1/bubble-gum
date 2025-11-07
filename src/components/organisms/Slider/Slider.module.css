@@ -1,0 +1,285 @@
+/**
+ * Slider Component Styles (Organism)
+ * God-Tier Development Protocol 2025
+ *
+ * CSS Module for Slider organism component with full accessibility,
+ * dark mode, reduced motion, high contrast, and print styles.
+ */
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.slider {
+  --slider-bg: var(--color-surface, #ffffff);
+  --slider-arrow-bg: rgba(0, 0, 0, 0.5);
+  --slider-arrow-hover: rgba(0, 0, 0, 0.8);
+  --slider-dot-bg: rgba(0, 0, 0, 0.2);
+  --slider-dot-active: var(--color-primary, #3b82f6);
+  --slider-transition: transform 0.5s ease-in-out;
+
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--slider-bg);
+}
+
+/* ============================================
+   VIEWPORT & TRACK
+   ============================================ */
+
+.slider-viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.slider-track {
+  display: flex;
+  transition: var(--slider-transition);
+  will-change: transform;
+}
+
+.slider-slide {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* ============================================
+   CENTER MODE
+   ============================================ */
+
+.slider--center {
+  padding: 0 10%;
+}
+
+.slider--center .slider-slide {
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.slider--center .slider-track {
+  align-items: center;
+}
+
+/* Active slide in center mode */
+.slider--center .slider-slide:first-child {
+  opacity: 1;
+}
+
+/* ============================================
+   NAVIGATION ARROWS
+   ============================================ */
+
+.slider-arrow-prev,
+.slider-arrow-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: var(--slider-arrow-bg) !important;
+  color: white !important;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.slider-arrow-prev:hover:not(:disabled),
+.slider-arrow-next:hover:not(:disabled) {
+  background: var(--slider-arrow-hover) !important;
+}
+
+.slider-arrow-prev:disabled,
+.slider-arrow-next:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.slider-arrow-prev {
+  left: 16px;
+}
+
+.slider-arrow-next {
+  right: 16px;
+}
+
+/* ============================================
+   DOT INDICATORS
+   ============================================ */
+
+.slider-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.slider-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--slider-dot-bg);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.slider-dot:hover {
+  background: var(--slider-dot-active);
+  transform: scale(1.2);
+}
+
+.slider-dot--active {
+  background: var(--slider-dot-active);
+  transform: scale(1.3);
+}
+
+.slider-dot:focus-visible {
+  outline: 2px solid var(--color-focus, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   SCREEN READER ONLY
+   ============================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .slider {
+    --slider-bg: var(--color-surface-dark, #1f2937);
+    --slider-arrow-bg: rgba(255, 255, 255, 0.3);
+    --slider-arrow-hover: rgba(255, 255, 255, 0.5);
+    --slider-dot-bg: rgba(255, 255, 255, 0.3);
+    --slider-dot-active: var(--color-primary-dark, #60a5fa);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .slider-track {
+    transition: none;
+  }
+
+  .slider-slide {
+    transition: none;
+  }
+
+  .slider-arrow-prev,
+  .slider-arrow-next,
+  .slider-dot {
+    transition: none;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .slider-arrow-prev,
+  .slider-arrow-next {
+    background: black !important;
+    border: 2px solid white;
+  }
+
+  .slider-dot {
+    border: 2px solid currentColor;
+  }
+
+  .slider-dot--active {
+    background: currentColor;
+  }
+}
+
+/* ============================================
+   FOCUS STYLES
+   ============================================ */
+
+.slider-arrow-prev:focus-visible,
+.slider-arrow-next:focus-visible {
+  outline: 2px solid var(--color-focus, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .slider-arrow-prev,
+  .slider-arrow-next {
+    width: 32px;
+    height: 32px;
+  }
+
+  .slider-arrow-prev {
+    left: 8px;
+  }
+
+  .slider-arrow-next {
+    right: 8px;
+  }
+
+  .slider-dot {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .slider {
+    overflow: visible;
+  }
+
+  .slider-track {
+    transform: none !important;
+    flex-wrap: wrap;
+  }
+
+  .slider-slide {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .slider-arrow-prev,
+  .slider-arrow-next,
+  .slider-dots {
+    display: none;
+  }
+}
