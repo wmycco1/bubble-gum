@@ -1,0 +1,444 @@
+/**
+ * Progress Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * Features:
+ * - CSS Modules for scoped styling
+ * - CSS Variables for theming
+ * - Accessibility-first design (WCAG 2.2 AA)
+ * - Smooth transitions and animations
+ * - Responsive design
+ * - Dark mode support
+ * - Reduced motion support
+ * - High contrast mode support
+ * - Print-friendly styles
+ */
+
+/* ============================================
+   CSS VARIABLES (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Track */
+  --progress-track-bg: #e5e7eb;
+  --progress-track-height-sm: 0.5rem;
+  --progress-track-height-md: 0.75rem;
+  --progress-track-height-lg: 1rem;
+  --progress-track-radius: 9999px;
+
+  /* Bar colors by variant */
+  --progress-bar-default: #3b82f6;
+  --progress-bar-success: #10b981;
+  --progress-bar-warning: #f59e0b;
+  --progress-bar-error: #ef4444;
+  --progress-bar-info: #06b6d4;
+
+  /* Spacing */
+  --progress-gap-sm: 0.25rem;
+  --progress-gap-md: 0.5rem;
+  --progress-gap-lg: 0.75rem;
+
+  /* Transitions */
+  --progress-transition: width 0.3s ease-in-out;
+
+  /* Animations */
+  --progress-animation-duration: 1s;
+
+  /* Striped pattern */
+  --progress-stripe-size: 1rem;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.progress {
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  /* Box Model */
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   HEADER (Label + Percentage)
+   ============================================ */
+
+.progress__header {
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  /* Box Model */
+  margin-bottom: var(--progress-gap-md);
+}
+
+.progress--sm .progress__header {
+  margin-bottom: var(--progress-gap-sm);
+}
+
+.progress--lg .progress__header {
+  margin-bottom: var(--progress-gap-lg);
+}
+
+/* Label */
+.progress__label {
+  flex: 1;
+  min-width: 0; /* Prevent text overflow */
+}
+
+/* Percentage */
+.progress__percentage {
+  flex-shrink: 0;
+}
+
+/* Children container */
+.progress__children {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ============================================
+   TRACK (Background)
+   ============================================ */
+
+.progress__track {
+  /* Layout */
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+
+  /* Visual */
+  background-color: var(--progress-track-bg);
+  border-radius: var(--progress-track-radius);
+
+  /* Default height (md) */
+  height: var(--progress-track-height-md);
+}
+
+/* ============================================
+   BAR (Fill)
+   ============================================ */
+
+.progress__bar {
+  /* Layout */
+  position: relative;
+  height: 100%;
+
+  /* Visual */
+  background-color: var(--progress-bar-default);
+  border-radius: var(--progress-track-radius);
+
+  /* Transition */
+  transition: var(--progress-transition);
+
+  /* Performance */
+  will-change: width;
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+
+.progress--sm .progress__track {
+  height: var(--progress-track-height-sm);
+}
+
+.progress--md .progress__track {
+  height: var(--progress-track-height-md);
+}
+
+.progress--lg .progress__track {
+  height: var(--progress-track-height-lg);
+}
+
+/* ============================================
+   COLOR VARIANTS
+   ============================================ */
+
+.progress__bar--default {
+  background-color: var(--progress-bar-default);
+}
+
+.progress__bar--success {
+  background-color: var(--progress-bar-success);
+}
+
+.progress__bar--warning {
+  background-color: var(--progress-bar-warning);
+}
+
+.progress__bar--error {
+  background-color: var(--progress-bar-error);
+}
+
+.progress__bar--info {
+  background-color: var(--progress-bar-info);
+}
+
+/* ============================================
+   ANIMATED STATE
+   ============================================ */
+
+.progress__bar--animated {
+  transition: var(--progress-transition);
+}
+
+/* ============================================
+   STRIPED PATTERN
+   ============================================ */
+
+.progress__bar--striped {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: var(--progress-stripe-size) var(--progress-stripe-size);
+}
+
+/* Animate stripes */
+.progress__bar--striped.progress__bar--animated {
+  animation: progress-stripes var(--progress-animation-duration) linear infinite;
+}
+
+@keyframes progress-stripes {
+  0% {
+    background-position: var(--progress-stripe-size) 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* ============================================
+   INDETERMINATE STATE
+   ============================================ */
+
+.progress__bar--indeterminate {
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    currentColor,
+    transparent
+  );
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+}
+
+@keyframes progress-indeterminate {
+  0% {
+    background-position: -50% 0;
+  }
+  100% {
+    background-position: 150% 0;
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Mobile (< 640px) */
+@media (max-width: 639px) {
+  .progress__header {
+    gap: 0.5rem;
+  }
+
+  /* Stack label and percentage on very small screens if needed */
+  @media (max-width: 359px) {
+    .progress__header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}
+
+/* Tablet (640px - 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* Maintain default styles */
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  /* Maintain default styles */
+}
+
+/* ============================================
+   ACCESSIBILITY FEATURES
+   ============================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .progress__track {
+    border: 2px solid currentColor;
+  }
+
+  .progress__bar {
+    border: 1px solid currentColor;
+  }
+
+  .progress__bar--default {
+    background-color: #0066cc;
+  }
+
+  .progress__bar--success {
+    background-color: #008800;
+  }
+
+  .progress__bar--warning {
+    background-color: #cc8800;
+  }
+
+  .progress__bar--error {
+    background-color: #cc0000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .progress__bar {
+    transition: none;
+  }
+
+  .progress__bar--animated {
+    transition: none;
+  }
+
+  .progress__bar--striped.progress__bar--animated {
+    animation: none;
+  }
+
+  .progress__bar--indeterminate {
+    animation: none;
+    background-image: none;
+    background: var(--progress-bar-default);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --progress-track-bg: #374151;
+  }
+
+  .progress__bar--default {
+    --progress-bar-default: #60a5fa;
+  }
+
+  .progress__bar--success {
+    --progress-bar-success: #34d399;
+  }
+
+  .progress__bar--warning {
+    --progress-bar-warning: #fbbf24;
+  }
+
+  .progress__bar--error {
+    --progress-bar-error: #f87171;
+  }
+
+  .progress__bar--info {
+    --progress-bar-info: #22d3ee;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .progress {
+    page-break-inside: avoid;
+  }
+
+  .progress__track {
+    border: 1px solid #000;
+  }
+
+  .progress__bar {
+    background-color: #000 !important;
+  }
+
+  /* Disable animations in print */
+  .progress__bar--striped.progress__bar--animated,
+  .progress__bar--indeterminate {
+    animation: none;
+    background-image: none;
+  }
+}
+
+/* ============================================
+   LOADING/PENDING STATE
+   ============================================ */
+
+.progress--loading {
+  opacity: 0.6;
+  cursor: wait;
+  pointer-events: none;
+}
+
+.progress--loading .progress__bar {
+  animation: progress-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Disable pulse in reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .progress--loading .progress__bar {
+    animation: none;
+  }
+}
+
+/* ============================================
+   FOCUS STYLES (for accessibility)
+   ============================================ */
+
+.progress:focus-within {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.progress:focus-within .progress__track {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* ============================================
+   COMPLETED STATE (100%)
+   ============================================ */
+
+.progress__bar[aria-valuenow="100"] {
+  /* Optional: Add celebration animation for 100% */
+}
+
+/* ============================================
+   RTL SUPPORT
+   ============================================ */
+
+[dir="rtl"] .progress__bar--indeterminate {
+  animation-direction: reverse;
+}
+
+[dir="rtl"] .progress__bar--striped.progress__bar--animated {
+  animation-direction: reverse;
+}

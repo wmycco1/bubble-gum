@@ -1,0 +1,352 @@
+/**
+ * ImageBox Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * Features:
+ * - CSS Modules for scoped styling
+ * - CSS Variables for theming
+ * - Accessibility-first design (WCAG 2.2 AA)
+ * - Smooth transitions and animations
+ * - Responsive design
+ * - Dark mode support
+ * - Reduced motion support
+ * - High contrast mode support
+ * - Print-friendly styles
+ */
+
+/* ============================================
+   CSS VARIABLES (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Spacing */
+  --imagebox-gap-sm: 0.5rem;
+  --imagebox-gap-md: 0.75rem;
+  --imagebox-gap-lg: 1rem;
+  --imagebox-gap-xl: 1.5rem;
+
+  /* Padding */
+  --imagebox-padding-sm: 0.5rem;
+  --imagebox-padding-md: 0.75rem;
+  --imagebox-padding-lg: 1rem;
+  --imagebox-padding-xl: 1.5rem;
+
+  /* Colors */
+  --imagebox-bg: transparent;
+  --imagebox-bg-hover: #f9fafb;
+  --imagebox-border-color: #e5e7eb;
+  --imagebox-border-color-hover: #d1d5db;
+  --imagebox-caption-bg: rgba(255, 255, 255, 0.95);
+
+  /* Border */
+  --imagebox-border-width: 1px;
+  --imagebox-border-radius: 0.5rem;
+
+  /* Transitions */
+  --imagebox-transition: all 0.2s ease-in-out;
+
+  /* Shadows */
+  --imagebox-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --imagebox-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --imagebox-shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.imagebox {
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  gap: var(--imagebox-gap-md);
+
+  /* Box Model */
+  margin: 0;
+  padding: 0;
+  border: var(--imagebox-border-width) solid transparent;
+  border-radius: var(--imagebox-border-radius);
+
+  /* Visual */
+  background-color: var(--imagebox-bg);
+
+  /* Transition */
+  transition: var(--imagebox-transition);
+
+  /* Performance */
+  will-change: transform, box-shadow;
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+
+.imagebox--sm {
+  gap: var(--imagebox-gap-sm);
+}
+
+.imagebox--md {
+  gap: var(--imagebox-gap-md);
+}
+
+.imagebox--lg {
+  gap: var(--imagebox-gap-lg);
+}
+
+.imagebox--xl {
+  gap: var(--imagebox-gap-xl);
+}
+
+/* ============================================
+   VISUAL VARIANTS
+   ============================================ */
+
+/* Border variant */
+.imagebox--border {
+  border-color: var(--imagebox-border-color);
+  padding: var(--imagebox-padding-md);
+}
+
+.imagebox--border.imagebox--sm {
+  padding: var(--imagebox-padding-sm);
+}
+
+.imagebox--border.imagebox--lg {
+  padding: var(--imagebox-padding-lg);
+}
+
+.imagebox--border.imagebox--xl {
+  padding: var(--imagebox-padding-xl);
+}
+
+/* Shadow variant */
+.imagebox--shadow {
+  box-shadow: var(--imagebox-shadow);
+}
+
+/* ============================================
+   INTERACTIVE STATES
+   ============================================ */
+
+/* Clickable */
+.imagebox--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Hoverable */
+.imagebox--hoverable:hover,
+.imagebox--clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--imagebox-shadow-hover);
+}
+
+.imagebox--border.imagebox--hoverable:hover,
+.imagebox--border.imagebox--clickable:hover {
+  border-color: var(--imagebox-border-color-hover);
+}
+
+.imagebox--shadow.imagebox--hoverable:hover,
+.imagebox--shadow.imagebox--clickable:hover {
+  box-shadow: var(--imagebox-shadow-hover);
+}
+
+/* Focus state - Accessibility */
+.imagebox--clickable:focus {
+  outline: none;
+}
+
+.imagebox--clickable:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: var(--imagebox-shadow-focus);
+}
+
+/* Active state */
+.imagebox--clickable:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   COMPONENT PARTS
+   ============================================ */
+
+/* Image container */
+.imagebox__image {
+  /* Layout */
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+
+  /* Visual */
+  line-height: 0; /* Remove extra space below image */
+}
+
+/* Caption */
+.imagebox__caption {
+  /* Layout */
+  display: block;
+  margin: 0;
+  padding: 0;
+
+  /* Visual */
+  background-color: var(--imagebox-caption-bg);
+}
+
+.imagebox--border .imagebox__caption,
+.imagebox--shadow .imagebox__caption {
+  padding: var(--imagebox-padding-sm);
+  border-radius: var(--imagebox-border-radius);
+}
+
+/* Children container */
+.imagebox__children {
+  margin: 0;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Mobile (< 640px) */
+@media (max-width: 639px) {
+  .imagebox--border,
+  .imagebox--shadow {
+    padding: var(--imagebox-padding-sm);
+  }
+
+  .imagebox--sm {
+    gap: calc(var(--imagebox-gap-sm) * 0.75);
+  }
+
+  .imagebox--md {
+    gap: calc(var(--imagebox-gap-md) * 0.75);
+  }
+
+  .imagebox--lg {
+    gap: calc(var(--imagebox-gap-lg) * 0.75);
+  }
+
+  .imagebox--xl {
+    gap: calc(var(--imagebox-gap-xl) * 0.75);
+  }
+}
+
+/* Tablet (640px - 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* Maintain default styles */
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  /* Maintain default styles */
+}
+
+/* ============================================
+   ACCESSIBILITY FEATURES
+   ============================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .imagebox--border {
+    border-width: 2px;
+    border-color: currentColor;
+  }
+
+  .imagebox--clickable:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  .imagebox__caption {
+    border-top: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .imagebox,
+  .imagebox--hoverable:hover,
+  .imagebox--clickable:hover,
+  .imagebox--clickable:active {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --imagebox-bg-hover: #1f2937;
+    --imagebox-border-color: #374151;
+    --imagebox-border-color-hover: #4b5563;
+    --imagebox-caption-bg: rgba(17, 24, 39, 0.95);
+  }
+
+  .imagebox--shadow {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  }
+
+  .imagebox--shadow.imagebox--hoverable:hover,
+  .imagebox--shadow.imagebox--clickable:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .imagebox {
+    background: none;
+    border: 1px solid #000;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  .imagebox--hoverable,
+  .imagebox--clickable {
+    cursor: default;
+  }
+
+  .imagebox--clickable {
+    pointer-events: none;
+  }
+
+  /* Ensure images print properly */
+  .imagebox__image {
+    max-width: 100%;
+  }
+}
+
+/* ============================================
+   LOADING STATE (Optional)
+   ============================================ */
+
+.imagebox--loading {
+  opacity: 0.6;
+  cursor: wait;
+  pointer-events: none;
+}
+
+.imagebox--loading .imagebox__image {
+  animation: imagebox-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes imagebox-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Disable pulse in reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .imagebox--loading .imagebox__image {
+    animation: none;
+  }
+}
