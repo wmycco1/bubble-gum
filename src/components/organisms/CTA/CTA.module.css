@@ -1,0 +1,345 @@
+/**
+ * CTA Component Styles
+ * God-Tier Development Protocol 2025
+ */
+
+/* ============================================
+ * BASE CTA
+ * ============================================ */
+
+.cta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-16, 4rem) var(--spacing-8, 2rem);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* ============================================
+ * CTA VARIANTS
+ * ============================================ */
+
+.cta--default {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: var(--color-white, #ffffff);
+}
+
+.cta--outlined {
+  background-color: var(--color-white, #ffffff);
+  border: 2px solid var(--color-gray-200, #e5e7eb);
+  color: var(--color-gray-900, #111827);
+}
+
+.cta--filled {
+  background-color: var(--color-primary-600, #2563eb);
+  color: var(--color-white, #ffffff);
+}
+
+/* ============================================
+ * FULL WIDTH
+ * ============================================ */
+
+.cta--full-width {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ============================================
+ * BACKGROUND IMAGE
+ * ============================================ */
+
+.cta--with-bg-image {
+  background-blend-mode: overlay;
+}
+
+/* ============================================
+ * OVERLAY
+ * ============================================ */
+
+.cta-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ============================================
+ * CONTAINER
+ * ============================================ */
+
+.cta-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8, 2rem);
+  width: 100%;
+  max-width: var(--container-max-width, 1280px);
+  margin: 0 auto;
+}
+
+/* ============================================
+ * LAYOUTS
+ * ============================================ */
+
+/* Centered layout (default) */
+.cta--centered .cta-container {
+  align-items: center;
+  text-align: center;
+}
+
+.cta--centered .cta-content {
+  max-width: 48rem;
+}
+
+/* Split layout */
+.cta--split .cta-container {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-12, 3rem);
+}
+
+.cta--split .cta-content {
+  flex: 1;
+  text-align: left;
+}
+
+/* Split with image on left */
+.cta--split.cta--image-left .cta-container {
+  flex-direction: row-reverse;
+}
+
+/* ============================================
+ * CONTENT
+ * ============================================ */
+
+.cta-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 1rem);
+}
+
+/* ============================================
+ * TITLE & DESCRIPTION
+ * ============================================ */
+
+.cta-title {
+  margin: 0;
+  font-size: var(--font-size-4xl, 2.25rem);
+  font-weight: var(--font-weight-bold, 700);
+  line-height: var(--line-height-tight, 1.25);
+}
+
+.cta--default .cta-title,
+.cta--filled .cta-title {
+  color: var(--color-white, #ffffff);
+}
+
+.cta--outlined .cta-title {
+  color: var(--color-gray-900, #111827);
+}
+
+.cta-description {
+  margin: 0;
+  font-size: var(--font-size-xl, 1.25rem);
+  line-height: var(--line-height-relaxed, 1.625);
+}
+
+.cta--default .cta-description,
+.cta--filled .cta-description {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cta--outlined .cta-description {
+  color: var(--color-gray-600, #4b5563);
+}
+
+/* ============================================
+ * ACTIONS (CTA BUTTONS)
+ * ============================================ */
+
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4, 1rem);
+  margin-top: var(--spacing-4, 1rem);
+}
+
+.cta--centered .cta-actions {
+  justify-content: center;
+}
+
+.cta--split .cta-actions {
+  justify-content: flex-start;
+}
+
+/* ============================================
+ * SIDE IMAGE
+ * ============================================ */
+
+.cta-image {
+  flex: 0 0 45%;
+  max-width: 45%;
+  border-radius: var(--border-radius-lg, 0.75rem);
+  overflow: hidden;
+  box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+}
+
+/* ============================================
+ * RESPONSIVE DESIGN
+ * ============================================ */
+
+/* Mobile (<640px) */
+@media (max-width: 640px) {
+  .cta {
+    padding: var(--spacing-12, 3rem) var(--spacing-4, 1rem);
+  }
+
+  .cta-title {
+    font-size: var(--font-size-2xl, 1.5rem);
+  }
+
+  .cta-description {
+    font-size: var(--font-size-lg, 1.125rem);
+  }
+
+  /* Stack split layout on mobile */
+  .cta--split .cta-container {
+    flex-direction: column;
+  }
+
+  .cta--split .cta-content {
+    text-align: center;
+  }
+
+  .cta--split .cta-actions {
+    justify-content: center;
+  }
+
+  .cta-image {
+    flex: 1;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .cta-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .cta-actions button {
+    width: 100%;
+  }
+}
+
+/* Tablet (641px-1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .cta {
+    padding: var(--spacing-14, 3.5rem) var(--spacing-6, 1.5rem);
+  }
+
+  .cta-title {
+    font-size: var(--font-size-3xl, 1.875rem);
+  }
+
+  .cta-image {
+    flex: 0 0 40%;
+    max-width: 40%;
+  }
+}
+
+/* Desktop (>1024px) */
+@media (min-width: 1025px) {
+  .cta {
+    padding: var(--spacing-20, 5rem) var(--spacing-8, 2rem);
+  }
+}
+
+/* ============================================
+ * DARK MODE
+ * ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .cta--outlined {
+    background-color: var(--color-gray-800, #1f2937);
+    border-color: var(--color-gray-600, #4b5563);
+  }
+
+  .cta--outlined .cta-title {
+    color: var(--color-gray-100, #f3f4f6);
+  }
+
+  .cta--outlined .cta-description {
+    color: var(--color-gray-400, #9ca3af);
+  }
+
+  .cta--filled {
+    background-color: var(--color-primary-700, #1d4ed8);
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .cta {
+    transition: none;
+  }
+
+  .cta-overlay {
+    transition: none;
+  }
+}
+
+/* ============================================
+ * HIGH CONTRAST
+ * ============================================ */
+
+@media (prefers-contrast: high) {
+  .cta--outlined {
+    border-width: 3px;
+  }
+
+  .cta-overlay {
+    opacity: 0.7 !important;
+  }
+}
+
+/* ============================================
+ * PRINT STYLES
+ * ============================================ */
+
+@media print {
+  .cta {
+    break-inside: avoid;
+    background-image: none !important;
+    padding: var(--spacing-8, 2rem);
+  }
+
+  .cta--default,
+  .cta--filled {
+    background: transparent;
+    color: #000;
+    border: 2px solid #000;
+  }
+
+  .cta-overlay {
+    display: none;
+  }
+
+  .cta-actions {
+    display: none;
+  }
+
+  .cta-image {
+    display: none;
+  }
+}

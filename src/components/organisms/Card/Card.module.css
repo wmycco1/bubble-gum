@@ -1,0 +1,333 @@
+/**
+ * Card Component Styles
+ * God-Tier Development Protocol 2025
+ */
+
+/* ============================================
+ * BASE CARD
+ * ============================================ */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--border-radius-md, 0.5rem);
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Link wrapper (semantic) */
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+/* ============================================
+ * CARD VARIANTS
+ * ============================================ */
+
+.card--default {
+  background-color: var(--color-white, #ffffff);
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+}
+
+.card--default:hover {
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  border-color: var(--color-gray-300, #d1d5db);
+}
+
+.card--bordered {
+  background-color: var(--color-white, #ffffff);
+  border: 2px solid var(--color-gray-300, #d1d5db);
+}
+
+.card--bordered:hover {
+  border-color: var(--color-gray-400, #9ca3af);
+}
+
+.card--elevated {
+  background-color: var(--color-white, #ffffff);
+  border: none;
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+}
+
+.card--elevated:hover {
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+  transform: translateY(-2px);
+}
+
+.card--ghost {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.card--ghost:hover {
+  background-color: var(--color-gray-50, #f9fafb);
+}
+
+/* ============================================
+ * CLICKABLE CARD
+ * ============================================ */
+
+.card--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.card--clickable:focus {
+  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* ============================================
+ * IMAGE POSITIONS
+ * ============================================ */
+
+/* Top image (default) */
+.card--image-top {
+  flex-direction: column;
+}
+
+/* Left image (horizontal layout) */
+.card--image-left {
+  flex-direction: row;
+}
+
+.card--image-left .card-image {
+  flex: 0 0 40%;
+  max-width: 40%;
+}
+
+.card--image-left .card-content {
+  flex: 1;
+}
+
+/* Right image (horizontal layout) */
+.card--image-right {
+  flex-direction: row-reverse;
+}
+
+.card--image-right .card-image {
+  flex: 0 0 40%;
+  max-width: 40%;
+}
+
+.card--image-right .card-content {
+  flex: 1;
+}
+
+/* ============================================
+ * CARD IMAGE
+ * ============================================ */
+
+.card-image {
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-gray-100, #f3f4f6);
+}
+
+.card--image-top .card-image {
+  aspect-ratio: 16 / 9;
+}
+
+.card--image-left .card-image,
+.card--image-right .card-image {
+  aspect-ratio: 1 / 1;
+  height: 100%;
+}
+
+/* ============================================
+ * CARD CONTENT
+ * ============================================ */
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 0.75rem);
+  padding: var(--spacing-6, 1.5rem);
+}
+
+/* ============================================
+ * BADGES
+ * ============================================ */
+
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2, 0.5rem);
+}
+
+/* ============================================
+ * TITLE & DESCRIPTION
+ * ============================================ */
+
+.card-title {
+  margin: 0;
+  color: var(--color-gray-900, #111827);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: var(--font-weight-semibold, 600);
+  line-height: var(--line-height-tight, 1.25);
+}
+
+.card-description {
+  margin: 0;
+  color: var(--color-gray-600, #4b5563);
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: var(--line-height-relaxed, 1.625);
+}
+
+/* ============================================
+ * ACTIONS (CTA BUTTONS)
+ * ============================================ */
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3, 0.75rem);
+  margin-top: var(--spacing-2, 0.5rem);
+}
+
+/* ============================================
+ * FOOTER
+ * ============================================ */
+
+.card-footer {
+  padding-top: var(--spacing-4, 1rem);
+  margin-top: auto;
+  border-top: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+/* ============================================
+ * RESPONSIVE DESIGN
+ * ============================================ */
+
+/* Mobile: stack horizontal layouts */
+@media (max-width: 640px) {
+  .card--image-left,
+  .card--image-right {
+    flex-direction: column;
+  }
+
+  .card--image-left .card-image,
+  .card--image-right .card-image {
+    flex: 1;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  .card-content {
+    padding: var(--spacing-4, 1rem);
+  }
+
+  .card-actions {
+    flex-direction: column;
+  }
+
+  .card-actions button {
+    width: 100%;
+  }
+}
+
+/* Tablet and up */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .card-content {
+    padding: var(--spacing-5, 1.25rem);
+  }
+}
+
+/* ============================================
+ * DARK MODE
+ * ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .card--default,
+  .card--bordered,
+  .card--elevated {
+    background-color: var(--color-gray-800, #1f2937);
+  }
+
+  .card--default {
+    border-color: var(--color-gray-700, #374151);
+  }
+
+  .card--default:hover {
+    border-color: var(--color-gray-600, #4b5563);
+  }
+
+  .card--bordered {
+    border-color: var(--color-gray-600, #4b5563);
+  }
+
+  .card--bordered:hover {
+    border-color: var(--color-gray-500, #6b7280);
+  }
+
+  .card--ghost:hover {
+    background-color: var(--color-gray-700, #374151);
+  }
+
+  .card-title {
+    color: var(--color-gray-100, #f3f4f6);
+  }
+
+  .card-description {
+    color: var(--color-gray-400, #9ca3af);
+  }
+
+  .card-footer {
+    border-top-color: var(--color-gray-700, #374151);
+  }
+
+  .card-image {
+    background-color: var(--color-gray-700, #374151);
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .card--elevated:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+ * HIGH CONTRAST
+ * ============================================ */
+
+@media (prefers-contrast: high) {
+  .card--default,
+  .card--bordered {
+    border-width: 2px;
+  }
+
+  .card--clickable:focus {
+    outline-width: 3px;
+  }
+}
+
+/* ============================================
+ * PRINT STYLES
+ * ============================================ */
+
+@media print {
+  .card {
+    break-inside: avoid;
+    border: 1px solid #000;
+    box-shadow: none;
+  }
+
+  .card-actions {
+    display: none;
+  }
+}

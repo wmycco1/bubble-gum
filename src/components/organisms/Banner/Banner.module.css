@@ -1,0 +1,413 @@
+/**
+ * Banner Component Styles (Organism)
+ * God-Tier Development Protocol 2025
+ */
+
+/* ============================================
+   BASE BANNER
+   ============================================ */
+
+.banner {
+  --banner-bg: var(--color-surface, #ffffff);
+  --banner-color: var(--color-text, #1f2937);
+  --banner-border: var(--color-border, #e5e7eb);
+  --banner-padding: var(--spacing-md, 1rem);
+  --banner-transition: all 0.3s ease;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--banner-bg);
+  color: var(--banner-color);
+  padding: var(--banner-padding);
+  border-bottom: 1px solid var(--banner-border);
+  overflow: hidden;
+  z-index: 100;
+}
+
+/* Background image styling */
+.banner--with-bg-image {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #ffffff;
+}
+
+.banner--with-bg-image .banner-title,
+.banner--with-bg-image .banner-message {
+  color: #ffffff;
+}
+
+/* ============================================
+   CONTAINER & CONTENT
+   ============================================ */
+
+.banner-container {
+  position: relative;
+  width: 100%;
+  max-width: var(--container-max-width, 1200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.banner-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: center;
+  min-width: 0; /* Allow text truncation */
+}
+
+/* ============================================
+   TITLE & MESSAGE
+   ============================================ */
+
+.banner-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.banner-message {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ============================================
+   BADGE
+   ============================================ */
+
+.banner-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   ACTIONS (CTA BUTTON)
+   ============================================ */
+
+.banner-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.banner-cta {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   CLOSE BUTTON
+   ============================================ */
+
+.banner-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: var(--banner-transition);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.banner-close:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.banner-close:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+/* Info variant (default blue) */
+.banner--info {
+  --banner-bg: #dbeafe;
+  --banner-color: #1e40af;
+  --banner-border: #93c5fd;
+}
+
+.banner--info .banner-badge {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+/* Success variant (green) */
+.banner--success {
+  --banner-bg: #d1fae5;
+  --banner-color: #065f46;
+  --banner-border: #6ee7b7;
+}
+
+.banner--success .banner-badge {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+/* Warning variant (yellow/orange) */
+.banner--warning {
+  --banner-bg: #fef3c7;
+  --banner-color: #92400e;
+  --banner-border: #fcd34d;
+}
+
+.banner--warning .banner-badge {
+  background-color: #f59e0b;
+  color: #ffffff;
+}
+
+/* Promo variant (purple/gradient) */
+.banner--promo {
+  --banner-bg: #ede9fe;
+  --banner-color: #5b21b6;
+  --banner-border: #c4b5fd;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
+.banner--promo .banner-title,
+.banner--promo .banner-message {
+  color: #ffffff;
+}
+
+.banner--promo .banner-badge {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.banner--promo .banner-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   POSITIONS
+   ============================================ */
+
+.banner--relative {
+  position: relative;
+}
+
+.banner--top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.banner--bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-top: 1px solid var(--banner-border);
+  border-bottom: none;
+}
+
+/* Sticky behavior */
+.banner--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .banner {
+    --banner-bg: #1f2937;
+    --banner-color: #f9fafb;
+    --banner-border: #374151;
+  }
+
+  .banner--info {
+    --banner-bg: #1e3a8a;
+    --banner-color: #dbeafe;
+    --banner-border: #3b82f6;
+  }
+
+  .banner--success {
+    --banner-bg: #064e3b;
+    --banner-color: #d1fae5;
+    --banner-border: #10b981;
+  }
+
+  .banner--warning {
+    --banner-bg: #78350f;
+    --banner-color: #fef3c7;
+    --banner-border: #f59e0b;
+  }
+
+  .banner-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .banner,
+  .banner-close {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .banner {
+    border: 2px solid currentColor;
+  }
+
+  .banner-badge {
+    border: 2px solid currentColor;
+  }
+
+  .banner-close {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ============================================
+   PRINT
+   ============================================ */
+
+@media print {
+  .banner {
+    position: static !important;
+    background: none !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    padding: 0.5rem;
+    page-break-inside: avoid;
+  }
+
+  .banner-close,
+  .banner-actions {
+    display: none;
+  }
+
+  .banner-title,
+  .banner-message {
+    color: #000000 !important;
+  }
+
+  .banner-badge {
+    border: 1px solid #000000;
+    background: none;
+    color: #000000;
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Mobile (< 640px) */
+@media (max-width: 640px) {
+  .banner {
+    padding: 0.75rem 1rem;
+  }
+
+  .banner-container {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .banner-content {
+    order: 2;
+  }
+
+  .banner-badge {
+    order: 1;
+    align-self: center;
+  }
+
+  .banner-actions {
+    order: 3;
+    width: 100%;
+  }
+
+  .banner-cta {
+    width: 100%;
+  }
+
+  .banner-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .banner-title {
+    font-size: 0.875rem;
+  }
+
+  .banner-message {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Tablet (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .banner {
+    padding: 1rem 1.5rem;
+  }
+
+  .banner-container {
+    gap: 1rem;
+  }
+}
+
+/* Desktop (> 1025px) */
+@media (min-width: 1025px) {
+  .banner {
+    padding: 1rem 2rem;
+  }
+
+  .banner-container {
+    gap: 1.5rem;
+  }
+
+  .banner-title {
+    font-size: 1.125rem;
+  }
+
+  .banner-message {
+    font-size: 1rem;
+  }
+}
