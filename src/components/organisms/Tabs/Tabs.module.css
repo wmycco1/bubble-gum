@@ -1,0 +1,399 @@
+/**
+ * Tabs Component Styles
+ * God-Tier Development Protocol 2025
+ */
+
+/* ============================================
+ * BASE TABS
+ * ============================================ */
+
+.tabs {
+  display: flex;
+  width: 100%;
+}
+
+.tabs--horizontal {
+  flex-direction: column;
+}
+
+.tabs--vertical {
+  flex-direction: row;
+  gap: var(--spacing-6, 1.5rem);
+}
+
+/* ============================================
+ * TAB LIST
+ * ============================================ */
+
+.tabs-list {
+  display: flex;
+  position: relative;
+}
+
+.tabs-list--horizontal {
+  flex-direction: row;
+  border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+.tabs-list--vertical {
+  flex-direction: column;
+  border-right: 1px solid var(--color-gray-200, #e5e7eb);
+  min-width: 200px;
+}
+
+.tabs-list--full-width .tab-trigger {
+  flex: 1;
+}
+
+/* ============================================
+ * TAB TRIGGER (BUTTONS)
+ * ============================================ */
+
+.tab-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2, 0.5rem);
+  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-gray-600, #4b5563);
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap;
+  user-select: none;
+  position: relative;
+}
+
+.tab-trigger:hover:not(.tab-trigger--disabled) {
+  color: var(--color-gray-900, #111827);
+  background-color: var(--color-gray-50, #f9fafb);
+}
+
+.tab-trigger:focus {
+  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline-offset: -2px;
+  z-index: 10;
+}
+
+.tab-trigger--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================
+ * TAB VARIANTS
+ * ============================================ */
+
+/* Default variant */
+.tab-trigger--default.tab-trigger--active {
+  color: var(--color-primary-600, #2563eb);
+  border-bottom: 2px solid var(--color-primary-600, #2563eb);
+}
+
+.tabs-list--vertical .tab-trigger--default.tab-trigger--active {
+  border-bottom: none;
+  border-right: 2px solid var(--color-primary-600, #2563eb);
+}
+
+/* Underline variant */
+.tab-trigger--underline {
+  border-bottom: 2px solid transparent;
+}
+
+.tab-trigger--underline.tab-trigger--active {
+  color: var(--color-primary-600, #2563eb);
+  border-bottom-color: var(--color-primary-600, #2563eb);
+}
+
+/* Pills variant */
+.tab-trigger--pills {
+  border-radius: var(--border-radius-full, 9999px);
+  padding: var(--spacing-2, 0.5rem) var(--spacing-4, 1rem);
+}
+
+.tab-trigger--pills.tab-trigger--active {
+  background-color: var(--color-primary-600, #2563eb);
+  color: var(--color-white, #ffffff);
+}
+
+.tab-trigger--pills:hover:not(.tab-trigger--disabled) {
+  background-color: var(--color-gray-100, #f3f4f6);
+}
+
+.tab-trigger--pills.tab-trigger--active:hover {
+  background-color: var(--color-primary-700, #1d4ed8);
+}
+
+/* Enclosed variant */
+.tab-trigger--enclosed {
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--border-radius-md, 0.5rem) var(--border-radius-md, 0.5rem) 0 0;
+  margin-bottom: -1px;
+}
+
+.tab-trigger--enclosed.tab-trigger--active {
+  color: var(--color-gray-900, #111827);
+  background-color: var(--color-white, #ffffff);
+  border-color: var(--color-gray-200, #e5e7eb);
+  border-bottom-color: var(--color-white, #ffffff);
+}
+
+.tabs-list--vertical .tab-trigger--enclosed {
+  border-bottom: 1px solid transparent;
+  border-right: none;
+  border-radius: var(--border-radius-md, 0.5rem) 0 0 var(--border-radius-md, 0.5rem);
+  margin-right: -1px;
+  margin-bottom: 0;
+}
+
+.tabs-list--vertical .tab-trigger--enclosed.tab-trigger--active {
+  border-right-color: var(--color-white, #ffffff);
+}
+
+/* ============================================
+ * TAB ICON
+ * ============================================ */
+
+.tab-icon {
+  flex-shrink: 0;
+}
+
+/* ============================================
+ * TAB LABEL
+ * ============================================ */
+
+.tab-label {
+  flex: 1;
+}
+
+/* ============================================
+ * TAB PANELS
+ * ============================================ */
+
+.tabs-panels {
+  position: relative;
+  flex: 1;
+  min-height: 100px;
+}
+
+.tab-panel {
+  display: none;
+  padding: var(--spacing-4, 1rem);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.tab-panel--active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+ * EMPTY STATE
+ * ============================================ */
+
+.tabs-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  padding: var(--spacing-6, 1.5rem);
+  background-color: var(--color-gray-50, #f9fafb);
+  border: 2px dashed var(--color-gray-300, #d1d5db);
+  border-radius: var(--border-radius-lg, 0.75rem);
+}
+
+/* ============================================
+ * RESPONSIVE DESIGN
+ * ============================================ */
+
+/* Mobile (<640px) */
+@media (max-width: 639px) {
+  .tabs-list--horizontal {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs-list--horizontal::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .tabs-list--horizontal::-webkit-scrollbar-thumb {
+    background-color: var(--color-gray-300, #d1d5db);
+    border-radius: var(--border-radius-full, 9999px);
+  }
+
+  .tab-trigger {
+    padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+    font-size: var(--font-size-xs, 0.75rem);
+  }
+
+  .tab-panel {
+    padding: var(--spacing-3, 0.75rem);
+  }
+
+  /* Force horizontal on mobile for vertical tabs */
+  .tabs--vertical {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tabs-list--vertical {
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    min-width: auto;
+    overflow-x: auto;
+  }
+}
+
+/* Tablet (640px-1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .tab-trigger {
+    padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  }
+}
+
+/* ============================================
+ * DARK MODE
+ * ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .tabs-list--horizontal {
+    border-bottom-color: var(--color-gray-700, #374151);
+  }
+
+  .tabs-list--vertical {
+    border-right-color: var(--color-gray-700, #374151);
+  }
+
+  .tab-trigger {
+    color: var(--color-gray-400, #9ca3af);
+  }
+
+  .tab-trigger:hover:not(.tab-trigger--disabled) {
+    color: var(--color-gray-100, #f3f4f6);
+    background-color: var(--color-gray-800, #1f2937);
+  }
+
+  .tab-trigger--default.tab-trigger--active,
+  .tab-trigger--underline.tab-trigger--active {
+    color: var(--color-primary-400, #60a5fa);
+    border-color: var(--color-primary-400, #60a5fa);
+  }
+
+  .tab-trigger--pills:hover:not(.tab-trigger--disabled) {
+    background-color: var(--color-gray-800, #1f2937);
+  }
+
+  .tab-trigger--pills.tab-trigger--active:hover {
+    background-color: var(--color-primary-700, #1d4ed8);
+  }
+
+  .tab-trigger--enclosed.tab-trigger--active {
+    color: var(--color-gray-100, #f3f4f6);
+    background-color: var(--color-gray-800, #1f2937);
+    border-color: var(--color-gray-700, #374151);
+    border-bottom-color: var(--color-gray-800, #1f2937);
+  }
+
+  .tabs-list--vertical .tab-trigger--enclosed.tab-trigger--active {
+    border-right-color: var(--color-gray-800, #1f2937);
+  }
+
+  .tabs-empty {
+    background-color: var(--color-gray-800, #1f2937);
+    border-color: var(--color-gray-600, #4b5563);
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-trigger,
+  .tab-panel {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ============================================
+ * HIGH CONTRAST
+ * ============================================ */
+
+@media (prefers-contrast: high) {
+  .tabs-list--horizontal,
+  .tabs-list--vertical {
+    border-width: 2px;
+  }
+
+  .tab-trigger--default.tab-trigger--active,
+  .tab-trigger--underline.tab-trigger--active {
+    border-width: 3px;
+  }
+
+  .tab-trigger:focus {
+    outline-width: 3px;
+  }
+
+  .tab-trigger {
+    font-weight: var(--font-weight-semibold, 600);
+  }
+}
+
+/* ============================================
+ * PRINT STYLES
+ * ============================================ */
+
+@media print {
+  .tabs {
+    break-inside: avoid;
+  }
+
+  .tabs-list {
+    border: none;
+    margin-bottom: var(--spacing-4, 1rem);
+  }
+
+  .tab-trigger {
+    border: 1px solid #000;
+    border-radius: 0;
+    page-break-inside: avoid;
+  }
+
+  .tab-trigger--active {
+    font-weight: var(--font-weight-bold, 700);
+    background-color: #f0f0f0;
+  }
+
+  /* Show all panels when printing */
+  .tab-panel {
+    display: block !important;
+    border: 1px solid #000;
+    margin-bottom: var(--spacing-4, 1rem);
+    page-break-inside: avoid;
+  }
+
+  .tab-panel::before {
+    content: attr(aria-labelledby);
+    display: block;
+    font-weight: var(--font-weight-bold, 700);
+    margin-bottom: var(--spacing-2, 0.5rem);
+    text-transform: uppercase;
+  }
+}
