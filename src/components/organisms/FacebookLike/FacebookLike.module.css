@@ -1,0 +1,36 @@
+/**
+ * FacebookLike Component Styles
+ * God-Tier Development Protocol 2025
+ */
+
+/* Main container */
+.facebook-like {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--color-bg-primary);
+  border-radius: var(--border-radius-md);
+}
+
+/* TODO: Add component-specific styles */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .facebook-like {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .facebook-like {
+    background: var(--color-bg-primary-dark, #1a1a1a);
+  }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .facebook-like * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

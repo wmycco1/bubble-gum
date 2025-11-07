@@ -1,0 +1,36 @@
+/**
+ * CMSPage Component Styles
+ * God-Tier Development Protocol 2025
+ */
+
+/* Main container */
+.c-m-s-page {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--color-bg-primary);
+  border-radius: var(--border-radius-md);
+}
+
+/* TODO: Add component-specific styles */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .c-m-s-page {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .c-m-s-page {
+    background: var(--color-bg-primary-dark, #1a1a1a);
+  }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .c-m-s-page * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
