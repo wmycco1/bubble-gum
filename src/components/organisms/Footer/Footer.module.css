@@ -1,0 +1,441 @@
+/**
+ * Footer Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * CSS Module with:
+ * - CSS Variables for theming
+ * - Dark mode support
+ * - Reduced motion support
+ * - High contrast mode
+ * - Print styles
+ * - Responsive design
+ */
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+
+.footer {
+  /* Colors - Light variant */
+  --footer-bg: #f9fafb;
+  --footer-text: #6b7280;
+  --footer-text-hover: #1f2937;
+  --footer-border: #e5e7eb;
+  --footer-heading: #1f2937;
+  --footer-link-active: #3b82f6;
+  --footer-input-bg: #ffffff;
+  --footer-input-border: #d1d5db;
+  --footer-button-bg: #3b82f6;
+  --footer-button-text: #ffffff;
+
+  /* Spacing */
+  --footer-padding-y: 3rem;
+  --footer-padding-x: 1.5rem;
+  --footer-gap: 2rem;
+  --footer-column-gap: 2rem;
+  --footer-link-gap: 0.75rem;
+
+  /* Transitions */
+  --footer-transition: all 0.2s ease;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.footer {
+  width: 100%;
+  background-color: var(--footer-bg);
+  border-top: 1px solid var(--footer-border);
+  padding: var(--footer-padding-y) var(--footer-padding-x);
+}
+
+.footer--full-width {
+  width: 100vw;
+}
+
+/* ============================================
+   CONTAINER
+   ============================================ */
+
+.footer-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--footer-gap);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.footer-container--centered {
+  align-items: center;
+  text-align: center;
+}
+
+/* ============================================
+   MULTI-COLUMN LAYOUT
+   ============================================ */
+
+.footer-columns {
+  display: grid;
+  gap: var(--footer-column-gap);
+  width: 100%;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-column-title {
+  font-weight: 600;
+  color: var(--footer-heading);
+  margin-bottom: 0.5rem;
+}
+
+.footer-column-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--footer-link-gap);
+}
+
+.footer-column-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--footer-text);
+  text-decoration: none;
+  transition: var(--footer-transition);
+}
+
+.footer-column-link:hover {
+  color: var(--footer-text-hover);
+}
+
+.footer-column-link:focus-visible {
+  outline: 2px solid var(--footer-link-active);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* ============================================
+   NEWSLETTER SECTION
+   ============================================ */
+
+.footer-newsletter {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  width: 100%;
+}
+
+.footer-newsletter-title {
+  font-weight: 600;
+  color: var(--footer-heading);
+}
+
+.footer-newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.footer-newsletter-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--footer-input-border);
+  border-radius: 0.375rem;
+  background-color: var(--footer-input-bg);
+  color: var(--footer-heading);
+  transition: var(--footer-transition);
+}
+
+.footer-newsletter-input:focus {
+  outline: none;
+  border-color: var(--footer-link-active);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.footer-newsletter-input::placeholder {
+  color: var(--footer-text);
+}
+
+.footer-newsletter-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--footer-button-text);
+  background-color: var(--footer-button-bg);
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: var(--footer-transition);
+  white-space: nowrap;
+}
+
+.footer-newsletter-button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.footer-newsletter-button:focus-visible {
+  outline: 2px solid var(--footer-link-active);
+  outline-offset: 2px;
+}
+
+.footer-newsletter-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   SINGLE ROW LINKS
+   ============================================ */
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--footer-text);
+  text-decoration: none;
+  transition: var(--footer-transition);
+}
+
+.footer-link:hover {
+  color: var(--footer-text-hover);
+}
+
+.footer-link:focus-visible {
+  outline: 2px solid var(--footer-link-active);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.footer-link-icon {
+  font-size: 1rem;
+}
+
+/* ============================================
+   SOCIAL MEDIA LINKS
+   ============================================ */
+
+.footer-social {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--footer-text);
+  background-color: transparent;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: var(--footer-transition);
+}
+
+.footer-social-link:hover {
+  color: var(--footer-text-hover);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.footer-social-link:focus-visible {
+  outline: 2px solid var(--footer-link-active);
+  outline-offset: 2px;
+}
+
+.footer-social-icon {
+  font-size: 1.25rem;
+}
+
+.footer-social-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ============================================
+   COPYRIGHT
+   ============================================ */
+
+.footer-copyright {
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--footer-border);
+}
+
+.footer-copyright-text {
+  color: var(--footer-text);
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+/* Dark Variant */
+.footer--dark {
+  --footer-bg: #1f2937;
+  --footer-text: #9ca3af;
+  --footer-text-hover: #f9fafb;
+  --footer-border: #374151;
+  --footer-heading: #f9fafb;
+  --footer-input-bg: #374151;
+  --footer-input-border: #4b5563;
+}
+
+.footer--dark .footer-social-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Mobile (< 640px) */
+@media (max-width: 640px) {
+  .footer {
+    --footer-padding-y: 2rem;
+    --footer-padding-x: 1rem;
+  }
+
+  .footer-columns {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .footer-newsletter {
+    max-width: 100%;
+  }
+
+  .footer-newsletter-form {
+    flex-direction: column;
+  }
+
+  .footer-newsletter-button {
+    width: 100%;
+  }
+}
+
+/* Tablet (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .footer-columns {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .footer:not(.footer--light) {
+    --footer-bg: #1f2937;
+    --footer-text: #9ca3af;
+    --footer-text-hover: #f9fafb;
+    --footer-border: #374151;
+    --footer-heading: #f9fafb;
+    --footer-input-bg: #374151;
+    --footer-input-border: #4b5563;
+  }
+
+  .footer:not(.footer--light) .footer-social-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-link,
+  .footer-column-link,
+  .footer-social-link,
+  .footer-newsletter-input,
+  .footer-newsletter-button {
+    transition: none;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .footer {
+    --footer-border: #000000;
+    border-width: 2px;
+  }
+
+  .footer-link,
+  .footer-column-link {
+    text-decoration: underline;
+  }
+
+  .footer-link:focus-visible,
+  .footer-column-link:focus-visible,
+  .footer-social-link:focus-visible,
+  .footer-newsletter-input:focus,
+  .footer-newsletter-button:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+
+  .footer-newsletter-input {
+    border-width: 2px;
+  }
+
+  .footer-newsletter-button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .footer {
+    border-top: 2px solid #000000;
+    padding: 1rem;
+    background: #ffffff !important;
+  }
+
+  .footer-newsletter,
+  .footer-social {
+    display: none !important;
+  }
+
+  .footer-link,
+  .footer-column-link,
+  .footer-copyright-text {
+    color: #000000 !important;
+  }
+
+  .footer-columns {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1rem;
+  }
+
+  .footer-links {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+}

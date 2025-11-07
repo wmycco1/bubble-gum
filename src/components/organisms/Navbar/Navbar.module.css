@@ -1,0 +1,495 @@
+/**
+ * Navbar Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * CSS Module with:
+ * - CSS Variables for theming
+ * - Dark mode support
+ * - Reduced motion support
+ * - High contrast mode
+ * - Print styles
+ * - Responsive design
+ */
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+
+.navbar {
+  /* Colors - Light variant */
+  --navbar-bg: #ffffff;
+  --navbar-text: #1f2937;
+  --navbar-text-hover: #111827;
+  --navbar-border: #e5e7eb;
+  --navbar-shadow: rgba(0, 0, 0, 0.1);
+  --navbar-link-active: #3b82f6;
+  --navbar-backdrop: rgba(0, 0, 0, 0.5);
+
+  /* Spacing */
+  --navbar-height: 64px;
+  --navbar-padding-x: 1.5rem;
+  --navbar-padding-y: 1rem;
+  --navbar-gap: 2rem;
+  --navbar-mobile-gap: 1rem;
+
+  /* Z-index */
+  --navbar-z-index: 1000;
+
+  /* Transitions */
+  --navbar-transition: all 0.3s ease;
+  --navbar-shadow-transition: box-shadow 0.2s ease;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.navbar {
+  position: relative;
+  width: 100%;
+  background-color: var(--navbar-bg);
+  border-bottom: 1px solid var(--navbar-border);
+  transition: var(--navbar-transition);
+}
+
+.navbar--full-width {
+  width: 100vw;
+}
+
+.navbar--sticky {
+  position: sticky;
+  top: 0;
+  z-index: var(--navbar-z-index);
+}
+
+.navbar--shadow {
+  box-shadow: 0 1px 3px 0 var(--navbar-shadow);
+  transition: var(--navbar-shadow-transition);
+}
+
+.navbar--scrolled {
+  box-shadow: 0 4px 6px -1px var(--navbar-shadow);
+}
+
+/* ============================================
+   CONTAINER
+   ============================================ */
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: var(--navbar-height);
+  padding: var(--navbar-padding-y) var(--navbar-padding-x);
+  margin: 0 auto;
+}
+
+.navbar-container--constrained {
+  max-width: 1200px;
+}
+
+/* ============================================
+   LOGO
+   ============================================ */
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.navbar-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-logo-link:hover {
+  opacity: 0.8;
+}
+
+.navbar-logo-link:focus-visible {
+  outline: 2px solid var(--navbar-link-active);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.navbar-logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--navbar-text);
+}
+
+/* ============================================
+   DESKTOP NAVIGATION LINKS
+   ============================================ */
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--navbar-gap);
+}
+
+.navbar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--navbar-text);
+  text-decoration: none;
+  border-radius: 0.375rem;
+  transition: var(--navbar-transition);
+}
+
+.navbar-link:hover {
+  color: var(--navbar-text-hover);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.navbar-link:focus-visible {
+  outline: 2px solid var(--navbar-link-active);
+  outline-offset: 2px;
+}
+
+.navbar-link--active {
+  color: var(--navbar-link-active);
+  font-weight: 600;
+}
+
+.navbar-link--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.navbar-link-icon {
+  font-size: 1rem;
+}
+
+/* ============================================
+   MOBILE TOGGLE BUTTON
+   ============================================ */
+
+.navbar-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0.375rem;
+  color: var(--navbar-text);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  z-index: 2;
+}
+
+.navbar-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.navbar-toggle:focus-visible {
+  outline: 2px solid var(--navbar-link-active);
+  outline-offset: 2px;
+}
+
+.navbar-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   MOBILE MENU
+   ============================================ */
+
+.navbar-menu {
+  position: fixed;
+  top: var(--navbar-height);
+  right: 0;
+  width: 280px;
+  max-width: 100%;
+  height: calc(100vh - var(--navbar-height));
+  background-color: var(--navbar-bg);
+  border-left: 1px solid var(--navbar-border);
+  box-shadow: -4px 0 6px -1px var(--navbar-shadow);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  z-index: 1;
+  padding: 1rem;
+  display: none;
+  flex-direction: column;
+  gap: var(--navbar-mobile-gap);
+}
+
+.navbar-menu--open {
+  transform: translateX(0);
+}
+
+.navbar-mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--navbar-text);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: var(--navbar-transition);
+}
+
+.navbar-mobile-link:hover {
+  color: var(--navbar-text-hover);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.navbar-mobile-link:focus-visible {
+  outline: 2px solid var(--navbar-link-active);
+  outline-offset: 2px;
+}
+
+.navbar-mobile-link--active {
+  color: var(--navbar-link-active);
+  background-color: rgba(59, 130, 246, 0.1);
+  font-weight: 600;
+}
+
+.navbar-mobile-link--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.navbar-mobile-link-icon {
+  font-size: 1.25rem;
+}
+
+/* ============================================
+   MOBILE BACKDROP
+   ============================================ */
+
+.navbar-backdrop {
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - var(--navbar-height));
+  background-color: var(--navbar-backdrop);
+  z-index: 0;
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+/* Dark Variant */
+.navbar--dark {
+  --navbar-bg: #1f2937;
+  --navbar-text: #f9fafb;
+  --navbar-text-hover: #ffffff;
+  --navbar-border: #374151;
+  --navbar-shadow: rgba(0, 0, 0, 0.3);
+}
+
+.navbar--dark .navbar-link:hover,
+.navbar--dark .navbar-mobile-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar--dark .navbar-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Transparent Variant */
+.navbar--transparent {
+  --navbar-bg: transparent;
+  --navbar-border: transparent;
+  --navbar-shadow: transparent;
+}
+
+.navbar--transparent.navbar--scrolled {
+  --navbar-bg: #ffffff;
+  --navbar-border: #e5e7eb;
+  --navbar-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Small breakpoint (sm: 640px) */
+@media (max-width: 640px) {
+  .navbar--mobile-sm .navbar-links {
+    display: none;
+  }
+
+  .navbar--mobile-sm .navbar-toggle {
+    display: flex;
+  }
+
+  .navbar--mobile-sm .navbar-menu {
+    display: flex;
+  }
+
+  .navbar--mobile-sm.navbar--menu-open .navbar-backdrop {
+    display: block;
+  }
+}
+
+/* Medium breakpoint (md: 768px) */
+@media (max-width: 768px) {
+  .navbar--mobile-md .navbar-links {
+    display: none;
+  }
+
+  .navbar--mobile-md .navbar-toggle {
+    display: flex;
+  }
+
+  .navbar--mobile-md .navbar-menu {
+    display: flex;
+  }
+
+  .navbar--mobile-md.navbar--menu-open .navbar-backdrop {
+    display: block;
+  }
+}
+
+/* Large breakpoint (lg: 1024px) */
+@media (max-width: 1024px) {
+  .navbar--mobile-lg .navbar-links {
+    display: none;
+  }
+
+  .navbar--mobile-lg .navbar-toggle {
+    display: flex;
+  }
+
+  .navbar--mobile-lg .navbar-menu {
+    display: flex;
+  }
+
+  .navbar--mobile-lg.navbar--menu-open .navbar-backdrop {
+    display: block;
+  }
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .navbar:not(.navbar--light) {
+    --navbar-bg: #1f2937;
+    --navbar-text: #f9fafb;
+    --navbar-text-hover: #ffffff;
+    --navbar-border: #374151;
+    --navbar-shadow: rgba(0, 0, 0, 0.5);
+  }
+
+  .navbar:not(.navbar--light) .navbar-link:hover,
+  .navbar:not(.navbar--light) .navbar-mobile-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .navbar:not(.navbar--light) .navbar-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .navbar-link,
+  .navbar-mobile-link,
+  .navbar-logo-link,
+  .navbar-toggle,
+  .navbar-menu {
+    transition: none;
+  }
+
+  .navbar-backdrop {
+    animation: none;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .navbar {
+    --navbar-border: #000000;
+    border-width: 2px;
+  }
+
+  .navbar-link,
+  .navbar-mobile-link {
+    border: 1px solid transparent;
+  }
+
+  .navbar-link:focus-visible,
+  .navbar-mobile-link:focus-visible,
+  .navbar-toggle:focus-visible,
+  .navbar-logo-link:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+
+  .navbar-link--active,
+  .navbar-mobile-link--active {
+    border-color: currentColor;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .navbar {
+    position: static;
+    box-shadow: none;
+    border-bottom: 2px solid #000000;
+  }
+
+  .navbar-toggle,
+  .navbar-menu,
+  .navbar-backdrop {
+    display: none !important;
+  }
+
+  .navbar-links {
+    display: flex !important;
+    gap: 1rem;
+  }
+
+  .navbar-link {
+    color: #000000 !important;
+    background: none !important;
+  }
+}
