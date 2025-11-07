@@ -27,3 +27,16 @@ export type { HeroProps } from './Hero';
 // Menu (existing)
 export { Menu } from './Menu';
 export type { MenuProps, MenuItem } from './Menu';
+
+// Features
+export { Features } from './Features';
+export type { FeaturesProps, Feature, FeaturesLayout } from './Features';
+
+// Testimonial
+export { Testimonial } from './Testimonial';
+export type {
+  TestimonialProps,
+  TestimonialItem,
+  TestimonialLayout,
+  TestimonialVariant,
+} from './Testimonial';

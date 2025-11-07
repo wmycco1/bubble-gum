@@ -1,0 +1,357 @@
+/**
+ * Features Component Styles (Organism)
+ * God-Tier Development Protocol 2025
+ */
+
+/* ============================================
+   BASE FEATURES
+   ============================================ */
+
+.features {
+  --features-bg: var(--color-surface, #ffffff);
+  --features-color: var(--color-text, #1f2937);
+  --features-header-color: var(--color-heading, #111827);
+  --features-spacing: var(--spacing-lg, 2rem);
+  --features-max-width: var(--container-max-width, 1200px);
+  --features-gap: var(--spacing-md, 1.5rem);
+
+  position: relative;
+  background-color: var(--features-bg);
+  color: var(--features-color);
+  padding: var(--features-spacing);
+}
+
+/* ============================================
+   CONTAINER
+   ============================================ */
+
+.features-container {
+  max-width: var(--features-max-width);
+  margin: 0 auto;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.features-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.features-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 1rem 0;
+  color: var(--features-header-color);
+}
+
+.features-description {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================================
+   GRID LAYOUTS
+   ============================================ */
+
+.features-grid {
+  display: grid;
+  gap: var(--features-gap);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* Grid 2 columns */
+.features--grid-2 .features-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .features--grid-2 .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Grid 3 columns */
+.features--grid-3 .features-grid {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .features--grid-3 .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .features--grid-3 .features-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Grid 4 columns */
+.features--grid-4 .features-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .features--grid-4 .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .features--grid-4 .features-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* List layout */
+.features--list .features-grid {
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .features--list .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================
+   RESPONSIVE COLUMNS
+   ============================================ */
+
+.features-grid--cols-1 {
+  grid-template-columns: 1fr !important;
+}
+
+.features-grid--cols-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .features-grid--cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.features-grid--cols-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .features-grid--cols-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .features-grid--cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.features-grid--cols-4 {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .features-grid--cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .features-grid--cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ============================================
+   FEATURE ITEM
+   ============================================ */
+
+.features-item {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+.features-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--color-surface-muted, #f9fafb);
+  border: 2px dashed var(--color-border, #e5e7eb);
+  border-radius: 8px;
+}
+
+.features-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .features {
+    --features-bg: #111827;
+    --features-color: #f9fafb;
+    --features-header-color: #ffffff;
+  }
+
+  .features-empty {
+    background: #1f2937;
+    border-color: #374151;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .features,
+  .features-item {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .features {
+    border: 1px solid var(--features-color);
+  }
+
+  .features-title {
+    font-weight: 800;
+  }
+
+  .features-empty {
+    border-width: 3px;
+  }
+}
+
+/* ============================================
+   PRINT
+   ============================================ */
+
+@media print {
+  .features {
+    background: none !important;
+    color: #000000 !important;
+    padding: 1rem;
+    page-break-inside: avoid;
+  }
+
+  .features-title {
+    color: #000000 !important;
+    font-size: 1.5rem !important;
+  }
+
+  .features-description {
+    color: #000000 !important;
+    font-size: 1rem !important;
+  }
+
+  .features-grid {
+    display: block;
+  }
+
+  .features-item {
+    page-break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+
+  .features-empty {
+    border: 1px solid #000000;
+    background: none;
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Mobile (< 640px) */
+@media (max-width: 640px) {
+  .features {
+    padding: 2rem 1rem;
+  }
+
+  .features-header {
+    margin-bottom: 2rem;
+  }
+
+  .features-title {
+    font-size: 1.75rem;
+  }
+
+  .features-description {
+    font-size: 1rem;
+  }
+
+  .features-grid {
+    gap: 1rem;
+  }
+}
+
+/* Tablet (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .features {
+    padding: 3rem 2rem;
+  }
+
+  .features-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .features-title {
+    font-size: 2rem;
+  }
+
+  .features-description {
+    font-size: 1.125rem;
+  }
+
+  .features-grid {
+    gap: 1.5rem;
+  }
+}
+
+/* Desktop (> 1025px) */
+@media (min-width: 1025px) {
+  .features {
+    padding: 4rem 2rem;
+  }
+
+  .features-header {
+    margin-bottom: 3rem;
+  }
+
+  .features-title {
+    font-size: 2.5rem;
+  }
+
+  .features-description {
+    font-size: 1.25rem;
+  }
+
+  .features-grid {
+    gap: 2rem;
+  }
+}

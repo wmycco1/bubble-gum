@@ -1,0 +1,475 @@
+/**
+ * PricingTable Component Styles
+ * God-Tier Development Protocol 2025
+ */
+
+/* ============================================
+ * BASE PRICING TABLE
+ * ============================================ */
+
+.pricing-table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8, 2rem);
+  width: 100%;
+  padding: var(--spacing-8, 2rem) 0;
+}
+
+/* ============================================
+ * PERIOD TOGGLE
+ * ============================================ */
+
+.pricing-table-toggle {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-2, 0.5rem);
+  padding: var(--spacing-4, 1rem);
+  background-color: var(--color-gray-100, #f3f4f6);
+  border-radius: var(--border-radius-full, 9999px);
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.toggle-button {
+  padding: var(--spacing-2, 0.5rem) var(--spacing-6, 1.5rem);
+  border-radius: var(--border-radius-full, 9999px);
+  border: none;
+  background-color: transparent;
+  color: var(--color-gray-700, #374151);
+  font-weight: var(--font-weight-medium, 500);
+  font-size: var(--font-size-sm, 0.875rem);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.toggle-button:hover {
+  background-color: var(--color-gray-200, #e5e7eb);
+}
+
+.toggle-button--active {
+  background-color: var(--color-white, #ffffff);
+  color: var(--color-gray-900, #111827);
+  box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+}
+
+.toggle-button:focus {
+  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* ============================================
+ * PRICING GRID LAYOUTS
+ * ============================================ */
+
+.pricing-table-grid {
+  display: grid;
+  gap: var(--spacing-6, 1.5rem);
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-4, 1rem);
+}
+
+/* Grid 2 columns */
+.pricing-table--grid-2 .pricing-table-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .pricing-table--grid-2 .pricing-table-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 900px;
+  }
+}
+
+/* Grid 3 columns */
+.pricing-table--grid-3 .pricing-table-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .pricing-table--grid-3 .pricing-table-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pricing-table--grid-3 .pricing-table-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Grid 4 columns */
+.pricing-table--grid-4 .pricing-table-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .pricing-table--grid-4 .pricing-table-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pricing-table--grid-4 .pricing-table-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .pricing-table--grid-4 .pricing-table-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ============================================
+ * PRICING TIER CARD
+ * ============================================ */
+
+.pricing-tier {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--color-white, #ffffff);
+  border: 2px solid var(--color-gray-200, #e5e7eb);
+  border-radius: var(--border-radius-lg, 0.75rem);
+  padding: var(--spacing-8, 2rem);
+  transition: all 0.3s ease-in-out;
+  cursor: default;
+}
+
+.pricing-tier:hover {
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  border-color: var(--color-gray-300, #d1d5db);
+}
+
+/* Highlighted tier */
+.pricing-tier--highlighted {
+  border-color: var(--color-primary-500, #3b82f6);
+  background-color: var(--color-primary-50, #eff6ff);
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.pricing-tier--highlighted:hover {
+  box-shadow: var(--shadow-2xl, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+}
+
+/* Disabled tier */
+.pricing-tier--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================
+ * TIER BADGE
+ * ============================================ */
+
+.tier-badge-wrapper {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.tier-badge {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--font-weight-bold, 700);
+}
+
+/* ============================================
+ * TIER CONTENT
+ * ============================================ */
+
+.tier-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 1.5rem);
+  height: 100%;
+}
+
+/* ============================================
+ * TIER NAME & DESCRIPTION
+ * ============================================ */
+
+.tier-name {
+  margin: 0;
+  color: var(--color-gray-900, #111827);
+  font-size: var(--font-size-2xl, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+  text-align: center;
+}
+
+.pricing-tier--highlighted .tier-name {
+  color: var(--color-primary-900, #1e3a8a);
+}
+
+.tier-description {
+  margin: 0;
+  text-align: center;
+  min-height: 2.5rem;
+}
+
+/* ============================================
+ * TIER PRICE
+ * ============================================ */
+
+.tier-price-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-4, 1rem) 0;
+  border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+.tier-price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-1, 0.25rem);
+}
+
+.tier-price-amount {
+  font-size: var(--font-size-5xl, 3rem);
+  font-weight: var(--font-weight-extrabold, 800);
+  line-height: 1;
+  color: var(--color-gray-900, #111827);
+}
+
+.pricing-tier--highlighted .tier-price-amount {
+  color: var(--color-primary-600, #2563eb);
+}
+
+.tier-price-period {
+  font-size: var(--font-size-base, 1rem);
+  color: var(--color-gray-600, #4b5563);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+/* ============================================
+ * CTA BUTTON
+ * ============================================ */
+
+.tier-cta {
+  margin-top: var(--spacing-2, 0.5rem);
+}
+
+/* ============================================
+ * FEATURES LIST
+ * ============================================ */
+
+.tier-features {
+  flex: 1;
+  padding-top: var(--spacing-4, 1rem);
+  list-style: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 0.75rem);
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3, 0.75rem);
+}
+
+.feature-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.feature-text {
+  flex: 1;
+  margin: 0;
+}
+
+/* ============================================
+ * EMPTY STATE
+ * ============================================ */
+
+.pricing-table-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: var(--spacing-8, 2rem);
+  background-color: var(--color-gray-50, #f9fafb);
+  border: 2px dashed var(--color-gray-300, #d1d5db);
+  border-radius: var(--border-radius-lg, 0.75rem);
+}
+
+/* ============================================
+ * RESPONSIVE DESIGN
+ * ============================================ */
+
+/* Mobile (<768px) */
+@media (max-width: 767px) {
+  .pricing-table {
+    padding: var(--spacing-6, 1.5rem) 0;
+    gap: var(--spacing-6, 1.5rem);
+  }
+
+  .pricing-table-grid {
+    padding: 0;
+  }
+
+  .pricing-tier {
+    padding: var(--spacing-6, 1.5rem);
+  }
+
+  .pricing-tier--highlighted {
+    transform: none;
+    margin: var(--spacing-4, 1rem) 0;
+  }
+
+  .tier-price-amount {
+    font-size: var(--font-size-4xl, 2.25rem);
+  }
+
+  .tier-name {
+    font-size: var(--font-size-xl, 1.25rem);
+  }
+}
+
+/* Tablet (768px-1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .pricing-tier--highlighted {
+    transform: scale(1.02);
+  }
+}
+
+/* ============================================
+ * DARK MODE
+ * ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .pricing-table-toggle {
+    background-color: var(--color-gray-800, #1f2937);
+  }
+
+  .toggle-button {
+    color: var(--color-gray-300, #d1d5db);
+  }
+
+  .toggle-button:hover {
+    background-color: var(--color-gray-700, #374151);
+  }
+
+  .toggle-button--active {
+    background-color: var(--color-gray-900, #111827);
+    color: var(--color-white, #ffffff);
+  }
+
+  .pricing-tier {
+    background-color: var(--color-gray-800, #1f2937);
+    border-color: var(--color-gray-700, #374151);
+  }
+
+  .pricing-tier:hover {
+    border-color: var(--color-gray-600, #4b5563);
+  }
+
+  .pricing-tier--highlighted {
+    background-color: var(--color-primary-900, #1e3a8a);
+    border-color: var(--color-primary-600, #2563eb);
+  }
+
+  .tier-name {
+    color: var(--color-gray-100, #f3f4f6);
+  }
+
+  .pricing-tier--highlighted .tier-name {
+    color: var(--color-primary-100, #dbeafe);
+  }
+
+  .tier-price-amount {
+    color: var(--color-gray-100, #f3f4f6);
+  }
+
+  .pricing-tier--highlighted .tier-price-amount {
+    color: var(--color-primary-300, #93c5fd);
+  }
+
+  .tier-price-period {
+    color: var(--color-gray-400, #9ca3af);
+  }
+
+  .tier-price-wrapper {
+    border-bottom-color: var(--color-gray-700, #374151);
+  }
+
+  .pricing-table-empty {
+    background-color: var(--color-gray-800, #1f2937);
+    border-color: var(--color-gray-600, #4b5563);
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .pricing-tier,
+  .toggle-button {
+    transition: none;
+  }
+
+  .pricing-tier--highlighted {
+    transform: none;
+  }
+
+  .pricing-tier--highlighted:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+ * HIGH CONTRAST
+ * ============================================ */
+
+@media (prefers-contrast: high) {
+  .pricing-tier {
+    border-width: 3px;
+  }
+
+  .pricing-tier--highlighted {
+    border-width: 4px;
+  }
+
+  .toggle-button:focus {
+    outline-width: 3px;
+  }
+}
+
+/* ============================================
+ * PRINT STYLES
+ * ============================================ */
+
+@media print {
+  .pricing-table {
+    break-inside: avoid;
+  }
+
+  .pricing-tier {
+    break-inside: avoid;
+    border: 2px solid #000;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  .pricing-tier--highlighted {
+    transform: none;
+    border-width: 3px;
+  }
+
+  .pricing-table-toggle {
+    display: none;
+  }
+
+  .tier-cta {
+    display: none;
+  }
+}
