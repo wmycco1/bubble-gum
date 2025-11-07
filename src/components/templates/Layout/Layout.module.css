@@ -1,0 +1,256 @@
+/**
+ * Layout Component Styles (Template)
+ * God-Tier Development Protocol 2025
+ *
+ * Styles for page-level layout with header, footer, sidebar, and main content
+ */
+
+/* ============================================
+ * BASE LAYOUT
+ * ============================================ */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Full-height layout (100vh) */
+.layout--full-height {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================
+ * HEADER
+ * ============================================ */
+
+.layout-header {
+  flex-shrink: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+/* Sticky header */
+.layout-header--sticky {
+  position: sticky;
+  top: 0;
+  background-color: hsl(var(--background, 0 0% 100%));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+ * BODY (Main + Sidebar container)
+ * ============================================ */
+
+.layout-body {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  overflow: auto;
+}
+
+/* Body with sidebar */
+.layout-body--with-sidebar {
+  /* Flexbox handles the layout */
+}
+
+/* Sidebar on left (default) */
+.layout-body--sidebar-left {
+  flex-direction: row;
+}
+
+/* Sidebar on right */
+.layout-body--sidebar-right {
+  flex-direction: row-reverse;
+}
+
+/* ============================================
+ * SIDEBAR
+ * ============================================ */
+
+.layout-sidebar {
+  flex-shrink: 0;
+  overflow-y: auto;
+  background-color: hsl(var(--muted, 210 40% 96.1%));
+  border-right: 1px solid hsl(var(--border, 214.3 31.8% 91.4%));
+}
+
+/* Sidebar on right has border on left instead */
+.layout-body--sidebar-right .layout-sidebar {
+  border-right: none;
+  border-left: 1px solid hsl(var(--border, 214.3 31.8% 91.4%));
+}
+
+/* ============================================
+ * MAIN CONTENT
+ * ============================================ */
+
+.layout-main {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0; /* Prevent flex item from overflowing */
+}
+
+/* ============================================
+ * FOOTER
+ * ============================================ */
+
+.layout-footer {
+  flex-shrink: 0;
+  width: 100%;
+  z-index: 50;
+}
+
+/* Sticky footer */
+.layout-footer--sticky {
+  position: sticky;
+  bottom: 0;
+  background-color: hsl(var(--background, 0 0% 100%));
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+ * RESPONSIVE BEHAVIOR
+ * Mobile-first approach
+ * ============================================ */
+
+/* Mobile - stack sidebar below main on small screens */
+@media (max-width: 767px) {
+  .layout-body--with-sidebar {
+    flex-direction: column;
+  }
+
+  .layout-body--sidebar-left,
+  .layout-body--sidebar-right {
+    flex-direction: column;
+  }
+
+  .layout-sidebar {
+    width: 100% !important;
+    border-right: none;
+    border-left: none;
+    border-top: 1px solid hsl(var(--border, 214.3 31.8% 91.4%));
+  }
+
+  /* Sidebar appears below main on mobile */
+  .layout-body--sidebar-left .layout-sidebar {
+    order: 2;
+  }
+
+  .layout-main {
+    order: 1;
+  }
+}
+
+/* Tablet (768px+) - show sidebar */
+@media (min-width: 768px) {
+  /* Default behavior restored */
+}
+
+/* ============================================
+ * DARK MODE
+ * ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .layout-header--sticky,
+  .layout-footer--sticky {
+    background-color: hsl(var(--background, 222.2 84% 4.9%));
+    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+  }
+
+  .layout-footer--sticky {
+    box-shadow: 0 -1px 3px rgba(255, 255, 255, 0.1);
+  }
+
+  .layout-sidebar {
+    background-color: hsl(var(--muted, 217.2 32.6% 17.5%));
+    border-color: hsl(var(--border, 217.2 32.6% 17.5%));
+  }
+}
+
+/* ============================================
+ * ACCESSIBILITY
+ * ============================================ */
+
+.layout:focus-visible {
+  outline: 2px solid hsl(var(--primary, 222.2 47.4% 11.2%));
+  outline-offset: 2px;
+}
+
+/* Skip to main content link (hidden but accessible) */
+.layout-skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: hsl(var(--primary, 222.2 47.4% 11.2%));
+  color: hsl(var(--primary-foreground, 210 40% 98%));
+  padding: 8px;
+  text-decoration: none;
+  z-index: 200;
+}
+
+.layout-skip-link:focus {
+  top: 0;
+}
+
+/* ============================================
+ * PRINT STYLES
+ * ============================================ */
+
+@media print {
+  .layout-header--sticky,
+  .layout-footer--sticky {
+    position: static !important;
+  }
+
+  .layout-sidebar {
+    display: none !important;
+  }
+
+  .layout-body {
+    flex-direction: column !important;
+  }
+
+  .layout-main {
+    width: 100% !important;
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .layout * {
+    transition: none !important;
+  }
+}
+
+/* ============================================
+ * SCROLLBAR STYLING (optional)
+ * ============================================ */
+
+/* Custom scrollbar for sidebar and main (Webkit browsers) */
+.layout-sidebar::-webkit-scrollbar,
+.layout-main::-webkit-scrollbar {
+  width: 8px;
+}
+
+.layout-sidebar::-webkit-scrollbar-track,
+.layout-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.layout-sidebar::-webkit-scrollbar-thumb,
+.layout-main::-webkit-scrollbar-thumb {
+  background: hsl(var(--border, 214.3 31.8% 91.4%));
+  border-radius: 4px;
+}
+
+.layout-sidebar::-webkit-scrollbar-thumb:hover,
+.layout-main::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground, 215.4 16.3% 46.9%));
+}

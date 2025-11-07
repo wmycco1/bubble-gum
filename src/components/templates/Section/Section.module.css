@@ -1,0 +1,245 @@
+/**
+ * Section Component Styles (Template)
+ * God-Tier Development Protocol 2025
+ *
+ * Styles for content section with background and padding
+ */
+
+/* ============================================
+ * BASE SECTION
+ * ============================================ */
+
+.section {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden; /* Contain background images */
+}
+
+/* Background image sections */
+.section--has-image {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Full-width sections */
+.section--full-width {
+  max-width: 100%;
+}
+
+/* ============================================
+ * OVERLAY (for background images)
+ * ============================================ */
+
+.section-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none; /* Allow clicks to pass through */
+}
+
+/* ============================================
+ * CONTENT WRAPPER
+ * ============================================ */
+
+.section-content {
+  position: relative;
+  z-index: 2; /* Above overlay */
+  width: 100%;
+}
+
+/* ============================================
+ * BACKGROUND VARIANTS
+ * ============================================ */
+
+.section--bg-none {
+  background-color: transparent;
+}
+
+.section--bg-light {
+  background-color: hsl(var(--muted, 210 40% 96.1%));
+}
+
+.section--bg-dark {
+  background-color: hsl(var(--accent, 210 40% 96.1%));
+  color: hsl(var(--accent-foreground, 222.2 47.4% 11.2%));
+}
+
+.section--bg-primary {
+  background-color: hsl(var(--primary, 222.2 47.4% 11.2%));
+  color: hsl(var(--primary-foreground, 210 40% 98%));
+}
+
+.section--bg-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary, 222.2 47.4% 11.2%)) 0%,
+    hsl(var(--accent, 210 40% 96.1%)) 100%
+  );
+  color: hsl(var(--primary-foreground, 210 40% 98%));
+}
+
+/* ============================================
+ * PADDING VARIANTS
+ * ============================================ */
+
+.section--padding-none {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.section--padding-sm {
+  padding-top: 2rem; /* 32px */
+  padding-bottom: 2rem;
+}
+
+.section--padding-md {
+  padding-top: 4rem; /* 64px */
+  padding-bottom: 4rem;
+}
+
+.section--padding-lg {
+  padding-top: 6rem; /* 96px */
+  padding-bottom: 6rem;
+}
+
+.section--padding-xl {
+  padding-top: 8rem; /* 128px */
+  padding-bottom: 8rem;
+}
+
+/* ============================================
+ * RESPONSIVE PADDING
+ * Mobile-first approach
+ * ============================================ */
+
+/* Mobile (default) - reduce padding */
+@media (max-width: 767px) {
+  .section--padding-sm {
+    padding-top: 1.5rem; /* 24px */
+    padding-bottom: 1.5rem;
+  }
+
+  .section--padding-md {
+    padding-top: 3rem; /* 48px */
+    padding-bottom: 3rem;
+  }
+
+  .section--padding-lg {
+    padding-top: 4rem; /* 64px */
+    padding-bottom: 4rem;
+  }
+
+  .section--padding-xl {
+    padding-top: 5rem; /* 80px */
+    padding-bottom: 5rem;
+  }
+}
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+  .section--padding-sm {
+    padding-top: 2.5rem; /* 40px */
+    padding-bottom: 2.5rem;
+  }
+
+  .section--padding-md {
+    padding-top: 5rem; /* 80px */
+    padding-bottom: 5rem;
+  }
+
+  .section--padding-lg {
+    padding-top: 7rem; /* 112px */
+    padding-bottom: 7rem;
+  }
+
+  .section--padding-xl {
+    padding-top: 9rem; /* 144px */
+    padding-bottom: 9rem;
+  }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .section--padding-sm {
+    padding-top: 3rem; /* 48px */
+    padding-bottom: 3rem;
+  }
+
+  .section--padding-md {
+    padding-top: 6rem; /* 96px */
+    padding-bottom: 6rem;
+  }
+
+  .section--padding-lg {
+    padding-top: 8rem; /* 128px */
+    padding-bottom: 8rem;
+  }
+
+  .section--padding-xl {
+    padding-top: 10rem; /* 160px */
+    padding-bottom: 10rem;
+  }
+}
+
+/* ============================================
+ * DARK MODE
+ * ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .section--bg-light {
+    background-color: hsl(var(--muted, 217.2 32.6% 17.5%));
+    color: hsl(var(--muted-foreground, 215 20.2% 65.1%));
+  }
+
+  .section--bg-dark {
+    background-color: hsl(var(--background, 222.2 84% 4.9%));
+    color: hsl(var(--foreground, 210 40% 98%));
+  }
+}
+
+/* ============================================
+ * ACCESSIBILITY
+ * ============================================ */
+
+.section:focus-visible {
+  outline: 2px solid hsl(var(--primary, 222.2 47.4% 11.2%));
+  outline-offset: 2px;
+}
+
+/* Ensure text contrast on dark backgrounds */
+.section--bg-dark *,
+.section--bg-primary *,
+.section--bg-gradient * {
+  color: inherit;
+}
+
+/* ============================================
+ * PRINT STYLES
+ * ============================================ */
+
+@media print {
+  .section {
+    padding: 1rem 0 !important;
+    background: none !important;
+    page-break-inside: avoid;
+  }
+
+  .section-overlay {
+    display: none !important;
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    transition: none !important;
+  }
+}

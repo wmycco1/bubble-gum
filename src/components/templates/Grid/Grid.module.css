@@ -1,0 +1,271 @@
+/**
+ * Grid Component Styles (Template)
+ * God-Tier Development Protocol 2025
+ *
+ * Styles for multi-column grid layout with responsive breakpoints
+ */
+
+/* ============================================
+ * BASE GRID
+ * ============================================ */
+
+.grid {
+  display: grid;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ============================================
+ * COLUMN VARIANTS (1-12 columns)
+ * Default (no responsive config)
+ * ============================================ */
+
+.grid--cols-1 {
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.grid--cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid--cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid--cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid--cols-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.grid--cols-6 {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.grid--cols-7 {
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.grid--cols-8 {
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.grid--cols-9 {
+  grid-template-columns: repeat(9, 1fr);
+}
+
+.grid--cols-10 {
+  grid-template-columns: repeat(10, 1fr);
+}
+
+.grid--cols-11 {
+  grid-template-columns: repeat(11, 1fr);
+}
+
+.grid--cols-12 {
+  grid-template-columns: repeat(12, 1fr);
+}
+
+/* ============================================
+ * RESPONSIVE COLUMN VARIANTS
+ * Mobile-first approach
+ * ============================================ */
+
+/* Mobile (default - applies to all sizes unless overridden) */
+.grid--cols-1-mobile {
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.grid--cols-2-mobile {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid--cols-3-mobile {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid--cols-4-mobile {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid--cols-5-mobile {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.grid--cols-6-mobile {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+  .grid--cols-1-tablet {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .grid--cols-2-tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid--cols-3-tablet {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid--cols-4-tablet {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .grid--cols-5-tablet {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .grid--cols-6-tablet {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .grid--cols-7-tablet {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .grid--cols-8-tablet {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .grid--cols-1-desktop {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .grid--cols-2-desktop {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid--cols-3-desktop {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid--cols-4-desktop {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .grid--cols-5-desktop {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .grid--cols-6-desktop {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .grid--cols-7-desktop {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .grid--cols-8-desktop {
+    grid-template-columns: repeat(8, 1fr);
+  }
+
+  .grid--cols-9-desktop {
+    grid-template-columns: repeat(9, 1fr);
+  }
+
+  .grid--cols-10-desktop {
+    grid-template-columns: repeat(10, 1fr);
+  }
+
+  .grid--cols-11-desktop {
+    grid-template-columns: repeat(11, 1fr);
+  }
+
+  .grid--cols-12-desktop {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+/* Wide screens (1280px+) */
+@media (min-width: 1280px) {
+  .grid--cols-1-wide {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .grid--cols-2-wide {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid--cols-3-wide {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid--cols-4-wide {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .grid--cols-5-wide {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .grid--cols-6-wide {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .grid--cols-7-wide {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .grid--cols-8-wide {
+    grid-template-columns: repeat(8, 1fr);
+  }
+
+  .grid--cols-9-wide {
+    grid-template-columns: repeat(9, 1fr);
+  }
+
+  .grid--cols-10-wide {
+    grid-template-columns: repeat(10, 1fr);
+  }
+
+  .grid--cols-11-wide {
+    grid-template-columns: repeat(11, 1fr);
+  }
+
+  .grid--cols-12-wide {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+/* ============================================
+ * ACCESSIBILITY
+ * ============================================ */
+
+.grid:focus-visible {
+  outline: 2px solid hsl(var(--primary, 222.2 47.4% 11.2%));
+  outline-offset: 2px;
+}
+
+/* ============================================
+ * PRINT STYLES
+ * ============================================ */
+
+@media print {
+  .grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* ============================================
+ * DARK MODE
+ * Inherits from parent - no specific dark mode styles needed
+ * ============================================ */
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .grid {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,128 @@
+/**
+ * Container Component Styles (Template)
+ * God-Tier Development Protocol 2025
+ *
+ * Styles for max-width wrapper with responsive padding
+ */
+
+/* ============================================
+ * BASE CONTAINER
+ * ============================================ */
+
+.container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Centered container (default) */
+.container--centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================================
+ * PADDING VARIANTS
+ * ============================================ */
+
+.container--padding-none {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.container--padding-sm {
+  padding-left: 1rem; /* 16px */
+  padding-right: 1rem;
+}
+
+.container--padding-md {
+  padding-left: 1.5rem; /* 24px */
+  padding-right: 1.5rem;
+}
+
+.container--padding-lg {
+  padding-left: 2rem; /* 32px */
+  padding-right: 2rem;
+}
+
+.container--padding-xl {
+  padding-left: 3rem; /* 48px */
+  padding-right: 3rem;
+}
+
+/* ============================================
+ * RESPONSIVE PADDING
+ * Mobile-first approach
+ * ============================================ */
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+  .container--padding-sm {
+    padding-left: 1.5rem; /* 24px */
+    padding-right: 1.5rem;
+  }
+
+  .container--padding-md {
+    padding-left: 2rem; /* 32px */
+    padding-right: 2rem;
+  }
+
+  .container--padding-lg {
+    padding-left: 3rem; /* 48px */
+    padding-right: 3rem;
+  }
+
+  .container--padding-xl {
+    padding-left: 4rem; /* 64px */
+    padding-right: 4rem;
+  }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .container--padding-sm {
+    padding-left: 2rem; /* 32px */
+    padding-right: 2rem;
+  }
+
+  .container--padding-md {
+    padding-left: 2.5rem; /* 40px */
+    padding-right: 2.5rem;
+  }
+
+  .container--padding-lg {
+    padding-left: 4rem; /* 64px */
+    padding-right: 4rem;
+  }
+
+  .container--padding-xl {
+    padding-left: 5rem; /* 80px */
+    padding-right: 5rem;
+  }
+}
+
+/* ============================================
+ * DARK MODE
+ * Inherits from parent - no specific dark mode styles needed
+ * ============================================ */
+
+/* ============================================
+ * ACCESSIBILITY
+ * Focus management for interactive containers
+ * ============================================ */
+
+.container:focus-visible {
+  outline: 2px solid hsl(var(--primary, 222.2 47.4% 11.2%));
+  outline-offset: 2px;
+}
+
+/* ============================================
+ * PRINT STYLES
+ * ============================================ */
+
+@media print {
+  .container {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
