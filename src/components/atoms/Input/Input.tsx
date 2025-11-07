@@ -2,22 +2,48 @@
  * Input Component (Atom)
  * God-Tier Development Protocol 2025
  *
- * A text input field with multiple types, validation, and accessibility support.
+ * A text input field with Context API, validation, and full accessibility.
+ * Uses AtomParameters for styling and behavior through Context API.
  *
- * @example
+ * @example Basic
  * ```tsx
  * <Input type="email" placeholder="Enter email" required />
+ * ```
+ *
+ * @example With Context API
+ * ```tsx
+ * <AtomProvider value={{ size: 'lg' }}>
+ *   <Input placeholder="Inherits large size" />
+ * </AtomProvider>
+ * ```
+ *
+ * @example With Validation
+ * ```tsx
+ * <Input
+ *   type="email"
+ *   validation="invalid"
+ *   error="Please enter a valid email"
+ * />
  * ```
  */
 
 'use client';
 
 import React, { forwardRef } from 'react';
+import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
 import type { InputProps } from './Input.types';
+import styles from './Input.module.css';
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
+  (props, ref) => {
+    // Get inherited parameters from Atom context
+    const contextParams = useAtomContext();
+
+    // Merge context + props (props win in case of conflicts)
+    const params = mergeParameters(contextParams, props) as InputProps;
+
+    // Destructure with defaults
+    const {
       type = 'text',
       size = 'md',
       validation,
@@ -31,86 +57,52 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       'aria-describedby': ariaDescribedBy,
       'aria-invalid': ariaInvalid,
       'data-testid': testId = 'input',
-      ...props
-    },
-    ref
-  ) => {
-    // Size classes
-    const sizeClasses = {
-      sm: 'h-8 px-2 text-sm',
-      md: 'h-10 px-3 text-base',
-      lg: 'h-12 px-4 text-lg',
-    };
+      id,
+      style,
+      ...rest
+    } = params;
 
-    // Validation classes
-    const validationClasses = {
-      valid: 'border-green-500 focus:border-green-600 focus:ring-green-500',
-      invalid: 'border-red-500 focus:border-red-600 focus:ring-red-500',
-      warning: 'border-yellow-500 focus:border-yellow-600 focus:ring-yellow-500',
-      undefined: 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
-    };
+    // Compute CSS classes
+    const baseClasses = styles.input;
+    const sizeClasses = styles[`input--${size}`];
+    const validationClasses = validation ? styles[`input--${validation}`] : '';
 
-    // Build class names
-    const classes = [
-      // Base styles
-      'w-full',
-      'rounded-md',
-      'border',
-      'bg-white',
-      'transition-all',
-      'duration-200',
-
-      // Focus styles
-      'focus:outline-none',
-      'focus:ring-2',
-      'focus:ring-offset-0',
-
-      // Size
-      sizeClasses[size],
-
-      // Validation
-      validationClasses[validation || 'undefined'],
-
-      // States
-      disabled && 'opacity-50 cursor-not-allowed bg-gray-50',
-      readOnly && 'bg-gray-50 cursor-default',
-
-      // Custom classes
-      className,
-    ]
+    const classes = [baseClasses, sizeClasses, validationClasses, className]
       .filter(Boolean)
       .join(' ');
 
     // Determine aria-describedby
     const describedBy = [
       ariaDescribedBy,
-      error && `${props.id}-error`,
-      helperText && `${props.id}-helper`,
+      error && `${id}-error`,
+      helperText && `${id}-helper`,
     ]
       .filter(Boolean)
       .join(' ');
 
     return (
-      <div className="w-full">
+      <div className={styles['input-wrapper']}>
         <input
           ref={ref}
+          id={id}
           type={type}
           className={classes}
+          style={style}
           disabled={disabled}
           readOnly={readOnly}
           required={required}
           aria-label={ariaLabel}
           aria-describedby={describedBy || undefined}
-          aria-invalid={ariaInvalid || validation === 'invalid'}
+          aria-invalid={ariaInvalid || validation === 'invalid' || !!error}
           data-testid={testId}
-          {...props}
+          {...rest}
         />
 
         {/* Error message */}
         {error && (
           <p
-            id={`${props.id}-error`}
-            className="mt-1 text-sm text-red-600"
+            id={`${id}-error`}
+            className={styles['input-error']}
             role="alert"
           >
             {error}
@@ -120,8 +112,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {/* Helper text */}
         {helperText && !error && (
           <p
-            id={`${props.id}-helper`}
-            className="mt-1 text-sm text-gray-500"
+            id={`${id}-helper`}
+            className={styles['input-helper']}
           >
             {helperText}
           </p>
@@ -131,4 +123,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
+// Display name for React DevTools
 Input.displayName = 'Input';
+
+// Default export for convenience
+export default Input;

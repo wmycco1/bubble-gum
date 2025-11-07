@@ -4,11 +4,16 @@
 'use client';
 
 import React, { forwardRef } from 'react';
+import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
 import type { TextareaProps } from './Textarea.types';
+import styles from './Textarea.module.css';
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  (
-    {
+  (props, ref) => {
+    const contextParams = useAtomContext();
+    const params = mergeParameters(contextParams, props) as TextareaProps;
+
+    const {
       size = 'md',
       rows = 4,
       error,
@@ -17,51 +22,44 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       readOnly = false,
       className = '',
       'data-testid': testId = 'textarea',
-      ...props
-    },
-    ref
-  ) => {
-    const sizeClasses = {
-      sm: 'text-sm px-2 py-1',
-      md: 'text-base px-3 py-2',
-      lg: 'text-lg px-4 py-3',
-    };
+      id,
+      ...rest
+    } = params;
 
+    const validationClass = error ? styles['textarea--invalid'] : '';
+    
     const classes = [
-      'w-full',
-      'rounded-md',
-      'border',
-      error ? 'border-red-500' : 'border-gray-300',
-      'focus:outline-none',
-      'focus:ring-2',
-      error ? 'focus:ring-red-500' : 'focus:ring-blue-500',
-      sizeClasses[size],
-      disabled && 'opacity-50 cursor-not-allowed bg-gray-50',
-      readOnly && 'bg-gray-50',
+      styles.textarea,
+      styles[`textarea--${size}`],
+      validationClass,
       className,
     ]
       .filter(Boolean)
       .join(' ');
 
     return (
-      <div className="w-full">
+      <div className={styles['textarea-wrapper']}>
         <textarea
           ref={ref}
+          id={id}
           rows={rows}
           className={classes}
           disabled={disabled}
           readOnly={readOnly}
           aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : helperText ? `${id}-helper` : undefined}
           data-testid={testId}
-          {...props}
+          {...rest}
         />
         {error && (
-          <p className="mt-1 text-sm text-red-600" role="alert">
+          <p id={`${id}-error`} className={styles['textarea-error']} role="alert">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+          <p id={`${id}-helper`} className={styles['textarea-helper']}>
+            {helperText}
+          </p>
         )}
       </div>
     );
@@ -69,3 +67,5 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 );
 
 Textarea.displayName = 'Textarea';
+
+export default Textarea;

@@ -1,52 +1,84 @@
 /**
  * Heading Component (Atom)
  * God-Tier Development Protocol 2025
+ *
+ * Semantic heading component with proper hierarchy and styling.
+ * Uses AtomParameters for styling and behavior through Context API.
+ *
+ * @example Basic
+ * ```tsx
+ * <Heading level="h1">Main Title</Heading>
+ * <Heading level="h2" align="center">Subtitle</Heading>
+ * ```
+ *
+ * @example With Context API
+ * ```tsx
+ * <AtomProvider value={{ align: 'center', color: 'primary' }}>
+ *   <Heading level="h1">Centered Primary Heading</Heading>
+ * </AtomProvider>
+ * ```
  */
 
 'use client';
 
 import React from 'react';
+import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
 import type { HeadingProps } from './Heading.types';
+import styles from './Heading.module.css';
 
-export const Heading: React.FC<HeadingProps> = ({
-  level = 'h2',
-  align = 'left',
-  children,
-  className = '',
-  'data-testid': testId = 'heading',
-  ...props
-}) => {
+export const Heading: React.FC<HeadingProps> = (props) => {
+  // Get inherited parameters from Atom context
+  const contextParams = useAtomContext();
+
+  // Merge context + props (props win in case of conflicts)
+  const params = mergeParameters(contextParams, props) as HeadingProps;
+
+  // Destructure with defaults
+  const {
+    level = 'h2',
+    align = 'left',
+    color = 'default',
+    children,
+    className = '',
+    'data-testid': testId = 'heading',
+    'aria-label': ariaLabel,
+    id,
+    ...rest
+  } = params;
+
   const Component = level;
 
-  const sizeClasses = {
-    h1: 'text-4xl font-bold',
-    h2: 'text-3xl font-semibold',
-    h3: 'text-2xl font-semibold',
-    h4: 'text-xl font-semibold',
-    h5: 'text-lg font-medium',
-    h6: 'text-base font-medium',
-  };
-
-  const alignClasses = {
-    left: 'text-left',
-    center: 'text-center',
-    right: 'text-right',
-  };
+  // Compute CSS classes (using CSS modules)
+  const baseClasses = styles.heading;
+  const levelClasses = styles[`heading--${level}`];
+  const alignClasses = styles[`heading--${align}`];
+  const colorClasses = styles[`heading--${color}`];
 
   const classes = [
-    sizeClasses[level],
-    alignClasses[align],
-    'text-gray-900',
+    baseClasses,
+    levelClasses,
+    alignClasses,
+    colorClasses,
     className,
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <Component className={classes} data-testid={testId} {...props}>
+    <Component
+      id={id}
+      className={classes}
+      data-testid={testId}
+      aria-label={ariaLabel}
+      {...rest}
+    >
       {children}
     </Component>
   );
 };
 
+// Display name for React DevTools
 Heading.displayName = 'Heading';
+
+// Default export for convenience
+export default Heading;

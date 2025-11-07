@@ -1,9 +1,11 @@
 /**
- * Submit Component - Specialized button for forms
+ * Submit Component - God-Tier 2025
  */
 'use client';
 
 import React from 'react';
+import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import styles from './Submit.module.css';
 
 export interface SubmitProps {
   value?: string;
@@ -13,18 +15,21 @@ export interface SubmitProps {
   'data-testid'?: string;
 }
 
-export const Submit: React.FC<SubmitProps> = ({
-  value = 'Submit',
-  disabled = false,
-  loading = false,
-  className = '',
-  'data-testid': testId = 'submit',
-}) => {
+export const Submit: React.FC<SubmitProps> = (props) => {
+  const contextParams = useAtomContext();
+  const params = mergeParameters(contextParams, props) as SubmitProps;
+
+  const {
+    value = 'Submit',
+    disabled = false,
+    loading = false,
+    className = '',
+    'data-testid': testId = 'submit',
+  } = params;
+
   const classes = [
-    'px-6 py-2 rounded-md font-medium transition-colors',
-    'bg-blue-600 text-white hover:bg-blue-700',
-    'focus:outline-none focus:ring-2 focus:ring-blue-500',
-    (disabled || loading) && 'opacity-50 cursor-not-allowed',
+    styles.submit,
+    loading && styles['submit--loading'],
     className,
   ].filter(Boolean).join(' ');
 
@@ -40,3 +45,5 @@ export const Submit: React.FC<SubmitProps> = ({
 };
 
 Submit.displayName = 'Submit';
+
+export default Submit;

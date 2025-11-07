@@ -1,21 +1,35 @@
+/**
+ * Spacer Component - God-Tier 2025
+ */
 'use client';
+
 import React from 'react';
+import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import styles from './Spacer.module.css';
 
 export interface SpacerProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   orientation?: 'horizontal' | 'vertical';
 }
 
-export const Spacer: React.FC<SpacerProps> = ({
-  size = 'md',
-  orientation = 'vertical',
-}) => {
-  const sizeMap = { xs: '0.25rem', sm: '0.5rem', md: '1rem', lg: '2rem', xl: '4rem' };
-  const space = sizeMap[size];
+export const Spacer: React.FC<SpacerProps> = (props) => {
+  const contextParams = useAtomContext();
+  const params = mergeParameters(contextParams, props) as SpacerProps;
 
-  const style = orientation === 'vertical'
-    ? { height: space, width: '100%' }
-    : { width: space, height: '100%' };
+  const {
+    size = 'md',
+    orientation = 'vertical',
+  } = params;
 
-  return <div style={style} aria-hidden="true" />;
+  const classes = [
+    styles.spacer,
+    styles[`spacer--${orientation}`],
+    styles[`spacer--${size}`],
+  ].filter(Boolean).join(' ');
+
+  return <div className={classes} aria-hidden="true" />;
 };
+
+Spacer.displayName = 'Spacer';
+
+export default Spacer;

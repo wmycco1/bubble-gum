@@ -1,0 +1,37 @@
+/**
+ * Spacer Component Styles - God-Tier 2025
+ */
+
+:root {
+  --spacer-xs: 0.25rem;
+  --spacer-sm: 0.5rem;
+  --spacer-md: 1rem;
+  --spacer-lg: 2rem;
+  --spacer-xl: 4rem;
+}
+
+.spacer {
+  display: block;
+  flex-shrink: 0;
+}
+
+.spacer--vertical { width: 100%; }
+.spacer--horizontal { height: 100%; }
+
+.spacer--vertical.spacer--xs { height: var(--spacer-xs); }
+.spacer--vertical.spacer--sm { height: var(--spacer-sm); }
+.spacer--vertical.spacer--md { height: var(--spacer-md); }
+.spacer--vertical.spacer--lg { height: var(--spacer-lg); }
+.spacer--vertical.spacer--xl { height: var(--spacer-xl); }
+
+.spacer--horizontal.spacer--xs { width: var(--spacer-xs); }
+.spacer--horizontal.spacer--sm { width: var(--spacer-sm); }
+.spacer--horizontal.spacer--md { width: var(--spacer-md); }
+.spacer--horizontal.spacer--lg { width: var(--spacer-lg); }
+.spacer--horizontal.spacer--xl { width: var(--spacer-xl); }
+
+@media print {
+  .spacer {
+    display: none;
+  }
+}

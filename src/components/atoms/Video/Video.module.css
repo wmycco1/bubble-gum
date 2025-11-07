@@ -1,0 +1,28 @@
+/**
+ * Video Component Styles - God-Tier 2025
+ */
+
+.video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  background-color: #000;
+}
+
+.video:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video {
+    animation: none;
+  }
+}
+
+@media print {
+  .video {
+    display: none;
+  }
+}

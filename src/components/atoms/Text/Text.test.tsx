@@ -1,10 +1,14 @@
 /**
  * Text Component Tests
  * God-Tier Development Protocol 2025
+ *
+ * Tests CSS Modules, Context API integration, and accessibility
  */
 
 import { render, screen } from '@testing-library/react';
 import { Text } from './Text';
+import { AtomProvider } from '@/context/parameters/ParameterContext';
+import styles from './Text.module.css';
 
 describe('Text', () => {
   describe('Rendering', () => {
@@ -40,7 +44,7 @@ describe('Text', () => {
       (size) => {
         const { container } = render(<Text size={size}>Text</Text>);
         const text = container.querySelector('p');
-        expect(text).toHaveClass(`text-${size}`);
+        expect(text).toHaveClass(styles[`text--${size}`]);
       }
     );
   });
@@ -51,7 +55,7 @@ describe('Text', () => {
       (weight) => {
         const { container } = render(<Text weight={weight}>Text</Text>);
         const text = container.querySelector('p');
-        expect(text).toHaveClass(`font-${weight}`);
+        expect(text).toHaveClass(styles[`text--${weight}`]);
       }
     );
   });
@@ -62,7 +66,7 @@ describe('Text', () => {
       (align) => {
         const { container } = render(<Text align={align}>Text</Text>);
         const text = container.querySelector('p');
-        expect(text).toHaveClass(`text-${align}`);
+        expect(text).toHaveClass(styles[`text--${align}`]);
       }
     );
   });
@@ -79,7 +83,7 @@ describe('Text', () => {
     ] as const)('applies %s color class', (color) => {
       const { container } = render(<Text color={color}>Text</Text>);
       const text = container.querySelector('p');
-      expect(text).toBeInTheDocument();
+      expect(text).toHaveClass(styles[`text--${color}`]);
     });
   });
 
@@ -87,19 +91,19 @@ describe('Text', () => {
     it('applies italic style', () => {
       const { container } = render(<Text italic>Text</Text>);
       const text = container.querySelector('p');
-      expect(text).toHaveClass('italic');
+      expect(text).toHaveClass(styles['text--italic']);
     });
 
     it('applies underline style', () => {
       const { container } = render(<Text underline>Text</Text>);
       const text = container.querySelector('p');
-      expect(text).toHaveClass('underline');
+      expect(text).toHaveClass(styles['text--underline']);
     });
 
     it('applies line-through style', () => {
       const { container } = render(<Text lineThrough>Text</Text>);
       const text = container.querySelector('p');
-      expect(text).toHaveClass('line-through');
+      expect(text).toHaveClass(styles['text--line-through']);
     });
 
     it('applies multiple styles', () => {
@@ -109,9 +113,9 @@ describe('Text', () => {
         </Text>
       );
       const text = container.querySelector('p');
-      expect(text).toHaveClass('italic');
-      expect(text).toHaveClass('underline');
-      expect(text).toHaveClass('font-bold');
+      expect(text).toHaveClass(styles['text--italic']);
+      expect(text).toHaveClass(styles['text--underline']);
+      expect(text).toHaveClass(styles['text--bold']);
     });
   });
 
@@ -119,13 +123,13 @@ describe('Text', () => {
     it('applies truncate class', () => {
       const { container } = render(<Text truncate>Long text</Text>);
       const text = container.querySelector('p');
-      expect(text).toHaveClass('truncate');
+      expect(text).toHaveClass(styles['text--truncate']);
     });
 
     it('applies line-clamp class with maxLines', () => {
       const { container } = render(<Text maxLines={3}>Long text</Text>);
       const text = container.querySelector('p');
-      expect(text).toHaveClass('line-clamp-3');
+      expect(text).toHaveClass(styles['text--clamp-3']);
     });
   });
 
@@ -175,11 +179,11 @@ describe('Text', () => {
       );
 
       const text = container.querySelector('span');
-      expect(text).toHaveClass('text-lg');
-      expect(text).toHaveClass('font-bold');
-      expect(text).toHaveClass('text-center');
-      expect(text).toHaveClass('text-blue-600');
-      expect(text).toHaveClass('italic');
+      expect(text).toHaveClass(styles['text--lg']);
+      expect(text).toHaveClass(styles['text--bold']);
+      expect(text).toHaveClass(styles['text--center']);
+      expect(text).toHaveClass(styles['text--primary']);
+      expect(text).toHaveClass(styles['text--italic']);
     });
 
     it('renders with nested elements', () => {
@@ -190,6 +194,74 @@ describe('Text', () => {
       );
       expect(screen.getByText(/Hello/)).toBeInTheDocument();
       expect(screen.getByText('World')).toBeInTheDocument();
+    });
+  });
+
+  describe('Context API Integration', () => {
+    it('inherits size from context', () => {
+      const { container } = render(
+        <AtomProvider value={{ size: 'lg' }}>
+          <Text>Context text</Text>
+        </AtomProvider>
+      );
+      const text = container.querySelector('p');
+      expect(text).toHaveClass(styles['text--lg']);
+    });
+
+    it('inherits color from context', () => {
+      const { container } = render(
+        <AtomProvider value={{ color: 'primary' }}>
+          <Text>Context text</Text>
+        </AtomProvider>
+      );
+      const text = container.querySelector('p');
+      expect(text).toHaveClass(styles['text--primary']);
+    });
+
+    it('props override context values', () => {
+      const { container } = render(
+        <AtomProvider value={{ size: 'sm', color: 'muted' }}>
+          <Text size="xl" color="error">Override text</Text>
+        </AtomProvider>
+      );
+      const text = container.querySelector('p');
+      expect(text).toHaveClass(styles['text--xl']);
+      expect(text).toHaveClass(styles['text--error']);
+      expect(text).not.toHaveClass(styles['text--sm']);
+      expect(text).not.toHaveClass(styles['text--muted']);
+    });
+
+    it('merges context and props correctly', () => {
+      const { container } = render(
+        <AtomProvider value={{ size: 'lg', weight: 'bold' }}>
+          <Text color="primary">Merged text</Text>
+        </AtomProvider>
+      );
+      const text = container.querySelector('p');
+      expect(text).toHaveClass(styles['text--lg']);
+      expect(text).toHaveClass(styles['text--bold']);
+      expect(text).toHaveClass(styles['text--primary']);
+    });
+  });
+
+  describe('CSS Modules', () => {
+    it('applies base text class', () => {
+      const { container } = render(<Text>Text</Text>);
+      const text = container.querySelector('p');
+      expect(text).toHaveClass(styles.text);
+    });
+
+    it('applies multiple CSS module classes', () => {
+      const { container } = render(
+        <Text size="lg" weight="bold" color="primary">
+          Text
+        </Text>
+      );
+      const text = container.querySelector('p');
+      expect(text).toHaveClass(styles.text);
+      expect(text).toHaveClass(styles['text--lg']);
+      expect(text).toHaveClass(styles['text--bold']);
+      expect(text).toHaveClass(styles['text--primary']);
     });
   });
 });

@@ -1,0 +1,58 @@
+/**
+ * Divider Component Styles - God-Tier 2025
+ */
+
+:root {
+  --divider-color: #e5e7eb;
+  --divider-thickness-thin: 1px;
+  --divider-thickness-medium: 2px;
+  --divider-thickness-thick: 4px;
+}
+
+.divider {
+  background-color: var(--divider-color);
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.divider--horizontal {
+  width: 100%;
+  height: var(--divider-thickness-thin);
+}
+
+.divider--vertical {
+  width: var(--divider-thickness-thin);
+  height: 100%;
+}
+
+.divider--thin {
+  --thickness: var(--divider-thickness-thin);
+}
+
+.divider--medium {
+  --thickness: var(--divider-thickness-medium);
+}
+
+.divider--thick {
+  --thickness: var(--divider-thickness-thick);
+}
+
+.divider--horizontal.divider--thin { height: var(--divider-thickness-thin); }
+.divider--horizontal.divider--medium { height: var(--divider-thickness-medium); }
+.divider--horizontal.divider--thick { height: var(--divider-thickness-thick); }
+.divider--vertical.divider--thin { width: var(--divider-thickness-thin); }
+.divider--vertical.divider--medium { width: var(--divider-thickness-medium); }
+.divider--vertical.divider--thick { width: var(--divider-thickness-thick); }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --divider-color: #374151;
+  }
+}
+
+@media print {
+  .divider {
+    background-color: #000;
+  }
+}

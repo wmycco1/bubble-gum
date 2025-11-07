@@ -1,0 +1,254 @@
+/**
+ * Input Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * Based on Button.module.css pattern
+ */
+
+/* ============================================
+   CSS VARIABLES (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Colors - Base */
+  --input-bg: #ffffff;
+  --input-bg-disabled: #f9fafb;
+  --input-bg-readonly: #f9fafb;
+  --input-border: #d1d5db;
+  --input-border-hover: #9ca3af;
+  --input-border-focus: #3b82f6;
+  --input-text: #111827;
+  --input-text-disabled: #9ca3af;
+  --input-placeholder: #6b7280;
+
+  /* Colors - Validation States */
+  --input-border-valid: #10b981;
+  --input-border-invalid: #ef4444;
+  --input-border-warning: #f59e0b;
+  --input-ring-valid: rgba(16, 185, 129, 0.5);
+  --input-ring-invalid: rgba(239, 68, 68, 0.5);
+  --input-ring-warning: rgba(245, 158, 11, 0.5);
+
+  /* Typography */
+  --input-font-size-sm: 0.875rem;
+  --input-font-size-md: 1rem;
+  --input-font-size-lg: 1.125rem;
+  --input-line-height: 1.5;
+
+  /* Spacing */
+  --input-padding-sm: 0.375rem 0.75rem;
+  --input-padding-md: 0.5rem 0.75rem;
+  --input-padding-lg: 0.625rem 1rem;
+
+  /* Height */
+  --input-height-sm: 32px;
+  --input-height-md: 40px;
+  --input-height-lg: 48px;
+
+  /* Border */
+  --input-border-width: 1px;
+  --input-border-radius: 0.375rem;
+
+  /* Transitions */
+  --input-transition: all 0.15s ease-in-out;
+
+  /* Focus ring */
+  --input-ring-width: 2px;
+  --input-ring-offset: 0px;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.input {
+  /* Layout */
+  display: block;
+  width: 100%;
+
+  /* Typography */
+  font-family: inherit;
+  font-size: var(--input-font-size-md);
+  line-height: var(--input-line-height);
+  color: var(--input-text);
+
+  /* Box Model */
+  height: var(--input-height-md);
+  padding: var(--input-padding-md);
+  border: var(--input-border-width) solid var(--input-border);
+  border-radius: var(--input-border-radius);
+
+  /* Visual */
+  background-color: var(--input-bg);
+  appearance: none;
+
+  /* Interaction */
+  transition: var(--input-transition);
+
+  /* Performance */
+  will-change: border-color, box-shadow;
+}
+
+/* Placeholder */
+.input::placeholder {
+  color: var(--input-placeholder);
+  opacity: 1;
+}
+
+/* Focus state */
+.input:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 var(--input-ring-width) rgba(59, 130, 246, 0.5);
+}
+
+/* Hover state */
+.input:hover:not(:disabled):not(:read-only):not(:focus) {
+  border-color: var(--input-border-hover);
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+
+.input--sm {
+  height: var(--input-height-sm);
+  padding: var(--input-padding-sm);
+  font-size: var(--input-font-size-sm);
+}
+
+.input--md {
+  height: var(--input-height-md);
+  padding: var(--input-padding-md);
+  font-size: var(--input-font-size-md);
+}
+
+.input--lg {
+  height: var(--input-height-lg);
+  padding: var(--input-padding-lg);
+  font-size: var(--input-font-size-lg);
+}
+
+/* ============================================
+   VALIDATION STATES
+   ============================================ */
+
+.input--valid {
+  border-color: var(--input-border-valid);
+}
+
+.input--valid:focus {
+  border-color: var(--input-border-valid);
+  box-shadow: 0 0 0 var(--input-ring-width) var(--input-ring-valid);
+}
+
+.input--invalid {
+  border-color: var(--input-border-invalid);
+}
+
+.input--invalid:focus {
+  border-color: var(--input-border-invalid);
+  box-shadow: 0 0 0 var(--input-ring-width) var(--input-ring-invalid);
+}
+
+.input--warning {
+  border-color: var(--input-border-warning);
+}
+
+.input--warning:focus {
+  border-color: var(--input-border-warning);
+  box-shadow: 0 0 0 var(--input-ring-width) var(--input-ring-warning);
+}
+
+/* ============================================
+   STATE STYLES
+   ============================================ */
+
+.input:disabled {
+  background-color: var(--input-bg-disabled);
+  color: var(--input-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.input:read-only {
+  background-color: var(--input-bg-readonly);
+  cursor: default;
+}
+
+/* ============================================
+   WRAPPER & HELPERS
+   ============================================ */
+
+.input-wrapper {
+  width: 100%;
+}
+
+.input-error {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+.input-helper {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --input-bg: #1f2937;
+    --input-bg-disabled: #374151;
+    --input-bg-readonly: #374151;
+    --input-border: #4b5563;
+    --input-border-hover: #6b7280;
+    --input-text: #f9fafb;
+    --input-text-disabled: #6b7280;
+    --input-placeholder: #9ca3af;
+  }
+
+  .input-error {
+    color: #f87171;
+  }
+
+  .input-helper {
+    color: #9ca3af;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .input {
+    border-width: 2px;
+  }
+
+  .input:focus {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input {
+    transition: none;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .input {
+    border: 1px solid #000;
+    background: none;
+  }
+}

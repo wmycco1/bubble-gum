@@ -1,0 +1,24 @@
+/**
+ * HTML Component Styles - God-Tier 2025
+ */
+
+.html {
+  color: inherit;
+  font-family: inherit;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.html > *:first-child {
+  margin-top: 0;
+}
+
+.html > *:last-child {
+  margin-bottom: 0;
+}
+
+@media print {
+  .html {
+    color: #000;
+  }
+}

@@ -1,0 +1,92 @@
+/**
+ * Badge Component Styles - God-Tier 2025
+ */
+
+:root {
+  --badge-padding-sm: 0.125rem 0.5rem;
+  --badge-padding-md: 0.125rem 0.625rem;
+  --badge-padding-lg: 0.25rem 0.75rem;
+  --badge-font-sm: 0.75rem;
+  --badge-font-md: 0.875rem;
+  --badge-font-lg: 1rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.badge--sm {
+  padding: var(--badge-padding-sm);
+  font-size: var(--badge-font-sm);
+}
+
+.badge--md {
+  padding: var(--badge-padding-md);
+  font-size: var(--badge-font-md);
+}
+
+.badge--lg {
+  padding: var(--badge-padding-lg);
+  font-size: var(--badge-font-lg);
+}
+
+.badge--default {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.badge--primary {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badge--success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.badge--warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge--error {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+@media (prefers-color-scheme: dark) {
+  .badge--default {
+    background-color: #374151;
+    color: #f9fafb;
+  }
+  .badge--primary {
+    background-color: #1e3a8a;
+    color: #dbeafe;
+  }
+  .badge--success {
+    background-color: #064e3b;
+    color: #d1fae5;
+  }
+  .badge--warning {
+    background-color: #78350f;
+    color: #fef3c7;
+  }
+  .badge--error {
+    background-color: #7f1d1d;
+    color: #fee2e2;
+  }
+}
+
+@media print {
+  .badge {
+    border: 1px solid #000;
+    background: none !important;
+    color: #000 !important;
+  }
+}

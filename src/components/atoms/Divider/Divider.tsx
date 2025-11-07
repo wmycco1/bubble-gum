@@ -1,5 +1,11 @@
+/**
+ * Divider Component - God-Tier 2025
+ */
 'use client';
+
 import React from 'react';
+import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import styles from './Divider.module.css';
 
 export interface DividerProps {
   orientation?: 'horizontal' | 'vertical';
@@ -8,25 +14,32 @@ export interface DividerProps {
   className?: string;
 }
 
-export const Divider: React.FC<DividerProps> = ({
-  orientation = 'horizontal',
-  thickness = 'thin',
-  color = 'gray-200',
-  className = '',
-}) => {
-  const thicknessMap = { thin: '1px', medium: '2px', thick: '4px' };
-  const isHorizontal = orientation === 'horizontal';
+export const Divider: React.FC<DividerProps> = (props) => {
+  const contextParams = useAtomContext();
+  const params = mergeParameters(contextParams, props) as DividerProps;
 
-  const style = isHorizontal
-    ? { height: thicknessMap[thickness], width: '100%' }
-    : { width: thicknessMap[thickness], height: '100%' };
+  const {
+    orientation = 'horizontal',
+    thickness = 'thin',
+    className = '',
+  } = params;
+
+  const classes = [
+    styles.divider,
+    styles[`divider--${orientation}`],
+    styles[`divider--${thickness}`],
+    className,
+  ].filter(Boolean).join(' ');
 
   return (
     <div
       role="separator"
       aria-orientation={orientation}
-      className={`bg-${color} ${className}`}
-      style={style}
+      className={classes}
     />
   );
 };
+
+Divider.displayName = 'Divider';
+
+export default Divider;

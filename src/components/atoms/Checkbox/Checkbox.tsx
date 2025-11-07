@@ -1,24 +1,40 @@
 /**
  * Checkbox Component (Atom) - God-Tier 2025
+ * 
+ * @example
+ * ```tsx
+ * <Checkbox label="Accept terms" />
+ * ```
+ * 
+ * @example With Context API
+ * ```tsx
+ * <AtomProvider value={{ size: 'lg' }}>
+ *   <Checkbox label="Large checkbox" />
+ * </AtomProvider>
+ * ```
  */
 'use client';
 
 import React, { forwardRef, useEffect, useRef } from 'react';
+import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
 import type { CheckboxProps } from './Checkbox.types';
+import styles from './Checkbox.module.css';
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  (
-    {
+  (props, ref) => {
+    const contextParams = useAtomContext();
+    const params = mergeParameters(contextParams, props) as CheckboxProps;
+
+    const {
       size = 'md',
       label,
       disabled = false,
       indeterminate = false,
       className = '',
       'data-testid': testId = 'checkbox',
-      ...props
-    },
-    ref
-  ) => {
+      ...rest
+    } = params;
+
     const internalRef = useRef<HTMLInputElement>(null);
     const checkboxRef = (ref as any) || internalRef;
 
@@ -28,21 +44,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       }
     }, [indeterminate, checkboxRef]);
 
-    const sizeClasses = {
-      sm: 'h-4 w-4',
-      md: 'h-5 w-5',
-      lg: 'h-6 w-6',
-    };
-
     const classes = [
-      'rounded',
-      'border-gray-300',
-      'text-blue-600',
-      'focus:ring-2',
-      'focus:ring-blue-500',
-      'focus:ring-offset-0',
-      sizeClasses[size],
-      disabled && 'opacity-50 cursor-not-allowed',
+      styles.checkbox,
+      styles[`checkbox--${size}`],
       className,
     ]
       .filter(Boolean)
@@ -55,15 +59,15 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         className={classes}
         disabled={disabled}
         data-testid={testId}
-        {...props}
+        {...rest}
       />
     );
 
     if (label) {
       return (
-        <label className="inline-flex items-center gap-2 cursor-pointer">
+        <label className={styles['checkbox-label']}>
           {checkbox}
-          <span className="text-gray-700">{label}</span>
+          <span className={styles['checkbox-label-text']}>{label}</span>
         </label>
       );
     }
@@ -73,3 +77,5 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 );
 
 Checkbox.displayName = 'Checkbox';
+
+export default Checkbox;

@@ -1,0 +1,203 @@
+/**
+ * Textarea Component Styles
+ * God-Tier Development Protocol 2025
+ * Based on Input.module.css pattern
+ */
+
+:root {
+  /* Colors - Base */
+  --textarea-bg: #ffffff;
+  --textarea-bg-disabled: #f9fafb;
+  --textarea-bg-readonly: #f9fafb;
+  --textarea-border: #d1d5db;
+  --textarea-border-hover: #9ca3af;
+  --textarea-border-focus: #3b82f6;
+  --textarea-text: #111827;
+  --textarea-text-disabled: #9ca3af;
+  --textarea-placeholder: #6b7280;
+
+  /* Colors - Validation States */
+  --textarea-border-valid: #10b981;
+  --textarea-border-invalid: #ef4444;
+  --textarea-border-warning: #f59e0b;
+  --textarea-ring-valid: rgba(16, 185, 129, 0.5);
+  --textarea-ring-invalid: rgba(239, 68, 68, 0.5);
+  --textarea-ring-warning: rgba(245, 158, 11, 0.5);
+
+  /* Typography */
+  --textarea-font-size-sm: 0.875rem;
+  --textarea-font-size-md: 1rem;
+  --textarea-font-size-lg: 1.125rem;
+  --textarea-line-height: 1.5;
+
+  /* Spacing */
+  --textarea-padding-sm: 0.375rem 0.75rem;
+  --textarea-padding-md: 0.5rem 0.75rem;
+  --textarea-padding-lg: 0.625rem 1rem;
+
+  /* Border */
+  --textarea-border-width: 1px;
+  --textarea-border-radius: 0.375rem;
+
+  /* Transitions */
+  --textarea-transition: all 0.15s ease-in-out;
+
+  /* Focus ring */
+  --textarea-ring-width: 2px;
+}
+
+.textarea {
+  display: block;
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--textarea-font-size-md);
+  line-height: var(--textarea-line-height);
+  color: var(--textarea-text);
+  padding: var(--textarea-padding-md);
+  border: var(--textarea-border-width) solid var(--textarea-border);
+  border-radius: var(--textarea-border-radius);
+  background-color: var(--textarea-bg);
+  resize: vertical;
+  transition: var(--textarea-transition);
+  min-height: 80px;
+}
+
+.textarea::placeholder {
+  color: var(--textarea-placeholder);
+  opacity: 1;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--textarea-border-focus);
+  box-shadow: 0 0 0 var(--textarea-ring-width) rgba(59, 130, 246, 0.5);
+}
+
+.textarea:hover:not(:disabled):not(:read-only):not(:focus) {
+  border-color: var(--textarea-border-hover);
+}
+
+/* Size variants */
+.textarea--sm {
+  padding: var(--textarea-padding-sm);
+  font-size: var(--textarea-font-size-sm);
+  min-height: 60px;
+}
+
+.textarea--md {
+  padding: var(--textarea-padding-md);
+  font-size: var(--textarea-font-size-md);
+  min-height: 80px;
+}
+
+.textarea--lg {
+  padding: var(--textarea-padding-lg);
+  font-size: var(--textarea-font-size-lg);
+  min-height: 100px;
+}
+
+/* Validation states */
+.textarea--valid {
+  border-color: var(--textarea-border-valid);
+}
+
+.textarea--valid:focus {
+  border-color: var(--textarea-border-valid);
+  box-shadow: 0 0 0 var(--textarea-ring-width) var(--textarea-ring-valid);
+}
+
+.textarea--invalid {
+  border-color: var(--textarea-border-invalid);
+}
+
+.textarea--invalid:focus {
+  border-color: var(--textarea-border-invalid);
+  box-shadow: 0 0 0 var(--textarea-ring-width) var(--textarea-ring-invalid);
+}
+
+.textarea--warning {
+  border-color: var(--textarea-border-warning);
+}
+
+.textarea--warning:focus {
+  border-color: var(--textarea-border-warning);
+  box-shadow: 0 0 0 var(--textarea-ring-width) var(--textarea-ring-warning);
+}
+
+/* State styles */
+.textarea:disabled {
+  background-color: var(--textarea-bg-disabled);
+  color: var(--textarea-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.textarea:read-only {
+  background-color: var(--textarea-bg-readonly);
+  cursor: default;
+}
+
+/* Wrapper */
+.textarea-wrapper {
+  width: 100%;
+}
+
+.textarea-error {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+.textarea-helper {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --textarea-bg: #1f2937;
+    --textarea-bg-disabled: #374151;
+    --textarea-bg-readonly: #374151;
+    --textarea-border: #4b5563;
+    --textarea-border-hover: #6b7280;
+    --textarea-text: #f9fafb;
+    --textarea-text-disabled: #6b7280;
+    --textarea-placeholder: #9ca3af;
+  }
+
+  .textarea-error {
+    color: #f87171;
+  }
+
+  .textarea-helper {
+    color: #9ca3af;
+  }
+}
+
+/* Accessibility */
+@media (prefers-contrast: high) {
+  .textarea {
+    border-width: 2px;
+  }
+
+  .textarea:focus {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .textarea {
+    transition: none;
+  }
+}
+
+/* Print */
+@media print {
+  .textarea {
+    border: 1px solid #000;
+    background: none;
+  }
+}

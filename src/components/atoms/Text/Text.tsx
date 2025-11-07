@@ -3,100 +3,111 @@
  * God-Tier Development Protocol 2025
  *
  * A versatile text component with size, weight, alignment, and color variants.
+ * Uses AtomParameters for styling and behavior through Context API.
  *
- * @example
+ * @example Basic
  * ```tsx
  * <Text size="lg" weight="bold">Important text</Text>
+ * ```
+ *
+ * @example With Context API
+ * ```tsx
+ * <AtomProvider value={{ size: 'lg', color: 'primary' }}>
+ *   <Text>Inherits size and color from context</Text>
+ * </AtomProvider>
+ * ```
+ *
+ * @example With Truncation
+ * ```tsx
+ * <Text truncate>This text will be truncated with ellipsis</Text>
+ * <Text maxLines={3}>This text will be clamped to 3 lines</Text>
  * ```
  */
 
 'use client';
 
 import React from 'react';
+import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
 import type { TextProps } from './Text.types';
+import styles from './Text.module.css';
 
-export const Text: React.FC<TextProps> = ({
-  children,
-  as: Component = 'p',
-  size = 'md',
-  weight = 'normal',
-  align = 'left',
-  color = 'default',
-  italic = false,
-  underline = false,
-  lineThrough = false,
-  truncate = false,
-  maxLines,
-  className = '',
-  'data-testid': testId = 'text',
-  ...props
-}) => {
-  // Size classes
-  const sizeClasses = {
-    xs: 'text-xs',
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg',
-    xl: 'text-xl',
-    '2xl': 'text-2xl',
-    '3xl': 'text-3xl',
-  };
+export const Text: React.FC<TextProps> = (props) => {
+  // Get inherited parameters from Atom context
+  const contextParams = useAtomContext();
 
-  // Weight classes
-  const weightClasses = {
-    normal: 'font-normal',
-    medium: 'font-medium',
-    semibold: 'font-semibold',
-    bold: 'font-bold',
-  };
+  // Merge context + props (props win in case of conflicts)
+  const params = mergeParameters(contextParams, props) as TextProps;
 
-  // Alignment classes
-  const alignClasses = {
-    left: 'text-left',
-    center: 'text-center',
-    right: 'text-right',
-    justify: 'text-justify',
-  };
+  // Destructure with defaults
+  const {
+    children,
+    as: Component = 'p',
+    size = 'md',
+    weight = 'normal',
+    align = 'left',
+    color = 'default',
+    italic = false,
+    underline = false,
+    lineThrough = false,
+    truncate = false,
+    maxLines,
+    className = '',
+    'data-testid': testId = 'text',
+    'aria-label': ariaLabel,
+    id,
+    ...rest
+  } = params;
 
-  // Color classes
-  const colorClasses = {
-    default: 'text-gray-900',
-    muted: 'text-gray-500',
-    primary: 'text-blue-600',
-    secondary: 'text-gray-700',
-    success: 'text-green-600',
-    warning: 'text-yellow-600',
-    error: 'text-red-600',
-  };
+  // Compute CSS classes (using CSS modules)
+  const baseClasses = styles.text;
+  const sizeClasses = styles[`text--${size}`];
+  const weightClasses = styles[`text--${weight}`];
+  const alignClasses = styles[`text--${align}`];
+  const colorClasses = styles[`text--${color}`];
 
-  // Build class names
+  const decorationClasses = [
+    italic && styles['text--italic'],
+    underline && styles['text--underline'],
+    lineThrough && styles['text--line-through'],
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const truncationClasses = [
+    truncate && styles['text--truncate'],
+    maxLines && styles[`text--clamp-${maxLines}`],
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   const classes = [
-    // Size, weight, alignment
-    sizeClasses[size],
-    weightClasses[weight],
-    alignClasses[align],
-    colorClasses[color],
-
-    // Styles
-    italic && 'italic',
-    underline && 'underline',
-    lineThrough && 'line-through',
-
-    // Truncation
-    truncate && 'truncate',
-    maxLines && `line-clamp-${maxLines}`,
-
-    // Custom classes
+    baseClasses,
+    sizeClasses,
+    weightClasses,
+    alignClasses,
+    colorClasses,
+    decorationClasses,
+    truncationClasses,
     className,
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <Component className={classes} data-testid={testId} {...props}>
+    <Component
+      id={id}
+      className={classes}
+      data-testid={testId}
+      aria-label={ariaLabel}
+      {...rest}
+    >
       {children}
     </Component>
   );
 };
 
+// Display name for React DevTools
 Text.displayName = 'Text';
+
+// Default export for convenience
+export default Text;

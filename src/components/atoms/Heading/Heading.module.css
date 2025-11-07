@@ -1,0 +1,207 @@
+/**
+ * Heading Component Styles
+ * God-Tier Development Protocol 2025
+ *
+ * Features:
+ * - CSS Modules for scoped styling
+ * - Semantic heading hierarchy (h1-h6)
+ * - CSS Variables for theming
+ * - Dark mode support
+ * - Accessibility-first design (WCAG 2.2 AA)
+ */
+
+/* ============================================
+   CSS VARIABLES (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Colors */
+  --heading-color-default: #111827;
+  --heading-color-muted: #6b7280;
+  --heading-color-primary: #3b82f6;
+
+  /* Font Sizes */
+  --heading-size-h1: 2.25rem;
+  --heading-size-h2: 1.875rem;
+  --heading-size-h3: 1.5rem;
+  --heading-size-h4: 1.25rem;
+  --heading-size-h5: 1.125rem;
+  --heading-size-h6: 1rem;
+
+  /* Font Weights */
+  --heading-weight-h1: 700;
+  --heading-weight-h2: 600;
+  --heading-weight-h3: 600;
+  --heading-weight-h4: 600;
+  --heading-weight-h5: 500;
+  --heading-weight-h6: 500;
+
+  /* Line Heights */
+  --heading-line-height-tight: 1.25;
+  --heading-line-height-normal: 1.375;
+
+  /* Spacing */
+  --heading-margin-bottom: 0.5rem;
+
+  /* Transitions */
+  --heading-transition: color 0.15s ease-in-out;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.heading {
+  /* Typography */
+  font-family: inherit;
+  font-weight: var(--heading-weight-h2);
+  line-height: var(--heading-line-height-tight);
+  color: var(--heading-color-default);
+
+  /* Box Model */
+  margin: 0;
+  padding: 0;
+  margin-bottom: var(--heading-margin-bottom);
+
+  /* Transition */
+  transition: var(--heading-transition);
+
+  /* Word wrapping */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ============================================
+   HEADING LEVELS
+   ============================================ */
+
+.heading--h1 {
+  font-size: var(--heading-size-h1);
+  font-weight: var(--heading-weight-h1);
+  line-height: var(--heading-line-height-tight);
+}
+
+.heading--h2 {
+  font-size: var(--heading-size-h2);
+  font-weight: var(--heading-weight-h2);
+  line-height: var(--heading-line-height-tight);
+}
+
+.heading--h3 {
+  font-size: var(--heading-size-h3);
+  font-weight: var(--heading-weight-h3);
+  line-height: var(--heading-line-height-normal);
+}
+
+.heading--h4 {
+  font-size: var(--heading-size-h4);
+  font-weight: var(--heading-weight-h4);
+  line-height: var(--heading-line-height-normal);
+}
+
+.heading--h5 {
+  font-size: var(--heading-size-h5);
+  font-weight: var(--heading-weight-h5);
+  line-height: var(--heading-line-height-normal);
+}
+
+.heading--h6 {
+  font-size: var(--heading-size-h6);
+  font-weight: var(--heading-weight-h6);
+  line-height: var(--heading-line-height-normal);
+}
+
+/* ============================================
+   ALIGNMENT VARIANTS
+   ============================================ */
+
+.heading--left {
+  text-align: left;
+}
+
+.heading--center {
+  text-align: center;
+}
+
+.heading--right {
+  text-align: right;
+}
+
+/* ============================================
+   COLOR VARIANTS
+   ============================================ */
+
+.heading--default {
+  color: var(--heading-color-default);
+}
+
+.heading--muted {
+  color: var(--heading-color-muted);
+}
+
+.heading--primary {
+  color: var(--heading-color-primary);
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --heading-color-default: #f9fafb;
+    --heading-color-muted: #9ca3af;
+    --heading-color-primary: #60a5fa;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY HELPERS
+   ============================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .heading {
+    font-weight: 700;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .heading {
+    transition: none;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .heading {
+    color: #000;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .heading--h1 {
+    font-size: 24pt;
+  }
+
+  .heading--h2 {
+    font-size: 20pt;
+  }
+
+  .heading--h3 {
+    font-size: 16pt;
+  }
+
+  .heading--h4 {
+    font-size: 14pt;
+  }
+
+  .heading--h5,
+  .heading--h6 {
+    font-size: 12pt;
+  }
+}
