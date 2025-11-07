@@ -5,7 +5,7 @@
  * TypeScript interfaces for Button component (Atom level)
  */
 
-import type { AtomParameters } from '@/types/parameters';
+import type { AtomParameters } from '@/src/types/parameters';
 
 /**
  * Button visual variants
@@ -67,25 +67,13 @@ export interface ButtonProps extends AtomParameters {
   loading?: boolean;
 
   /**
-   * Icon to display before text
-   * Can be a string (emoji, character) or React component
-   */
-  leftIcon?: React.ReactNode;
-
-  /**
-   * Icon to display after text
-   * Can be a string (emoji, character) or React component
-   */
-  rightIcon?: React.ReactNode;
-
-  /**
-   * Click handler
-   * Called when button is clicked (not called when disabled or loading)
-   */
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-
-  /**
    * Button HTML type attribute
+   * @default 'button'
+   */
+  buttonType?: 'button' | 'submit' | 'reset';
+
+  /**
+   * Alternative to buttonType (for backwards compatibility)
    * @default 'button'
    */
   type?: 'button' | 'submit' | 'reset';
@@ -96,4 +84,40 @@ export interface ButtonProps extends AtomParameters {
    * @default false
    */
   fullWidth?: boolean;
+
+  /**
+   * CSS class name(s)
+   * Additional classes to apply to the button
+   */
+  className?: string;
+
+  /**
+   * Inline styles
+   * Custom CSS properties to apply to the button
+   */
+  style?: React.CSSProperties;
+
+  /**
+   * Unique identifier
+   * HTML id attribute for the button
+   */
+  id?: string;
+
+  /**
+   * Accessible label for screen readers
+   * ARIA label attribute
+   */
+  'aria-label'?: string;
+
+  /**
+   * ID of element describing this button
+   * ARIA describedby attribute
+   */
+  'aria-describedby'?: string;
+
+  /**
+   * Test ID for testing libraries
+   * Data attribute for testing
+   */
+  'data-testid'?: string;
 }

@@ -92,18 +92,24 @@ export const Hero: React.FC<HeroProps> = (props) => {
     .join(' ');
 
   // Compute inline styles
-  const inlineStyles: React.CSSProperties = {
-    ...style,
-    minHeight: !fullHeight ? minHeight : undefined,
-  };
+  const inlineStyles: React.CSSProperties = {};
 
+  if (!fullHeight && minHeight) {
+    inlineStyles.minHeight = minHeight;
+  }
+
+  // Add background image or gradient
   if (backgroundImage) {
     inlineStyles.backgroundImage = `url(${backgroundImage})`;
-  }
-
-  if (backgroundGradient) {
+  } else if (backgroundGradient) {
     inlineStyles.backgroundImage = backgroundGradient;
   }
+
+  // Merge custom styles (but preserve backgroundImage if set by props)
+  const finalStyles: React.CSSProperties = {
+    ...style,
+    ...inlineStyles,
+  };
 
   // Handle CTA clicks
   const handlePrimaryClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -122,8 +128,10 @@ export const Hero: React.FC<HeroProps> = (props) => {
 
   return (
     <section
+      role="region"
+      aria-label={title}
       className={classes}
-      style={inlineStyles}
+      style={finalStyles}
       data-testid={testId}
       {...rest}
     >
@@ -204,7 +212,6 @@ export const Hero: React.FC<HeroProps> = (props) => {
               fit="cover"
               rounded
               loading="eager"
-              priority
             />
           </div>
         )}

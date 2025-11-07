@@ -54,6 +54,7 @@ export const Image: React.FC<ImageProps> = (props) => {
     loading = 'lazy',
     className = '',
     'data-testid': testId = 'image',
+    priority, // Extract but don't use (Next.js specific, not for native <img>)
     ...rest
   } = params;
 

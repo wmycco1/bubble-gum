@@ -35,7 +35,8 @@ export const Button: React.FC<ButtonProps> = (props) => {
     text,
     variant = 'primary',
     size = 'md',
-    type = 'button',
+    buttonType,
+    type,
     disabled = false,
     loading = false,
     fullWidth = false,
@@ -50,6 +51,9 @@ export const Button: React.FC<ButtonProps> = (props) => {
     style,
     ...rest
   } = params;
+
+  // Support both 'type' and 'buttonType' props (backwards compatibility)
+  const htmlType = (type || buttonType || 'button') as 'button' | 'submit' | 'reset';
 
   // Compute CSS classes (using CSS modules)
   const baseClasses = styles.button;
@@ -82,7 +86,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
   return (
     <button
       id={id}
-      type={type}
+      type={htmlType}
       className={classes}
       style={style}
       disabled={isDisabled}
