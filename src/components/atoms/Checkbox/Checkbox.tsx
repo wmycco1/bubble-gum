@@ -31,6 +31,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       label,
       disabled = false,
       indeterminate = false,
+      checked,
+      defaultChecked,
+      onChange,
       className = '',
       'data-testid': testId = 'checkbox',
       ...rest
@@ -62,6 +65,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         type="checkbox"
         className={classes}
         disabled={disabled}
+        checked={checked}
+        defaultChecked={defaultChecked}
+        onChange={onChange}
         data-testid={testId}
         {...validDOMProps}
       />

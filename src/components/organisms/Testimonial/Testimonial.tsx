@@ -77,6 +77,9 @@ export const Testimonial: React.FC<TestimonialProps> = (props) => {
     setActiveIndex(index);
   }, []);
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   // Compute CSS classes
   const classes = [
     styles.testimonial,
@@ -194,9 +197,6 @@ export const Testimonial: React.FC<TestimonialProps> = (props) => {
       </section>
     );
   }
-
-  // Filter out invalid DOM props from rest
-  const validDOMProps = getValidDOMProps(rest);
 
   return (
     <section
