@@ -48,7 +48,7 @@ export const Testimonial: React.FC<TestimonialProps> = (props) => {
 
   // Destructure with defaults
   const {
-    testimonials,
+    testimonials = [], // Default to empty array
     layout = 'grid',
     variant = 'default',
     showRating = true,
@@ -64,10 +64,12 @@ export const Testimonial: React.FC<TestimonialProps> = (props) => {
 
   // Navigate carousel
   const handlePrev = useCallback(() => {
+    if (testimonials.length === 0) return;
     setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
   }, [testimonials.length]);
 
   const handleNext = useCallback(() => {
+    if (testimonials.length === 0) return;
     setActiveIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
   }, [testimonials.length]);
 
