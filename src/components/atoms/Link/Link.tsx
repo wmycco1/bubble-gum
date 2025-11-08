@@ -32,11 +32,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { LinkProps } from './Link.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Link.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Link: React.FC<LinkProps> = (props) => {
   // Get inherited parameters from Atom context

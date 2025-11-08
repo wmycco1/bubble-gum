@@ -31,9 +31,7 @@ import {
   TemplateProvider,
 } from '@/context/parameters/ParameterContext';
 import type { ContainerProps, ContainerMaxWidth, ContainerPadding } from './Container.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Container.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 /**
  * Max-width value mappings

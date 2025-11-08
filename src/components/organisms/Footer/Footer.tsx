@@ -39,15 +39,10 @@
 import React, { useState } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useOrganismContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Link } from '@/components/atoms/Link';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { FooterProps, FooterLink, SocialLink } from './Footer.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Footer.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Footer: React.FC<FooterProps> = (props) => {
   // Get inherited parameters from Organism context

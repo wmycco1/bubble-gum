@@ -6,11 +6,8 @@
 import { forwardRef } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { TextareaProps } from './Textarea.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Textarea.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (props, ref) => {

@@ -12,11 +12,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { VideoProps } from './Video.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Video.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Video: React.FC<VideoProps> = (props) => {
   // Get inherited parameters from context

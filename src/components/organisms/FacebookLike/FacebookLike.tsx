@@ -12,11 +12,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { FacebookLikeProps } from './FacebookLike.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './FacebookLike.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const FacebookLike: React.FC<FacebookLikeProps> = (props) => {
   // Get inherited parameters from context

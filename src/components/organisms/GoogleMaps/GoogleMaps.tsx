@@ -12,11 +12,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { GoogleMapsProps } from './GoogleMaps.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './GoogleMaps.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const GoogleMaps: React.FC<GoogleMapsProps> = (props) => {
   // Get inherited parameters from context

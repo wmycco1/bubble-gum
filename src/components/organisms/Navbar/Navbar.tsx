@@ -39,13 +39,9 @@
 import React, { useState, useEffect } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useOrganismContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Link } from '@/components/atoms/Link';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { NavbarProps } from './Navbar.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Navbar.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Navbar: React.FC<NavbarProps> = (props) => {
   // Get inherited parameters from Organism context

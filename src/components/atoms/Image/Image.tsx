@@ -34,11 +34,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { ImageProps } from './Image.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Image.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Image: React.FC<ImageProps> = (props) => {
   // Get inherited parameters from Atom context

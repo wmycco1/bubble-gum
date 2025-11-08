@@ -34,17 +34,11 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { TabsProps, TabItem } from './Tabs.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Tabs.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Tabs: React.FC<TabsProps> = (props) => {
   // Get inherited parameters from context

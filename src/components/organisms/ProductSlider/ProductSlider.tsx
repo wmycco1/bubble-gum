@@ -10,13 +10,10 @@
 'use client';
 
 import React from 'react';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { ProductSliderProps } from './ProductSlider.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './ProductSlider.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const ProductSlider: React.FC<ProductSliderProps> = (props) => {
   // Get inherited parameters from context

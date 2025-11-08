@@ -37,15 +37,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { createPortal } from 'react-dom';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useMoleculeContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { TooltipProps, TooltipPosition } from './Tooltip.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Tooltip.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Tooltip: React.FC<TooltipProps> = (props) => {
   // Get inherited parameters from Molecule context

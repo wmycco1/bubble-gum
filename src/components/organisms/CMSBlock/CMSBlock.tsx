@@ -12,11 +12,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { CMSBlockProps } from './CMSBlock.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './CMSBlock.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const CMSBlock: React.FC<CMSBlockProps> = (props) => {
   // Get inherited parameters from context

@@ -37,19 +37,12 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Heading } from '@/components/atoms/Heading';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Image } from '@/components/atoms/Image';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { CTAProps } from './CTA.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './CTA.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const CTA: React.FC<CTAProps> = (props) => {
   // Get inherited parameters from context

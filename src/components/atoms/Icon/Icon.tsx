@@ -30,11 +30,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { IconProps } from './Icon.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Icon.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Icon: React.FC<IconProps> = (props) => {
   // Get inherited parameters from Atom context

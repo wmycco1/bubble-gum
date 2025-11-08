@@ -30,15 +30,10 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { StarRatingProps } from './StarRating.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './StarRating.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const StarRating: React.FC<StarRatingProps> = (props) => {
   // Get inherited parameters from context

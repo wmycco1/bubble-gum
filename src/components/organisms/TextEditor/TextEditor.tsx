@@ -12,11 +12,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { TextEditorProps } from './TextEditor.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './TextEditor.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const TextEditor: React.FC<TextEditorProps> = (props) => {
   // Get inherited parameters from context

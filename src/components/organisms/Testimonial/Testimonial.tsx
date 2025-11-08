@@ -31,21 +31,13 @@
 import React, { useState, useCallback } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useOrganismContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Image } from '@/components/atoms/Image';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Heading } from '@/components/atoms/Heading';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { StarRating } from '@/components/molecules/StarRating';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { TestimonialProps, TestimonialItem } from './Testimonial.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Testimonial.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Testimonial: React.FC<TestimonialProps> = (props) => {
   // Get inherited parameters from context

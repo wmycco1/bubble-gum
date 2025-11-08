@@ -12,11 +12,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { NewProductsProps } from './NewProducts.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './NewProducts.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const NewProducts: React.FC<NewProductsProps> = (props) => {
   // Get inherited parameters from context

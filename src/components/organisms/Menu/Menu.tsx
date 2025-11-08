@@ -30,15 +30,10 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Link } from '@/components/atoms/Link';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { MenuProps, MenuItem } from './Menu.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Menu.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Menu: React.FC<MenuProps> = (props) => {
   // Get inherited parameters from context

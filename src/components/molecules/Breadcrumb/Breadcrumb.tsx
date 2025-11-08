@@ -34,17 +34,11 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Link } from '@/components/atoms/Link';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { BreadcrumbProps } from './Breadcrumb.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Breadcrumb.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Breadcrumb: React.FC<BreadcrumbProps> = (props) => {
   // Get inherited parameters from context

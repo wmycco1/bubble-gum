@@ -32,15 +32,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { SliderProps } from './Slider.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Slider.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Slider: React.FC<SliderProps> = (props) => {
   // Get inherited parameters from context

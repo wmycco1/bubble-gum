@@ -24,11 +24,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { HeadingProps } from './Heading.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Heading.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Heading: React.FC<HeadingProps> = (props) => {
   // Get inherited parameters from Atom context

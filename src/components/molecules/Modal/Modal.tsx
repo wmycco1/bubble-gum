@@ -40,19 +40,12 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { createPortal } from 'react-dom';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useMoleculeContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Heading } from '@/components/atoms/Heading';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { ModalProps } from './Modal.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Modal.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Modal: React.FC<ModalProps> = (props) => {
   // Get inherited parameters from Molecule context

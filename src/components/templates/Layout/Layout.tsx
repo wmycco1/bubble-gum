@@ -35,9 +35,7 @@ import {
   TemplateProvider,
 } from '@/context/parameters/ParameterContext';
 import type { LayoutProps } from './Layout.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Layout.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Layout: React.FC<LayoutProps> = (props) => {
   // Get inherited parameters from context

@@ -12,11 +12,8 @@
 import React from 'react';
 import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { SocialIconsProps } from './SocialIcons.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './SocialIcons.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const SocialIcons: React.FC<SocialIconsProps> = (props) => {
   // Get inherited parameters from context

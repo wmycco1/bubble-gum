@@ -34,9 +34,7 @@ import {
   TemplateProvider,
 } from '@/context/parameters/ParameterContext';
 import type { GridProps, GridGap } from './Grid.types';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Grid.module.css';
-import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 /**
  * Gap value mappings (rem units)
