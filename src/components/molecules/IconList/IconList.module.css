@@ -1,0 +1,78 @@
+/**
+ * IconList Component Styles
+ * God-Tier Development Protocol 2025
+ */
+
+/* Base list */
+.icon-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Spacing variants */
+.icon-list--compact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.icon-list--default {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.icon-list--relaxed {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* List item */
+.icon-list__item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.icon-list__item--left {
+  flex-direction: row;
+}
+
+.icon-list__item--right {
+  flex-direction: row-reverse;
+}
+
+/* Icon wrapper */
+.icon-list__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-list__icon--left {
+  margin-right: 0.5rem;
+}
+
+.icon-list__icon--right {
+  margin-left: 0.5rem;
+}
+
+/* Text */
+.icon-list__text {
+  flex: 1;
+  line-height: 1.5;
+}
+
+/* Link variant */
+.icon-list__link {
+  color: var(--color-primary, #3b82f6);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.icon-list__link:hover {
+  color: var(--color-primary-dark, #2563eb);
+  text-decoration: underline;
+}

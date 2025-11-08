@@ -1,0 +1,16 @@
+/**
+ * InnerSection Component Styles
+ * God-Tier Development Protocol 2025
+ */
+
+/* Base section */
+.inner-section {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Default styling */
+.inner-section--default {
+  max-width: 1200px;
+  padding: 2rem;
+}

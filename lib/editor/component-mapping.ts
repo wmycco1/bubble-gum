@@ -31,8 +31,8 @@ import { Submit } from '@/src/components/atoms/Submit/Submit';
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import { Alert } from '@/src/components/molecules/Alert/Alert';
 import { Breadcrumb } from '@/src/components/molecules/Breadcrumb/Breadcrumb';
-// NOTE: Counter and IconList directories exist but are empty - using canvas fallback via wrappers
-import { CounterWrapper as Counter, IconListWrapper as IconList } from './canvas-component-wrappers';
+import { Counter } from '@/src/components/molecules/Counter/Counter';
+import { IconList } from '@/src/components/molecules/IconList/IconList';
 import { ImageBox } from '@/src/components/molecules/ImageBox/ImageBox';
 import { Modal } from '@/src/components/molecules/Modal/Modal';
 import { Progress } from '@/src/components/molecules/Progress/Progress';
@@ -64,8 +64,7 @@ import { GoogleMaps } from '@/src/components/organisms/GoogleMaps/GoogleMaps';
 import { Hero } from '@/src/components/organisms/Hero/Hero';
 // NOTE: IconBox is actually in molecules, not organisms
 import { IconBox } from '@/src/components/molecules/IconBox/IconBox';
-// NOTE: InnerSection directory empty - using canvas fallback via wrapper
-import { InnerSectionWrapper as InnerSection } from './canvas-component-wrappers';
+import { InnerSection } from '@/src/components/organisms/InnerSection/InnerSection';
 import { Menu } from '@/src/components/organisms/Menu/Menu';
 import { MultistepFormBuilder } from '@/src/components/organisms/MultistepFormBuilder/MultistepFormBuilder';
 import { Navbar } from '@/src/components/organisms/Navbar/Navbar';
@@ -77,8 +76,7 @@ import { ProductSlider } from '@/src/components/organisms/ProductSlider/ProductS
 import { RecentlyCompared } from '@/src/components/organisms/RecentlyCompared/RecentlyCompared';
 import { RecentlyViewed } from '@/src/components/organisms/RecentlyViewed/RecentlyViewed';
 import { Slider } from '@/src/components/organisms/Slider/Slider';
-// NOTE: SoundCloud directory empty - using canvas fallback via wrapper
-import { SoundCloudWrapper as SoundCloud } from './canvas-component-wrappers';
+import { SoundCloud } from '@/src/components/organisms/SoundCloud/SoundCloud';
 import { Tabs } from '@/src/components/organisms/Tabs/Tabs';
 import { Testimonial } from '@/src/components/organisms/Testimonial/Testimonial';
 import { TextEditor } from '@/src/components/organisms/TextEditor/TextEditor';
