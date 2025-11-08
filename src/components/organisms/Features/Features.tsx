@@ -29,12 +29,19 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useOrganismContext, mergeParameters, MoleculeProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { IconBox } from '@/components/molecules/IconBox';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Heading } from '@/components/atoms/Heading';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { FeaturesProps } from './Features.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Features.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Features: React.FC<FeaturesProps> = (props) => {
   // Get inherited parameters from context
@@ -80,7 +87,7 @@ export const Features: React.FC<FeaturesProps> = (props) => {
       <section
         className={styles.features}
         data-testid={testId}
-        {...rest}
+        {...validDOMProps}
       >
         <div className={styles['features-empty']}>
           <div className={styles['features-empty-icon']}>✨</div>
@@ -93,11 +100,14 @@ export const Features: React.FC<FeaturesProps> = (props) => {
     );
   }
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <section
       className={classes}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       <div className={styles['features-container']}>
         {/* Section Header */}

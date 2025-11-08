@@ -35,11 +35,17 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { createPortal } from 'react-dom';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useMoleculeContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { TooltipProps, TooltipPosition } from './Tooltip.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Tooltip.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Tooltip: React.FC<TooltipProps> = (props) => {
   // Get inherited parameters from Molecule context
@@ -423,6 +429,9 @@ export const Tooltip: React.FC<TooltipProps> = (props) => {
   // Render through portal
   const target = portalTarget || (typeof document !== 'undefined' ? document.body : null);
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <>
       <Component
@@ -431,7 +440,7 @@ export const Tooltip: React.FC<TooltipProps> = (props) => {
         data-testid={testId}
         aria-describedby={isOpen && id ? `${id}-tooltip` : undefined}
         {...getTriggerHandlers()}
-        {...rest}
+        {...validDOMProps}
       >
         {children}
       </Component>

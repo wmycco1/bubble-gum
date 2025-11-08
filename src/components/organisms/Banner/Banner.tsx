@@ -39,6 +39,7 @@ import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { Button } from '@/components/atoms/Button';
 import { X } from 'lucide-react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { BannerProps } from './Banner.types';
 import styles from './Banner.module.css';
 
@@ -116,6 +117,9 @@ export const Banner: React.FC<BannerProps> = (props) => {
     inlineStyles.backgroundImage = `url(${backgroundImage})`;
   }
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <section
       className={classes}
@@ -124,7 +128,7 @@ export const Banner: React.FC<BannerProps> = (props) => {
       role="region"
       aria-label={title || 'Announcement banner'}
       aria-live="polite"
-      {...rest}
+      {...validDOMProps}
     >
       <div className={styles['banner-container']}>
         {/* Badge */}

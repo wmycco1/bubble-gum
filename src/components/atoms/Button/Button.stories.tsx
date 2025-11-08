@@ -335,7 +335,7 @@ export const IconExamples: Story = {
 export const Submit: Story = {
   args: {
     text: 'Submit Form',
-    type: 'submit',
+    buttonType: 'submit',
     variant: 'primary',
   },
 };
@@ -346,7 +346,7 @@ export const Submit: Story = {
 export const Reset: Story = {
   args: {
     text: 'Reset Form',
-    type: 'reset',
+    buttonType: 'reset',
     variant: 'secondary',
   },
 };
@@ -457,7 +457,7 @@ export const FormButtons: Story = {
     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
       <Button text="Cancel" variant="ghost" />
       <Button text="Save Draft" variant="outline" />
-      <Button text="Publish" variant="primary" type="submit" />
+      <Button text="Publish" variant="primary" buttonType="submit" />
     </div>
   ),
   parameters: {

@@ -32,9 +32,13 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { ImageProps } from './Image.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Image.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Image: React.FC<ImageProps> = (props) => {
   // Get inherited parameters from Atom context
@@ -76,6 +80,9 @@ export const Image: React.FC<ImageProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div className={containerClasses} data-testid={`${testId}-container`}>
       <img
@@ -84,7 +91,7 @@ export const Image: React.FC<ImageProps> = (props) => {
         loading={loading}
         className={imageClasses}
         data-testid={testId}
-        {...rest}
+        {...validDOMProps}
       />
     </div>
   );

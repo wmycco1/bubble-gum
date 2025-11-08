@@ -29,10 +29,15 @@
 'use client';
 
 import React, { useId, useCallback } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { ToggleProps } from './Toggle.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Toggle.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Toggle: React.FC<ToggleProps> = (props) => {
   // Get inherited parameters from context
@@ -108,8 +113,11 @@ export const Toggle: React.FC<ToggleProps> = (props) => {
   // Determine accessible label
   const effectiveAriaLabel = ariaLabel || label || 'Toggle';
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
-    <div className={containerClasses} data-testid={testId} {...rest}>
+    <div className={containerClasses} data-testid={testId} {...validDOMProps}>
       {/* Label (left position) */}
       {label && labelPosition === 'left' && (
         <AtomProvider value={{ size: 'sm' }}>

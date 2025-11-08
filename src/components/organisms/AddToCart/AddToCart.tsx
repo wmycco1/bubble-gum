@@ -10,9 +10,13 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { AddToCartProps } from './AddToCart.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './AddToCart.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const AddToCart: React.FC<AddToCartProps> = (props) => {
   // Get inherited parameters from context
@@ -38,12 +42,15 @@ export const AddToCart: React.FC<AddToCartProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={classes}
       style={style as React.CSSProperties}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       <h2>AddToCart Component</h2>
       <p>Add to cart button with quantity selector</p>

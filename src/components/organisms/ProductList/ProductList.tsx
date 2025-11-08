@@ -27,10 +27,15 @@
 'use client';
 
 import React, { useState } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Card } from '../Card';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { ProductListProps } from './ProductList.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './ProductList.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const ProductList: React.FC<ProductListProps> = (props) => {
   // Get inherited parameters from context
@@ -106,12 +111,15 @@ export const ProductList: React.FC<ProductListProps> = (props) => {
     );
   }
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={styles['product-list-wrapper']}
       style={style as React.CSSProperties}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       {/* Controls */}
       {(showFilters || showSort || showViewToggle) && (

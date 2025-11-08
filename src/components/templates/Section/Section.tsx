@@ -32,6 +32,7 @@ import {
   mergeParameters,
   TemplateProvider,
 } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { SectionProps, SectionBackground, SectionPadding } from './Section.types';
 import styles from './Section.module.css';
 
@@ -107,13 +108,16 @@ export const Section: React.FC<SectionProps> = (props) => {
     opacity: overlayOpacity,
   };
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <TemplateProvider value={params}>
       <Element
         className={classes}
         style={inlineStyles}
         data-testid={testId}
-        {...rest}
+        {...validDOMProps}
       >
         {/* Overlay for background images */}
         {backgroundImage && overlay && (

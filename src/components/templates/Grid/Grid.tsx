@@ -27,13 +27,16 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import {
   useTemplateContext,
   mergeParameters,
   TemplateProvider,
 } from '@/context/parameters/ParameterContext';
 import type { GridProps, GridGap } from './Grid.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Grid.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 /**
  * Gap value mappings (rem units)
@@ -96,13 +99,16 @@ export const Grid: React.FC<GridProps> = (props) => {
     ...style,
   };
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <TemplateProvider value={params}>
       <Element
         className={classes}
         style={inlineStyles}
         data-testid={testId}
-        {...rest}
+        {...validDOMProps}
       >
         {children}
       </Element>

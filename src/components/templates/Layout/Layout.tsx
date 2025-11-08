@@ -28,13 +28,16 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import {
   useTemplateContext,
   mergeParameters,
   TemplateProvider,
 } from '@/context/parameters/ParameterContext';
 import type { LayoutProps } from './Layout.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Layout.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Layout: React.FC<LayoutProps> = (props) => {
   // Get inherited parameters from context
@@ -100,13 +103,16 @@ export const Layout: React.FC<LayoutProps> = (props) => {
       }
     : {};
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <TemplateProvider value={params}>
       <div
         className={layoutClasses}
         style={style as React.CSSProperties}
         data-testid={testId}
-        {...rest}
+        {...validDOMProps}
       >
         {/* Header */}
         {header && (

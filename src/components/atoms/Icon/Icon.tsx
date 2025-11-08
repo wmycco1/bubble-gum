@@ -28,9 +28,13 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { IconProps } from './Icon.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Icon.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Icon: React.FC<IconProps> = (props) => {
   // Get inherited parameters from Atom context
@@ -63,6 +67,9 @@ export const Icon: React.FC<IconProps> = (props) => {
 
   // Simple placeholder SVG (in real implementation, integrate icon library)
   // This could be replaced with lucide-react, heroicons, or custom SVG loader
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <svg
       className={classes}
@@ -73,7 +80,7 @@ export const Icon: React.FC<IconProps> = (props) => {
       fill="currentColor"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      {...rest}
+      {...validDOMProps}
     >
       {/* Placeholder: star icon */}
       {/* In production, load actual icon based on 'name' prop */}

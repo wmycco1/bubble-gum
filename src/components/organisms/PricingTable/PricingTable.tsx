@@ -35,14 +35,23 @@
 'use client';
 
 import React, { useState } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Heading } from '@/components/atoms/Heading';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Badge } from '@/components/atoms/Badge';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { PricingTableProps, PricingTier, BillingPeriod, PricingFeature } from './PricingTable.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './PricingTable.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const PricingTable: React.FC<PricingTableProps> = (props) => {
   // Get inherited parameters from context
@@ -139,12 +148,15 @@ export const PricingTable: React.FC<PricingTableProps> = (props) => {
     );
   }
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <section
       className={containerClasses}
       style={style as React.CSSProperties}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       {/* Period Toggle (Optional) */}
       {showPeriodToggle && (

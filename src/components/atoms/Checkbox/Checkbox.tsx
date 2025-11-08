@@ -15,10 +15,14 @@
  */
 'use client';
 
-import React, { forwardRef, useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { CheckboxProps } from './Checkbox.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Checkbox.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (props, ref) => {
@@ -59,7 +63,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         className={classes}
         disabled={disabled}
         data-testid={testId}
-        {...rest}
+        {...validDOMProps}
       />
     );
 

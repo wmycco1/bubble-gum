@@ -32,12 +32,19 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Link } from '@/components/atoms/Link';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { BreadcrumbProps } from './Breadcrumb.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Breadcrumb.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Breadcrumb: React.FC<BreadcrumbProps> = (props) => {
   // Get inherited parameters from context
@@ -80,12 +87,15 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = (props) => {
     return null;
   }
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <nav
       className={classes}
       aria-label="Breadcrumb"
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       <ol className={styles['breadcrumb-list']}>
         <AtomProvider value={{ size: 'sm' }}>

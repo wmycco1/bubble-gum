@@ -28,11 +28,17 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { StarRatingProps } from './StarRating.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './StarRating.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const StarRating: React.FC<StarRatingProps> = (props) => {
   // Get inherited parameters from context
@@ -122,6 +128,9 @@ export const StarRating: React.FC<StarRatingProps> = (props) => {
   // Format rating value for display
   const formattedRating = clampedRating.toFixed(1);
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       id={id}
@@ -134,7 +143,7 @@ export const StarRating: React.FC<StarRatingProps> = (props) => {
       aria-valuemax={readonly ? undefined : maxRating}
       aria-readonly={readonly}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       {/* Stars container */}
       <div className={styles['star-rating__stars']}>

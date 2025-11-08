@@ -33,12 +33,19 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { CarouselProps, CarouselSlide } from './Carousel.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Carousel.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Carousel: React.FC<CarouselProps> = (props) => {
   // Get inherited parameters from context
@@ -211,6 +218,9 @@ export const Carousel: React.FC<CarouselProps> = (props) => {
   const canGoPrevious = loop || currentIndex > 0;
   const canGoNext = loop || currentIndex < slides.length - 1;
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={containerClasses}
@@ -223,7 +233,7 @@ export const Carousel: React.FC<CarouselProps> = (props) => {
       role="region"
       aria-roledescription="carousel"
       aria-label="Image carousel"
-      {...rest}
+      {...validDOMProps}
     >
       {/* Carousel Viewport */}
       <div className={styles['carousel-viewport']} data-testid={`${testId}-viewport`}>

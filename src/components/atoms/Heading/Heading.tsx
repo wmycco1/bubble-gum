@@ -22,9 +22,13 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { HeadingProps } from './Heading.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Heading.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Heading: React.FC<HeadingProps> = (props) => {
   // Get inherited parameters from Atom context
@@ -64,13 +68,16 @@ export const Heading: React.FC<HeadingProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <Component
       id={id}
       className={classes}
       data-testid={testId}
       aria-label={ariaLabel}
-      {...rest}
+      {...validDOMProps}
     >
       {children}
     </Component>

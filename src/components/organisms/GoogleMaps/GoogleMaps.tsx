@@ -10,9 +10,13 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { GoogleMapsProps } from './GoogleMaps.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './GoogleMaps.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const GoogleMaps: React.FC<GoogleMapsProps> = (props) => {
   // Get inherited parameters from context
@@ -38,12 +42,15 @@ export const GoogleMaps: React.FC<GoogleMapsProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={classes}
       style={style as React.CSSProperties}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       <h2>GoogleMaps Component</h2>
       <p>Google Maps embed component</p>

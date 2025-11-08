@@ -27,9 +27,13 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { TextProps } from './Text.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Text.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Text: React.FC<TextProps> = (props) => {
   // Get inherited parameters from Atom context
@@ -93,13 +97,16 @@ export const Text: React.FC<TextProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <Component
       id={id}
       className={classes}
       data-testid={testId}
       aria-label={ariaLabel}
-      {...rest}
+      {...validDOMProps}
     >
       {children}
     </Component>

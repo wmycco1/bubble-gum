@@ -29,10 +29,14 @@
 
 'use client';
 
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { InputProps } from './Input.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Input.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (props, ref) => {
@@ -95,7 +99,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           aria-describedby={describedBy || undefined}
           aria-invalid={ariaInvalid || validation === 'invalid' || !!error}
           data-testid={testId}
-          {...rest}
+          {...validDOMProps}
         />
 
         {/* Error message */}

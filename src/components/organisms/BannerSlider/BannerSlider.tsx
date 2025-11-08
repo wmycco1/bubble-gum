@@ -32,13 +32,21 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Heading } from '@/components/atoms/Heading';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { BannerSliderProps } from './BannerSlider.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './BannerSlider.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const BannerSlider: React.FC<BannerSliderProps> = (props) => {
   // Get inherited parameters from context
@@ -171,7 +179,7 @@ export const BannerSlider: React.FC<BannerSliderProps> = (props) => {
         data-testid={testId}
         role="region"
         aria-label="Banner announcement"
-        {...rest}
+        {...validDOMProps}
       >
         <div className={styles['slider-track']}>
           <div
@@ -211,6 +219,9 @@ export const BannerSlider: React.FC<BannerSliderProps> = (props) => {
   // Multiple slides - full carousel
   const currentSlide = slides[currentIndex];
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <section
       className={`${styles['banner-slider']} ${className}`}
@@ -224,7 +235,7 @@ export const BannerSlider: React.FC<BannerSliderProps> = (props) => {
       onMouseLeave={handleMouseLeave}
       onKeyDown={handleKeyDown}
       tabIndex={0}
-      {...rest}
+      {...validDOMProps}
     >
       {/* Slides */}
       <div className={styles['slider-track']}>

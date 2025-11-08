@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { FormBuilderProps } from './FormBuilder.types';
 import styles from './FormBuilder.module.css';
 
@@ -38,12 +39,15 @@ export const FormBuilder: React.FC<FormBuilderProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={classes}
       style={style as React.CSSProperties}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       <h2>FormBuilder Component</h2>
       <p>Dynamic form builder with drag-drop fields</p>

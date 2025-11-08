@@ -11,6 +11,56 @@ import type { CanvasComponent } from './types';
 import type { CSSProperties } from 'react';
 
 /**
+ * Default props for components when they're first added to canvas
+ * Prevents empty/broken components with missing required props
+ */
+const DEFAULT_COMPONENT_PROPS: Record<string, Record<string, any>> = {
+  // Atoms
+  'Button': { text: 'Button', variant: 'primary', size: 'md' },
+  'Text': { text: 'Text content', variant: 'paragraph' },
+  'Heading': { text: 'Heading', level: 'h2' },
+  'Image': { src: '/placeholder.svg', alt: 'Image', width: 300, height: 200 },
+  'Link': { href: '#', text: 'Link' },
+  'Icon': { name: 'star', size: 24 },
+  'Input': { placeholder: 'Enter text...', type: 'text' },
+  'Textarea': { placeholder: 'Enter text...', rows: 4 },
+  'Checkbox': { label: 'Checkbox', checked: false },
+  'Badge': { text: 'Badge', variant: 'default' },
+  'Submit': { text: 'Submit' },
+
+  // Molecules
+  'Alert': { title: 'Alert', message: 'This is an alert message', variant: 'info' },
+  'Breadcrumb': { items: [{ label: 'Home', href: '/' }, { label: 'Current' }] },
+  'Modal': { title: 'Modal Title', children: 'Modal content' },
+  'Progress': { value: 50, max: 100 },
+  'StarRating': { rating: 4, max: 5 },
+  'Toggle': { label: 'Toggle', checked: false },
+  'Tooltip': { content: 'Tooltip text', children: 'Hover me' },
+  'IconBox': { icon: 'star', title: 'Feature', description: 'Description' },
+  'ImageBox': { src: '/placeholder.svg', alt: 'Image', caption: 'Caption' },
+
+  // Organisms
+  'Navbar': { brand: 'Brand', links: [{ label: 'Home', href: '/' }] },
+  'Footer': { text: 'Footer content', links: [] },
+  'Hero': { title: 'Hero Title', subtitle: 'Subtitle', cta: 'Get Started' },
+  'Card': { title: 'Card Title', description: 'Card description' },
+  'Form': { title: 'Form', fields: [] },
+  'Accordion': { items: [{ title: 'Item 1', content: 'Content 1' }] },
+  'Tabs': { tabs: [{ label: 'Tab 1', content: 'Content 1' }] },
+  'Carousel': { items: [{ src: '/placeholder.svg', alt: 'Slide 1' }] },
+  'Features': { title: 'Features', items: [] },
+  'Testimonial': { quote: 'Great product!', author: 'John Doe' },
+  'PricingTable': { plans: [] },
+  'Menu': { items: [{ label: 'Item 1', href: '#' }] },
+
+  // Templates
+  'Container': { children: 'Container content' },
+  'Section': { children: 'Section content' },
+  'Grid': { columns: 3, children: 'Grid content' },
+  'Layout': { children: 'Layout content' },
+};
+
+/**
  * Convert CanvasComponent to Atomic Component props
  *
  * Takes the old format:
@@ -35,10 +85,15 @@ import type { CSSProperties } from 'react';
 export function convertCanvasComponentToProps(
   component: CanvasComponent
 ): Record<string, any> {
-  const { id, props = {}, style = {}, children } = component;
+  const { id, type, props = {}, style = {}, children } = component;
 
-  // Start with all original props
+  // Get default props for this component type (removes "Component" suffix if present)
+  const componentType = type.replace('Component', '');
+  const defaultProps = DEFAULT_COMPONENT_PROPS[componentType] || {};
+
+  // Start with defaults, then merge original props (props win in conflicts)
   const atomicProps: Record<string, any> = {
+    ...defaultProps,
     ...props,
   };
 

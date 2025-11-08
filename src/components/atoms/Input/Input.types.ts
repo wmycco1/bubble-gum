@@ -5,7 +5,7 @@
  * Type-safe props for Input component
  */
 
-import type { ChangeEvent, FocusEvent } from 'react';
+import type { ChangeEvent, FocusEvent, CSSProperties } from 'react';
 
 /**
  * Supported input types
@@ -116,6 +116,12 @@ export interface InputProps {
 
   /** Custom class name */
   className?: string;
+
+  /** Inline styles */
+  style?: CSSProperties;
+
+  /** HTML id */
+  id?: string;
 
   /** Test ID */
   'data-testid'?: string;

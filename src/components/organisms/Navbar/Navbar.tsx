@@ -37,10 +37,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useOrganismContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Link } from '@/components/atoms/Link';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { NavbarProps } from './Navbar.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Navbar.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Navbar: React.FC<NavbarProps> = (props) => {
   // Get inherited parameters from Organism context
@@ -147,6 +152,9 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <nav
       className={navClasses}
@@ -157,7 +165,7 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
         ...(zIndex && { zIndex }),
         ...rest.style,
       }}
-      {...rest}
+      {...validDOMProps}
     >
       <div
         className={containerClasses}

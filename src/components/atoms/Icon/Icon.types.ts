@@ -3,7 +3,6 @@
  * God-Tier Development Protocol 2025
  */
 
-import type { AtomParameters } from '@/types/parameters';
 
 /**
  * Icon sizes matching the size scale

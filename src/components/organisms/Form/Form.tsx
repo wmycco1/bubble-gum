@@ -31,15 +31,25 @@
 'use client';
 
 import React, { useState, FormEvent } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Input } from '@/components/atoms/Input';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Textarea } from '@/components/atoms/Textarea';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Checkbox } from '@/components/atoms/Checkbox';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Heading } from '@/components/atoms/Heading';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { FormProps, FormField } from './Form.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Form.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Form: React.FC<FormProps> = (props) => {
   // Get inherited parameters from context
@@ -269,6 +279,9 @@ export const Form: React.FC<FormProps> = (props) => {
     }
   };
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <form
       className={classes}
@@ -276,7 +289,7 @@ export const Form: React.FC<FormProps> = (props) => {
       onSubmit={handleSubmit}
       noValidate
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       {/* Title */}
       {title && (

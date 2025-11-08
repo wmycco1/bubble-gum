@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": ["components/atoms/**/*.types.ts", "components/atoms/**/*.tsx"]
+}

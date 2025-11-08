@@ -19,9 +19,13 @@
  */
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { ButtonProps } from './Button.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Button.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Button: React.FC<ButtonProps> = (props) => {
   // Get inherited parameters from Atom context
@@ -83,6 +87,9 @@ export const Button: React.FC<ButtonProps> = (props) => {
   // Determine if button should be disabled
   const isDisabled = disabled || loading;
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <button
       id={id}
@@ -96,7 +103,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
       aria-disabled={disabled}
       aria-busy={loading}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       {/* Loading spinner */}
       {loading && (

@@ -30,11 +30,17 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { SliderProps } from './Slider.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Slider.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Slider: React.FC<SliderProps> = (props) => {
   // Get inherited parameters from context
@@ -152,6 +158,9 @@ export const Slider: React.FC<SliderProps> = (props) => {
   const canGoPrevious = loop || currentIndex > 0;
   const canGoNext = loop || currentIndex < totalPages - 1;
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={classes}
@@ -163,7 +172,7 @@ export const Slider: React.FC<SliderProps> = (props) => {
       role="region"
       aria-label="Content slider"
       aria-roledescription="carousel"
-      {...rest}
+      {...validDOMProps}
     >
       {/* Slider track */}
       <div className={styles['slider-viewport']} data-testid={`${testId}-viewport`}>

@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { RecentlyViewedProps } from './RecentlyViewed.types';
 import styles from './RecentlyViewed.module.css';
 
@@ -38,12 +39,15 @@ export const RecentlyViewed: React.FC<RecentlyViewedProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={classes}
       style={style as React.CSSProperties}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       <h2>RecentlyViewed Component</h2>
       <p>Recently viewed products list</p>

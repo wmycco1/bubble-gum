@@ -3,10 +3,14 @@
  */
 'use client';
 
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { TextareaProps } from './Textarea.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Textarea.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (props, ref) => {
@@ -49,7 +53,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : helperText ? `${id}-helper` : undefined}
           data-testid={testId}
-          {...rest}
+          {...validDOMProps}
         />
         {error && (
           <p id={`${id}-error`} className={styles['textarea-error']} role="alert">

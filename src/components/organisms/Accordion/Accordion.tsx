@@ -31,12 +31,19 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Heading } from '@/components/atoms/Heading';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { AccordionProps, AccordionItem } from './Accordion.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Accordion.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Accordion: React.FC<AccordionProps> = (props) => {
   // Get inherited parameters from context
@@ -144,12 +151,15 @@ export const Accordion: React.FC<AccordionProps> = (props) => {
     );
   }
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={containerClasses}
       style={style as React.CSSProperties}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       {items.map((item, index) => {
         const isOpen = openItems.has(item.id);

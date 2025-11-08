@@ -10,9 +10,13 @@
 'use client';
 
 import React from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { FacebookLikeProps } from './FacebookLike.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './FacebookLike.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const FacebookLike: React.FC<FacebookLikeProps> = (props) => {
   // Get inherited parameters from context
@@ -38,12 +42,15 @@ export const FacebookLike: React.FC<FacebookLikeProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={classes}
       style={style as React.CSSProperties}
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       <h2>FacebookLike Component</h2>
       <p>Facebook Like button embed</p>

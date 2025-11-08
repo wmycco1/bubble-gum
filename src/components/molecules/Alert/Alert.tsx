@@ -32,13 +32,21 @@
 'use client';
 
 import React, { useState } from 'react';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { useAtomContext, mergeParameters, AtomProvider } from '@/context/parameters/ParameterContext';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Icon } from '@/components/atoms/Icon';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Text } from '@/components/atoms/Text';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Heading } from '@/components/atoms/Heading';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import { Button } from '@/components/atoms/Button';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import type { AlertProps } from './Alert.types';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 import styles from './Alert.module.css';
+import { getValidDOMProps } from '@/lib/utils/filterDOMProps';
 
 export const Alert: React.FC<AlertProps> = (props) => {
   // Get inherited parameters from context
@@ -112,12 +120,15 @@ export const Alert: React.FC<AlertProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   return (
     <div
       className={classes}
       role="alert"
       data-testid={testId}
-      {...rest}
+      {...validDOMProps}
     >
       {/* Icon */}
       <div className={styles['alert-icon']}>
