@@ -106,10 +106,100 @@ const VALID_DOM_ATTRIBUTES = new Set([
 ]);
 
 /**
+ * List of custom React props from our Parameter system that should NEVER reach DOM.
+ * These are from Atom/Molecule/Organism/Template Parameters.
+ */
+const INVALID_CUSTOM_PROPS = new Set([
+  // Navigation/CTA
+  'ctaLink',
+  'ctaText',
+  'ctaVariant',
+  'ctaOnClick',
+  'ctaHref',
+
+  // Display/Layout
+  'overlay',
+  'overlayOpacity',
+  'overlayColor',
+  'textAlign',
+  'align',
+  'justify',
+  'gap',
+  'spacing',
+  'padding',
+  'margin',
+  'maxWidth',
+  'fullWidth',
+
+  // Component-specific
+  'maxItems',
+  'showAddToCart',
+  'submitText',
+  'showLabels',
+  'showProgress',
+  'showCloseButton',
+  'dismissible',
+
+  // Content
+  'items',
+  'data',
+  'columns',
+  'rows',
+
+  // Animations
+  'animation',
+  'animationDuration',
+  'animationDelay',
+
+  // Other common parameters
+  'variant',
+  'size',
+  'position',
+  'sticky',
+  'badge',
+  'backgroundImage',
+  'message',
+  'subtitle',
+  'description',
+  'content',
+  'sidebar',
+  'sidebarPosition',
+  'header',
+  'footer',
+  'level',
+  'weight',
+  'family',
+  'underline',
+  'italic',
+  'truncate',
+  'ellipsis',
+  'icon',
+  'iconPosition',
+  'iconSize',
+  'iconColor',
+  'format',
+  'aspectRatio',
+  'objectFit',
+  'lazy',
+  'priority',
+  'quality',
+  'blur',
+  'radius',
+  'as',
+  'Element',
+  'responsive',
+]);
+
+/**
  * Check if an attribute is a valid DOM attribute
  */
 function isValidDOMAttribute(key: string): boolean {
-  // Check if it's in the whitelist
+  // First check if it's explicitly invalid (our custom props)
+  if (INVALID_CUSTOM_PROPS.has(key)) {
+    return false;
+  }
+
+  // Check if it's in the valid whitelist
   if (VALID_DOM_ATTRIBUTES.has(key)) {
     return true;
   }
@@ -153,6 +243,10 @@ export function filterDOMProps<T extends Record<string, any>>(
         validProps[key] = props[key];
       } else {
         invalidProps[key] = props[key];
+        // Log filtered props in development
+        if (process.env.NODE_ENV === 'development') {
+          console.debug(`[filterDOMProps] Filtered out: ${key}`);
+        }
       }
     }
   }
