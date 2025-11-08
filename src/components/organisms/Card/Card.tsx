@@ -88,6 +88,9 @@ export const Card: React.FC<CardProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   // Handle card click
   const handleCardClick = (e: React.MouseEvent<HTMLElement>) => {
     if (href || onCardClick) {

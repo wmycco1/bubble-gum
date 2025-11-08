@@ -53,6 +53,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       .filter(Boolean)
       .join(' ');
 
+    // Filter out invalid DOM props from rest
+    const validDOMProps = getValidDOMProps(rest);
+
     const checkbox = (
       <input
         ref={checkboxRef}

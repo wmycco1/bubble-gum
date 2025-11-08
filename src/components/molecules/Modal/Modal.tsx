@@ -269,6 +269,9 @@ export const Modal: React.FC<ModalProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest
+  const validDOMProps = getValidDOMProps(rest);
+
   // Render modal content
   const modalContent = (
     <div

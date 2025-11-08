@@ -81,6 +81,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       .filter(Boolean)
       .join(' ');
 
+    // Filter out invalid DOM props from rest
+    const validDOMProps = getValidDOMProps(rest);
+
     return (
       <div className={styles['input-wrapper']}>
         <input
