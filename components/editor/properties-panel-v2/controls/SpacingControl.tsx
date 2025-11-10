@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SpacingControl - Modern UI for Margin/Padding (V7.4)
+ * SpacingControl - Modern UI for Margin/Padding (V7.5)
  *
  * Features:
  * - All-sides input (shorthand)
@@ -9,11 +9,12 @@
  * - Visual box model preview
  * - User-friendly UX 2025
  *
- * V7.4 Fix (Nov 10, 2025):
- * - Fixed: Simple mode ALWAYS overwrites ALL 4 sides now (including Advanced-set values)
- * - Changed order: set shorthand FIRST, then clear individual sides
- * - This ensures Badge component sees shorthand before checking individual values
- * - Badge priority is: individual > shorthand, so order matters for React batching
+ * V7.5 Fix (Nov 10, 2025):
+ * - Fixed: Simple mode NOW ALWAYS overwrites ALL 4 sides (including Advanced-set values)
+ * - Used setTimeout(0) to break React batching for individual side clearing
+ * - Set shorthand FIRST, then clear sides in next event loop tick
+ * - This guarantees Badge processes shorthand before individual values are cleared
+ * - Without setTimeout, React batches all updates and Badge sees old individual values
  * - User can switch modes freely, values cleared only when editing Simple field
  */
 
@@ -57,18 +58,19 @@ export function SpacingControl({
   const handleShorthandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? undefined : Number(e.target.value);
 
-    // CRITICAL: Set shorthand FIRST, then clear individual sides
-    // This order ensures Badge sees the new shorthand before checking individual values
-    // Badge priority: individual > shorthand, so we need shorthand set before clearing
+    // CRITICAL: Set shorthand FIRST
     onChange(paramName, newValue);
 
-    // Clear ALL individual sides AFTER setting shorthand
-    // This ensures Simple mode value applies to ALL 4 sides
+    // Use setTimeout to ensure individual sides are cleared AFTER shorthand is processed
+    // This breaks React batching and guarantees shorthand is saved before clearing sides
+    // Without this, Badge might see old individual values due to React's concurrent updates
     if (onSideChange) {
-      onSideChange('Top', undefined);
-      onSideChange('Right', undefined);
-      onSideChange('Bottom', undefined);
-      onSideChange('Left', undefined);
+      setTimeout(() => {
+        onSideChange('Top', undefined);
+        onSideChange('Right', undefined);
+        onSideChange('Bottom', undefined);
+        onSideChange('Left', undefined);
+      }, 0);
     }
   };
 
