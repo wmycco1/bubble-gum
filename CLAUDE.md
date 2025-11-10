@@ -213,6 +213,7 @@
 |------|------|--------|---------|
 | **Технологический стек** | [docs/TECH_STACK.md](./docs/TECH_STACK.md) | 8 KB | ⚠️ **ОБНОВЛЕНО (Nov 2025)**: Next.js 16, React 19, Prisma 6, tRPC 11, Clerk 6, Tailwind 4 + [Breaking Changes Guide](./MIGRATION_GUIDE.md) |
 | **Актуальные версии** | [docs/TECH_STACK_ACTUAL_NOV_2025.md](./docs/TECH_STACK_ACTUAL_NOV_2025.md) | 17 KB | **NEW!** Полная таблица версий (Nov 2025), Breaking changes, Совместимость пакетов, Рекомендации по миграции |
+| **Dev Server Management** | [docs/DEV_SERVER_MANAGEMENT.md](./docs/DEV_SERVER_MANAGEMENT.md) | 12 KB | **NEW!** Правила управления dev сервером, Troubleshooting, Turbopack кэш, Порты (КРИТИЧНО для работы) |
 | **База данных** | [docs/DATABASE.md](./docs/DATABASE.md) | 16 KB | 24 таблицы (11 MVP), Prisma schema, Field Reference, Indexes, Security, Multi-tenancy |
 | **API** | [docs/API.md](./docs/API.md) | 24 KB | tRPC (13 роутеров, 80+ endpoints), REST (OpenAPI 3.0), 6 critical endpoints с примерами, CSV import, Webhooks, Rate limits |
 | **Security** | [docs/SECURITY.md](./docs/SECURITY.md) | 36 KB | Authentication (Clerk), Input Validation (Zod), XSS Prevention, Security Headers, Rate Limiting, Encryption, OWASP Top 10, Checklist (28 пунктов) |
@@ -568,6 +569,17 @@ npx prisma generate && npx prisma db push
 # Проверь rate limits
 # Модель: claude-sonnet-4-5-20250929
 ```
+
+**Dev Server Issues:**
+```bash
+# Множественные Node процессы, порты, Turbopack кэш
+# См. ПОЛНЫЙ ГАЙД: docs/DEV_SERVER_MANAGEMENT.md
+
+# Быстрое решение:
+pkill -9 node && rm -rf .next && sleep 3 && npm run dev
+```
+
+> ⚠️ **КРИТИЧНО:** При изменениях в React компонентах ВСЕГДА выполняй полную очистку! См. [docs/DEV_SERVER_MANAGEMENT.md](./docs/DEV_SERVER_MANAGEMENT.md)
 
 ---
 
