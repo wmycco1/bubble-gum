@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SpacingControl - Modern UI for Margin/Padding (V7.2)
+ * SpacingControl - Modern UI for Margin/Padding (V7.3)
  *
  * Features:
  * - All-sides input (shorthand)
@@ -9,10 +9,11 @@
  * - Visual box model preview
  * - User-friendly UX 2025
  *
- * V7.2 Fix (Nov 10, 2025):
- * - Fixed: Switching from Advanced to Simple now resets ALL individual sides
- * - Now Simple mode ALWAYS overwrites all 4 sides with same value
- * - handleModeToggle() clears individual values when switching to Simple
+ * V7.3 Fix (Nov 10, 2025):
+ * - Fixed: Simple mode now properly overwrites ALL 4 sides when entering value
+ * - Clears individual sides ONLY when user enters value in Simple mode
+ * - Does NOT clear on mode toggle (Advanced <-> Simple button click)
+ * - User can switch modes freely, values cleared only when editing Simple field
  */
 
 import React, { useState } from 'react';
@@ -55,16 +56,17 @@ export function SpacingControl({
   const handleShorthandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? undefined : Number(e.target.value);
 
-    // Set the shorthand value
-    onChange(paramName, newValue);
-
-    // CRITICAL: Reset all individual sides to ensure shorthand takes precedence
+    // CRITICAL: When changing shorthand value, reset ALL individual sides
+    // This ensures Simple mode value applies to ALL 4 sides
     if (onSideChange) {
       onSideChange('Top', undefined);
       onSideChange('Right', undefined);
       onSideChange('Bottom', undefined);
       onSideChange('Left', undefined);
     }
+
+    // Set the shorthand value AFTER clearing individual sides
+    onChange(paramName, newValue);
   };
 
   const handleSideChange = (side: 'Top' | 'Right' | 'Bottom' | 'Left', e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,23 +74,6 @@ export function SpacingControl({
     if (onSideChange) {
       onSideChange(side, newValue);
     }
-  };
-
-  // Handle mode toggle (Advanced <-> Simple)
-  const handleModeToggle = () => {
-    const willBeSimple = isExpanded; // If currently expanded (Advanced), switching to Simple
-
-    if (willBeSimple && hasIndividualValues) {
-      // Switching to Simple mode: Reset all individual sides
-      if (onSideChange) {
-        onSideChange('Top', undefined);
-        onSideChange('Right', undefined);
-        onSideChange('Bottom', undefined);
-        onSideChange('Left', undefined);
-      }
-    }
-
-    setIsExpanded(!isExpanded);
   };
 
   return (
@@ -105,7 +90,7 @@ export function SpacingControl({
         </label>
         <button
           type="button"
-          onClick={handleModeToggle}
+          onClick={() => setIsExpanded(!isExpanded)}
           className="text-xs text-blue-600 hover:text-blue-700 font-medium"
         >
           {isExpanded ? 'Simple' : 'Advanced'}
