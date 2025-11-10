@@ -19,9 +19,28 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
   // ============================================
 
   Badge: [
+    // Content
     { name: 'children', type: 'text', label: 'Text', required: true },
-    { name: 'variant', type: 'select', label: 'Variant', options: ['default', 'primary', 'secondary', 'success', 'warning', 'error'] },
+
+    // Visual Style
+    { name: 'variant', type: 'select', label: 'Variant', options: ['default', 'primary', 'success', 'warning', 'error', 'info'] },
     { name: 'size', type: 'select', label: 'Size', options: ['sm', 'md', 'lg'] },
+    { name: 'rounded', type: 'select', label: 'Shape', options: ['pill', 'rounded', 'square'], defaultValue: 'pill' },
+    { name: 'outlined', type: 'boolean', label: 'Outlined' },
+
+    // Icon Settings
+    { name: 'icon', type: 'text', label: 'Icon Name', description: 'e.g. star, heart, check, x' },
+    { name: 'iconPosition', type: 'select', label: 'Icon Position', options: ['left', 'right'], defaultValue: 'left' },
+    { name: 'dot', type: 'boolean', label: 'Show Dot Indicator' },
+
+    // Interactive
+    { name: 'clickable', type: 'boolean', label: 'Clickable' },
+    { name: 'removable', type: 'boolean', label: 'Removable (Show × button)' },
+
+    // Custom Colors
+    { name: 'color', type: 'color', label: 'Text Color (Custom)', description: 'Overrides variant color' },
+    { name: 'backgroundColor', type: 'color', label: 'Background Color (Custom)', description: 'Overrides variant' },
+    { name: 'borderColor', type: 'color', label: 'Border Color (Custom)', description: 'For outlined mode' },
   ],
 
   Button: [
