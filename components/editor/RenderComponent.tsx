@@ -150,6 +150,38 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       ...(comp.style && { style: comp.style }),
     };
 
+    // ═══════════════════════════════════════════════════════════════
+    // SPECIAL HANDLING FOR MODAL IN EDITOR
+    // ═══════════════════════════════════════════════════════════════
+    if (component.type === 'Modal') {
+      // Override onClose to actually close the modal in editor
+      atomicProps.onClose = () => {
+        logger.debug('🔴 Modal close clicked in editor, removing component');
+        const { deleteComponent } = useCanvasStore.getState();
+        deleteComponent(component.id);
+        toast.success('Modal removed from canvas', {
+          duration: 2000,
+          icon: '✅',
+          position: 'bottom-right',
+        });
+      };
+
+      // Ensure modal is open in editor
+      atomicProps.isOpen = true;
+
+      // Make sure close button is visible
+      atomicProps.showCloseButton = true;
+
+      // Allow clicking overlay to close
+      atomicProps.closeOnOverlayClick = true;
+
+      logger.debug('🎭 Modal props overridden for editor:', {
+        componentId: component.id,
+        hasOnClose: !!atomicProps.onClose,
+        isOpen: atomicProps.isOpen,
+      });
+    }
+
     // Render children recursively if component has them
     if (comp.children && comp.children.length > 0) {
       atomicProps.children = comp.children.map((child) => (
