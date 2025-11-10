@@ -19,7 +19,7 @@ import { logger } from '@/lib/utils/logger';
 
 interface CanvasStore extends CanvasState {
   // Component actions
-  addComponent: (type: ComponentType, parentId?: string, index?: number) => void;
+  addComponent: (typeOrConfig: ComponentType | { type: ComponentType; props?: ComponentProps }, parentId?: string, index?: number) => void;
   updateComponent: (id: string, updates: Partial<CanvasComponent>) => void;
   deleteComponent: (id: string) => void;
   moveComponent: (id: string, newParentId: string | null, newIndex: number) => void;
@@ -1423,11 +1423,20 @@ export const useCanvasStore = create<CanvasStore>()(
         ...initialState,
 
         // Add new component
-        addComponent: (type, parentId, index) => {
+        addComponent: (typeOrConfig, parentId, index) => {
+          // Support both old API (type string) and new API (config object)
+          const isConfigObject = typeof typeOrConfig === 'object' && 'type' in typeOrConfig;
+          const type = isConfigObject ? typeOrConfig.type : typeOrConfig;
+          const customProps = isConfigObject ? typeOrConfig.props : undefined;
+
+          const defaultComponent = getDefaultComponent(type);
+
           const newComponent: CanvasComponent = {
-            ...getDefaultComponent(type),
+            ...defaultComponent,
             id: nanoid(),
             parentId,
+            // Merge custom props with default props
+            props: customProps ? { ...defaultComponent.props, ...customProps } : defaultComponent.props,
           };
 
           set((state) => {
