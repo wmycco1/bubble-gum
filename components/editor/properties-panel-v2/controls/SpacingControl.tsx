@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SpacingControl - Modern UI for Margin/Padding (V7.3)
+ * SpacingControl - Modern UI for Margin/Padding (V7.4)
  *
  * Features:
  * - All-sides input (shorthand)
@@ -9,10 +9,11 @@
  * - Visual box model preview
  * - User-friendly UX 2025
  *
- * V7.3 Fix (Nov 10, 2025):
- * - Fixed: Simple mode now properly overwrites ALL 4 sides when entering value
- * - Clears individual sides ONLY when user enters value in Simple mode
- * - Does NOT clear on mode toggle (Advanced <-> Simple button click)
+ * V7.4 Fix (Nov 10, 2025):
+ * - Fixed: Simple mode ALWAYS overwrites ALL 4 sides now (including Advanced-set values)
+ * - Changed order: set shorthand FIRST, then clear individual sides
+ * - This ensures Badge component sees shorthand before checking individual values
+ * - Badge priority is: individual > shorthand, so order matters for React batching
  * - User can switch modes freely, values cleared only when editing Simple field
  */
 
@@ -56,7 +57,12 @@ export function SpacingControl({
   const handleShorthandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? undefined : Number(e.target.value);
 
-    // CRITICAL: When changing shorthand value, reset ALL individual sides
+    // CRITICAL: Set shorthand FIRST, then clear individual sides
+    // This order ensures Badge sees the new shorthand before checking individual values
+    // Badge priority: individual > shorthand, so we need shorthand set before clearing
+    onChange(paramName, newValue);
+
+    // Clear ALL individual sides AFTER setting shorthand
     // This ensures Simple mode value applies to ALL 4 sides
     if (onSideChange) {
       onSideChange('Top', undefined);
@@ -64,9 +70,6 @@ export function SpacingControl({
       onSideChange('Bottom', undefined);
       onSideChange('Left', undefined);
     }
-
-    // Set the shorthand value AFTER clearing individual sides
-    onChange(paramName, newValue);
   };
 
   const handleSideChange = (side: 'Top' | 'Right' | 'Bottom' | 'Left', e: React.ChangeEvent<HTMLInputElement>) => {
