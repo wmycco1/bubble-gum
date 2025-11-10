@@ -235,6 +235,9 @@ function generateDefaultProps(componentName: string): Record<string, any> {
           defaultProps[param.name] = componentName;
         } else if (param.name === 'placeholder') {
           defaultProps[param.name] = `Enter ${param.label.toLowerCase()}...`;
+        } else if (param.name === 'value' && (componentName === 'Input' || componentName === 'Textarea')) {
+          // Use defaultValue instead of value for inputs in editor (no onChange)
+          defaultProps['defaultValue'] = '';
         } else if (param.required) {
           defaultProps[param.name] = `Sample ${param.label}`;
         }
@@ -253,7 +256,12 @@ function generateDefaultProps(componentName: string): Record<string, any> {
         break;
 
       case 'boolean':
-        defaultProps[param.name] = false;
+        // Use defaultChecked instead of checked for checkboxes in editor (no onChange)
+        if (param.name === 'checked' && componentName === 'Checkbox') {
+          defaultProps['defaultChecked'] = false;
+        } else {
+          defaultProps[param.name] = false;
+        }
         break;
 
       case 'color':
@@ -280,6 +288,12 @@ function generateDefaultProps(componentName: string): Record<string, any> {
   // Ensure children exists if not set
   if (!defaultProps.children && !defaultProps.content && !defaultProps.title) {
     defaultProps.children = componentName;
+  }
+
+  // Add required function props for specific components
+  if (componentName === 'Modal' && !defaultProps.onClose) {
+    defaultProps.onClose = () => {}; // noop function for editor
+    defaultProps.isOpen = true; // Show modal by default in editor
   }
 
   return defaultProps;
