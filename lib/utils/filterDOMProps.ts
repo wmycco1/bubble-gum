@@ -44,7 +44,7 @@ const VALID_DOM_ATTRIBUTES = new Set([
   // Form attributes
   'accept',
   'acceptCharset',
-  'action',
+  // 'action', // Removed - React 19 only allows on <form>, filtered in INVALID_CUSTOM_PROPS
   'autoComplete',
   'autoFocus',
   'checked',
@@ -110,6 +110,9 @@ const VALID_DOM_ATTRIBUTES = new Set([
  * These are from Atom/Molecule/Organism/Template Parameters.
  */
 const INVALID_CUSTOM_PROPS = new Set([
+  // React 19 form-specific props (only valid on <form> elements)
+  'action', // Can only be on <form>, not <div>
+
   // Navigation/CTA
   'ctaLink',
   'ctaText',

@@ -75,6 +75,9 @@ export const Features: React.FC<FeaturesProps> = (props) => {
     .filter(Boolean)
     .join(' ');
 
+  // Filter out invalid DOM props from rest (MUST be before early returns)
+  const validDOMProps = getValidDOMProps(rest);
+
   // Empty state
   if (!features || features.length === 0) {
     return (
@@ -93,9 +96,6 @@ export const Features: React.FC<FeaturesProps> = (props) => {
       </section>
     );
   }
-
-  // Filter out invalid DOM props from rest
-  const validDOMProps = getValidDOMProps(rest);
 
   return (
     <section
