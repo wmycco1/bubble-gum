@@ -53,7 +53,17 @@ export const Heading: React.FC<HeadingProps> = (props) => {
   let normalizedLevel: string = 'h2'; // Default fallback
 
   // First, convert rawLevel to string if it's a number
-  const level = typeof rawLevel === 'number' ? String(rawLevel) : rawLevel;
+  const level = typeof rawLevel === 'number' ? String(rawLevel) : (rawLevel || 'h2');
+
+  // Debug log BEFORE normalization
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    console.log('🔍 Heading level before normalization:', {
+      rawLevel,
+      level,
+      typeOfRaw: typeof rawLevel,
+      typeOfLevel: typeof level
+    });
+  }
 
   if (typeof level === 'string') {
     if (/^[1-6]$/.test(level)) {
@@ -69,18 +79,20 @@ export const Heading: React.FC<HeadingProps> = (props) => {
   const validLevels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
   type ValidHeadingTag = typeof validLevels[number];
 
-  const Component: ValidHeadingTag = validLevels.includes(normalizedLevel as any)
+  let Component: ValidHeadingTag = validLevels.includes(normalizedLevel as any)
     ? (normalizedLevel as ValidHeadingTag)
     : 'h2';
 
-  // Debug log for troubleshooting (can be removed later)
-  if (typeof window !== 'undefined' && !validLevels.includes(Component)) {
-    console.warn('🚨 Invalid heading level detected:', {
-      original: level,
-      normalized: normalizedLevel,
-      final: Component,
-      type: typeof level
+  // CRITICAL: Double-check Component is valid before rendering
+  // This prevents ANY invalid tag from being used
+  if (!validLevels.includes(Component as any)) {
+    console.error('🚨 CRITICAL: Invalid Component detected, forcing h2:', {
+      Component,
+      normalizedLevel,
+      level,
+      rawLevel
     });
+    Component = 'h2';
   }
 
   // Compute CSS classes (using CSS modules)
