@@ -66,13 +66,16 @@ export const SoundCloud: React.FC<SoundCloudProps> = (props) => {
     ...rest
   } = params;
 
+  // Error icon constant
+  const ERROR_ICON = String.fromCodePoint(0x1F50A); // 🔊 speaker emoji
+
   // Validate URL
   if (!url || !url.includes('soundcloud.com')) {
     return (
-      <div className={styles.soundcloud__error} data-testid={`${testId}-error`}>
-        <div className={styles.soundcloud__error-icon}>🔊</div>
-        <div className={styles.soundcloud__error-title}>Invalid SoundCloud URL</div>
-        <div className={styles.soundcloud__error-message}>
+      <div className={styles['soundcloud__error']} data-testid={`${testId}-error`}>
+        <div className={styles['soundcloud__error-icon']}>{ERROR_ICON}</div>
+        <div className={styles['soundcloud__error-title']}>Invalid SoundCloud URL</div>
+        <div className={styles['soundcloud__error-message']}>
           {url ? 'Please provide a valid SoundCloud URL' : 'No URL provided'}
         </div>
       </div>
@@ -96,7 +99,7 @@ export const SoundCloud: React.FC<SoundCloudProps> = (props) => {
   embedUrl.searchParams.set('visual', String(showArtwork));
 
   // Compute CSS classes
-  const wrapperClasses = [styles.soundcloud, className].filter(Boolean).join(' ');
+  const wrapperClasses = [styles['soundcloud'], className].filter(Boolean).join(' ');
 
   // Filter out invalid DOM props
   const validDOMProps = getValidDOMProps(rest);
@@ -109,15 +112,14 @@ export const SoundCloud: React.FC<SoundCloudProps> = (props) => {
       {...validDOMProps}
     >
       <iframe
-        className={styles.soundcloud__iframe}
+        className={styles['soundcloud__iframe']}
         width="100%"
         height={embedHeight}
-        scrolling="no"
-        frameBorder="no"
         allow="autoplay"
         src={embedUrl.toString()}
         title={ariaLabel || 'SoundCloud Player'}
         aria-label={ariaLabel || 'SoundCloud embedded player'}
+        style={{ border: 'none', overflow: 'hidden' }}
       />
     </div>
   );

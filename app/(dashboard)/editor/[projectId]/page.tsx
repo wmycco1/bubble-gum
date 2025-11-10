@@ -32,7 +32,7 @@ import {
   hasLocalStorageConflict,
   getPersistedCanvasState,
 } from '@/lib/editor/canvas-store';
-import { convertArrayOldToNew, type DbComponent } from '@/lib/editor/adapter';
+// Adapter removed - all data now in atomic component format
 import { useAutoSave } from '@/lib/hooks/useAutoSave';
 import { useKeyboardShortcuts } from '@/lib/hooks/useKeyboardShortcuts';
 import toast, { Toaster } from 'react-hot-toast';
@@ -144,18 +144,10 @@ export default function EditorPage(props: EditorPageProps) {
           : [];
 
       // Detect format: NEW format has 'style' property, OLD format has specific DB shape
-      let loadedComponents;
-      if (content.length > 0 && 'style' in content[0]) {
-        // NEW format - use directly
-        logger.debug('📥 Loading components in NEW format from DB', { count: content.length });
-        loadedComponents = content;
-      } else if (content.length > 0) {
-        // OLD format - convert
-        logger.debug('📥 Loading components in OLD format from DB (converting...)', { count: content.length });
-        loadedComponents = convertArrayOldToNew(content as DbComponent[]);
-      } else {
-        // Empty
-        loadedComponents = [];
+      // All data is now in atomic component format (adapters removed)
+      const loadedComponents = content.length > 0 ? content : [];
+      if (loadedComponents.length > 0) {
+        logger.debug('📥 Loading components from DB', { count: loadedComponents.length });
       }
 
       // Check for localStorage conflict
@@ -347,8 +339,8 @@ export default function EditorPage(props: EditorPageProps) {
           ? JSON.parse(homepage.content)
           : [];
 
-      const dbComponents = convertArrayOldToNew(content as DbComponent[]);
-      loadComponents(dbComponents);
+      // All data is now in atomic component format (adapters removed)
+      loadComponents(content);
       setShowConflictModal(false);
       setConflictResolved(true);
       toast.success('Loaded from database', { duration: 3000 });
