@@ -1,40 +1,64 @@
 /**
  * Badge Component Styles - God-Tier 2025
+ * Enhanced with icon support, removable option, and custom styling
  */
 
 :root {
   --badge-padding-sm: 0.125rem 0.5rem;
-  --badge-padding-md: 0.125rem 0.625rem;
-  --badge-padding-lg: 0.25rem 0.75rem;
+  --badge-padding-md: 0.25rem 0.625rem;
+  --badge-padding-lg: 0.375rem 0.75rem;
   --badge-font-sm: 0.75rem;
   --badge-font-md: 0.875rem;
   --badge-font-lg: 1rem;
+  --badge-gap: 0.375rem;
+  --badge-transition: all 0.15s ease;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: var(--badge-gap);
   font-weight: 500;
-  border-radius: 9999px;
   white-space: nowrap;
+  transition: var(--badge-transition);
+  border: 1px solid transparent;
+  position: relative;
 }
 
+/* Sizes */
 .badge--sm {
   padding: var(--badge-padding-sm);
   font-size: var(--badge-font-sm);
+  line-height: 1.2;
 }
 
 .badge--md {
   padding: var(--badge-padding-md);
   font-size: var(--badge-font-md);
+  line-height: 1.3;
 }
 
 .badge--lg {
   padding: var(--badge-padding-lg);
   font-size: var(--badge-font-lg);
+  line-height: 1.4;
 }
 
+/* Rounded variants */
+.badge--pill {
+  border-radius: 9999px;
+}
+
+.badge--rounded {
+  border-radius: 0.375rem;
+}
+
+.badge--square {
+  border-radius: 0.25rem;
+}
+
+/* Variant colors - Filled */
 .badge--default {
   background-color: #f3f4f6;
   color: #1f2937;
@@ -60,26 +84,183 @@
   color: #991b1b;
 }
 
+.badge--info {
+  background-color: #e0f2fe;
+  color: #075985;
+}
+
+/* Outlined variants */
+.badge--outlined {
+  background-color: transparent;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.badge--outlined.badge--default {
+  border-color: #d1d5db;
+  color: #4b5563;
+}
+
+.badge--outlined.badge--primary {
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+.badge--outlined.badge--success {
+  border-color: #10b981;
+  color: #065f46;
+}
+
+.badge--outlined.badge--warning {
+  border-color: #f59e0b;
+  color: #92400e;
+}
+
+.badge--outlined.badge--error {
+  border-color: #ef4444;
+  color: #991b1b;
+}
+
+.badge--outlined.badge--info {
+  border-color: #0ea5e9;
+  color: #075985;
+}
+
+/* Clickable state */
+.badge--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.badge--clickable:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.badge--clickable:active {
+  transform: translateY(0);
+  opacity: 0.7;
+}
+
+.badge--clickable:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Badge text wrapper */
+.badge-text {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Icon styling */
+.badge-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+/* Dot indicator */
+.badge-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+}
+
+/* Remove button */
+.badge-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.badge-remove:hover {
+  opacity: 1;
+}
+
+.badge-remove:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+/* Adjust padding when removable */
+.badge--removable {
+  padding-right: 0.25rem;
+}
+
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
+  /* Filled variants */
   .badge--default {
     background-color: #374151;
     color: #f9fafb;
   }
+
   .badge--primary {
     background-color: #1e3a8a;
     color: #dbeafe;
   }
+
   .badge--success {
     background-color: #064e3b;
     color: #d1fae5;
   }
+
   .badge--warning {
     background-color: #78350f;
     color: #fef3c7;
   }
+
   .badge--error {
     background-color: #7f1d1d;
     color: #fee2e2;
+  }
+
+  .badge--info {
+    background-color: #0c4a6e;
+    color: #e0f2fe;
+  }
+
+  /* Outlined variants dark mode */
+  .badge--outlined.badge--default {
+    border-color: #6b7280;
+    color: #e5e7eb;
+  }
+
+  .badge--outlined.badge--primary {
+    border-color: #60a5fa;
+    color: #dbeafe;
+  }
+
+  .badge--outlined.badge--success {
+    border-color: #34d399;
+    color: #d1fae5;
+  }
+
+  .badge--outlined.badge--warning {
+    border-color: #fbbf24;
+    color: #fef3c7;
+  }
+
+  .badge--outlined.badge--error {
+    border-color: #f87171;
+    color: #fee2e2;
+  }
+
+  .badge--outlined.badge--info {
+    border-color: #38bdf8;
+    color: #e0f2fe;
   }
 }
 
