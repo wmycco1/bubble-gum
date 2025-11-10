@@ -76,6 +76,7 @@ export const Features: React.FC<FeaturesProps> = (props) => {
     .join(' ');
 
   // Filter out invalid DOM props from rest (MUST be before early returns)
+  // CRITICAL: This must be declared BEFORE the empty state early return below
   const validDOMProps = getValidDOMProps(rest);
 
   // Empty state
