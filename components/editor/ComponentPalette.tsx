@@ -25,6 +25,9 @@ import * as Molecules from '../../src/components/molecules';
 import * as Organisms from '../../src/components/organisms';
 import * as Templates from '../../src/components/templates';
 
+// Import parameter definitions to generate default props
+import { COMPONENT_PARAMETERS } from './properties-panel-v2/componentParametersMap';
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Atomic Component Registry
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -202,6 +205,87 @@ const COMPONENT_REGISTRY: Record<AtomicCategory, string[]> = {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Generate Default Props for Component
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function generateDefaultProps(componentName: string): Record<string, any> {
+  const paramDefs = COMPONENT_PARAMETERS[componentName];
+
+  if (!paramDefs) {
+    // Fallback for components without parameter definitions
+    return {
+      children: componentName,
+    };
+  }
+
+  const defaultProps: Record<string, any> = {};
+
+  paramDefs.forEach((param) => {
+    // Use defaultValue if provided
+    if (param.defaultValue !== undefined) {
+      defaultProps[param.name] = param.defaultValue;
+      return;
+    }
+
+    // Generate sensible defaults based on type
+    switch (param.type) {
+      case 'text':
+      case 'textarea':
+        if (param.name === 'children' || param.name === 'title' || param.name === 'label') {
+          defaultProps[param.name] = componentName;
+        } else if (param.name === 'placeholder') {
+          defaultProps[param.name] = `Enter ${param.label.toLowerCase()}...`;
+        } else if (param.required) {
+          defaultProps[param.name] = `Sample ${param.label}`;
+        }
+        break;
+
+      case 'number':
+        if (param.name === 'width' || param.name === 'height') {
+          defaultProps[param.name] = 300;
+        } else if (param.name === 'level') {
+          defaultProps[param.name] = '2'; // h2 by default
+        } else if (param.name === 'rows') {
+          defaultProps[param.name] = 4;
+        } else if (param.required) {
+          defaultProps[param.name] = 0;
+        }
+        break;
+
+      case 'boolean':
+        defaultProps[param.name] = false;
+        break;
+
+      case 'color':
+        defaultProps[param.name] = '#3b82f6'; // blue-500
+        break;
+
+      case 'select':
+        if (param.options && param.options.length > 0) {
+          defaultProps[param.name] = param.options[0];
+        }
+        break;
+
+      case 'image':
+        if (param.name === 'src' || param.name === 'backgroundImage') {
+          defaultProps[param.name] = 'https://via.placeholder.com/800x600?text=Image';
+        }
+        if (param.name === 'alt' && param.required) {
+          defaultProps[param.name] = componentName + ' image';
+        }
+        break;
+    }
+  });
+
+  // Ensure children exists if not set
+  if (!defaultProps.children && !defaultProps.content && !defaultProps.title) {
+    defaultProps.children = componentName;
+  }
+
+  return defaultProps;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Draggable Component Item
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -232,10 +316,10 @@ function DraggableComponent({ componentName, icon, label, description }: Draggab
   const handleClick = () => {
     logger.info('🎨 Adding component from palette', { type: componentName });
 
-    // Create default props based on component type
-    const defaultProps: Record<string, any> = {
-      children: label,
-    };
+    // Generate default props from parameter definitions
+    const defaultProps = generateDefaultProps(componentName);
+
+    logger.debug('Generated default props', { componentName, defaultProps });
 
     addComponent({
       type: componentName as any,
