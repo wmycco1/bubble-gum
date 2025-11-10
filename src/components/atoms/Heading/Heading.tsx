@@ -47,11 +47,22 @@ export const Heading: React.FC<HeadingProps> = (props) => {
     ...rest
   } = params;
 
-  const Component = level;
+  // Auto-fix: Convert numeric level to h-tag (handles old components from localStorage)
+  // '1' -> 'h1', '2' -> 'h2', etc.
+  let normalizedLevel = level;
+  if (typeof level === 'string' && /^[1-6]$/.test(level)) {
+    normalizedLevel = `h${level}` as any;
+  } else if (typeof level === 'number' && level >= 1 && level <= 6) {
+    normalizedLevel = `h${level}` as any;
+  }
+
+  // Validate that Component is a valid heading tag
+  const validLevels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+  const Component = validLevels.includes(normalizedLevel as string) ? normalizedLevel : 'h2';
 
   // Compute CSS classes (using CSS modules)
   const baseClasses = styles.heading;
-  const levelClasses = styles[`heading--${level}`];
+  const levelClasses = styles[`heading--${normalizedLevel}`];
   const alignClasses = styles[`heading--${align}`];
   const colorClasses = styles[`heading--${color}`];
 

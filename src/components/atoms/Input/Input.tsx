@@ -84,6 +84,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     // Filter out invalid DOM props from rest
     const validDOMProps = getValidDOMProps(rest);
 
+    // Auto-fix: If value is provided without onChange, convert to defaultValue
+    // This handles old components from localStorage
+    const hasValue = 'value' in validDOMProps;
+    const hasDefaultValue = 'defaultValue' in validDOMProps;
+    const hasOnChange = 'onChange' in validDOMProps;
+
+    const inputProps: any = { ...validDOMProps };
+
+    if (hasValue && !hasOnChange) {
+      // Uncontrolled mode: value without onChange -> use defaultValue
+      inputProps.defaultValue = inputProps.value;
+      delete inputProps.value;
+    }
+
     return (
       <div className={styles['input-wrapper']}>
         <input
@@ -99,7 +113,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           aria-describedby={describedBy || undefined}
           aria-invalid={ariaInvalid || validation === 'invalid' || !!error}
           data-testid={testId}
-          {...validDOMProps}
+          {...inputProps}
         />
 
         {/* Error message */}

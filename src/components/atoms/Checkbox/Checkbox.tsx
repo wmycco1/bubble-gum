@@ -59,19 +59,36 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     // Filter out invalid DOM props from rest
     const validDOMProps = getValidDOMProps(rest);
 
-    const checkbox = (
-      <input
-        ref={checkboxRef}
-        type="checkbox"
-        className={classes}
-        disabled={disabled}
-        checked={checked}
-        defaultChecked={defaultChecked}
-        onChange={onChange}
-        data-testid={testId}
-        {...validDOMProps}
-      />
-    );
+    // Auto-fix: If checked is provided without onChange, convert to defaultChecked
+    // This handles old components from localStorage
+    const isControlled = checked !== undefined && onChange !== undefined;
+    const checkboxProps: any = {
+      ref: checkboxRef,
+      type: 'checkbox',
+      className: classes,
+      disabled,
+      'data-testid': testId,
+      ...validDOMProps,
+    };
+
+    if (isControlled) {
+      // Controlled mode: checked + onChange
+      checkboxProps.checked = checked;
+      checkboxProps.onChange = onChange;
+    } else if (checked !== undefined) {
+      // Uncontrolled mode: checked without onChange -> use defaultChecked
+      checkboxProps.defaultChecked = checked;
+    } else if (defaultChecked !== undefined) {
+      // Explicit defaultChecked
+      checkboxProps.defaultChecked = defaultChecked;
+    }
+
+    if (onChange && !isControlled) {
+      // If onChange is provided but checked is not, attach it
+      checkboxProps.onChange = onChange;
+    }
+
+    const checkbox = <input {...checkboxProps} />;
 
     if (label) {
       return (
