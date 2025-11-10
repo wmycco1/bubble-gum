@@ -1,246 +1,262 @@
 'use client';
 
 // ═══════════════════════════════════════════════════════════════
-// BUBBLE GUM - COMPONENT PALETTE (WITH CATEGORIZATION)
+// BUBBLE GUM - COMPONENT PALETTE V5.0.0 (ATOMIC DESIGN)
 // ═══════════════════════════════════════════════════════════════
-// Version: 4.0.0 - M3: Component categories with collapsible groups
+// Version: 5.0.0 - Atomic Design System
 // Changes:
-// - Organized components into categories (Layout, Content, Forms, Navigation, Feedback, Overlay)
-// - Collapsible category sections with localStorage persistence
-// - Search/filter functionality
-// - Recently used components section
-// - Drag and drop support maintained
+// - REMOVED old component categories (Layout, Content, Forms, etc.)
+// - NEW: 5 tabs based on Atomic Design (Atoms, Molecules, Organisms, Templates, Pages)
+// - Direct import from atomic component barrel exports
+// - Drag and drop support for all atomic components
+// - Search functionality across all categories
 // ═══════════════════════════════════════════════════════════════
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
-import type { ComponentType } from '@/lib/editor/types';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronDown, ChevronRight, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { logger } from '@/lib/utils/logger';
 
+// Import all atomic components to get their names
+import * as Atoms from '../../src/components/atoms';
+import * as Molecules from '../../src/components/molecules';
+import * as Organisms from '../../src/components/organisms';
+import * as Templates from '../../src/components/templates';
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Component Data with Categories
+// Atomic Component Registry
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+type AtomicCategory = 'atoms' | 'molecules' | 'organisms' | 'templates' | 'pages';
 
 interface ComponentItem {
-  type: ComponentType;
-  label: string;
+  name: string;
   icon: string;
   description: string;
-  category: 'layout' | 'content' | 'forms' | 'navigation' | 'feedback' | 'overlay' | 'interactive' | 'integrations' | 'sliders' | 'reviews' | 'ecommerce' | 'cms';
 }
 
-const componentTypes: ComponentItem[] = [
-  // Layout (6 - added 2 M3)
-  { type: 'Container', label: 'Container', icon: '📦', description: 'Content wrapper', category: 'layout' },
-  { type: 'Section', label: 'Hero Section', icon: '🎭', description: 'Full-width hero banner', category: 'layout' },
-  { type: 'Grid', label: 'Grid', icon: '🔲', description: 'Responsive grid layout', category: 'layout' },
-  { type: 'Card', label: 'Card', icon: '🃏', description: 'Content card', category: 'layout' },
-  { type: 'InnerSection', label: 'Inner Section', icon: '🔳', description: 'Nested layout container', category: 'layout' },
-  { type: 'Spacer', label: 'Spacer', icon: '↕️', description: 'Vertical spacing', category: 'layout' },
+// Get component names from barrel exports
+const atomComponents = Object.keys(Atoms);
+const moleculeComponents = Object.keys(Molecules);
+const organismComponents = Object.keys(Organisms);
+const templateComponents = Object.keys(Templates);
 
-  // Content (12 - added 7 M3)
-  { type: 'Text', label: 'Text', icon: '📝', description: 'Paragraph or heading text', category: 'content' },
-  { type: 'Heading', label: 'Heading', icon: '📄', description: 'h1-h6 headings', category: 'content' },
-  { type: 'Image', label: 'Image', icon: '🖼️', description: 'Image with alt text', category: 'content' },
-  { type: 'Link', label: 'Link', icon: '🔗', description: 'Hyperlink', category: 'content' },
-  { type: 'Icon', label: 'Icon', icon: '⭐', description: 'Lucide icons', category: 'content' },
-  { type: 'Banner', label: 'Banner', icon: '🎪', description: 'Hero banner with CTA', category: 'content' },
-  { type: 'HTML', label: 'HTML Block', icon: '🔧', description: 'Custom HTML content', category: 'content' },
-  { type: 'Video', label: 'Video', icon: '🎥', description: 'YouTube/Vimeo/HTML5 video', category: 'content' },
-  { type: 'TextEditor', label: 'Rich Text Editor', icon: '✍️', description: 'WYSIWYG editor', category: 'content' },
-  { type: 'IconBox', label: 'Icon Box', icon: '💎', description: 'Icon with heading/text', category: 'content' },
-  { type: 'ImageBox', label: 'Image Box', icon: '🖼️', description: 'Image with caption', category: 'content' },
-  { type: 'IconList', label: 'Icon List', icon: '📋', description: 'List with icons', category: 'content' },
+// Icon mapping for components
+const componentIcons: Record<string, string> = {
+  // Atoms
+  Badge: '🏷️',
+  Button: '🔘',
+  Checkbox: '☑️',
+  Divider: '➖',
+  Heading: '📄',
+  HTML: '🔧',
+  Icon: '⭐',
+  Image: '🖼️',
+  Input: '✏️',
+  Link: '🔗',
+  Spacer: '↕️',
+  Submit: '📤',
+  Text: '📝',
+  Textarea: '📝',
+  Video: '🎥',
 
-  // Forms (7 - added 2 M3)
-  { type: 'Form', label: 'Form', icon: '📋', description: 'Contact or signup form', category: 'forms' },
-  { type: 'Input', label: 'Input', icon: '✏️', description: 'Text input field', category: 'forms' },
-  { type: 'Textarea', label: 'Textarea', icon: '📝', description: 'Multiline text input', category: 'forms' },
-  { type: 'Checkbox', label: 'Checkbox', icon: '☑️', description: 'Checkbox with label', category: 'forms' },
-  { type: 'Submit', label: 'Submit Button', icon: '📤', description: 'Form submit button', category: 'forms' },
-  { type: 'FormBuilder', label: 'Form Builder', icon: '🏗️', description: 'Dynamic form builder', category: 'forms' },
-  { type: 'MultistepFormBuilder', label: 'Multi-step Form', icon: '🪜', description: 'Multi-step form wizard', category: 'forms' },
+  // Molecules
+  Alert: '🚨',
+  Breadcrumb: '🗺️',
+  Counter: '🔢',
+  IconBox: '💎',
+  IconList: '📋',
+  ImageBox: '🖼️',
+  Modal: '🪟',
+  Progress: '📊',
+  StarRating: '⭐',
+  Toggle: '🔄',
+  Tooltip: '💬',
 
-  // Navigation (5 - added 1 M3)
-  { type: 'Tabs', label: 'Tabs', icon: '📑', description: 'Tabbed navigation', category: 'navigation' },
-  { type: 'Accordion', label: 'Accordion', icon: '🎵', description: 'Collapsible panels', category: 'navigation' },
-  { type: 'Breadcrumb', label: 'Breadcrumb', icon: '🗺️', description: 'Navigation trail', category: 'navigation' },
-  { type: 'Carousel', label: 'Carousel', icon: '🎠', description: 'Image carousel', category: 'navigation' },
-  { type: 'Menu', label: 'Navigation Menu', icon: '🍔', description: 'Site navigation menu', category: 'navigation' },
+  // Organisms
+  Accordion: '🎵',
+  AddToCart: '🛒',
+  Banner: '🎪',
+  BannerSlider: '🎠',
+  Card: '🃏',
+  Carousel: '🎠',
+  CMSBlock: '📄',
+  CMSPage: '📄',
+  CTA: '📣',
+  FacebookContent: '📘',
+  FacebookLike: '👍',
+  Features: '✨',
+  Footer: '👣',
+  Form: '📋',
+  FormBuilder: '🏗️',
+  GoogleMaps: '🗺️',
+  Hero: '🎭',
+  InnerSection: '🔳',
+  Menu: '🍔',
+  MultistepFormBuilder: '🪜',
+  Navbar: '🧭',
+  NewProducts: '🆕',
+  OrdersAndReturns: '📦',
+  PricingTable: '💰',
+  ProductList: '📦',
+  ProductSlider: '🛍️',
+  RecentlyCompared: '⚖️',
+  RecentlyViewed: '👁️',
+  Slider: '🎠',
+  SocialIcons: '📱',
+  SoundCloud: '🔊',
+  Tabs: '📑',
+  Testimonial: '💬',
+  TextEditor: '✍️',
 
-  // Feedback (5)
-  { type: 'Alert', label: 'Alert', icon: '🚨', description: 'Alert message', category: 'feedback' },
-  { type: 'Progress', label: 'Progress Bar', icon: '📊', description: 'Progress indicator', category: 'feedback' },
-  { type: 'Counter', label: 'Counter', icon: '🔢', description: 'Numeric counter', category: 'feedback' },
-  { type: 'Badge', label: 'Badge', icon: '🏷️', description: 'Status badge', category: 'feedback' },
-  { type: 'Divider', label: 'Divider', icon: '➖', description: 'Content separator', category: 'feedback' },
+  // Templates
+  Container: '📦',
+  Grid: '🔲',
+  Layout: '🏗️',
+  Section: '📐',
+};
 
-  // Overlay (2)
-  { type: 'Modal', label: 'Modal', icon: '🪟', description: 'Dialog window', category: 'overlay' },
-  { type: 'Tooltip', label: 'Tooltip', icon: '💬', description: 'Contextual help', category: 'overlay' },
+// Description mapping
+const componentDescriptions: Record<string, string> = {
+  // Atoms
+  Badge: 'Status or label badge',
+  Button: 'Clickable button',
+  Checkbox: 'Checkbox with label',
+  Divider: 'Content separator',
+  Heading: 'Heading (h1-h6)',
+  HTML: 'Custom HTML block',
+  Icon: 'Icon component',
+  Image: 'Image with alt text',
+  Input: 'Text input field',
+  Link: 'Hyperlink',
+  Spacer: 'Vertical spacing',
+  Submit: 'Submit button',
+  Text: 'Text paragraph',
+  Textarea: 'Multi-line text input',
+  Video: 'Video player',
 
-  // Interactive (1)
-  { type: 'Button', label: 'Button', icon: '🔘', description: 'Call-to-action button', category: 'interactive' },
+  // Molecules
+  Alert: 'Alert message',
+  Breadcrumb: 'Navigation trail',
+  Counter: 'Numeric counter',
+  IconBox: 'Icon with text',
+  IconList: 'List with icons',
+  ImageBox: 'Image with caption',
+  Modal: 'Modal dialog',
+  Progress: 'Progress bar',
+  StarRating: 'Star rating',
+  Toggle: 'Toggle switch',
+  Tooltip: 'Tooltip',
 
-  // Integrations (5 - NEW M3)
-  { type: 'GoogleMaps', label: 'Google Maps', icon: '🗺️', description: 'Embedded Google Maps', category: 'integrations' },
-  { type: 'SoundCloud', label: 'SoundCloud', icon: '🎵', description: 'Audio player embed', category: 'integrations' },
-  { type: 'SocialIcons', label: 'Social Icons', icon: '🌐', description: 'Social media links', category: 'integrations' },
-  { type: 'FacebookLike', label: 'Facebook Like', icon: '👍', description: 'Facebook Like button', category: 'integrations' },
-  { type: 'FacebookContent', label: 'Facebook Embed', icon: '📘', description: 'Facebook post/page embed', category: 'integrations' },
+  // Organisms
+  Accordion: 'Collapsible panels',
+  AddToCart: 'Add to cart button',
+  Banner: 'Hero banner',
+  BannerSlider: 'Banner carousel',
+  Card: 'Content card',
+  Carousel: 'Image carousel',
+  CMSBlock: 'CMS content block',
+  CMSPage: 'CMS page',
+  CTA: 'Call to action',
+  FacebookContent: 'Facebook embed',
+  FacebookLike: 'Facebook like button',
+  Features: 'Features section',
+  Footer: 'Page footer',
+  Form: 'Contact form',
+  FormBuilder: 'Form builder',
+  GoogleMaps: 'Google Maps embed',
+  Hero: 'Hero section',
+  InnerSection: 'Inner section',
+  Menu: 'Navigation menu',
+  MultistepFormBuilder: 'Multi-step form',
+  Navbar: 'Navigation bar',
+  NewProducts: 'New products',
+  OrdersAndReturns: 'Orders & returns',
+  PricingTable: 'Pricing table',
+  ProductList: 'Product list',
+  ProductSlider: 'Product slider',
+  RecentlyCompared: 'Recently compared',
+  RecentlyViewed: 'Recently viewed',
+  Slider: 'Content slider',
+  SocialIcons: 'Social media icons',
+  SoundCloud: 'SoundCloud embed',
+  Tabs: 'Tabbed content',
+  Testimonial: 'Testimonial',
+  TextEditor: 'Rich text editor',
 
-  // Sliders (3 - NEW M3)
-  { type: 'BannerSlider', label: 'Banner Slider', icon: '🎬', description: 'Full-width banner carousel', category: 'sliders' },
-  { type: 'Slider', label: 'Content Slider', icon: '🎞️', description: 'Generic content slider', category: 'sliders' },
-  { type: 'Toggle', label: 'Toggle', icon: '🔀', description: 'Content toggle/accordion', category: 'sliders' },
+  // Templates
+  Container: 'Content container',
+  Grid: 'Grid layout',
+  Layout: 'Page layout',
+  Section: 'Page section',
+};
 
-  // Reviews (2 - NEW M3)
-  { type: 'Testimonial', label: 'Testimonial', icon: '💬', description: 'Customer testimonial', category: 'reviews' },
-  { type: 'StarRating', label: 'Star Rating', icon: '⭐', description: 'Rating display', category: 'reviews' },
-
-  // E-commerce (7 - NEW M3)
-  { type: 'ProductList', label: 'Product List', icon: '📦', description: 'Product grid/list', category: 'ecommerce' },
-  { type: 'ProductSlider', label: 'Product Slider', icon: '🛒', description: 'Product carousel', category: 'ecommerce' },
-  { type: 'AddToCart', label: 'Add to Cart', icon: '🛍️', description: 'Add to cart button', category: 'ecommerce' },
-  { type: 'PricingTable', label: 'Pricing Table', icon: '💰', description: 'Pricing comparison', category: 'ecommerce' },
-  { type: 'RecentlyViewed', label: 'Recently Viewed', icon: '👁️', description: 'Recently viewed products', category: 'ecommerce' },
-  { type: 'RecentlyCompared', label: 'Recently Compared', icon: '⚖️', description: 'Product comparison', category: 'ecommerce' },
-  { type: 'NewProducts', label: 'New Products', icon: '🆕', description: 'New products showcase', category: 'ecommerce' },
-
-  // CMS (3 - NEW M3)
-  { type: 'CMSBlock', label: 'CMS Block', icon: '📄', description: 'CMS content block', category: 'cms' },
-  { type: 'CMSPage', label: 'CMS Page', icon: '📃', description: 'CMS page embed', category: 'cms' },
-  { type: 'OrdersAndReturns', label: 'Orders & Returns', icon: '📋', description: 'Order lookup form', category: 'cms' },
-];
-
-const categories = [
-  { id: 'layout', label: 'Layout', icon: '📐', description: 'Structural components' },
-  { id: 'content', label: 'Content', icon: '📄', description: 'Text and media' },
-  { id: 'forms', label: 'Forms', icon: '📋', description: 'Input components' },
-  { id: 'navigation', label: 'Navigation', icon: '🧭', description: 'Navigation elements' },
-  { id: 'feedback', label: 'Feedback', icon: '💬', description: 'User feedback' },
-  { id: 'overlay', label: 'Overlay', icon: '🪟', description: 'Modals and popovers' },
-  { id: 'interactive', label: 'Interactive', icon: '🎯', description: 'Action components' },
-  { id: 'integrations', label: 'Integrations', icon: '🔌', description: 'Third-party integrations' },
-  { id: 'sliders', label: 'Sliders', icon: '🎬', description: 'Carousels and sliders' },
-  { id: 'reviews', label: 'Reviews', icon: '⭐', description: 'Testimonials and ratings' },
-  { id: 'ecommerce', label: 'E-commerce', icon: '🛒', description: 'Product and shopping' },
-  { id: 'cms', label: 'CMS', icon: '📰', description: 'Content management' },
-] as const;
+const COMPONENT_REGISTRY: Record<AtomicCategory, string[]> = {
+  atoms: atomComponents,
+  molecules: moleculeComponents,
+  organisms: organismComponents,
+  templates: templateComponents,
+  pages: [], // Pages will be added later
+};
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Draggable Component Item
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-function DraggableComponentItem({
-  type,
-  label,
-  icon,
-  description,
-  onAdd,
-}: {
-  type: ComponentType;
-  label: string;
+interface DraggableComponentProps {
+  componentName: string;
   icon: string;
+  label: string;
   description: string;
-  onAdd: (type: ComponentType) => void;
-}) {
+}
+
+function DraggableComponent({ componentName, icon, label, description }: DraggableComponentProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `palette-${type}`,
+    id: `palette-${componentName}`,
     data: {
-      type,
-      dragType: 'palette',
+      type: componentName,
+      fromPalette: true,
     },
   });
 
   const style = {
     transform: CSS.Translate.toString(transform),
     opacity: isDragging ? 0.5 : 1,
+    cursor: isDragging ? 'grabbing' : 'grab',
   };
+
+  const addComponent = useCanvasStore((state) => state.addComponent);
 
   const handleClick = () => {
-    onAdd(type);
+    logger.info('🎨 Adding component from palette', { type: componentName });
+
+    // Create default props based on component type
+    const defaultProps: Record<string, any> = {
+      children: label,
+    };
+
+    addComponent({
+      type: componentName as any,
+      props: defaultProps,
+    });
   };
 
   return (
-    <button
+    <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
       {...listeners}
+      {...attributes}
       onClick={handleClick}
-      className="group flex w-full items-start gap-2 rounded-md border border-slate-200 bg-white p-2 text-left transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow-sm cursor-grab active:cursor-grabbing"
-      title={`${description} - Click to add or drag to canvas`}
+      className="group relative flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all cursor-grab active:cursor-grabbing"
     >
-      <span className="text-lg flex-shrink-0">{icon}</span>
+      <div className="text-2xl">{icon}</div>
       <div className="flex-1 min-w-0">
-        <div className="text-xs font-medium text-slate-900 group-hover:text-slate-700">
-          {label}
-        </div>
-        <div className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">{description}</div>
+        <div className="text-sm font-medium text-gray-900">{label}</div>
+        <div className="text-xs text-gray-500 truncate">{description}</div>
       </div>
-    </button>
-  );
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Collapsible Category Section
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function CategorySection({
-  label,
-  icon,
-  components,
-  isOpen,
-  onToggle,
-  onAddComponent,
-}: {
-  label: string;
-  icon: string;
-  components: ComponentItem[];
-  isOpen: boolean;
-  onToggle: () => void;
-  onAddComponent: (type: ComponentType) => void;
-}) {
-  return (
-    <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-      {/* Category Header */}
-      <button
-        onClick={onToggle}
-        className="flex items-center justify-between w-full p-3 text-left hover:bg-slate-50 transition-colors"
-      >
-        <div className="flex items-center gap-2">
-          <span className="text-base">{icon}</span>
-          <div>
-            <div className="text-xs font-semibold text-slate-900">{label}</div>
-            <div className="text-[10px] text-slate-500">{components.length} components</div>
-          </div>
-        </div>
-        {isOpen ? (
-          <ChevronDown className="w-4 h-4 text-slate-400" />
-        ) : (
-          <ChevronRight className="w-4 h-4 text-slate-400" />
-        )}
-      </button>
-
-      {/* Category Content */}
-      {isOpen && (
-        <div className="p-2 border-t border-slate-100 bg-slate-50/50 space-y-1">
-          {components.map((comp) => (
-            <DraggableComponentItem
-              key={comp.type}
-              type={comp.type}
-              label={comp.label}
-              icon={comp.icon}
-              description={comp.description}
-              onAdd={onAddComponent}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -249,194 +265,115 @@ function CategorySection({
 // Main Component Palette
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-const STORAGE_KEY = 'bubble-gum-palette-state';
-
 export function ComponentPalette() {
-  const addComponent = useCanvasStore((state) => state.addComponent);
-
-  // Search state
+  const [activeTab, setActiveTab] = useState<AtomicCategory>('atoms');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Category collapse state (localStorage persisted)
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(() => {
-    if (typeof window === 'undefined') return new Set();
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return new Set(parsed.collapsedCategories || []);
-      }
-    } catch (error) {
-      console.error('Failed to load palette state:', error);
-    }
-    return new Set();
-  });
-
-  // Recently used components (localStorage persisted)
-  const [recentlyUsed, setRecentlyUsed] = useState<ComponentType[]>(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return parsed.recentlyUsed || [];
-      }
-    } catch (error) {
-      console.error('Failed to load palette state:', error);
-    }
-    return [];
-  });
-
-  // Save state to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          collapsedCategories: Array.from(collapsedCategories),
-          recentlyUsed,
-        })
-      );
-    } catch (error) {
-      console.error('Failed to save palette state:', error);
-    }
-  }, [collapsedCategories, recentlyUsed]);
-
-  // Toggle category
-  const toggleCategory = (categoryId: string) => {
-    setCollapsedCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(categoryId)) {
-        next.delete(categoryId);
-      } else {
-        next.add(categoryId);
-      }
-      return next;
-    });
-  };
-
-  // Handle component add (track recently used)
-  const handleAddComponent = (type: ComponentType) => {
-    addComponent(type);
-
-    // Update recently used (max 5 items)
-    setRecentlyUsed((prev) => {
-      const filtered = prev.filter((t) => t !== type);
-      return [type, ...filtered].slice(0, 5);
-    });
-
-    logger.debug('➕ Added component:', { value: type });
-  };
-
-  // Filter components by search query
+  // Filter components based on search
   const filteredComponents = useMemo(() => {
-    if (!searchQuery) return componentTypes;
+    const components = COMPONENT_REGISTRY[activeTab];
+
+    if (!searchQuery.trim()) {
+      return components;
+    }
 
     const query = searchQuery.toLowerCase();
-    return componentTypes.filter(
-      (comp) =>
-        comp.label.toLowerCase().includes(query) ||
-        comp.description.toLowerCase().includes(query) ||
-        comp.type.toLowerCase().includes(query)
+    return components.filter((name) =>
+      name.toLowerCase().includes(query) ||
+      (componentDescriptions[name] || '').toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  }, [activeTab, searchQuery]);
 
-  // Group components by category
-  const componentsByCategory = useMemo(() => {
-    return categories.map((cat) => ({
-      ...cat,
-      components: filteredComponents.filter((comp) => comp.category === cat.id),
-    }));
-  }, [filteredComponents]);
-
-  // Get recently used component items
-  const recentComponents = useMemo(() => {
-    return recentlyUsed
-      .map((type) => componentTypes.find((c) => c.type === type))
-      .filter((c): c is ComponentItem => c !== undefined);
-  }, [recentlyUsed]);
+  const tabs: { key: AtomicCategory; label: string; count: number }[] = [
+    { key: 'atoms', label: 'Atoms', count: atomComponents.length },
+    { key: 'molecules', label: 'Molecules', count: moleculeComponents.length },
+    { key: 'organisms', label: 'Organisms', count: organismComponents.length },
+    { key: 'templates', label: 'Templates', count: templateComponents.length },
+    { key: 'pages', label: 'Pages', count: 0 },
+  ];
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col h-full bg-gray-50">
       {/* Header */}
-      <div className="p-3 border-b border-slate-200 bg-white">
-        <h2 className="text-sm font-semibold text-slate-900 mb-2">Components</h2>
+      <div className="flex-shrink-0 p-4 bg-white border-b border-gray-200">
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">Components</h2>
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search components..."
-            className="w-full pl-8 pr-7 py-1.5 text-xs border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
+            className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Components List */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3">
-        {/* Recently Used */}
-        {!searchQuery && recentComponents.length > 0 && (
-          <div className="border border-blue-200 rounded-lg overflow-hidden bg-blue-50/30">
-            <div className="p-2 border-b border-blue-100 bg-blue-50">
-              <div className="text-xs font-semibold text-blue-900">⏱️ Recently Used</div>
-            </div>
-            <div className="p-2 space-y-1">
-              {recentComponents.map((comp) => (
-                <DraggableComponentItem
-                  key={comp.type}
-                  type={comp.type}
-                  label={comp.label}
-                  icon={comp.icon}
-                  description={comp.description}
-                  onAdd={handleAddComponent}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Categories */}
-        {componentsByCategory.map((cat) => {
-          if (cat.components.length === 0) return null;
-
-          return (
-            <CategorySection
-              key={cat.id}
-              label={cat.label}
-              icon={cat.icon}
-              components={cat.components}
-              isOpen={!collapsedCategories.has(cat.id)}
-              onToggle={() => toggleCategory(cat.id)}
-              onAddComponent={handleAddComponent}
-            />
-          );
-        })}
-
-        {/* No results */}
-        {filteredComponents.length === 0 && (
-          <div className="text-center py-8">
-            <div className="text-3xl mb-2">🔍</div>
-            <div className="text-sm text-slate-600">No components found</div>
-            <div className="text-xs text-slate-500 mt-1">Try a different search term</div>
-          </div>
-        )}
+      {/* Tabs */}
+      <div className="flex-shrink-0 flex border-b border-gray-200 bg-white overflow-x-auto">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`
+              flex-1 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors
+              ${
+                activeTab === tab.key
+                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }
+            `}
+          >
+            {tab.label}
+            <span className="ml-2 text-xs opacity-75">({tab.count})</span>
+          </button>
+        ))}
       </div>
 
-      {/* Footer */}
-      <div className="p-3 border-t border-slate-200 bg-white">
-        <div className="text-[10px] text-slate-500 text-center">
-          {componentTypes.length} components • {categories.length} categories
+      {/* Component List */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="space-y-2">
+          {filteredComponents.length > 0 ? (
+            filteredComponents.map((componentName) => (
+              <DraggableComponent
+                key={componentName}
+                componentName={componentName}
+                icon={componentIcons[componentName] || '🔷'}
+                label={componentName}
+                description={componentDescriptions[componentName] || 'Component'}
+              />
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <div className="text-4xl mb-2">🔍</div>
+              <div className="text-sm">No components found</div>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="mt-2 text-xs text-blue-600 hover:text-blue-700"
+                >
+                  Clear search
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Footer Info */}
+      <div className="flex-shrink-0 p-3 bg-white border-t border-gray-200">
+        <div className="text-xs text-gray-500 text-center">
+          {filteredComponents.length} component{filteredComponents.length !== 1 ? 's' : ''} available
         </div>
       </div>
     </div>

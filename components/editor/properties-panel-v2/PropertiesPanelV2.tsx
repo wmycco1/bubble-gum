@@ -5,15 +5,14 @@
  * Direct AtomParameters binding - NO adapters
  *
  * Features:
- * - 5 tabs: Atoms | Molecules | Organisms | Templates | Pages
+ * - Shows parameters ONLY for selected component
  * - Direct parameter editing
  * - Type-safe controls
  * - Real-time updates
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
-import { ComponentSelector } from './ComponentSelector';
 import { ParameterEditor } from './ParameterEditor';
 
 interface PropertiesPanelV2Props {
@@ -22,7 +21,6 @@ interface PropertiesPanelV2Props {
 
 export function PropertiesPanelV2({ className }: PropertiesPanelV2Props) {
   const { selectedComponentId, components, updateComponent } = useCanvasStore();
-  const [activeTab, setActiveTab] = useState<'atoms' | 'molecules' | 'organisms' | 'templates' | 'pages'>('atoms');
 
   // Get selected component
   const selectedComponent = components.find(c => c.id === selectedComponentId);
@@ -44,28 +42,15 @@ export function PropertiesPanelV2({ className }: PropertiesPanelV2Props) {
       {/* Header */}
       <div className="p-4 border-b border-gray-200 bg-white">
         <h2 className="text-lg font-bold text-gray-900">Properties</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          {selectedComponent ? `Editing: ${selectedComponent.type}` : 'Select a component'}
-        </p>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex border-b border-gray-200 bg-gray-50">
-        {(['atoms', 'molecules', 'organisms', 'templates', 'pages'] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`
-              flex-1 px-3 py-2 text-xs font-medium capitalize transition-colors
-              ${activeTab === tab
-                ? 'bg-white text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }
-            `}
-          >
-            {tab}
-          </button>
-        ))}
+        {selectedComponent ? (
+          <p className="text-sm text-gray-500 mt-1">
+            Editing: <span className="font-medium text-gray-700">{selectedComponent.type}</span>
+          </p>
+        ) : (
+          <p className="text-sm text-gray-400 mt-1">
+            No component selected
+          </p>
+        )}
       </div>
 
       {/* Content */}
@@ -76,13 +61,13 @@ export function PropertiesPanelV2({ className }: PropertiesPanelV2Props) {
             onParameterChange={handleParameterChange}
           />
         ) : (
-          <ComponentSelector
-            activeTab={activeTab}
-            onComponentSelect={(componentType) => {
-              // TODO: Add component to canvas
-              console.log('Add component:', componentType);
-            }}
-          />
+          <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+            <div className="text-6xl mb-4">👈</div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Selection</h3>
+            <p className="text-sm text-gray-500 max-w-xs">
+              Select a component from the canvas or add one from the component palette to edit its properties.
+            </p>
+          </div>
         )}
       </div>
 
