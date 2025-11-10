@@ -53,6 +53,27 @@ interface CanvasStore extends CanvasState {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Utility: Clean empty props
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Remove props with empty string values from an object.
+ * This prevents empty strings from overriding default/variant values.
+ *
+ * @param props - Object with props to clean
+ * @returns New object with empty string props removed
+ */
+const cleanEmptyProps = <T extends Record<string, any>>(props: T): T => {
+  const cleaned = { ...props };
+  Object.keys(cleaned).forEach((key) => {
+    if (cleaned[key] === '') {
+      delete cleaned[key];
+    }
+  });
+  return cleaned;
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Default Component Templates
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -1489,7 +1510,16 @@ export const useCanvasStore = create<CanvasStore>()(
             const updateInTree = (comps: CanvasComponent[]): CanvasComponent[] => {
               return comps.map((comp) => {
                 if (comp.id === id) {
-                  return { ...comp, ...updates };
+                  // Merge updates
+                  const merged = { ...comp, ...updates };
+
+                  // CRITICAL FIX: Remove props with empty string values
+                  // This prevents empty strings from overriding default/variant values
+                  if (updates.props) {
+                    merged.props = cleanEmptyProps(merged.props);
+                  }
+
+                  return merged;
                 }
                 if (comp.children) {
                   return { ...comp, children: updateInTree(comp.children) };
@@ -1725,9 +1755,13 @@ export const useCanvasStore = create<CanvasStore>()(
             const updateInTree = (comps: CanvasComponent[]): CanvasComponent[] => {
               return comps.map((comp) => {
                 if (comp.id === id) {
+                  // Merge props and clean empty strings
+                  const mergedProps = { ...comp.props, ...props };
+                  const cleanedProps = cleanEmptyProps(mergedProps);
+
                   const updated = {
                     ...comp,
-                    props: { ...comp.props, ...props },
+                    props: cleanedProps,
                   };
                   logger.debug('✅ Component props updated:', {
                     id,

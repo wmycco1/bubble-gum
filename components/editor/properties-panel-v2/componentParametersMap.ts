@@ -11,6 +11,8 @@ export interface ParameterDefinition {
   options?: string[];
   defaultValue?: any;
   required?: boolean;
+  min?: number; // For number type
+  max?: number; // For number type
 }
 
 export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
@@ -26,7 +28,12 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     { name: 'variant', type: 'select', label: 'Variant', options: ['default', 'primary', 'success', 'warning', 'error', 'info'] },
     { name: 'size', type: 'select', label: 'Size', options: ['sm', 'md', 'lg'] },
     { name: 'rounded', type: 'select', label: 'Shape', options: ['pill', 'rounded', 'square'], defaultValue: 'pill' },
-    { name: 'outlined', type: 'boolean', label: 'Outlined' },
+
+    // Border (Simple Modern UX)
+    { name: 'borderWidth', type: 'number', label: 'Border Width', description: 'Width in pixels', min: 0 },
+    { name: 'borderStyle', type: 'select', label: 'Border Style',
+      options: ['none', 'solid', 'dashed', 'dotted', 'double'] },
+    { name: 'borderColor', type: 'color', label: 'Border Color' },
 
     // Icon Settings
     { name: 'icon', type: 'text', label: 'Icon Name', description: 'e.g. star, heart, check, x' },
@@ -38,9 +45,8 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     { name: 'removable', type: 'boolean', label: 'Removable (Show × button)' },
 
     // Custom Colors
-    { name: 'color', type: 'color', label: 'Text Color (Custom)', description: 'Overrides variant color' },
-    { name: 'backgroundColor', type: 'color', label: 'Background Color (Custom)', description: 'Overrides variant' },
-    { name: 'borderColor', type: 'color', label: 'Border Color (Custom)', description: 'For outlined mode' },
+    { name: 'color', type: 'color', label: 'Text Color', description: 'Overrides variant color' },
+    { name: 'backgroundColor', type: 'color', label: 'Background Color', description: 'Overrides variant' },
   ],
 
   Button: [

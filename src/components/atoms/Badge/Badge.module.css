@@ -22,7 +22,7 @@
   font-weight: 500;
   white-space: nowrap;
   transition: var(--badge-transition);
-  border: 1px solid transparent;
+  border: none; /* No default border - use border* props for custom control */
   position: relative;
 }
 
@@ -55,7 +55,7 @@
 }
 
 .badge--square {
-  border-radius: 0.25rem;
+  border-radius: 0;
 }
 
 /* Variant colors - Filled */

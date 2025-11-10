@@ -29,11 +29,20 @@ export function PropertiesPanelV2({ className }: PropertiesPanelV2Props) {
   const handleParameterChange = (paramName: string, value: any) => {
     if (!selectedComponent) return;
 
+    // Special handling: When variant changes, clear custom colors to allow variant to show
+    const updatedProps: Record<string, any> = {
+      ...selectedComponent.props,
+      [paramName]: value,
+    };
+
+    // If changing variant, clear color and backgroundColor
+    if (paramName === 'variant') {
+      updatedProps.color = '';
+      updatedProps.backgroundColor = '';
+    }
+
     updateComponent(selectedComponent.id, {
-      props: {
-        ...selectedComponent.props,
-        [paramName]: value,
-      },
+      props: updatedProps,
     });
   };
 
