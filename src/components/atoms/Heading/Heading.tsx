@@ -36,7 +36,7 @@ export const Heading: React.FC<HeadingProps> = (props) => {
 
   // Destructure with defaults
   const {
-    level = 'h2',
+    level: rawLevel = 'h2',
     align = 'left',
     color = 'default',
     children,
@@ -49,16 +49,39 @@ export const Heading: React.FC<HeadingProps> = (props) => {
 
   // Auto-fix: Convert numeric level to h-tag (handles old components from localStorage)
   // '1' -> 'h1', '2' -> 'h2', etc.
-  let normalizedLevel = level;
-  if (typeof level === 'string' && /^[1-6]$/.test(level)) {
-    normalizedLevel = `h${level}` as any;
-  } else if (typeof level === 'number' && level >= 1 && level <= 6) {
-    normalizedLevel = `h${level}` as any;
+  // Handle all possible formats: 1, '1', 'h1'
+  let normalizedLevel: string = 'h2'; // Default fallback
+
+  // First, convert rawLevel to string if it's a number
+  const level = typeof rawLevel === 'number' ? String(rawLevel) : rawLevel;
+
+  if (typeof level === 'string') {
+    if (/^[1-6]$/.test(level)) {
+      // Convert '1' -> 'h1', '2' -> 'h2', etc.
+      normalizedLevel = `h${level}`;
+    } else if (/^h[1-6]$/i.test(level)) {
+      // Already valid format like 'h1', 'h2', etc.
+      normalizedLevel = level.toLowerCase();
+    }
   }
 
   // Validate that Component is a valid heading tag
-  const validLevels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-  const Component = validLevels.includes(normalizedLevel as string) ? normalizedLevel : 'h2';
+  const validLevels = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
+  type ValidHeadingTag = typeof validLevels[number];
+
+  const Component: ValidHeadingTag = validLevels.includes(normalizedLevel as any)
+    ? (normalizedLevel as ValidHeadingTag)
+    : 'h2';
+
+  // Debug log for troubleshooting (can be removed later)
+  if (typeof window !== 'undefined' && !validLevels.includes(Component)) {
+    console.warn('🚨 Invalid heading level detected:', {
+      original: level,
+      normalized: normalizedLevel,
+      final: Component,
+      type: typeof level
+    });
+  }
 
   // Compute CSS classes (using CSS modules)
   const baseClasses = styles.heading;
