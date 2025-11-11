@@ -20,6 +20,7 @@ import { VariantControl } from './controls/VariantControl';
 import { ResponsiveVisibilityControl } from './controls/ResponsiveVisibilityControl';
 import { AlignmentControl } from './controls/AlignmentControl';
 import { FontFamilyControl } from './controls/FontFamilyControl';
+import { FontSizeControl } from './controls/FontSizeControl';
 import { FontStyleControl } from './controls/FontStyleControl';
 import { LetterSpacingControl } from './controls/LetterSpacingControl';
 import { TextTransformControl } from './controls/TextTransformControl';
@@ -291,6 +292,7 @@ function renderControl(
       const rotate = allParams['rotate'];
       const scaleX = allParams['scaleX'];
       const scaleY = allParams['scaleY'];
+      const transitionDuration = allParams['transitionDuration'];
 
       return (
         <TransformControl
@@ -300,6 +302,7 @@ function renderControl(
           rotate={rotate}
           scaleX={scaleX}
           scaleY={scaleY}
+          transitionDuration={transitionDuration}
           onChange={onChange}
         />
       );
@@ -355,6 +358,30 @@ function renderControl(
           onChange={onChange}
         />
       );
+
+    // V8.1 - Font Size Control with Unit Support (px, rem, em, %)
+    case 'fontSize': {
+      // Get unit from component props (default: px)
+      const unit = allParams['fontSizeUnit'] || 'px';
+
+      return (
+        <FontSizeControl
+          key={param.name}
+          name={param.name}
+          label={param.label}
+          description={param.description}
+          value={value}
+          unit={unit}
+          min={param.min}
+          max={param.max}
+          onChange={onChange}
+          onUnitChange={(name, newUnit) => {
+            // Store unit separately
+            onChange('fontSizeUnit', newUnit);
+          }}
+        />
+      );
+    }
 
     // V8.1 - Font Style Control with Visual Buttons
     case 'fontStyle':
