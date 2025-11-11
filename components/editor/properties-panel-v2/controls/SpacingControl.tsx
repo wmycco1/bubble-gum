@@ -1,13 +1,22 @@
 'use client';
 
 /**
- * SpacingControl - Modern UI for Margin/Padding (V7.6)
+ * SpacingControl - Modern UI for Margin/Padding (V7.7 - Optimized)
  *
  * Features:
  * - All-sides input (shorthand)
  * - Individual side controls (expand/collapse)
+ * - Hold-to-repeat increment/decrement buttons (Advanced mode)
+ * - Independent unit selectors for each side (px, rem, em, %)
+ * - Optimized compact layout (reduced height)
  * - Visual box model preview
  * - User-friendly UX 2025
+ *
+ * V7.7 Improvements (Nov 11, 2025):
+ * - Added hold-to-repeat buttons to Advanced mode inputs
+ * - Made unit selectors independent for each side
+ * - Optimized layout height - reduced padding, gaps, sizes
+ * - More compact design that fits in properties panel
  *
  * V7.6 Fix (Nov 11, 2025):
  * - Fixed: Text selection issue when editing padding/margin input fields
@@ -26,7 +35,7 @@
  * - User can switch modes freely, values cleared only when editing Simple field
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 interface SpacingControlProps {
   label: string;
@@ -44,6 +53,13 @@ interface SpacingControlProps {
   /** Base parameter name (e.g., 'margin' or 'padding') */
   paramName: string;
   description?: string;
+  /** Unit selectors for each side (Advanced mode) */
+  topUnit?: 'px' | 'rem' | 'em' | '%';
+  rightUnit?: 'px' | 'rem' | 'em' | '%';
+  bottomUnit?: 'px' | 'rem' | 'em' | '%';
+  leftUnit?: 'px' | 'rem' | 'em' | '%';
+  /** Callback for unit change */
+  onUnitChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%') => void;
 }
 
 export function SpacingControl({
@@ -57,6 +73,11 @@ export function SpacingControl({
   onSideChange,
   paramName,
   description,
+  topUnit = 'px',
+  rightUnit = 'px',
+  bottomUnit = 'px',
+  leftUnit = 'px',
+  onUnitChange,
 }: SpacingControlProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [unit, setUnit] = useState<'px' | 'rem' | 'em' | '%'>('px');
@@ -64,39 +85,15 @@ export function SpacingControl({
   // Check if any individual sides are set
   const hasIndividualValues = top !== undefined || right !== undefined || bottom !== undefined || left !== undefined;
 
-  // Debug: Log props on every render
-  console.log(`🔍 SpacingControl RENDER for ${paramName}:`, {
-    value,
-    top,
-    right,
-    bottom,
-    left,
-    hasIndividualValues,
-    isExpanded
-  });
-
   const handleShorthandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? undefined : Number(e.target.value);
 
-    console.log(`🔧 SpacingControl: handleShorthandChange called`, {
-      paramName,
-      inputValue: e.target.value,
-      newValue,
-      currentValue: value,
-      hasIndividualValues,
-      top, right, bottom, left
-    });
-
     // V7.5 FIX CORRECTED: Set shorthand FIRST (immediate), then clear sides in next tick
-    // This ensures Badge processes shorthand before individual values are cleared
-    console.log(`🔧 SpacingControl: Step 1 - Applying shorthand ${paramName}=${newValue} (immediate)`);
     onChange(paramName, newValue);
 
     // Then clear individual sides in next event loop tick (if they exist)
     if (onSideChange && hasIndividualValues) {
-      console.log(`🔧 SpacingControl: Step 2 - Will clear individual sides in next tick for ${paramName}`);
       setTimeout(() => {
-        console.log(`🔧 SpacingControl: Step 2 - Clearing individual sides for ${paramName}`);
         onSideChange('Top', undefined);
         onSideChange('Right', undefined);
         onSideChange('Bottom', undefined);
@@ -112,13 +109,161 @@ export function SpacingControl({
     }
   };
 
-  // NOTE: setSelectionRange handlers removed because input[type="number"] doesn't support selection
-  // Number inputs don't allow text selection API, causing InvalidStateError
+  // Hold-to-repeat logic for each side
+  const createHoldToRepeatHandlers = (side: 'Top' | 'Right' | 'Bottom' | 'Left', currentValue?: number, min = 0) => {
+    const [isIncrementPressed, setIsIncrementPressed] = useState(false);
+    const [isDecrementPressed, setIsDecrementPressed] = useState(false);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const speedRef = useRef(100);
+    const valueRef = useRef(currentValue ?? value ?? 0);
+
+    useEffect(() => {
+      valueRef.current = currentValue ?? value ?? 0;
+    }, [currentValue]);
+
+    const handleIncrement = useCallback(() => {
+      const current = valueRef.current;
+      const newValue = current + 1;
+      if (onSideChange) {
+        onSideChange(side, newValue);
+        valueRef.current = newValue;
+      }
+    }, [side]);
+
+    const handleDecrement = useCallback(() => {
+      const current = valueRef.current;
+      const newValue = Math.max(min, current - 1);
+      if (onSideChange) {
+        onSideChange(side, newValue);
+        valueRef.current = newValue;
+      }
+    }, [side, min]);
+
+    const startIncrement = () => {
+      setIsIncrementPressed(true);
+      handleIncrement();
+
+      speedRef.current = 100;
+      timeoutRef.current = setTimeout(() => {
+        intervalRef.current = setInterval(() => {
+          handleIncrement();
+          if (speedRef.current > 20) {
+            speedRef.current = Math.max(20, speedRef.current - 10);
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            intervalRef.current = setInterval(handleIncrement, speedRef.current);
+          }
+        }, speedRef.current);
+      }, 200);
+    };
+
+    const startDecrement = () => {
+      setIsDecrementPressed(true);
+      handleDecrement();
+
+      speedRef.current = 100;
+      timeoutRef.current = setTimeout(() => {
+        intervalRef.current = setInterval(() => {
+          handleDecrement();
+          if (speedRef.current > 20) {
+            speedRef.current = Math.max(20, speedRef.current - 10);
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            intervalRef.current = setInterval(handleDecrement, speedRef.current);
+          }
+        }, speedRef.current);
+      }, 200);
+    };
+
+    const stopChange = () => {
+      setIsIncrementPressed(false);
+      setIsDecrementPressed(false);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      speedRef.current = 100;
+    };
+
+    useEffect(() => {
+      return () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      };
+    }, []);
+
+    return {
+      isIncrementPressed,
+      isDecrementPressed,
+      startIncrement,
+      startDecrement,
+      stopChange,
+    };
+  };
+
+  // Create handlers for each side
+  const topHandlers = createHoldToRepeatHandlers('Top', top);
+  const rightHandlers = createHoldToRepeatHandlers('Right', right);
+  const bottomHandlers = createHoldToRepeatHandlers('Bottom', bottom);
+  const leftHandlers = createHoldToRepeatHandlers('Left', left);
+
+  // Render increment/decrement buttons
+  const renderButtons = (handlers: ReturnType<typeof createHoldToRepeatHandlers>, currentValue?: number, max?: number) => (
+    <div className="flex flex-col gap-0.5">
+      <button
+        type="button"
+        onMouseDown={handlers.startIncrement}
+        onMouseUp={handlers.stopChange}
+        onMouseLeave={handlers.stopChange}
+        onTouchStart={handlers.startIncrement}
+        onTouchEnd={handlers.stopChange}
+        disabled={max !== undefined && (currentValue ?? 0) >= max}
+        className={`
+          p-0.5 border rounded transition-all
+          ${handlers.isIncrementPressed && !(max !== undefined && (currentValue ?? 0) >= max)
+            ? 'border-blue-500 bg-blue-50 text-blue-700'
+            : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+          }
+          disabled:opacity-40 disabled:cursor-not-allowed
+        `}
+        title="Increment (hold to repeat)"
+      >
+        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        onMouseDown={handlers.startDecrement}
+        onMouseUp={handlers.stopChange}
+        onMouseLeave={handlers.stopChange}
+        onTouchStart={handlers.startDecrement}
+        onTouchEnd={handlers.stopChange}
+        disabled={(currentValue ?? 0) <= 0}
+        className={`
+          p-0.5 border rounded transition-all
+          ${handlers.isDecrementPressed && (currentValue ?? 0) > 0
+            ? 'border-blue-500 bg-blue-50 text-blue-700'
+            : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+          }
+          disabled:opacity-40 disabled:cursor-not-allowed
+        `}
+        title="Decrement (hold to repeat)"
+      >
+        <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
+  );
 
   return (
-    <div className="mb-4">
+    <div className="mb-3">
       {/* Label & Expand Button */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-1.5">
         <label className="block text-sm font-medium text-gray-700">
           {label}
           {description && (
@@ -146,7 +291,7 @@ export function SpacingControl({
             value={value ?? ''}
             onChange={handleShorthandChange}
             placeholder="All sides"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
           <select
             value={unit}
@@ -161,92 +306,93 @@ export function SpacingControl({
         </div>
       )}
 
-      {/* Individual Sides (Advanced Mode) - Figma-style */}
+      {/* Individual Sides (Advanced Mode) - Compact Figma-style */}
       {isExpanded && (
-        <div className="space-y-3">
-          {/* Figma-style Box Model - Symmetric Layout */}
-          <div className="p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
-            <div className="flex flex-col items-center gap-2">
+        <div className="space-y-2">
+          {/* Compact Box Model - Reduced padding and gaps */}
+          <div className="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex flex-col items-center gap-1.5">
               {/* Top Side - Centered */}
-              <div className="flex flex-col items-center gap-1.5">
-                <span className="text-xs font-medium text-gray-600">Top</span>
-                <div className="flex items-center gap-1">
-                  <input
-                    type="number"
-                    min="0"
-                    step={unit === 'px' ? '1' : '0.1'}
-                    value={top ?? value ?? ''}
-                    onChange={(e) => handleSideChange('Top', e)}
-                    placeholder="0"
-                    className="w-12 px-1.5 py-1.5 text-xs text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
-                  />
-                  <select
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
-                    className="px-1 py-1 text-xs border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
-                  >
-                    <option value="px">px</option>
-                    <option value="rem">rem</option>
-                    <option value="em">em</option>
-                    <option value="%">%</option>
-                  </select>
-                </div>
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-medium text-gray-600 w-8 text-right">Top</span>
+                <input
+                  type="number"
+                  min="0"
+                  step={topUnit === 'px' ? '1' : '0.1'}
+                  value={top ?? value ?? ''}
+                  onChange={(e) => handleSideChange('Top', e)}
+                  placeholder="0"
+                  className="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+                <select
+                  value={topUnit}
+                  onChange={(e) => onUnitChange?.('Top', e.target.value as 'px' | 'rem' | 'em' | '%')}
+                  className="px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                >
+                  <option value="px">px</option>
+                  <option value="rem">rem</option>
+                  <option value="em">em</option>
+                  <option value="%">%</option>
+                </select>
+                {renderButtons(topHandlers, top ?? value)}
               </div>
 
-              {/* Middle Row: Left + Center Box + Right - Symmetric */}
-              <div className="flex items-center gap-2">
+              {/* Middle Row: Left + Center Box + Right */}
+              <div className="flex items-center gap-1.5 w-full justify-center">
                 {/* Left Side */}
-                <div className="flex flex-col items-center gap-1.5">
+                <div className="flex flex-col items-end gap-1">
                   <span className="text-xs font-medium text-gray-600">Left</span>
                   <div className="flex items-center gap-1">
                     <input
                       type="number"
                       min="0"
-                      step={unit === 'px' ? '1' : '0.1'}
+                      step={leftUnit === 'px' ? '1' : '0.1'}
                       value={left ?? value ?? ''}
                       onChange={(e) => handleSideChange('Left', e)}
                       placeholder="0"
-                      className="w-12 px-1.5 py-1.5 text-xs text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
+                      className="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                     />
                     <select
-                      value={unit}
-                      onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
-                      className="px-1 py-1 text-xs border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                      value={leftUnit}
+                      onChange={(e) => onUnitChange?.('Left', e.target.value as 'px' | 'rem' | 'em' | '%')}
+                      className="px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
                     >
                       <option value="px">px</option>
                       <option value="rem">rem</option>
                       <option value="em">em</option>
                       <option value="%">%</option>
                     </select>
+                    {renderButtons(leftHandlers, left ?? value)}
                   </div>
                 </div>
 
-                {/* Center Box */}
+                {/* Center Box - Smaller */}
                 <div className="flex items-center justify-center">
-                  <div className="w-24 h-24 bg-white flex items-center justify-center rounded shadow-md border-2 border-gray-300">
-                    <span className="text-2xl font-bold text-gray-400">
+                  <div className="w-16 h-16 bg-white flex items-center justify-center rounded shadow border-2 border-gray-300">
+                    <span className="text-xl font-bold text-gray-400">
                       {paramName === 'margin' ? 'M' : 'P'}
                     </span>
                   </div>
                 </div>
 
                 {/* Right Side */}
-                <div className="flex flex-col items-center gap-1.5">
+                <div className="flex flex-col items-start gap-1">
                   <span className="text-xs font-medium text-gray-600">Right</span>
                   <div className="flex items-center gap-1">
+                    {renderButtons(rightHandlers, right ?? value)}
                     <input
                       type="number"
                       min="0"
-                      step={unit === 'px' ? '1' : '0.1'}
+                      step={rightUnit === 'px' ? '1' : '0.1'}
                       value={right ?? value ?? ''}
                       onChange={(e) => handleSideChange('Right', e)}
                       placeholder="0"
-                      className="w-12 px-1.5 py-1.5 text-xs text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
+                      className="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                     />
                     <select
-                      value={unit}
-                      onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
-                      className="px-1 py-1 text-xs border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                      value={rightUnit}
+                      onChange={(e) => onUnitChange?.('Right', e.target.value as 'px' | 'rem' | 'em' | '%')}
+                      className="px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
                     >
                       <option value="px">px</option>
                       <option value="rem">rem</option>
@@ -258,34 +404,33 @@ export function SpacingControl({
               </div>
 
               {/* Bottom Side - Centered */}
-              <div className="flex flex-col items-center gap-1.5">
-                <span className="text-xs font-medium text-gray-600">Bottom</span>
-                <div className="flex items-center gap-1">
-                  <input
-                    type="number"
-                    min="0"
-                    step={unit === 'px' ? '1' : '0.1'}
-                    value={bottom ?? value ?? ''}
-                    onChange={(e) => handleSideChange('Bottom', e)}
-                    placeholder="0"
-                    className="w-12 px-1.5 py-1.5 text-xs text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
-                  />
-                  <select
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
-                    className="px-1 py-1 text-xs border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
-                  >
-                    <option value="px">px</option>
-                    <option value="rem">rem</option>
-                    <option value="em">em</option>
-                    <option value="%">%</option>
-                  </select>
-                </div>
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-medium text-gray-600 w-8 text-right">Bot</span>
+                <input
+                  type="number"
+                  min="0"
+                  step={bottomUnit === 'px' ? '1' : '0.1'}
+                  value={bottom ?? value ?? ''}
+                  onChange={(e) => handleSideChange('Bottom', e)}
+                  placeholder="0"
+                  className="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+                <select
+                  value={bottomUnit}
+                  onChange={(e) => onUnitChange?.('Bottom', e.target.value as 'px' | 'rem' | 'em' | '%')}
+                  className="px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                >
+                  <option value="px">px</option>
+                  <option value="rem">rem</option>
+                  <option value="em">em</option>
+                  <option value="%">%</option>
+                </select>
+                {renderButtons(bottomHandlers, bottom ?? value)}
               </div>
             </div>
           </div>
 
-          {/* Helper Text */}
+          {/* Helper Text - Smaller */}
           <p className="text-xs text-gray-500 text-center">
             {hasIndividualValues
               ? 'Individual values override "All sides"'
