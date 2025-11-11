@@ -251,9 +251,9 @@ export function BorderControl({
         </div>
       )}
 
-      {/* Individual Sides (Advanced Mode) */}
+      {/* Individual Sides (Advanced Mode) - Compact 2x2 Grid */}
       {isExpanded && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {/* Border Style (Advanced mode) */}
           <div>
             <label className="block text-xs text-gray-600 mb-1">Style</label>
@@ -270,105 +270,95 @@ export function BorderControl({
             </select>
           </div>
 
-          {/* Top Side */}
-          <div className="p-2 bg-gray-50 rounded border border-gray-200">
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">Top</label>
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
+          {/* Row 1: Top + Right */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* Top Side */}
+            <div className="p-2 bg-gray-50 rounded border border-gray-200">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Top</label>
+              <div className="flex items-center gap-1">
                 <input
                   type="number"
                   min="0"
                   value={top ?? value ?? ''}
                   onChange={(e) => handleSideChange('Top', e)}
-                  placeholder="Width (px)"
-                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  placeholder="px"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
                 />
-              </div>
-              <div>
                 <input
                   type="color"
                   value={topColor ?? borderColor}
                   onChange={(e) => handleSideColorChange('Top', e)}
-                  className="w-10 h-9 border border-gray-300 rounded cursor-pointer"
-                  title="Top border color"
+                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
+                  title="Top color"
                 />
               </div>
             </div>
-          </div>
 
-          {/* Right Side */}
-          <div className="p-2 bg-gray-50 rounded border border-gray-200">
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">Right</label>
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
+            {/* Right Side */}
+            <div className="p-2 bg-gray-50 rounded border border-gray-200">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Right</label>
+              <div className="flex items-center gap-1">
                 <input
                   type="number"
                   min="0"
                   value={right ?? value ?? ''}
                   onChange={(e) => handleSideChange('Right', e)}
-                  placeholder="Width (px)"
-                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  placeholder="px"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
                 />
-              </div>
-              <div>
                 <input
                   type="color"
                   value={rightColor ?? borderColor}
                   onChange={(e) => handleSideColorChange('Right', e)}
-                  className="w-10 h-9 border border-gray-300 rounded cursor-pointer"
-                  title="Right border color"
+                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
+                  title="Right color"
                 />
               </div>
             </div>
           </div>
 
-          {/* Bottom Side */}
-          <div className="p-2 bg-gray-50 rounded border border-gray-200">
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">Bottom</label>
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
+          {/* Row 2: Bottom + Left */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* Bottom Side */}
+            <div className="p-2 bg-gray-50 rounded border border-gray-200">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Bottom</label>
+              <div className="flex items-center gap-1">
                 <input
                   type="number"
                   min="0"
                   value={bottom ?? value ?? ''}
                   onChange={(e) => handleSideChange('Bottom', e)}
-                  placeholder="Width (px)"
-                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  placeholder="px"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
                 />
-              </div>
-              <div>
                 <input
                   type="color"
                   value={bottomColor ?? borderColor}
                   onChange={(e) => handleSideColorChange('Bottom', e)}
-                  className="w-10 h-9 border border-gray-300 rounded cursor-pointer"
-                  title="Bottom border color"
+                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
+                  title="Bottom color"
                 />
               </div>
             </div>
-          </div>
 
-          {/* Left Side */}
-          <div className="p-2 bg-gray-50 rounded border border-gray-200">
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">Left</label>
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
+            {/* Left Side */}
+            <div className="p-2 bg-gray-50 rounded border border-gray-200">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Left</label>
+              <div className="flex items-center gap-1">
                 <input
                   type="number"
                   min="0"
                   value={left ?? value ?? ''}
                   onChange={(e) => handleSideChange('Left', e)}
-                  placeholder="Width (px)"
-                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  placeholder="px"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
                 />
-              </div>
-              <div>
                 <input
                   type="color"
                   value={leftColor ?? borderColor}
                   onChange={(e) => handleSideColorChange('Left', e)}
-                  className="w-10 h-9 border border-gray-300 rounded cursor-pointer"
-                  title="Left border color"
+                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
+                  title="Left color"
                 />
               </div>
             </div>
