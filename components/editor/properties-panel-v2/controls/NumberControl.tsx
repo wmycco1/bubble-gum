@@ -24,6 +24,12 @@ export function NumberControl({
   step = 1,
   required
 }: NumberControlProps) {
+  const [isIncrementPressed, setIsIncrementPressed] = React.useState(false);
+  const [isDecrementPressed, setIsDecrementPressed] = React.useState(false);
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const speedRef = React.useRef(300); // Initial delay
+
   const handleIncrement = () => {
     const newValue = (value || 0) + step;
     if (max === undefined || newValue <= max) {
@@ -37,6 +43,67 @@ export function NumberControl({
       onChange(name, newValue);
     }
   };
+
+  // Start incrementing with acceleration
+  const startIncrement = () => {
+    setIsIncrementPressed(true);
+    handleIncrement(); // First click
+
+    speedRef.current = 300; // Reset speed
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        handleIncrement();
+        // Accelerate - reduce delay every iteration
+        if (speedRef.current > 50) {
+          speedRef.current = Math.max(50, speedRef.current - 20);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = setInterval(handleIncrement, speedRef.current);
+        }
+      }, speedRef.current);
+    }, 400); // Initial delay before repeat starts
+  };
+
+  // Start decrementing with acceleration
+  const startDecrement = () => {
+    setIsDecrementPressed(true);
+    handleDecrement(); // First click
+
+    speedRef.current = 300; // Reset speed
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        handleDecrement();
+        // Accelerate - reduce delay every iteration
+        if (speedRef.current > 50) {
+          speedRef.current = Math.max(50, speedRef.current - 20);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = setInterval(handleDecrement, speedRef.current);
+        }
+      }, speedRef.current);
+    }, 400); // Initial delay before repeat starts
+  };
+
+  // Stop incrementing/decrementing
+  const stopChange = () => {
+    setIsIncrementPressed(false);
+    setIsDecrementPressed(false);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    speedRef.current = 300; // Reset speed
+  };
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   return (
     <div className="mb-4">
@@ -58,7 +125,8 @@ export function NumberControl({
             min={min}
             max={max}
             step={step}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            style={{ MozAppearance: 'textfield' }}
           />
           {(min !== undefined || max !== undefined) && (
             <div className="text-xs text-gray-400 mt-1">
@@ -69,24 +137,46 @@ export function NumberControl({
         <div className="flex flex-col gap-0.5">
           <button
             type="button"
-            onClick={handleIncrement}
+            onMouseDown={startIncrement}
+            onMouseUp={stopChange}
+            onMouseLeave={stopChange}
+            onTouchStart={startIncrement}
+            onTouchEnd={stopChange}
             disabled={max !== undefined && (value || 0) >= max}
-            className="p-1 border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-            title="Increment"
+            className={`
+              p-1.5 border-2 rounded-md transition-all shadow-sm
+              ${isIncrementPressed && !(max !== undefined && (value || 0) >= max)
+                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+              }
+              disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+            `}
+            title="Increment (hold to repeat)"
           >
-            <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
             </svg>
           </button>
           <button
             type="button"
-            onClick={handleDecrement}
+            onMouseDown={startDecrement}
+            onMouseUp={stopChange}
+            onMouseLeave={stopChange}
+            onTouchStart={startDecrement}
+            onTouchEnd={stopChange}
             disabled={min !== undefined && (value || 0) <= min}
-            className="p-1 border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-            title="Decrement"
+            className={`
+              p-1.5 border-2 rounded-md transition-all shadow-sm
+              ${isDecrementPressed && !(min !== undefined && (value || 0) <= min)
+                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+              }
+              disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+            `}
+            title="Decrement (hold to repeat)"
           >
-            <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
         </div>
