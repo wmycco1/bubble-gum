@@ -5,7 +5,7 @@
 
 export interface ParameterDefinition {
   name: string;
-  type: 'text' | 'number' | 'boolean' | 'color' | 'select' | 'image' | 'textarea' | 'spacing' | 'shadow' | 'opacity' | 'borderRadius' | 'border';
+  type: 'text' | 'number' | 'boolean' | 'color' | 'select' | 'variant' | 'image' | 'textarea' | 'spacing' | 'shadow' | 'opacity' | 'borderRadius' | 'border' | 'transform' | 'responsive' | 'alignment' | 'fontFamily' | 'fontStyle' | 'letterSpacing' | 'textTransform' | 'textShadow';
   label: string;
   description?: string;
   options?: string[];
@@ -28,10 +28,10 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     // Content
     { name: 'children', type: 'text', label: 'Text', required: true },
 
-    // Visual Style
-    { name: 'variant', type: 'select', label: 'Variant', options: ['default', 'primary', 'success', 'warning', 'error', 'info'] },
-    { name: 'size', type: 'select', label: 'Size', options: ['sm', 'md', 'lg'] },
-    { name: 'rounded', type: 'select', label: 'Shape', options: ['pill', 'rounded', 'square'], defaultValue: 'pill' },
+    // Visual Style (Preset)
+    { name: 'variant', type: 'variant', label: 'Variant',
+      options: ['default', 'primary', 'success', 'warning', 'error', 'info'],
+      description: 'Predefined color schemes' },
 
     // V7.3 - BORDER SYSTEM (Simple & Advanced modes)
     { name: 'borderWidth', type: 'border', label: 'Border',
@@ -70,8 +70,7 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     { name: 'backgroundColor', type: 'color', label: 'Background Color', description: 'Overrides variant' },
 
     // V7.5 - LAYOUT & POSITIONING
-    { name: 'align', type: 'select', label: 'Alignment',
-      options: ['left', 'center', 'right', 'full'],
+    { name: 'align', type: 'alignment', label: 'Alignment',
       description: 'Horizontal alignment or full width' },
     { name: 'position', type: 'select', label: 'Position',
       options: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
@@ -80,8 +79,8 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
       options: ['inline-flex', 'block', 'inline-block', 'flex', 'inline', 'grid', 'inline-grid', 'none'],
       description: 'CSS display property', defaultValue: 'inline-flex' },
 
-    // V7.6 - TYPOGRAPHY (Text Styling)
-    { name: 'fontFamily', type: 'select', label: 'Font Family',
+    // V7.6 - TYPOGRAPHY (Text Styling) - V8.1 Enhanced with Visual Controls
+    { name: 'fontFamily', type: 'fontFamily', label: 'Font Family',
       options: ['system-ui', 'serif', 'monospace', 'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins'],
       description: 'Font family for text' },
     { name: 'fontSize', type: 'number', label: 'Font Size (px)',
@@ -89,26 +88,19 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     { name: 'fontWeight', type: 'select', label: 'Font Weight',
       options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
       description: 'Text weight (100=thin, 900=black)' },
-    { name: 'fontStyle', type: 'select', label: 'Font Style',
-      options: ['normal', 'italic', 'oblique'],
+    { name: 'fontStyle', type: 'fontStyle', label: 'Font Style',
       description: 'Text style' },
-    { name: 'letterSpacing', type: 'number', label: 'Letter Spacing (px)',
+    { name: 'letterSpacing', type: 'letterSpacing', label: 'Letter Spacing',
       description: 'Space between letters', min: -5, max: 10 },
-    { name: 'textTransform', type: 'select', label: 'Text Transform',
-      options: ['none', 'uppercase', 'lowercase', 'capitalize'],
+    { name: 'textTransform', type: 'textTransform', label: 'Text Transform',
       description: 'Text case transformation' },
+    { name: 'textShadow', type: 'textShadow', label: 'Text Shadow',
+      description: 'Text shadow effect',
+      presetOptions: ['none', 'sm', 'md', 'lg', 'xl'] },
 
-    // V7.6 - TRANSFORM (2D Transformations)
-    { name: 'rotate', type: 'number', label: 'Rotate (deg)',
-      description: 'Rotation angle in degrees', min: -360, max: 360 },
-    { name: 'scaleX', type: 'number', label: 'Scale X',
-      description: 'Horizontal scale (1 = normal)', min: 0, max: 3 },
-    { name: 'scaleY', type: 'number', label: 'Scale Y',
-      description: 'Vertical scale (1 = normal)', min: 0, max: 3 },
-    { name: 'skewX', type: 'number', label: 'Skew X (deg)',
-      description: 'Horizontal skew angle', min: -45, max: 45 },
-    { name: 'skewY', type: 'number', label: 'Skew Y (deg)',
-      description: 'Vertical skew angle', min: -45, max: 45 },
+    // V7.7 - TRANSFORM (2D Transformations - unified control)
+    { name: 'transform', type: 'transform', label: 'Transform',
+      description: 'Rotation & Scale (Simple: uniform, Advanced: individual X/Y)' },
 
     // V7.6 - ANIMATION
     { name: 'transitionDuration', type: 'number', label: 'Transition Duration (ms)',
@@ -116,6 +108,10 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     { name: 'transitionTimingFunction', type: 'select', label: 'Timing Function',
       options: ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'],
       description: 'Animation easing function', defaultValue: 'ease' },
+
+    // V7.8 - RESPONSIVE VISIBILITY
+    { name: 'responsive', type: 'responsive', label: 'Device Visibility',
+      description: 'Show/hide on mobile, tablet, and desktop devices' },
   ],
 
   Button: [

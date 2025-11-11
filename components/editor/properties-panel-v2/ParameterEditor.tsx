@@ -6,6 +6,7 @@ import { TextControl } from './controls/TextControl';
 import { NumberControl } from './controls/NumberControl';
 import { ToggleControl } from './controls/ToggleControl';
 import { ColorControl } from './controls/ColorControl';
+import { DualColorControl } from './controls/DualColorControl';
 import { SelectControl } from './controls/SelectControl';
 import { ImageControl } from './controls/ImageControl';
 import { TextareaControl } from './controls/TextareaControl';
@@ -14,6 +15,15 @@ import { ShadowControl } from './controls/ShadowControl';
 import { OpacityControl } from './controls/OpacityControl';
 import { BorderRadiusControl } from './controls/BorderRadiusControl';
 import { BorderControl } from './controls/BorderControl';
+import { TransformControl } from './controls/TransformControl';
+import { VariantControl } from './controls/VariantControl';
+import { ResponsiveVisibilityControl } from './controls/ResponsiveVisibilityControl';
+import { AlignmentControl } from './controls/AlignmentControl';
+import { FontFamilyControl } from './controls/FontFamilyControl';
+import { FontStyleControl } from './controls/FontStyleControl';
+import { LetterSpacingControl } from './controls/LetterSpacingControl';
+import { TextTransformControl } from './controls/TextTransformControl';
+import { TextShadowControl } from './controls/TextShadowControl';
 import { COMPONENT_PARAMETERS, COMMON_PARAMETERS } from './componentParametersMap';
 
 interface ParameterEditorProps {
@@ -27,20 +37,67 @@ export function ParameterEditor({ component, onParameterChange }: ParameterEdito
   // Get component-specific parameters from comprehensive mapping
   const specificParams = COMPONENT_PARAMETERS[component.type] || [];
 
+  // Enhanced onChange handler that clears custom colors when variant changes
+  const handleParameterChange = React.useCallback((paramName: string, value: any) => {
+    // Special handling: When variant changes on Badge, clear custom colors
+    // This ensures variant preset colors take effect
+    if (paramName === 'variant' && component.type === 'Badge') {
+      console.log('🔄 ParameterEditor: Badge variant changed, clearing custom colors');
+      // Clear color first
+      onParameterChange('color', undefined);
+      // Clear backgroundColor
+      onParameterChange('backgroundColor', undefined);
+      // Then set the new variant
+      onParameterChange(paramName, value);
+    } else {
+      // Normal parameter change
+      onParameterChange(paramName, value);
+    }
+  }, [component.type, onParameterChange]);
+
+  // Filter out individual color/backgroundColor params - we'll render them as DualColorControl
+  const shouldSkipParam = (paramName: string, index: number, allParams: any[]) => {
+    // Skip backgroundColor if color param exists (they'll be rendered together)
+    if (paramName === 'backgroundColor') {
+      return allParams.some(p => p.name === 'color');
+    }
+    return false;
+  };
+
   return (
     <div className="p-4 space-y-4">
       {/* Component-specific parameters first (most important) */}
       {specificParams.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold text-gray-700 mb-3">Component Properties</h3>
-          {specificParams.map((param) => renderControl(param, params[param.name], onParameterChange, params))}
+          {specificParams.map((param, index) => {
+            // Skip params that will be rendered by DualColorControl
+            if (shouldSkipParam(param.name, index, specificParams)) {
+              return null;
+            }
+
+            // Special case: render color + backgroundColor as DualColorControl
+            if (param.name === 'color' && specificParams.some(p => p.name === 'backgroundColor')) {
+              return (
+                <DualColorControl
+                  key="colors"
+                  textColor={params['color']}
+                  backgroundColor={params['backgroundColor']}
+                  onTextColorChange={(color) => handleParameterChange('color', color)}
+                  onBackgroundColorChange={(bgColor) => handleParameterChange('backgroundColor', bgColor)}
+                />
+              );
+            }
+
+            return renderControl(param, params[param.name], handleParameterChange, params);
+          })}
         </div>
       )}
 
       {/* Common parameters at the bottom (advanced) */}
       <div>
         <h3 className="text-sm font-semibold text-gray-700 mb-3">Common Properties</h3>
-        {COMMON_PARAMETERS.map((param) => renderControl(param, params[param.name], onParameterChange, params))}
+        {COMMON_PARAMETERS.map((param) => renderControl(param, params[param.name], handleParameterChange, params))}
       </div>
     </div>
   );
@@ -70,6 +127,9 @@ function renderControl(
       return <ToggleControl key={param.name} {...param} value={value} onChange={onChange} />;
     case 'color':
       return <ColorControl key={param.name} {...param} value={value} onChange={onChange} />;
+    case 'variant':
+      // Visual variant selector for Badge
+      return <VariantControl key={param.name} {...param} value={value} onChange={onChange} />;
     case 'select':
       return <SelectControl key={param.name} {...param} value={value} onChange={onChange} />;
     case 'image':
@@ -220,6 +280,150 @@ function renderControl(
           onSideColorChange={(side: 'Top' | 'Right' | 'Bottom' | 'Left', color: string | undefined) => {
             // Handle individual side color changes (can be undefined to clear)
             onChange(`border${side}Color`, color);
+          }}
+        />
+      );
+    }
+
+    // V7.7 - Transform Control (Rotation & Scale)
+    case 'transform': {
+      // Get individual transform values from component props
+      const rotate = allParams['rotate'];
+      const scaleX = allParams['scaleX'];
+      const scaleY = allParams['scaleY'];
+
+      return (
+        <TransformControl
+          key={param.name}
+          label={param.label}
+          description={param.description}
+          rotate={rotate}
+          scaleX={scaleX}
+          scaleY={scaleY}
+          onChange={onChange}
+        />
+      );
+    }
+
+    // V7.8 - Responsive Visibility Control
+    case 'responsive': {
+      // Get device visibility flags from component props
+      const hideOnMobile = allParams['hideOnMobile'];
+      const hideOnTablet = allParams['hideOnTablet'];
+      const hideOnDesktop = allParams['hideOnDesktop'];
+
+      return (
+        <ResponsiveVisibilityControl
+          key={param.name}
+          label={param.label}
+          description={param.description}
+          hideOnMobile={hideOnMobile}
+          hideOnTablet={hideOnTablet}
+          hideOnDesktop={hideOnDesktop}
+          onChange={(device: 'mobile' | 'tablet' | 'desktop', hide: boolean) => {
+            // Map device to parameter name
+            const paramName = `hideOn${device.charAt(0).toUpperCase()}${device.slice(1)}`;
+            onChange(paramName, hide);
+          }}
+        />
+      );
+    }
+
+    // V8.1 - Visual Alignment Control
+    case 'alignment':
+      return (
+        <AlignmentControl
+          key={param.name}
+          name={param.name}
+          label={param.label}
+          description={param.description}
+          value={value}
+          onChange={onChange}
+        />
+      );
+
+    // V8.1 - Font Family Control with Visual Preview
+    case 'fontFamily':
+      return (
+        <FontFamilyControl
+          key={param.name}
+          name={param.name}
+          label={param.label}
+          description={param.description}
+          value={value}
+          options={param.options || []}
+          onChange={onChange}
+        />
+      );
+
+    // V8.1 - Font Style Control with Visual Buttons
+    case 'fontStyle':
+      return (
+        <FontStyleControl
+          key={param.name}
+          name={param.name}
+          label={param.label}
+          description={param.description}
+          value={value}
+          onChange={onChange}
+        />
+      );
+
+    // V8.1 - Letter Spacing Control with Live Preview
+    case 'letterSpacing':
+      return (
+        <LetterSpacingControl
+          key={param.name}
+          name={param.name}
+          label={param.label}
+          description={param.description}
+          value={value}
+          min={param.min}
+          max={param.max}
+          onChange={onChange}
+        />
+      );
+
+    // V8.1 - Text Transform Control with Visual Buttons
+    case 'textTransform':
+      return (
+        <TextTransformControl
+          key={param.name}
+          name={param.name}
+          label={param.label}
+          description={param.description}
+          value={value}
+          onChange={onChange}
+        />
+      );
+
+    // V8.1 - Text Shadow Control with Live Text Preview
+    case 'textShadow': {
+      // Get custom text shadow parameters from component props
+      const offsetX = allParams['textShadowOffsetX'];
+      const offsetY = allParams['textShadowOffsetY'];
+      const blur = allParams['textShadowBlur'];
+      const color = allParams['textShadowColor'];
+      const textShadowOpacity = allParams['textShadowOpacity'];
+
+      return (
+        <TextShadowControl
+          key={param.name}
+          label={param.label}
+          description={param.description}
+          preset={value || 'none'}
+          offsetX={offsetX}
+          offsetY={offsetY}
+          blur={blur}
+          color={color}
+          opacity={textShadowOpacity}
+          onPresetChange={(preset) => onChange('textShadow', preset)}
+          onCustomChange={(paramType, customValue) => {
+            // Handle custom text shadow parameters
+            onChange(`textShadow${paramType.charAt(0).toUpperCase()}${paramType.slice(1)}`, customValue);
+          }}
+          onOpacityChange={(opacityValue) => {
+            onChange('textShadowOpacity', opacityValue);
           }}
         />
       );

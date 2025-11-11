@@ -572,6 +572,27 @@ export interface CanvasComponent {
   parentId?: string;
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Visual Editing Modes
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Visual editing mode for canvas components
+ * Controls which visual handles are shown when component is selected
+ *
+ * SOLVING: Border radius handles, spacing handles, and transform handles
+ * were overlapping in corners causing poor UX. Solution: contextual modes.
+ *
+ * Inspired by Figma/Webflow - one mode active at a time for clean UI
+ *
+ * @example
+ * - 'none' → Only selection bounds + toolbar (default)
+ * - 'spacing' → M/P buttons + spacing handles (margin/padding)
+ * - 'borderRadius' → Corner handles for border-radius
+ * - 'transform' → Rotation/scale handles (future)
+ */
+export type EditingMode = 'none' | 'spacing' | 'borderRadius' | 'transform';
+
 export interface CanvasState {
   // Components tree
   components: CanvasComponent[];
@@ -601,6 +622,15 @@ export interface CanvasState {
    * Advanced: full control, properties panel, granular styling
    */
   editorMode: 'simple' | 'advanced';
+
+  /**
+   * Visual editing mode for canvas (NEW!)
+   * Controls which visual handles are displayed when component is selected
+   * Prevents overlapping handles (spacing vs border-radius vs transform)
+   *
+   * User toggles via ComponentToolbar buttons
+   */
+  visualEditingMode: EditingMode;
 }
 
 export interface DragItem {

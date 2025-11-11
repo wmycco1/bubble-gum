@@ -265,7 +265,12 @@ function generateDefaultProps(componentName: string): Record<string, any> {
         break;
 
       case 'color':
-        defaultProps[param.name] = '#3b82f6'; // blue-500
+        // Badge uses variant system - don't set default custom colors
+        if (componentName === 'Badge' && (param.name === 'color' || param.name === 'backgroundColor')) {
+          // Skip - let variant handle colors
+        } else {
+          defaultProps[param.name] = '#3b82f6'; // blue-500
+        }
         break;
 
       case 'select':

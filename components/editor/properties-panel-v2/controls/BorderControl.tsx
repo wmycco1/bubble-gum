@@ -1,16 +1,13 @@
 'use client';
 
 /**
- * BorderControl - Modern UI for Border (V7.3)
+ * BorderControl - Modern UI for Border (V7.4 - Figma-style)
  *
  * Features:
- * - All-sides input (Simple mode)
- * - Individual side controls (Advanced mode)
- * - Border style & color
- * - Visual preview
+ * - Visual border style selector (Simple mode)
+ * - Figma-like box model preview (Advanced mode)
+ * - Individual side controls with colors
  * - User-friendly UX 2025
- *
- * Similar to SpacingControl and BorderRadiusControl
  */
 
 import React, { useState } from 'react';
@@ -46,6 +43,15 @@ interface BorderControlProps {
   description?: string;
 }
 
+// Border style options with visual previews
+const BORDER_STYLES = [
+  { value: 'none', label: 'None', preview: 'none' },
+  { value: 'solid', label: 'Solid', preview: 'solid' },
+  { value: 'dashed', label: 'Dashed', preview: 'dashed' },
+  { value: 'dotted', label: 'Dotted', preview: 'dotted' },
+  { value: 'double', label: 'Double', preview: 'double' },
+];
+
 export function BorderControl({
   label,
   value,
@@ -67,117 +73,60 @@ export function BorderControl({
   description,
 }: BorderControlProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [unit, setUnit] = useState<'px' | 'rem' | 'em' | '%'>('px');
 
   // Check if any individual sides are set
   const hasIndividualValues = top !== undefined || right !== undefined || bottom !== undefined || left !== undefined;
 
-  // Debug: Log props on every render
-  console.log(`🔍 BorderControl RENDER:`, {
-    value,
-    top,
-    right,
-    bottom,
-    left,
-    hasIndividualValues,
-    isExpanded,
-    borderStyle,
-    borderColor,
-  });
-
   const handleShorthandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? undefined : Number(e.target.value);
 
-    console.log(`🔧 BorderControl: handleShorthandChange called`, {
-      inputValue: e.target.value,
-      newValue,
-      currentValue: value,
-      hasIndividualValues,
-      top, right, bottom, left
-    });
-
     // Clear individual sides if they exist (to apply shorthand)
     if (onSideChange && hasIndividualValues) {
-      console.log(`🔧 BorderControl: Will clear sides + apply shorthand in setTimeout`);
-
       setTimeout(() => {
-        console.log(`🔧 BorderControl: Step 1 - Clearing individual sides`);
         onSideChange('Top', undefined);
         onSideChange('Right', undefined);
         onSideChange('Bottom', undefined);
         onSideChange('Left', undefined);
-
-        console.log(`🔧 BorderControl: Step 2 - Applying shorthand borderWidth=${newValue}`);
         onChange('borderWidth', newValue);
       }, 0);
     } else {
-      console.log(`🔧 BorderControl: No individual values, applying shorthand directly`);
       onChange('borderWidth', newValue);
     }
   };
 
   const handleSideChange = (side: 'Top' | 'Right' | 'Bottom' | 'Left', e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? undefined : Number(e.target.value);
-
-    console.log(`🔧 BorderControl: handleSideChange called`, {
-      side,
-      inputValue: e.target.value,
-      newValue,
-      currentValue: value,
-      hasIndividualValues,
-      top, right, bottom, left
-    });
-
-    // Don't clear shorthand! Individual values automatically override shorthand in Badge component
-    // This allows fallback: if side is undefined, use shorthand value
     if (onSideChange) {
-      console.log(`🔧 BorderControl: Calling onSideChange for ${side}=${newValue}`);
       onSideChange(side, newValue);
     }
   };
 
-  const handleStyleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleStyleClick = (style: string) => {
     if (onStyleChange) {
-      console.log(`🔧 BorderControl: Changing borderStyle to ${e.target.value}`);
-      onStyleChange(e.target.value);
+      onStyleChange(style);
     }
   };
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newColor = e.target.value;
-
-    console.log(`🔧 BorderControl: handleColorChange called`, {
-      newColor,
-      currentBorderColor: borderColor,
-      hasIndividualColors: topColor !== undefined || rightColor !== undefined || bottomColor !== undefined || leftColor !== undefined,
-      topColor, rightColor, bottomColor, leftColor
-    });
-
-    // Check if any individual side colors are set
     const hasIndividualColors = topColor !== undefined || rightColor !== undefined || bottomColor !== undefined || leftColor !== undefined;
 
-    // Clear individual side colors if they exist (to apply shorthand)
     if (onSideColorChange && hasIndividualColors && onColorChange) {
-      console.log(`🔧 BorderControl: Will clear individual side colors + apply shorthand borderColor in setTimeout`);
-
       setTimeout(() => {
-        console.log(`🔧 BorderControl: Step 1 - Clearing individual side colors`);
         onSideColorChange('Top', undefined);
         onSideColorChange('Right', undefined);
         onSideColorChange('Bottom', undefined);
         onSideColorChange('Left', undefined);
-
-        console.log(`🔧 BorderControl: Step 2 - Applying shorthand borderColor=${newColor}`);
         onColorChange(newColor);
       }, 0);
     } else if (onColorChange) {
-      console.log(`🔧 BorderControl: No individual colors, applying shorthand directly`);
       onColorChange(newColor);
     }
   };
 
   const handleSideColorChange = (side: 'Top' | 'Right' | 'Bottom' | 'Left', e: React.ChangeEvent<HTMLInputElement>) => {
     if (onSideColorChange) {
-      console.log(`🔧 BorderControl: Changing border${side}Color to ${e.target.value}`);
       onSideColorChange(side, e.target.value);
     }
   };
@@ -203,163 +152,294 @@ export function BorderControl({
         </button>
       </div>
 
-      {/* Simple Mode - Compact 3-column layout */}
+      {/* Simple Mode */}
       {!isExpanded && (
-        <div className="grid grid-cols-3 gap-2">
-          {/* Border Style */}
+        <div className="space-y-3">
+          {/* Visual Border Style Selector */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Style</label>
-            <select
-              value={borderStyle}
-              onChange={handleStyleChange}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="none">None</option>
-              <option value="solid">Solid</option>
-              <option value="dashed">Dashed</option>
-              <option value="dotted">Dotted</option>
-              <option value="double">Double</option>
-            </select>
-          </div>
-
-          {/* Width (All sides) */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Width</label>
-            <div className="flex items-center gap-1">
-              <input
-                type="number"
-                min="0"
-                value={value ?? ''}
-                onChange={handleShorthandChange}
-                placeholder="0"
-                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              />
-              <span className="text-xs text-gray-500">px</span>
+            <label className="block text-xs text-gray-600 mb-2">Style</label>
+            <div className="grid grid-cols-5 gap-1">
+              {BORDER_STYLES.map((style) => (
+                <button
+                  key={style.value}
+                  type="button"
+                  onClick={() => handleStyleClick(style.value)}
+                  className={`
+                    flex flex-col items-center justify-center p-2 rounded-md transition-all
+                    ${borderStyle === style.value
+                      ? 'ring-2 ring-blue-500 bg-blue-50'
+                      : 'ring-1 ring-gray-200 hover:ring-gray-300 bg-white'
+                    }
+                  `}
+                  title={style.label}
+                >
+                  {/* Visual Preview */}
+                  <div className="w-full h-8 flex items-center justify-center mb-1">
+                    {style.value === 'none' ? (
+                      <div className="w-full h-0.5 bg-gray-200 relative">
+                        <span className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">×</span>
+                      </div>
+                    ) : (
+                      <div
+                        className="w-full h-0"
+                        style={{
+                          borderTop: `3px ${style.preview} ${borderStyle === style.value ? '#3b82f6' : '#374151'}`,
+                        }}
+                      />
+                    )}
+                  </div>
+                  {/* Label */}
+                  <span className={`text-xs ${borderStyle === style.value ? 'text-blue-600 font-medium' : 'text-gray-600'}`}>
+                    {style.label}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Border Color */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Color</label>
-            <input
-              type="color"
-              value={borderColor}
-              onChange={handleColorChange}
-              className="w-full h-9 border border-gray-300 rounded cursor-pointer"
-            />
+          {/* Width & Color */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* Width */}
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Width</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min="0"
+                  step={unit === 'px' ? '1' : '0.1'}
+                  value={value ?? ''}
+                  onChange={handleShorthandChange}
+                  placeholder="0"
+                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+                <select
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
+                  className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                >
+                  <option value="px">px</option>
+                  <option value="rem">rem</option>
+                  <option value="em">em</option>
+                  <option value="%">%</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Color */}
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Color</label>
+              <input
+                type="color"
+                value={borderColor}
+                onChange={handleColorChange}
+                className="w-full h-9 border border-gray-300 rounded cursor-pointer"
+              />
+            </div>
           </div>
         </div>
       )}
 
-      {/* Individual Sides (Advanced Mode) - Compact 2x2 Grid */}
+      {/* Advanced Mode - Figma-style Box Model */}
       {isExpanded && (
-        <div className="space-y-2">
-          {/* Border Style (Advanced mode) */}
+        <div className="space-y-3">
+          {/* Visual Border Style Selector (same as Simple) */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Style</label>
-            <select
-              value={borderStyle}
-              onChange={handleStyleChange}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="none">None</option>
-              <option value="solid">Solid</option>
-              <option value="dashed">Dashed</option>
-              <option value="dotted">Dotted</option>
-              <option value="double">Double</option>
-            </select>
-          </div>
-
-          {/* Row 1: Top + Right */}
-          <div className="grid grid-cols-2 gap-2">
-            {/* Top Side */}
-            <div className="p-2 bg-gray-50 rounded border border-gray-200">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Top</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  min="0"
-                  value={top ?? value ?? ''}
-                  onChange={(e) => handleSideChange('Top', e)}
-                  placeholder="px"
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                />
-                <input
-                  type="color"
-                  value={topColor ?? borderColor}
-                  onChange={(e) => handleSideColorChange('Top', e)}
-                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
-                  title="Top color"
-                />
-              </div>
-            </div>
-
-            {/* Right Side */}
-            <div className="p-2 bg-gray-50 rounded border border-gray-200">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Right</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  min="0"
-                  value={right ?? value ?? ''}
-                  onChange={(e) => handleSideChange('Right', e)}
-                  placeholder="px"
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                />
-                <input
-                  type="color"
-                  value={rightColor ?? borderColor}
-                  onChange={(e) => handleSideColorChange('Right', e)}
-                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
-                  title="Right color"
-                />
-              </div>
+            <label className="block text-xs text-gray-600 mb-2">Style</label>
+            <div className="grid grid-cols-5 gap-1">
+              {BORDER_STYLES.map((style) => (
+                <button
+                  key={style.value}
+                  type="button"
+                  onClick={() => handleStyleClick(style.value)}
+                  className={`
+                    flex flex-col items-center justify-center p-2 rounded-md transition-all
+                    ${borderStyle === style.value
+                      ? 'ring-2 ring-blue-500 bg-blue-50'
+                      : 'ring-1 ring-gray-200 hover:ring-gray-300 bg-white'
+                    }
+                  `}
+                  title={style.label}
+                >
+                  {/* Visual Preview */}
+                  <div className="w-full h-8 flex items-center justify-center mb-1">
+                    {style.value === 'none' ? (
+                      <div className="w-full h-0.5 bg-gray-200 relative">
+                        <span className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">×</span>
+                      </div>
+                    ) : (
+                      <div
+                        className="w-full h-0"
+                        style={{
+                          borderTop: `3px ${style.preview} ${borderStyle === style.value ? '#3b82f6' : '#374151'}`,
+                        }}
+                      />
+                    )}
+                  </div>
+                  {/* Label */}
+                  <span className={`text-xs ${borderStyle === style.value ? 'text-blue-600 font-medium' : 'text-gray-600'}`}>
+                    {style.label}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Row 2: Bottom + Left */}
-          <div className="grid grid-cols-2 gap-2">
-            {/* Bottom Side */}
-            <div className="p-2 bg-gray-50 rounded border border-gray-200">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Bottom</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  min="0"
-                  value={bottom ?? value ?? ''}
-                  onChange={(e) => handleSideChange('Bottom', e)}
-                  placeholder="px"
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                />
-                <input
-                  type="color"
-                  value={bottomColor ?? borderColor}
-                  onChange={(e) => handleSideColorChange('Bottom', e)}
-                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
-                  title="Bottom color"
-                />
+          {/* Figma-style Box Model - Symmetric Layout */}
+          <div className="p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+            <div className="flex flex-col items-center gap-2">
+              {/* Top Border - Centered */}
+              <div className="flex flex-col items-center gap-1.5">
+                <span className="text-xs font-medium text-gray-600">Top</span>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    step={unit === 'px' ? '1' : '0.1'}
+                    value={top ?? value ?? ''}
+                    onChange={(e) => handleSideChange('Top', e)}
+                    placeholder="0"
+                    className="w-12 px-1.5 py-1.5 text-xs text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
+                  />
+                  <select
+                    value={unit}
+                    onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
+                    className="px-1 py-1 text-xs border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                  >
+                    <option value="px">px</option>
+                    <option value="rem">rem</option>
+                    <option value="em">em</option>
+                    <option value="%">%</option>
+                  </select>
+                  <input
+                    type="color"
+                    value={topColor ?? borderColor}
+                    onChange={(e) => handleSideColorChange('Top', e)}
+                    className="w-9 h-9 border-2 border-gray-300 rounded-md cursor-pointer shadow-sm hover:border-blue-400 transition-colors"
+                    title="Top color"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Left Side */}
-            <div className="p-2 bg-gray-50 rounded border border-gray-200">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Left</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  min="0"
-                  value={left ?? value ?? ''}
-                  onChange={(e) => handleSideChange('Left', e)}
-                  placeholder="px"
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                />
-                <input
-                  type="color"
-                  value={leftColor ?? borderColor}
-                  onChange={(e) => handleSideColorChange('Left', e)}
-                  className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
-                  title="Left color"
-                />
+              {/* Middle Row: Left + Center Box + Right - Symmetric */}
+              <div className="flex items-center gap-2">
+                {/* Left Border */}
+                <div className="flex flex-col items-center gap-1.5">
+                  <span className="text-xs font-medium text-gray-600">Left</span>
+                  <div className="flex flex-col items-center gap-1.5">
+                    <input
+                      type="number"
+                      min="0"
+                      step={unit === 'px' ? '1' : '0.1'}
+                      value={left ?? value ?? ''}
+                      onChange={(e) => handleSideChange('Left', e)}
+                      placeholder="0"
+                      className="w-12 px-1.5 py-1.5 text-xs text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
+                    />
+                    <select
+                      value={unit}
+                      onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
+                      className="px-1 py-1 text-xs border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                    >
+                      <option value="px">px</option>
+                      <option value="rem">rem</option>
+                      <option value="em">em</option>
+                      <option value="%">%</option>
+                    </select>
+                    <input
+                      type="color"
+                      value={leftColor ?? borderColor}
+                      onChange={(e) => handleSideColorChange('Left', e)}
+                      className="w-9 h-9 border-2 border-gray-300 rounded-md cursor-pointer shadow-sm hover:border-blue-400 transition-colors"
+                      title="Left color"
+                    />
+                  </div>
+                </div>
+
+                {/* Center Box with Border Preview */}
+                <div className="flex items-center justify-center">
+                  <div
+                    className="w-24 h-24 bg-white flex items-center justify-center text-xs font-medium text-gray-400 rounded shadow-md transition-all"
+                    style={{
+                      borderTopWidth: `${top ?? value ?? 0}px`,
+                      borderRightWidth: `${right ?? value ?? 0}px`,
+                      borderBottomWidth: `${bottom ?? value ?? 0}px`,
+                      borderLeftWidth: `${left ?? value ?? 0}px`,
+                      borderStyle: borderStyle,
+                      borderTopColor: topColor ?? borderColor,
+                      borderRightColor: rightColor ?? borderColor,
+                      borderBottomColor: bottomColor ?? borderColor,
+                      borderLeftColor: leftColor ?? borderColor,
+                    }}
+                  >
+                    Preview
+                  </div>
+                </div>
+
+                {/* Right Border */}
+                <div className="flex flex-col items-center gap-1.5">
+                  <span className="text-xs font-medium text-gray-600">Right</span>
+                  <div className="flex flex-col items-center gap-1.5">
+                    <input
+                      type="number"
+                      min="0"
+                      step={unit === 'px' ? '1' : '0.1'}
+                      value={right ?? value ?? ''}
+                      onChange={(e) => handleSideChange('Right', e)}
+                      placeholder="0"
+                      className="w-12 px-1.5 py-1.5 text-xs text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
+                    />
+                    <select
+                      value={unit}
+                      onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
+                      className="px-1 py-1 text-xs border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                    >
+                      <option value="px">px</option>
+                      <option value="rem">rem</option>
+                      <option value="em">em</option>
+                      <option value="%">%</option>
+                    </select>
+                    <input
+                      type="color"
+                      value={rightColor ?? borderColor}
+                      onChange={(e) => handleSideColorChange('Right', e)}
+                      className="w-9 h-9 border-2 border-gray-300 rounded-md cursor-pointer shadow-sm hover:border-blue-400 transition-colors"
+                      title="Right color"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Border - Centered */}
+              <div className="flex flex-col items-center gap-1.5">
+                <span className="text-xs font-medium text-gray-600">Bottom</span>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    step={unit === 'px' ? '1' : '0.1'}
+                    value={bottom ?? value ?? ''}
+                    onChange={(e) => handleSideChange('Bottom', e)}
+                    placeholder="0"
+                    className="w-12 px-1.5 py-1.5 text-xs text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm"
+                  />
+                  <select
+                    value={unit}
+                    onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
+                    className="px-1 py-1 text-xs border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                  >
+                    <option value="px">px</option>
+                    <option value="rem">rem</option>
+                    <option value="em">em</option>
+                    <option value="%">%</option>
+                  </select>
+                  <input
+                    type="color"
+                    value={bottomColor ?? borderColor}
+                    onChange={(e) => handleSideColorChange('Bottom', e)}
+                    className="w-9 h-9 border-2 border-gray-300 rounded-md cursor-pointer shadow-sm hover:border-blue-400 transition-colors"
+                    title="Bottom color"
+                  />
+                </div>
               </div>
             </div>
           </div>

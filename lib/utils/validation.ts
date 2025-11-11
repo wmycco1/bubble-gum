@@ -239,3 +239,83 @@ export function generateShadow(
 
   return shadowValue;
 }
+
+/**
+ * Generate text-shadow CSS value (V8.1)
+ * Similar to generateShadow but WITHOUT spread parameter (text-shadow doesn't support spread)
+ *
+ * Supports:
+ * - Preset shadows: 'none', 'sm', 'md', 'lg', 'xl'
+ * - Custom shadows with offsetX, offsetY, blur, color
+ * - Opacity override (0-100%)
+ *
+ * @param preset - Shadow preset name or 'custom'
+ * @param params - Custom shadow parameters (only for 'custom' preset)
+ * @param opacity - Shadow opacity override (0-100%, default 100)
+ * @returns CSS text-shadow value
+ */
+export function generateTextShadow(
+  preset: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'custom' = 'none',
+  params?: {
+    offsetX?: number;
+    offsetY?: number;
+    blur?: number;
+    color?: string;
+  },
+  opacity?: number
+): string {
+  // No shadow
+  if (preset === 'none') return 'none';
+
+  // Text shadow presets (matching TextShadowControl.tsx)
+  const TEXT_SHADOW_PRESETS = {
+    sm: '0 1px 2px rgba(0, 0, 0, 0.4)',
+    md: '0 2px 4px rgba(0, 0, 0, 0.5)',
+    lg: '0 3px 6px rgba(0, 0, 0, 0.6)',
+    xl: '0 4px 8px rgba(0, 0, 0, 0.7)',
+  };
+
+  // Custom text shadow (NO spread parameter)
+  if (preset === 'custom' && params) {
+    const x = params.offsetX ?? 0;
+    const y = params.offsetY ?? 2;
+    const blur = params.blur ?? 4;
+    const color = params.color && isValidCSSColor(params.color) ? params.color : 'rgba(0, 0, 0, 0.5)';
+
+    // Apply opacity if provided
+    const finalOpacity = opacity !== undefined ? sanitizeOpacity(opacity) / 100 : 1;
+
+    // Convert color to rgba with opacity
+    let finalColor = color;
+    if (color.startsWith('#')) {
+      // Convert hex to rgba
+      const hex = color.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      finalColor = `rgba(${r}, ${g}, ${b}, ${finalOpacity})`;
+    } else if (color.startsWith('rgb')) {
+      // Modify existing rgb/rgba
+      finalColor = color.replace(/rgba?\(([^)]+)\)/, (match, values) => {
+        const parts = values.split(',').map((v: string) => v.trim());
+        return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${finalOpacity})`;
+      });
+    }
+
+    // text-shadow format: offsetX offsetY blur color (NO spread!)
+    return `${x}px ${y}px ${blur}px ${finalColor}`;
+  }
+
+  // Preset text shadow with optional opacity override
+  let textShadowValue = TEXT_SHADOW_PRESETS[preset as keyof typeof TEXT_SHADOW_PRESETS];
+
+  if (opacity !== undefined && opacity !== 100) {
+    const finalOpacity = sanitizeOpacity(opacity) / 100;
+    // Adjust opacity in preset text shadow
+    textShadowValue = textShadowValue.replace(/rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/g, (match, r, g, b) => {
+      return `rgba(${r},${g},${b},${finalOpacity})`;
+    });
+  }
+
+  return textShadowValue;
+}

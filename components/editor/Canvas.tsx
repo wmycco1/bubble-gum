@@ -10,6 +10,7 @@
 // - Simplified: drag/drop/delete handled by RenderComponent
 // ═══════════════════════════════════════════════════════════════
 
+import React from 'react';
 import type { CanvasComponent, Breakpoint } from '@/lib/editor/types';
 import { useDroppable } from '@dnd-kit/core';
 import { RenderComponent } from './RenderComponent';
@@ -44,6 +45,20 @@ export function Canvas({
   void onSelectComponent;
   void onDeleteComponent;
   void onMoveComponent;
+
+  // DEBUG: Log when Canvas receives new components
+  React.useEffect(() => {
+    const badgeComponent = components.find(c => c.type === 'Badge');
+    if (badgeComponent) {
+      console.log(`🎨 Canvas: Received Badge component:`, {
+        id: badgeComponent.id,
+        fontWeight: badgeComponent.props.fontWeight,
+        fontSize: badgeComponent.props.fontSize,
+        fontFamily: badgeComponent.props.fontFamily,
+        propsKeys: Object.keys(badgeComponent.props),
+      });
+    }
+  }, [components]);
 
   const canvasWidth = CANVAS_WIDTHS[deviceMode];
   const canvasStyle = {

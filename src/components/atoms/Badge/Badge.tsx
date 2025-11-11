@@ -108,7 +108,8 @@ import {
   isValidBorderStyle,
   sanitizeNumericValue,
   sanitizeOpacity,
-  generateShadow
+  generateShadow,
+  generateTextShadow
 } from '@/lib/utils/validation';
 
 /**
@@ -314,6 +315,23 @@ export interface BadgeProps {
   textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
 
   // ============================================
+  // TEXT SHADOW (V8.1)
+  // ============================================
+
+  /** Text shadow preset (none, sm, md, lg, xl) */
+  textShadow?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'custom';
+  /** Custom text shadow offsetX (px, requires textShadow='custom') */
+  textShadowOffsetX?: number;
+  /** Custom text shadow offsetY (px, requires textShadow='custom') */
+  textShadowOffsetY?: number;
+  /** Custom text shadow blur (px, requires textShadow='custom') */
+  textShadowBlur?: number;
+  /** Custom text shadow color (validated, requires textShadow='custom') */
+  textShadowColor?: string;
+  /** Text shadow opacity (0-100%, applies to preset or custom) */
+  textShadowOpacity?: number;
+
+  // ============================================
   // TRANSFORM (V7.6)
   // ============================================
 
@@ -482,6 +500,14 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     letterSpacing,
     textTransform,
 
+    // V8.1 - Text Shadow
+    textShadow = 'none',
+    textShadowOffsetX,
+    textShadowOffsetY,
+    textShadowBlur,
+    textShadowColor,
+    textShadowOpacity,
+
     // V7.6 - Transform
     rotate,
     scaleX,
@@ -646,6 +672,48 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
   const safePaddingRight = React.useMemo(() => paddingRight !== undefined ? sanitizeNumericValue(paddingRight) : undefined, [paddingRight]);
   const safePaddingBottom = React.useMemo(() => paddingBottom !== undefined ? sanitizeNumericValue(paddingBottom) : undefined, [paddingBottom]);
   const safePaddingLeft = React.useMemo(() => paddingLeft !== undefined ? sanitizeNumericValue(paddingLeft) : undefined, [paddingLeft]);
+
+  /**
+   * V7.6 - Safe Typography values (reactive with useMemo for instant updates)
+   */
+  const safeFontFamily = React.useMemo(() => fontFamily, [fontFamily]);
+  const safeFontSize = React.useMemo(() => fontSize, [fontSize]);
+  const safeFontWeight = React.useMemo(() => fontWeight, [fontWeight]);
+  const safeFontStyle = React.useMemo(() => fontStyle, [fontStyle]);
+  const safeLetterSpacing = React.useMemo(() => letterSpacing, [letterSpacing]);
+  const safeTextTransform = React.useMemo(() => textTransform, [textTransform]);
+
+  /**
+   * V7.6 - Safe Transform values (reactive with useMemo for instant updates)
+   */
+  const safeRotate = React.useMemo(() => rotate, [rotate]);
+  const safeScaleX = React.useMemo(() => scaleX, [scaleX]);
+  const safeScaleY = React.useMemo(() => scaleY, [scaleY]);
+  const safeSkewX = React.useMemo(() => skewX, [skewX]);
+  const safeSkewY = React.useMemo(() => skewY, [skewY]);
+
+  /**
+   * V7.6 - Safe Animation values (reactive with useMemo for instant updates)
+   */
+  const safeTransitionDuration = React.useMemo(() => transitionDuration, [transitionDuration]);
+  const safeTransitionTimingFunction = React.useMemo(() => transitionTimingFunction, [transitionTimingFunction]);
+
+  /**
+   * Generate text-shadow value - V8.1
+   * Supports presets (sm, md, lg, xl) and custom parameters (NO spread)
+   */
+  const safeTextShadow = React.useMemo(() => {
+    return generateTextShadow(
+      textShadow,
+      textShadow === 'custom' ? {
+        offsetX: textShadowOffsetX,
+        offsetY: textShadowOffsetY,
+        blur: textShadowBlur,
+        color: textShadowColor,
+      } : undefined,
+      textShadowOpacity
+    );
+  }, [textShadow, textShadowOffsetX, textShadowOffsetY, textShadowBlur, textShadowColor, textShadowOpacity]);
 
   /**
    * Generate shadow value - V7.1
@@ -926,8 +994,8 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       styleOverrides.push(`position: ${position} !important`);
     }
 
-    // V7.6 - TYPOGRAPHY
-    if (fontFamily) {
+    // V7.6 - TYPOGRAPHY (using safe* values for reactivity)
+    if (safeFontFamily) {
       // Map font names to actual font stacks
       const fontMap: Record<string, string> = {
         'system-ui': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -940,67 +1008,72 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
         'Montserrat': '"Montserrat", sans-serif',
         'Poppins': '"Poppins", sans-serif',
       };
-      styleOverrides.push(`font-family: ${fontMap[fontFamily] || fontFamily} !important`);
+      styleOverrides.push(`font-family: ${fontMap[safeFontFamily] || safeFontFamily} !important`);
     }
 
-    if (fontSize !== undefined) {
-      styleOverrides.push(`font-size: ${fontSize}px !important`);
+    if (safeFontSize !== undefined) {
+      styleOverrides.push(`font-size: ${safeFontSize}px !important`);
     }
 
-    if (fontWeight) {
-      styleOverrides.push(`font-weight: ${fontWeight} !important`);
+    if (safeFontWeight) {
+      styleOverrides.push(`font-weight: ${safeFontWeight} !important`);
     }
 
-    if (fontStyle && fontStyle !== 'normal') {
-      styleOverrides.push(`font-style: ${fontStyle} !important`);
+    if (safeFontStyle && safeFontStyle !== 'normal') {
+      styleOverrides.push(`font-style: ${safeFontStyle} !important`);
     }
 
-    if (letterSpacing !== undefined) {
-      styleOverrides.push(`letter-spacing: ${letterSpacing}px !important`);
+    if (safeLetterSpacing !== undefined) {
+      styleOverrides.push(`letter-spacing: ${safeLetterSpacing}px !important`);
     }
 
-    if (textTransform && textTransform !== 'none') {
-      styleOverrides.push(`text-transform: ${textTransform} !important`);
+    if (safeTextTransform && safeTextTransform !== 'none') {
+      styleOverrides.push(`text-transform: ${safeTextTransform} !important`);
     }
 
-    // V7.6 - TRANSFORM
+    // V8.1 - TEXT SHADOW
+    if (safeTextShadow && safeTextShadow !== 'none') {
+      styleOverrides.push(`text-shadow: ${safeTextShadow} !important`);
+    }
+
+    // V7.6 - TRANSFORM (using safe* values for reactivity)
     const transforms: string[] = [];
 
-    if (rotate !== undefined && rotate !== 0) {
-      transforms.push(`rotate(${rotate}deg)`);
+    if (safeRotate !== undefined && safeRotate !== 0) {
+      transforms.push(`rotate(${safeRotate}deg)`);
     }
 
-    if (scaleX !== undefined && scaleX !== 1) {
-      transforms.push(`scaleX(${scaleX})`);
+    if (safeScaleX !== undefined && safeScaleX !== 1) {
+      transforms.push(`scaleX(${safeScaleX})`);
     }
 
-    if (scaleY !== undefined && scaleY !== 1) {
-      transforms.push(`scaleY(${scaleY})`);
+    if (safeScaleY !== undefined && safeScaleY !== 1) {
+      transforms.push(`scaleY(${safeScaleY})`);
     }
 
-    if (skewX !== undefined && skewX !== 0) {
-      transforms.push(`skewX(${skewX}deg)`);
+    if (safeSkewX !== undefined && safeSkewX !== 0) {
+      transforms.push(`skewX(${safeSkewX}deg)`);
     }
 
-    if (skewY !== undefined && skewY !== 0) {
-      transforms.push(`skewY(${skewY}deg)`);
+    if (safeSkewY !== undefined && safeSkewY !== 0) {
+      transforms.push(`skewY(${safeSkewY}deg)`);
     }
 
     if (transforms.length > 0) {
       styleOverrides.push(`transform: ${transforms.join(' ')} !important`);
     }
 
-    // V7.6 - ANIMATION
-    if (transitionDuration !== undefined && transitionDuration !== 300) {
-      styleOverrides.push(`transition-duration: ${transitionDuration}ms !important`);
+    // V7.6 - ANIMATION (using safe* values for reactivity)
+    if (safeTransitionDuration !== undefined && safeTransitionDuration !== 300) {
+      styleOverrides.push(`transition-duration: ${safeTransitionDuration}ms !important`);
     }
 
-    if (transitionTimingFunction && transitionTimingFunction !== 'ease') {
-      styleOverrides.push(`transition-timing-function: ${transitionTimingFunction} !important`);
+    if (safeTransitionTimingFunction && safeTransitionTimingFunction !== 'ease') {
+      styleOverrides.push(`transition-timing-function: ${safeTransitionTimingFunction} !important`);
     }
 
     // Always add transition-property for smooth animations
-    if (transitionDuration || transitionTimingFunction) {
+    if (safeTransitionDuration || safeTransitionTimingFunction) {
       styleOverrides.push(`transition-property: all !important`);
     }
 
@@ -1039,26 +1112,27 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     display,
     position,
     align,
-    // V7.6 - Typography
-    fontFamily,
-    fontSize,
-    fontWeight,
-    fontStyle,
-    letterSpacing,
-    textTransform,
-    // V7.6 - Transform
-    rotate,
-    scaleX,
-    scaleY,
-    skewX,
-    skewY,
-    // V7.6 - Animation
-    transitionDuration,
-    transitionTimingFunction,
+    // V7.6 - Typography (safe* values for instant reactivity)
+    safeFontFamily,
+    safeFontSize,
+    safeFontWeight,
+    safeFontStyle,
+    safeLetterSpacing,
+    safeTextTransform,
+    safeTextShadow,
+    // V7.6 - Transform (safe* values for instant reactivity)
+    safeRotate,
+    safeScaleX,
+    safeScaleY,
+    safeSkewX,
+    safeSkewY,
+    // V7.6 - Animation (safe* values for instant reactivity)
+    safeTransitionDuration,
+    safeTransitionTimingFunction,
   ]);
 
   // Apply inline styles with !important using cssText
-  // V7.1 ENHANCED: Clear ALL inline styles first, then apply new ones
+  // V7.7 FIXED: Clear ONLY props that are actually set, preserve CSS class styles
   React.useEffect(() => {
     console.log('🔥 Badge useEffect [APPLY STYLES] triggered', {
       hasSpanRef: !!spanRef.current,
@@ -1072,59 +1146,77 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       const cssTextBefore = spanRef.current.style.cssText;
       console.log('📍 cssText BEFORE clearing:', cssTextBefore);
 
-      // V7.0 - Clear previous color/background styles
-      spanRef.current.style.color = '';
-      spanRef.current.style.backgroundColor = '';
+      // V7.7 FIXED: Clear ONLY props that are SET (prevent clearing CSS class styles)
+      // This fixes the issue where border-radius from rounded='pill' was being cleared
+      // when only scaleX/scaleY changed
 
-      // V7.3 - Clear border width (all sides)
-      spanRef.current.style.borderTopWidth = '';
-      spanRef.current.style.borderRightWidth = '';
-      spanRef.current.style.borderBottomWidth = '';
-      spanRef.current.style.borderLeftWidth = '';
-      spanRef.current.style.borderStyle = '';
-      spanRef.current.style.borderColor = '';
+      // V7.0 - Clear color/background ONLY if props are set
+      if (color !== undefined) spanRef.current.style.color = '';
+      if (backgroundColor !== undefined) spanRef.current.style.backgroundColor = '';
 
-      // V7.4 - Clear individual border colors
-      spanRef.current.style.borderTopColor = '';
-      spanRef.current.style.borderRightColor = '';
-      spanRef.current.style.borderBottomColor = '';
-      spanRef.current.style.borderLeftColor = '';
+      // V7.3 - Clear border width ONLY if props are set
+      if (borderWidth !== undefined || borderTopWidth !== undefined) spanRef.current.style.borderTopWidth = '';
+      if (borderWidth !== undefined || borderRightWidth !== undefined) spanRef.current.style.borderRightWidth = '';
+      if (borderWidth !== undefined || borderBottomWidth !== undefined) spanRef.current.style.borderBottomWidth = '';
+      if (borderWidth !== undefined || borderLeftWidth !== undefined) spanRef.current.style.borderLeftWidth = '';
+      if (borderStyle !== undefined) spanRef.current.style.borderStyle = '';
+      if (borderColor !== undefined) spanRef.current.style.borderColor = '';
 
-      // V7.2 - Clear border radius (all corners)
-      spanRef.current.style.borderTopLeftRadius = '';
-      spanRef.current.style.borderTopRightRadius = '';
-      spanRef.current.style.borderBottomLeftRadius = '';
-      spanRef.current.style.borderBottomRightRadius = '';
+      // V7.4 - Clear individual border colors ONLY if props are set
+      if (borderTopColor !== undefined) spanRef.current.style.borderTopColor = '';
+      if (borderRightColor !== undefined) spanRef.current.style.borderRightColor = '';
+      if (borderBottomColor !== undefined) spanRef.current.style.borderBottomColor = '';
+      if (borderLeftColor !== undefined) spanRef.current.style.borderLeftColor = '';
 
-      // V7.1 - Clear spacing styles
-      spanRef.current.style.marginTop = '';
-      spanRef.current.style.marginRight = '';
-      spanRef.current.style.marginBottom = '';
-      spanRef.current.style.marginLeft = '';
-      spanRef.current.style.paddingTop = '';
-      spanRef.current.style.paddingRight = '';
-      spanRef.current.style.paddingBottom = '';
-      spanRef.current.style.paddingLeft = '';
+      // V7.2 - Clear border radius ONLY if props are set (CRITICAL FIX!)
+      // This prevents clearing border-radius from rounded='pill' CSS class
+      if (borderRadius !== undefined || borderRadiusTopLeft !== undefined) {
+        spanRef.current.style.borderTopLeftRadius = '';
+      }
+      if (borderRadius !== undefined || borderRadiusTopRight !== undefined) {
+        spanRef.current.style.borderTopRightRadius = '';
+      }
+      if (borderRadius !== undefined || borderRadiusBottomLeft !== undefined) {
+        spanRef.current.style.borderBottomLeftRadius = '';
+      }
+      if (borderRadius !== undefined || borderRadiusBottomRight !== undefined) {
+        spanRef.current.style.borderBottomRightRadius = '';
+      }
 
-      // V7.1 - Clear shadow & opacity
-      spanRef.current.style.boxShadow = '';
-      spanRef.current.style.opacity = '';
+      // V7.1 - Clear spacing ONLY if props are set
+      if (margin !== undefined || marginTop !== undefined) spanRef.current.style.marginTop = '';
+      if (margin !== undefined || marginRight !== undefined) spanRef.current.style.marginRight = '';
+      if (margin !== undefined || marginBottom !== undefined) spanRef.current.style.marginBottom = '';
+      if (margin !== undefined || marginLeft !== undefined) spanRef.current.style.marginLeft = '';
+      if (padding !== undefined || paddingTop !== undefined) spanRef.current.style.paddingTop = '';
+      if (padding !== undefined || paddingRight !== undefined) spanRef.current.style.paddingRight = '';
+      if (padding !== undefined || paddingBottom !== undefined) spanRef.current.style.paddingBottom = '';
+      if (padding !== undefined || paddingLeft !== undefined) spanRef.current.style.paddingLeft = '';
 
-      // V7.6 - Clear Typography styles
-      spanRef.current.style.fontFamily = '';
-      spanRef.current.style.fontSize = '';
-      spanRef.current.style.fontWeight = '';
-      spanRef.current.style.fontStyle = '';
-      spanRef.current.style.letterSpacing = '';
-      spanRef.current.style.textTransform = '';
+      // V7.1 - Clear shadow & opacity ONLY if props are set
+      if (shadow !== undefined && shadow !== 'none') spanRef.current.style.boxShadow = '';
+      if (opacity !== undefined && opacity !== 100) spanRef.current.style.opacity = '';
 
-      // V7.6 - Clear Transform styles
-      spanRef.current.style.transform = '';
+      // V7.6 - Clear Typography ONLY if props are set
+      if (fontFamily !== undefined) spanRef.current.style.fontFamily = '';
+      if (fontSize !== undefined) spanRef.current.style.fontSize = '';
+      if (fontWeight !== undefined) spanRef.current.style.fontWeight = '';
+      if (fontStyle !== undefined) spanRef.current.style.fontStyle = '';
+      if (letterSpacing !== undefined) spanRef.current.style.letterSpacing = '';
+      if (textTransform !== undefined) spanRef.current.style.textTransform = '';
 
-      // V7.6 - Clear Animation/Transition styles
-      spanRef.current.style.transitionDuration = '';
-      spanRef.current.style.transitionTimingFunction = '';
-      spanRef.current.style.transitionProperty = '';
+      // V8.1 - Clear Text Shadow ONLY if props are set
+      if (textShadow !== undefined && textShadow !== 'none') spanRef.current.style.textShadow = '';
+
+      // V7.6 - Clear Transform ONLY if props are set
+      if (rotate !== undefined || scaleX !== undefined || scaleY !== undefined || skewX !== undefined || skewY !== undefined) {
+        spanRef.current.style.transform = '';
+      }
+
+      // V7.6 - Clear Animation ONLY if props are set
+      if (transitionDuration !== undefined && transitionDuration !== 300) spanRef.current.style.transitionDuration = '';
+      if (transitionTimingFunction !== undefined && transitionTimingFunction !== 'ease') spanRef.current.style.transitionTimingFunction = '';
+      if (transitionDuration !== undefined || transitionTimingFunction !== undefined) spanRef.current.style.transitionProperty = '';
 
       // Get cssText AFTER clearing
       const cssTextAfterClearing = spanRef.current.style.cssText;
@@ -1150,7 +1242,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     } else {
       console.log('❌ Badge useEffect: spanRef.current is NULL!');
     }
-  }, [inlineStyleString]);
+  }, [inlineStyleString, color, backgroundColor, borderWidth, borderTopWidth, borderRightWidth, borderBottomWidth, borderLeftWidth, borderStyle, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius, borderRadiusTopLeft, borderRadiusTopRight, borderRadiusBottomLeft, borderRadiusBottomRight, margin, marginTop, marginRight, marginBottom, marginLeft, padding, paddingTop, paddingRight, paddingBottom, paddingLeft, shadow, opacity, fontFamily, fontSize, fontWeight, fontStyle, letterSpacing, textTransform, textShadow, textShadowOffsetX, textShadowOffsetY, textShadowBlur, textShadowColor, textShadowOpacity, rotate, scaleX, scaleY, skewX, skewY, transitionDuration, transitionTimingFunction]);
 
   // Debug custom styles
   if (process.env.NODE_ENV === 'development') {
@@ -1344,7 +1436,34 @@ export const Badge = React.memo(BadgeInner, (prevProps, nextProps) => {
       prevProps.shadowColor === nextProps.shadowColor &&
       prevProps.shadowOpacity === nextProps.shadowOpacity &&
       // V7.1 - Opacity
-      prevProps.opacity === nextProps.opacity) {
+      prevProps.opacity === nextProps.opacity &&
+      // V7.5 - Layout & Positioning
+      prevProps.align === nextProps.align &&
+      prevProps.position === nextProps.position &&
+      prevProps.display === nextProps.display &&
+      // V7.6 - Typography
+      prevProps.fontFamily === nextProps.fontFamily &&
+      prevProps.fontSize === nextProps.fontSize &&
+      prevProps.fontWeight === nextProps.fontWeight &&
+      prevProps.fontStyle === nextProps.fontStyle &&
+      prevProps.letterSpacing === nextProps.letterSpacing &&
+      prevProps.textTransform === nextProps.textTransform &&
+      // V8.1 - Text Shadow
+      prevProps.textShadow === nextProps.textShadow &&
+      prevProps.textShadowOffsetX === nextProps.textShadowOffsetX &&
+      prevProps.textShadowOffsetY === nextProps.textShadowOffsetY &&
+      prevProps.textShadowBlur === nextProps.textShadowBlur &&
+      prevProps.textShadowColor === nextProps.textShadowColor &&
+      prevProps.textShadowOpacity === nextProps.textShadowOpacity &&
+      // V7.6 - Transform
+      prevProps.rotate === nextProps.rotate &&
+      prevProps.scaleX === nextProps.scaleX &&
+      prevProps.scaleY === nextProps.scaleY &&
+      prevProps.skewX === nextProps.skewX &&
+      prevProps.skewY === nextProps.skewY &&
+      // V7.6 - Animation
+      prevProps.transitionDuration === nextProps.transitionDuration &&
+      prevProps.transitionTimingFunction === nextProps.transitionTimingFunction) {
     return true; // Props are equal, skip re-render
   }
 

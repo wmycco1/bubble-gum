@@ -30,6 +30,7 @@ import { logger } from '@/lib/utils/logger';
 import { ComponentToolbar } from './ComponentToolbar';
 import { SpacingHandlesV2 } from './canvas/SpacingHandlesV2';
 import { BorderRadiusHandles } from './canvas/BorderRadiusHandles';
+import { TransformHandles } from './canvas/TransformHandles';
 
 // Combine all components into single registry
 const COMPONENT_REGISTRY = {
@@ -46,7 +47,19 @@ interface RenderComponentProps {
 }
 
 export function RenderComponent({ component, isSelected, deviceMode = 'desktop' }: RenderComponentProps) {
-  const { selectComponent, setHoveredComponent, hoveredComponentId, updateComponentProps } = useCanvasStore();
+  const { selectComponent, setHoveredComponent, hoveredComponentId, updateComponentProps, visualEditingMode } = useCanvasStore();
+
+  // DEBUG: Log when RenderComponent receives new props
+  React.useEffect(() => {
+    if (component.type === 'Badge') {
+      console.log(`🔄 RenderComponent: Badge [${component.id}] received props:`, {
+        fontWeight: component.props.fontWeight,
+        fontSize: component.props.fontSize,
+        fontFamily: component.props.fontFamily,
+        allProps: component.props,
+      });
+    }
+  }, [component.props, component.id, component.type]);
 
   const isHovered = hoveredComponentId === component.id;
   const canHaveChildren = ['Container', 'Section', 'Grid', 'Card', 'Form', 'Layout'].includes(
@@ -214,6 +227,16 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       ...(comp.style && { style: comp.style }),
     };
 
+    // DEBUG: Log Badge props right before rendering
+    if (component.type === 'Badge') {
+      console.log(`📦 renderVisualComponent: About to render Badge with atomicProps:`, {
+        fontWeight: atomicProps.fontWeight,
+        fontSize: atomicProps.fontSize,
+        fontFamily: atomicProps.fontFamily,
+        propsKeys: Object.keys(atomicProps),
+      });
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // SPECIAL HANDLING FOR MODAL IN EDITOR
     // ═══════════════════════════════════════════════════════════════
@@ -305,17 +328,33 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
         <ComponentToolbar componentId={component.id} position="top-right" />
       )}
 
-      {/* Visual Component with Spacing & Border Radius Handles */}
+      {/* Visual Component with Contextual Editing Handles */}
       <div
         ref={canHaveChildren ? setDropRef : undefined}
         className="relative"
         style={{ pointerEvents: 'auto' }}
       >
-        {/* Spacing Handles V2 - positioned ON the actual component */}
-        {isSelected && <SpacingHandlesV2 componentId={component.id} />}
+        {/* ═══════════════════════════════════════════════════════════════
+            CONTEXTUAL EDITING HANDLES (V2.0)
+            ═══════════════════════════════════════════════════════════════
+            Only ONE type of handles visible at a time (no overlapping)
+            User toggles via ComponentToolbar buttons
+            ═══════════════════════════════════════════════════════════════ */}
 
-        {/* Border Radius Handles - positioned ON the actual component corners */}
-        {isSelected && <BorderRadiusHandles componentId={component.id} />}
+        {/* Spacing Handles - shown ONLY when visualEditingMode === 'spacing' */}
+        {isSelected && visualEditingMode === 'spacing' && (
+          <SpacingHandlesV2 componentId={component.id} />
+        )}
+
+        {/* Border Radius Handles - shown ONLY when visualEditingMode === 'borderRadius' */}
+        {isSelected && visualEditingMode === 'borderRadius' && (
+          <BorderRadiusHandles componentId={component.id} />
+        )}
+
+        {/* Transform Handles - shown ONLY when visualEditingMode === 'transform' */}
+        {isSelected && visualEditingMode === 'transform' && (
+          <TransformHandles componentId={component.id} />
+        )}
 
         {renderVisualComponent()}
       </div>

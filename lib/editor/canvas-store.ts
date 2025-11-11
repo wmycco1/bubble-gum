@@ -10,7 +10,7 @@ import { create } from 'zustand';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { temporal } from 'zundo';
 import { nanoid } from 'nanoid';
-import type { CanvasComponent, CanvasState, ComponentType, ComponentProps, ComponentStyle } from './types';
+import type { CanvasComponent, CanvasState, ComponentType, ComponentProps, ComponentStyle, EditingMode } from './types';
 import { logger } from '@/lib/utils/logger';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -18,6 +18,11 @@ import { logger } from '@/lib/utils/logger';
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 interface CanvasStore extends CanvasState {
+  // ═══════════════════════════════════════════════════════════════
+  // PERSISTENCE STATE (Internal)
+  // ═══════════════════════════════════════════════════════════════
+  _hasHydrated: boolean; // Internal flag: true when persist hydration completes
+
   // Component actions
   addComponent: (typeOrConfig: ComponentType | { type: ComponentType; props?: ComponentProps }, parentId?: string, index?: number) => void;
   updateComponent: (id: string, updates: Partial<CanvasComponent>) => void;
@@ -45,6 +50,7 @@ interface CanvasStore extends CanvasState {
   // NEW: EDITOR MODE ACTIONS (God-Tier 2025)
   // ═══════════════════════════════════════════════════════════════
   setEditorMode: (mode: 'simple' | 'advanced') => void;
+  setVisualEditingMode: (mode: EditingMode) => void;
 
   // Utility actions
   clearCanvas: () => void;
@@ -537,22 +543,16 @@ const getDefaultComponent = (type: ComponentType): Omit<CanvasComponent, 'id'> =
     Badge: {
       type: 'Badge',
       props: {
-        text: 'Badge',
+        children: 'Badge',
         variant: 'default',
-        size: 'md',
-        dot: false,
-        pulse: false,
       },
       style: {},
     },
     BadgeComponent: {
       type: 'BadgeComponent',
       props: {
-        text: 'Badge',
+        children: 'Badge',
         variant: 'default',
-        size: 'md',
-        dot: false,
-        pulse: false,
       },
       style: {},
     },
@@ -1418,6 +1418,13 @@ const initialState: CanvasState = {
   zoom: 1,
   deviceMode: 'desktop',
   editorMode: 'advanced', // Default to advanced mode (full properties panel)
+  visualEditingMode: 'none', // Default: only selection bounds + toolbar (clean UI)
+};
+
+// Initial store state (extends initialState with internal flags)
+const initialStoreState = {
+  ...initialState,
+  _hasHydrated: false, // Set to true when persist hydration completes
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1442,7 +1449,7 @@ export const useCanvasStore = create<CanvasStore>()(
     devtools(
       temporal(
         (set, get) => ({
-        ...initialState,
+        ...initialStoreState,
 
         // Add new component
         addComponent: (typeOrConfig, parentId, index) => {
@@ -1799,6 +1806,7 @@ export const useCanvasStore = create<CanvasStore>()(
         // NEW: EDITOR MODE (God-Tier 2025)
         // ═══════════════════════════════════════════════════════════════
         setEditorMode: (editorMode) => set({ editorMode }),
+        setVisualEditingMode: (visualEditingMode) => set({ visualEditingMode }),
 
         // Utility
         clearCanvas: () => set({ ...initialState }),
@@ -1863,7 +1871,7 @@ export const useCanvasStore = create<CanvasStore>()(
     // Only persist in browser environment
     skipHydration: typeof window === 'undefined',
 
-    // Log persistence events
+    // Log persistence events and set hydration flag
     onRehydrateStorage: () => {
       logger.debug('💾 localStorage: Starting hydration');
       return (state, error) => {
@@ -1873,6 +1881,10 @@ export const useCanvasStore = create<CanvasStore>()(
           logger.debug('✅ localStorage: Hydration complete', {
             components: state?.components.length || 0,
           });
+          // Set hydration flag to true (prevents race condition with DB load)
+          if (state) {
+            state._hasHydrated = true;
+          }
         }
       };
     },

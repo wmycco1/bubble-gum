@@ -14,7 +14,6 @@
 import React, { useState } from 'react';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { useSpacingKeyboard } from './useSpacingKeyboard';
-import { BorderRadiusHandles } from './BorderRadiusHandles';
 
 type SpacingMode = 'margin' | 'padding';
 type Side = 'top' | 'right' | 'bottom' | 'left';
@@ -293,9 +292,6 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         badgeRect={badgeRect}
         mode={spacingMode}
       />
-
-      {/* Border Radius Handles - separate from spacing */}
-      <BorderRadiusHandles componentId={componentId} />
     </>
   );
 }

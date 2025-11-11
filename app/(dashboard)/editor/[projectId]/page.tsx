@@ -130,11 +130,27 @@ export default function EditorPage(props: EditorPageProps) {
     },
   });
 
-  // Load page content from DB when homepage is available (with conflict detection)
+  // Load page content from DB when homepage is available
+  // V7.8 FIX: Database is authoritative source, always overwrites localStorage
   useEffect(() => {
-    if (!homepage?.content || components.length > 0 || conflictResolved) {
+    // Wait for persist hydration to complete before loading from DB
+    // This ensures we load DB data AFTER localStorage, so DB overwrites localStorage
+    const hasHydrated = useCanvasStore.getState()._hasHydrated;
+
+    if (!hasHydrated) {
+      logger.debug('⏳ Waiting for persist hydration to complete before loading from DB');
       return;
     }
+
+    // Skip if no DB content or already resolved
+    if (!homepage?.content || conflictResolved) {
+      return;
+    }
+
+    // REMOVED: components.length > 0 check
+    // Reason: Database should ALWAYS overwrite localStorage (DB is source of truth)
+    // Old buggy code: if (!homepage?.content || components.length > 0 || conflictResolved)
+    // This caused localStorage data to persist even when DB had different data
 
     try {
       const content = Array.isArray(homepage.content)
@@ -168,7 +184,9 @@ export default function EditorPage(props: EditorPageProps) {
     } catch (error) {
       console.error('❌ Failed to parse homepage content:', error);
     }
-  }, [homepage?.content, components.length, loadComponents, conflictResolved]);
+  }, [homepage?.content, loadComponents, conflictResolved]);
+  // REMOVED: components.length from dependencies (would cause infinite loop)
+  // Only re-run when DB content changes (homepage.content) or conflict is resolved
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // Keyboard Shortcuts (Using useKeyboardShortcuts hook)

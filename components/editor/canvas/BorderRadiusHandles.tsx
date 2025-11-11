@@ -125,8 +125,41 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
     });
   };
 
+  // Handle uniform border radius drag (all corners at once)
+  const handleUniformDrag = (newValue: number) => {
+    const clampedValue = Math.max(0, Math.round(newValue));
+
+    updateComponentProps(componentId, {
+      // Set shorthand property and clear individual corners
+      borderRadius: clampedValue,
+      borderRadiusTopLeft: undefined,
+      borderRadiusTopRight: undefined,
+      borderRadiusBottomLeft: undefined,
+      borderRadiusBottomRight: undefined,
+    });
+  };
+
+  // Get average border radius for center handle display
+  const getAverageBorderRadius = (): number => {
+    const avg = (topLeftValue + topRightValue + bottomLeftValue + bottomRightValue) / 4;
+    return Math.round(avg);
+  };
+
+  // Calculate center point
+  const centerX = badgeRect.left + badgeRect.width / 2;
+  const centerY = badgeRect.top + badgeRect.height / 2;
+
   return (
     <>
+      {/* Center Uniform Border Radius Handle - for grouped control */}
+      <UniformBorderRadiusHandle
+        value={getAverageBorderRadius()}
+        centerX={centerX}
+        centerY={centerY}
+        badgeRect={badgeRect}
+        onDrag={handleUniformDrag}
+      />
+
       {/* Border Radius Corner Handles */}
       <BorderRadiusHandle
         corner="topLeft"
@@ -171,7 +204,229 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
   );
 }
 
-// Border Radius Handle Component
+// ═══════════════════════════════════════════════════════════════
+// UNIFORM BORDER RADIUS HANDLE (Center, for grouped control)
+// ═══════════════════════════════════════════════════════════════
+interface UniformBorderRadiusHandleProps {
+  value: number;
+  centerX: number;
+  centerY: number;
+  badgeRect: DOMRect;
+  onDrag: (newValue: number) => void;
+}
+
+function UniformBorderRadiusHandle({
+  value,
+  centerX,
+  centerY,
+  badgeRect,
+  onDrag,
+}: UniformBorderRadiusHandleProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDragging(true);
+    dragStartRef.current = { x: e.clientX, y: e.clientY, initialValue: value };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!dragStartRef.current) return;
+
+      // Use diagonal movement (average of X and Y) for uniform radius
+      const totalDeltaX = e.clientX - dragStartRef.current.x;
+      const totalDeltaY = e.clientY - dragStartRef.current.y;
+
+      // Average delta for uniform border radius
+      const avgDelta = (totalDeltaX + totalDeltaY) / 2;
+
+      const newValue = dragStartRef.current.initialValue + avgDelta;
+      onDrag(newValue);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      dragStartRef.current = null;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  // Position handle at center of element
+  const handleSize = 18; // Larger than corner handles
+  const handleX = centerX - handleSize / 2;
+  const handleY = centerY - handleSize / 2;
+
+  return (
+    <>
+      {/* Visual feedback - dashed lines to corners when hovering/dragging */}
+      {(isHovered || isDragging) && value > 0 && (
+        <>
+          {/* Diagonal line to top-left corner */}
+          <svg
+            style={{
+              position: 'absolute',
+              left: `${badgeRect.left}px`,
+              top: `${badgeRect.top}px`,
+              width: `${centerX - badgeRect.left}px`,
+              height: `${centerY - badgeRect.top}px`,
+              pointerEvents: 'none',
+              zIndex: 44,
+              opacity: 0.6,
+            }}
+          >
+            <line
+              x1="0"
+              y1="0"
+              x2={centerX - badgeRect.left}
+              y2={centerY - badgeRect.top}
+              stroke="#10b981"
+              strokeWidth="2"
+              strokeDasharray="4"
+            />
+          </svg>
+
+          {/* Diagonal line to top-right corner */}
+          <svg
+            style={{
+              position: 'absolute',
+              left: `${centerX}px`,
+              top: `${badgeRect.top}px`,
+              width: `${badgeRect.right - centerX}px`,
+              height: `${centerY - badgeRect.top}px`,
+              pointerEvents: 'none',
+              zIndex: 44,
+              opacity: 0.6,
+            }}
+          >
+            <line
+              x1="0"
+              y1={centerY - badgeRect.top}
+              x2={badgeRect.right - centerX}
+              y2="0"
+              stroke="#10b981"
+              strokeWidth="2"
+              strokeDasharray="4"
+            />
+          </svg>
+
+          {/* Diagonal line to bottom-left corner */}
+          <svg
+            style={{
+              position: 'absolute',
+              left: `${badgeRect.left}px`,
+              top: `${centerY}px`,
+              width: `${centerX - badgeRect.left}px`,
+              height: `${badgeRect.bottom - centerY}px`,
+              pointerEvents: 'none',
+              zIndex: 44,
+              opacity: 0.6,
+            }}
+          >
+            <line
+              x1="0"
+              y1={badgeRect.bottom - centerY}
+              x2={centerX - badgeRect.left}
+              y2="0"
+              stroke="#10b981"
+              strokeWidth="2"
+              strokeDasharray="4"
+            />
+          </svg>
+
+          {/* Diagonal line to bottom-right corner */}
+          <svg
+            style={{
+              position: 'absolute',
+              left: `${centerX}px`,
+              top: `${centerY}px`,
+              width: `${badgeRect.right - centerX}px`,
+              height: `${badgeRect.bottom - centerY}px`,
+              pointerEvents: 'none',
+              zIndex: 44,
+              opacity: 0.6,
+            }}
+          >
+            <line
+              x1="0"
+              y1="0"
+              x2={badgeRect.right - centerX}
+              y2={badgeRect.bottom - centerY}
+              stroke="#10b981"
+              strokeWidth="2"
+              strokeDasharray="4"
+            />
+          </svg>
+        </>
+      )}
+
+      {/* Center Uniform Border Radius Handle (PROMINENT) */}
+      <div
+        onMouseDown={handleMouseDown}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          position: 'absolute',
+          left: `${handleX}px`,
+          top: `${handleY}px`,
+          width: `${handleSize}px`,
+          height: `${handleSize}px`,
+          borderRadius: '50%',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          zIndex: 49, // Above corner handles
+          transition: isDragging ? 'none' : 'all 0.15s ease',
+          backgroundColor: isDragging ? '#059669' : isHovered ? '#10b981' : '#34d399',
+          border: '3px solid white',
+          boxShadow: isDragging
+            ? '0 0 16px rgba(16, 185, 129, 0.8)'
+            : '0 3px 8px rgba(0,0,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '10px',
+          fontWeight: 'bold',
+          color: 'white',
+        }}
+        title="Drag to change all corners uniformly"
+      >
+        ⬤
+      </div>
+
+      {/* Tooltip */}
+      {(isHovered || isDragging) && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${centerX}px`,
+            top: `${centerY - 30}px`,
+            transform: 'translateX(-50%)',
+            backgroundColor: '#059669',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontSize: '11px',
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            zIndex: 51,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+          }}
+        >
+          🔄 all corners: {value}px
+          {isDragging && <span className="ml-1 text-green-200">(uniform)</span>}
+        </div>
+      )}
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BORDER RADIUS HANDLE (Individual corners)
+// ═══════════════════════════════════════════════════════════════
 interface BorderRadiusHandleProps {
   corner: Corner;
   value: number;
@@ -205,21 +460,31 @@ function BorderRadiusHandle({
       const totalDeltaX = e.clientX - dragStartRef.current.x;
       const totalDeltaY = e.clientY - dragStartRef.current.y;
 
-      // For border radius: drag away from corner increases, drag towards decreases
+      // FIXED: Inverted logic for intuitive behavior
+      // Drag OUTWARD (away from center) → radius DECREASES (sharper corner)
+      // Drag INWARD (towards center) → radius INCREASES (rounder corner)
       let delta = 0;
 
       switch (corner) {
         case 'topLeft':
-          delta = -(totalDeltaX + totalDeltaY) / 2;
+          // Drag up-left (outward) = negative delta → decrease radius
+          // Drag down-right (inward) = positive delta → increase radius
+          delta = (totalDeltaX + totalDeltaY) / 2;
           break;
         case 'topRight':
-          delta = (totalDeltaX - totalDeltaY) / 2;
+          // Drag up-right (outward) = negative delta → decrease radius
+          // Drag down-left (inward) = positive delta → increase radius
+          delta = -(totalDeltaX - totalDeltaY) / 2;
           break;
         case 'bottomLeft':
-          delta = (-totalDeltaX + totalDeltaY) / 2;
+          // Drag down-left (outward) = negative delta → decrease radius
+          // Drag up-right (inward) = positive delta → increase radius
+          delta = (totalDeltaX - totalDeltaY) / 2;
           break;
         case 'bottomRight':
-          delta = (totalDeltaX + totalDeltaY) / 2;
+          // Drag down-right (outward) = negative delta → decrease radius
+          // Drag up-left (inward) = positive delta → increase radius
+          delta = -(totalDeltaX + totalDeltaY) / 2;
           break;
       }
 
