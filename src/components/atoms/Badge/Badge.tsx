@@ -1110,6 +1110,22 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       spanRef.current.style.boxShadow = '';
       spanRef.current.style.opacity = '';
 
+      // V7.6 - Clear Typography styles
+      spanRef.current.style.fontFamily = '';
+      spanRef.current.style.fontSize = '';
+      spanRef.current.style.fontWeight = '';
+      spanRef.current.style.fontStyle = '';
+      spanRef.current.style.letterSpacing = '';
+      spanRef.current.style.textTransform = '';
+
+      // V7.6 - Clear Transform styles
+      spanRef.current.style.transform = '';
+
+      // V7.6 - Clear Animation/Transition styles
+      spanRef.current.style.transitionDuration = '';
+      spanRef.current.style.transitionTimingFunction = '';
+      spanRef.current.style.transitionProperty = '';
+
       // Get cssText AFTER clearing
       const cssTextAfterClearing = spanRef.current.style.cssText;
       console.log('📍 cssText AFTER clearing:', cssTextAfterClearing);
