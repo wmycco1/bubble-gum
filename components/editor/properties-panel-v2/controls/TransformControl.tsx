@@ -504,7 +504,7 @@ export function TransformControl({
                 className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ MozAppearance: 'textfield' }}
               />
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-0.5 items-center">
                 <button
                   type="button"
                   onMouseDown={startRotateIncrement}
@@ -569,7 +569,7 @@ export function TransformControl({
                 className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ MozAppearance: 'textfield' }}
               />
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-0.5 items-center">
                 <button
                   type="button"
                   onMouseDown={startUniformScaleIncrement}
@@ -634,7 +634,7 @@ export function TransformControl({
                 className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ MozAppearance: 'textfield' }}
               />
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-0.5 items-center">
                 <button
                   type="button"
                   onMouseDown={startTransitionIncrement}
@@ -704,7 +704,7 @@ export function TransformControl({
                 className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ MozAppearance: 'textfield' }}
               />
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-0.5 items-center">
                 <button
                   type="button"
                   onMouseDown={startRotateIncrement}
@@ -769,7 +769,7 @@ export function TransformControl({
                 className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ MozAppearance: 'textfield' }}
               />
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-0.5 items-center">
                 <button
                   type="button"
                   onMouseDown={startScaleXIncrement}
@@ -834,7 +834,7 @@ export function TransformControl({
                 className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ MozAppearance: 'textfield' }}
               />
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-0.5 items-center">
                 <button
                   type="button"
                   onMouseDown={startScaleYIncrement}
@@ -899,7 +899,7 @@ export function TransformControl({
                 className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ MozAppearance: 'textfield' }}
               />
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-0.5 items-center">
                 <button
                   type="button"
                   onMouseDown={startTransitionIncrement}
@@ -951,13 +951,12 @@ export function TransformControl({
 
           {/* Visual Preview */}
           <div className="mt-4 p-4 bg-gray-50 rounded border border-gray-200">
-            <div className="text-xs text-gray-600 mb-2 text-center">Preview</div>
+            <div className="text-xs text-gray-600 mb-2 text-center">Preview (no transition)</div>
             <div className="flex items-center justify-center h-24">
               <div
                 className="w-16 h-16 bg-blue-500 rounded flex items-center justify-center text-white font-bold"
                 style={{
                   transform: `rotate(${rotateValue}deg) scale(${scaleXValue}, ${scaleYValue})`,
-                  transition: `transform ${transitionValue}ms ease`,
                 }}
               >
                 T
