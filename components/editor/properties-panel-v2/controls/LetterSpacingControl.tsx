@@ -132,19 +132,16 @@ export function LetterSpacingControl({
         )}
       </label>
       <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <input
-            type="number"
-            value={value}
-            onChange={(e) => onChange(name, Number(e.target.value))}
-            min={min}
-            max={max}
-            step="0.5"
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            style={{ MozAppearance: 'textfield' }}
-          />
-          <div className="text-xs text-gray-400 mt-1">{min}-{max}px</div>
-        </div>
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(name, Number(e.target.value))}
+          min={min}
+          max={max}
+          step="0.5"
+          className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          style={{ MozAppearance: 'textfield' }}
+        />
         <div className="flex flex-col gap-0.5">
           <button
             type="button"
@@ -191,6 +188,7 @@ export function LetterSpacingControl({
             </svg>
           </button>
         </div>
+        <div className="text-xs text-gray-400 min-w-[60px] text-right">{min}-{max}px</div>
       </div>
       {/* Live Preview */}
       <div className="mt-2 p-3 bg-gray-50 rounded-md border border-gray-200">
