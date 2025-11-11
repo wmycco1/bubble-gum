@@ -203,9 +203,9 @@ export function BorderControl({
         </button>
       </div>
 
-      {/* Border Style & Color (Simple mode only) */}
+      {/* Simple Mode - Compact 3-column layout */}
       {!isExpanded && (
-        <div className="grid grid-cols-2 gap-2 mb-2">
+        <div className="grid grid-cols-3 gap-2">
           {/* Border Style */}
           <div>
             <label className="block text-xs text-gray-600 mb-1">Style</label>
@@ -222,6 +222,22 @@ export function BorderControl({
             </select>
           </div>
 
+          {/* Width (All sides) */}
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Width</label>
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                min="0"
+                value={value ?? ''}
+                onChange={handleShorthandChange}
+                placeholder="0"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
+              <span className="text-xs text-gray-500">px</span>
+            </div>
+          </div>
+
           {/* Border Color */}
           <div>
             <label className="block text-xs text-gray-600 mb-1">Color</label>
@@ -231,24 +247,6 @@ export function BorderControl({
               onChange={handleColorChange}
               className="w-full h-9 border border-gray-300 rounded cursor-pointer"
             />
-          </div>
-        </div>
-      )}
-
-      {/* Shorthand Input (Simple Mode) */}
-      {!isExpanded && (
-        <div>
-          <label className="block text-xs text-gray-600 mb-1">Width (All sides)</label>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min="0"
-              value={value ?? ''}
-              onChange={handleShorthandChange}
-              placeholder="All sides"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-            <span className="text-sm text-gray-500">px</span>
           </div>
         </div>
       )}
