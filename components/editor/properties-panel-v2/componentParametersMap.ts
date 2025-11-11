@@ -5,7 +5,7 @@
 
 export interface ParameterDefinition {
   name: string;
-  type: 'text' | 'number' | 'boolean' | 'color' | 'select' | 'variant' | 'image' | 'textarea' | 'spacing' | 'shadow' | 'opacity' | 'borderRadius' | 'border' | 'transform' | 'responsive' | 'alignment' | 'fontFamily' | 'fontStyle' | 'letterSpacing' | 'textTransform' | 'textShadow';
+  type: 'text' | 'number' | 'boolean' | 'color' | 'select' | 'variant' | 'image' | 'textarea' | 'spacing' | 'shadow' | 'opacity' | 'borderRadius' | 'border' | 'transform' | 'responsive' | 'alignment' | 'fontFamily' | 'fontSize' | 'fontStyle' | 'letterSpacing' | 'textTransform' | 'textShadow' | 'display';
   label: string;
   description?: string;
   options?: string[];
@@ -75,16 +75,15 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     { name: 'position', type: 'select', label: 'Position',
       options: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
       description: 'CSS position property', defaultValue: 'static' },
-    { name: 'display', type: 'select', label: 'Display',
-      options: ['inline-flex', 'block', 'inline-block', 'flex', 'inline', 'grid', 'inline-grid', 'none'],
-      description: 'CSS display property', defaultValue: 'inline-flex' },
+    { name: 'display', type: 'display', label: 'Display',
+      description: 'CSS display property', defaultValue: 'block' },
 
     // V7.6 - TYPOGRAPHY (Text Styling) - V8.1 Enhanced with Visual Controls
     { name: 'fontFamily', type: 'fontFamily', label: 'Font Family',
       options: ['system-ui', 'serif', 'monospace', 'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins'],
       description: 'Font family for text' },
-    { name: 'fontSize', type: 'number', label: 'Font Size (px)',
-      description: 'Text size in pixels', min: 8, max: 72 },
+    { name: 'fontSize', type: 'fontSize', label: 'Font Size',
+      description: 'Text size with unit support', min: 8, max: 72 },
     { name: 'fontWeight', type: 'select', label: 'Font Weight',
       options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
       description: 'Text weight (100=thin, 900=black)' },

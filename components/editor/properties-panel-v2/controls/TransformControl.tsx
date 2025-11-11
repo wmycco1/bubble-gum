@@ -622,265 +622,266 @@ export function TransformControl({
       {/* Advanced Mode */}
       {isExpanded && (
         <div className="space-y-3">
-          {/* Rotation - Full Width */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Rotation (°)</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min="-360"
-                max="360"
-                step="1"
-                value={rotateValue}
-                onChange={handleRotateChange}
-                placeholder="0"
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ MozAppearance: 'textfield' }}
-              />
-              <div className="flex flex-col gap-0.5 items-center">
-                <button
-                  type="button"
-                  onMouseDown={startRotateIncrement}
-                  onMouseUp={stopRotateChange}
-                  onMouseLeave={stopRotateChange}
-                  onTouchStart={startRotateIncrement}
-                  onTouchEnd={stopRotateChange}
-                  disabled={rotateValue >= 360}
-                  className={`
-                    p-1.5 border-2 rounded-md transition-all shadow-sm
-                    ${isRotateIncPressed && rotateValue < 360
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Increment (hold to repeat)"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onMouseDown={startRotateDecrement}
-                  onMouseUp={stopRotateChange}
-                  onMouseLeave={stopRotateChange}
-                  onTouchStart={startRotateDecrement}
-                  onTouchEnd={stopRotateChange}
-                  disabled={rotateValue <= -360}
-                  className={`
-                    p-1.5 border-2 rounded-md transition-all shadow-sm
-                    ${isRotateDecPressed && rotateValue > -360
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Decrement (hold to repeat)"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+          {/* Rotation + Scale X in one row */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Rotation */}
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Rotation (°)</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min="-360"
+                  max="360"
+                  step="1"
+                  value={rotateValue}
+                  onChange={handleRotateChange}
+                  placeholder="0"
+                  className="flex-1 px-2 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  style={{ MozAppearance: 'textfield' }}
+                />
+                <div className="flex flex-col gap-0.5 items-center">
+                  <button
+                    type="button"
+                    onMouseDown={startRotateIncrement}
+                    onMouseUp={stopRotateChange}
+                    onMouseLeave={stopRotateChange}
+                    onTouchStart={startRotateIncrement}
+                    onTouchEnd={stopRotateChange}
+                    disabled={rotateValue >= 360}
+                    className={`
+                      p-1 border-2 rounded transition-all shadow-sm
+                      ${isRotateIncPressed && rotateValue < 360
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed
+                    `}
+                    title="Increment"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={startRotateDecrement}
+                    onMouseUp={stopRotateChange}
+                    onMouseLeave={stopRotateChange}
+                    onTouchStart={startRotateDecrement}
+                    onTouchEnd={stopRotateChange}
+                    disabled={rotateValue <= -360}
+                    className={`
+                      p-1 border-2 rounded transition-all shadow-sm
+                      ${isRotateDecPressed && rotateValue > -360
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed
+                    `}
+                    title="Decrement"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <div className="text-xs text-gray-400 min-w-[60px] text-right">-360-360°</div>
+            </div>
+
+            {/* Scale X */}
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Scale X</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={scaleXValue.toFixed(1)}
+                  onChange={handleScaleXChange}
+                  placeholder="1"
+                  className="flex-1 px-2 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  style={{ MozAppearance: 'textfield' }}
+                />
+                <div className="flex flex-col gap-0.5 items-center">
+                  <button
+                    type="button"
+                    onMouseDown={startScaleXIncrement}
+                    onMouseUp={stopScaleXChange}
+                    onMouseLeave={stopScaleXChange}
+                    onTouchStart={startScaleXIncrement}
+                    onTouchEnd={stopScaleXChange}
+                    disabled={scaleXValue >= 10}
+                    className={`
+                      p-1 border-2 rounded transition-all shadow-sm
+                      ${isScaleXIncPressed && scaleXValue < 10
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed
+                    `}
+                    title="Increment"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={startScaleXDecrement}
+                    onMouseUp={stopScaleXChange}
+                    onMouseLeave={stopScaleXChange}
+                    onTouchStart={startScaleXDecrement}
+                    onTouchEnd={stopScaleXChange}
+                    disabled={scaleXValue <= 0}
+                    className={`
+                      p-1 border-2 rounded transition-all shadow-sm
+                      ${isScaleXDecPressed && scaleXValue > 0
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed
+                    `}
+                    title="Decrement"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Scale X */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Scale X</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min="0"
-                max="10"
-                step="0.1"
-                value={scaleXValue.toFixed(1)}
-                onChange={handleScaleXChange}
-                placeholder="1"
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ MozAppearance: 'textfield' }}
-              />
-              <div className="flex flex-col gap-0.5 items-center">
-                <button
-                  type="button"
-                  onMouseDown={startScaleXIncrement}
-                  onMouseUp={stopScaleXChange}
-                  onMouseLeave={stopScaleXChange}
-                  onTouchStart={startScaleXIncrement}
-                  onTouchEnd={stopScaleXChange}
-                  disabled={scaleXValue >= 10}
-                  className={`
-                    p-1.5 border-2 rounded-md transition-all shadow-sm
-                    ${isScaleXIncPressed && scaleXValue < 10
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Increment (hold to repeat)"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onMouseDown={startScaleXDecrement}
-                  onMouseUp={stopScaleXChange}
-                  onMouseLeave={stopScaleXChange}
-                  onTouchStart={startScaleXDecrement}
-                  onTouchEnd={stopScaleXChange}
-                  disabled={scaleXValue <= 0}
-                  className={`
-                    p-1.5 border-2 rounded-md transition-all shadow-sm
-                    ${isScaleXDecPressed && scaleXValue > 0
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Decrement (hold to repeat)"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+          {/* Scale Y + Transition Duration in one row */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Scale Y */}
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Scale Y</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={scaleYValue.toFixed(1)}
+                  onChange={handleScaleYChange}
+                  placeholder="1"
+                  className="flex-1 px-2 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  style={{ MozAppearance: 'textfield' }}
+                />
+                <div className="flex flex-col gap-0.5 items-center">
+                  <button
+                    type="button"
+                    onMouseDown={startScaleYIncrement}
+                    onMouseUp={stopScaleYChange}
+                    onMouseLeave={stopScaleYChange}
+                    onTouchStart={startScaleYIncrement}
+                    onTouchEnd={stopScaleYChange}
+                    disabled={scaleYValue >= 10}
+                    className={`
+                      p-1 border-2 rounded transition-all shadow-sm
+                      ${isScaleYIncPressed && scaleYValue < 10
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed
+                    `}
+                    title="Increment"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={startScaleYDecrement}
+                    onMouseUp={stopScaleYChange}
+                    onMouseLeave={stopScaleYChange}
+                    onTouchStart={startScaleYDecrement}
+                    onTouchEnd={stopScaleYChange}
+                    disabled={scaleYValue <= 0}
+                    className={`
+                      p-1 border-2 rounded transition-all shadow-sm
+                      ${isScaleYDecPressed && scaleYValue > 0
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed
+                    `}
+                    title="Decrement"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <div className="text-xs text-gray-400 min-w-[60px] text-right">0-10×</div>
             </div>
-          </div>
 
-          {/* Scale Y */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Scale Y</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min="0"
-                max="10"
-                step="0.1"
-                value={scaleYValue.toFixed(1)}
-                onChange={handleScaleYChange}
-                placeholder="1"
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ MozAppearance: 'textfield' }}
-              />
-              <div className="flex flex-col gap-0.5 items-center">
-                <button
-                  type="button"
-                  onMouseDown={startScaleYIncrement}
-                  onMouseUp={stopScaleYChange}
-                  onMouseLeave={stopScaleYChange}
-                  onTouchStart={startScaleYIncrement}
-                  onTouchEnd={stopScaleYChange}
-                  disabled={scaleYValue >= 10}
-                  className={`
-                    p-1.5 border-2 rounded-md transition-all shadow-sm
-                    ${isScaleYIncPressed && scaleYValue < 10
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Increment (hold to repeat)"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onMouseDown={startScaleYDecrement}
-                  onMouseUp={stopScaleYChange}
-                  onMouseLeave={stopScaleYChange}
-                  onTouchStart={startScaleYDecrement}
-                  onTouchEnd={stopScaleYChange}
-                  disabled={scaleYValue <= 0}
-                  className={`
-                    p-1.5 border-2 rounded-md transition-all shadow-sm
-                    ${isScaleYDecPressed && scaleYValue > 0
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Decrement (hold to repeat)"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+            {/* Transition Duration */}
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Transition Duration (ms)</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min="0"
+                  max="5000"
+                  step="50"
+                  value={transitionValue}
+                  onChange={handleTransitionChange}
+                  placeholder="300"
+                  className="flex-1 px-2 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  style={{ MozAppearance: 'textfield' }}
+                />
+                <div className="flex flex-col gap-0.5 items-center">
+                  <button
+                    type="button"
+                    onMouseDown={startTransitionIncrement}
+                    onMouseUp={stopTransitionChange}
+                    onMouseLeave={stopTransitionChange}
+                    onTouchStart={startTransitionIncrement}
+                    onTouchEnd={stopTransitionChange}
+                    disabled={transitionValue >= 5000}
+                    className={`
+                      p-1 border-2 rounded-md transition-all shadow-sm
+                      ${isTransitionIncPressed && transitionValue < 5000
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                    `}
+                    title="Increment (hold to repeat)"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={startTransitionDecrement}
+                    onMouseUp={stopTransitionChange}
+                    onMouseLeave={stopTransitionChange}
+                    onTouchStart={startTransitionDecrement}
+                    onTouchEnd={stopTransitionChange}
+                    disabled={transitionValue <= 0}
+                    className={`
+                      p-1 border-2 rounded-md transition-all shadow-sm
+                      ${isTransitionDecPressed && transitionValue > 0
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                    `}
+                    title="Decrement (hold to repeat)"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <div className="text-xs text-gray-400 min-w-[60px] text-right">0-10×</div>
             </div>
-          </div>
-
-          {/* Transition Duration */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Transition Duration (ms)</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min="0"
-                max="5000"
-                step="50"
-                value={transitionValue}
-                onChange={handleTransitionChange}
-                placeholder="300"
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ MozAppearance: 'textfield' }}
-              />
-              <div className="flex flex-col gap-0.5 items-center">
-                <button
-                  type="button"
-                  onMouseDown={startTransitionIncrement}
-                  onMouseUp={stopTransitionChange}
-                  onMouseLeave={stopTransitionChange}
-                  onTouchStart={startTransitionIncrement}
-                  onTouchEnd={stopTransitionChange}
-                  disabled={transitionValue >= 5000}
-                  className={`
-                    p-1.5 border-2 rounded-md transition-all shadow-sm
-                    ${isTransitionIncPressed && transitionValue < 5000
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Increment (hold to repeat)"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onMouseDown={startTransitionDecrement}
-                  onMouseUp={stopTransitionChange}
-                  onMouseLeave={stopTransitionChange}
-                  onTouchStart={startTransitionDecrement}
-                  onTouchEnd={stopTransitionChange}
-                  disabled={transitionValue <= 0}
-                  className={`
-                    p-1.5 border-2 rounded-md transition-all shadow-sm
-                    ${isTransitionDecPressed && transitionValue > 0
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Decrement (hold to repeat)"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              </div>
-              <div className="text-xs text-gray-400 min-w-[60px] text-right">0-5000ms</div>
-            </div>
-          </div>
 
           {/* Visual Preview */}
           <div className="mt-4 p-4 bg-gray-50 rounded border border-gray-200">
