@@ -35,20 +35,30 @@ export function LetterSpacingControl({
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const speedRef = React.useRef(300); // Initial delay
+  const valueRef = React.useRef(value); // Track current value
 
-  const handleIncrement = () => {
-    const newValue = (value || 0) + 0.5;
+  // Update ref when value changes
+  React.useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  const handleIncrement = React.useCallback(() => {
+    const currentValue = valueRef.current || 0;
+    const newValue = currentValue + 0.5;
     if (newValue <= max) {
       onChange(name, newValue);
+      valueRef.current = newValue; // Update ref immediately
     }
-  };
+  }, [name, onChange, max]);
 
-  const handleDecrement = () => {
-    const newValue = (value || 0) - 0.5;
+  const handleDecrement = React.useCallback(() => {
+    const currentValue = valueRef.current || 0;
+    const newValue = currentValue - 0.5;
     if (newValue >= min) {
       onChange(name, newValue);
+      valueRef.current = newValue; // Update ref immediately
     }
-  };
+  }, [name, onChange, min]);
 
   // Start incrementing with acceleration
   const startIncrement = () => {

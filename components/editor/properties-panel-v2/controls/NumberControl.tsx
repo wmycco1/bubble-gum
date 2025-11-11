@@ -29,20 +29,30 @@ export function NumberControl({
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const speedRef = React.useRef(300); // Initial delay
+  const valueRef = React.useRef(value); // Track current value
 
-  const handleIncrement = () => {
-    const newValue = (value || 0) + step;
+  // Update ref when value changes
+  React.useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  const handleIncrement = React.useCallback(() => {
+    const currentValue = valueRef.current || 0;
+    const newValue = currentValue + step;
     if (max === undefined || newValue <= max) {
       onChange(name, newValue);
+      valueRef.current = newValue; // Update ref immediately
     }
-  };
+  }, [name, onChange, step, max]);
 
-  const handleDecrement = () => {
-    const newValue = (value || 0) - step;
+  const handleDecrement = React.useCallback(() => {
+    const currentValue = valueRef.current || 0;
+    const newValue = currentValue - step;
     if (min === undefined || newValue >= min) {
       onChange(name, newValue);
+      valueRef.current = newValue; // Update ref immediately
     }
-  };
+  }, [name, onChange, step, min]);
 
   // Start incrementing with acceleration
   const startIncrement = () => {
