@@ -882,6 +882,7 @@ export function TransformControl({
                 </div>
               </div>
             </div>
+          </div>
 
           {/* Visual Preview */}
           <div className="mt-4 p-4 bg-gray-50 rounded border border-gray-200">
