@@ -55,22 +55,47 @@ export function SpacingControl({
   // Check if any individual sides are set
   const hasIndividualValues = top !== undefined || right !== undefined || bottom !== undefined || left !== undefined;
 
+  // Debug: Log props on every render
+  console.log(`🔍 SpacingControl RENDER for ${paramName}:`, {
+    value,
+    top,
+    right,
+    bottom,
+    left,
+    hasIndividualValues,
+    isExpanded
+  });
+
   const handleShorthandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? undefined : Number(e.target.value);
 
-    // CRITICAL: Set shorthand FIRST
-    onChange(paramName, newValue);
+    console.log(`🔧 SpacingControl: handleShorthandChange called`, {
+      paramName,
+      inputValue: e.target.value,
+      newValue,
+      currentValue: value,
+      hasIndividualValues,
+      top, right, bottom, left
+    });
 
-    // Use setTimeout to ensure individual sides are cleared AFTER shorthand is processed
-    // This breaks React batching and guarantees shorthand is saved before clearing sides
-    // Without this, Badge might see old individual values due to React's concurrent updates
-    if (onSideChange) {
+    // ONLY clear individual sides if they actually exist
+    if (onSideChange && hasIndividualValues) {
+      console.log(`🔧 SpacingControl: Will clear sides + apply shorthand in setTimeout for ${paramName}`);
+
+      // Put EVERYTHING in setTimeout to avoid React batching issues
       setTimeout(() => {
+        console.log(`🔧 SpacingControl: Step 1 - Clearing individual sides for ${paramName}`);
         onSideChange('Top', undefined);
         onSideChange('Right', undefined);
         onSideChange('Bottom', undefined);
         onSideChange('Left', undefined);
+
+        console.log(`🔧 SpacingControl: Step 2 - Applying shorthand ${paramName}=${newValue}`);
+        onChange(paramName, newValue);
       }, 0);
+    } else {
+      console.log(`🔧 SpacingControl: No individual values, applying shorthand directly`);
+      onChange(paramName, newValue);
     }
   };
 

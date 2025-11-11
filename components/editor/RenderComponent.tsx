@@ -28,6 +28,8 @@ import * as Templates from '../../src/components/templates';
 
 import { logger } from '@/lib/utils/logger';
 import { ComponentToolbar } from './ComponentToolbar';
+import { SpacingHandlesV2 } from './canvas/SpacingHandlesV2';
+import { BorderRadiusHandles } from './canvas/BorderRadiusHandles';
 
 // Combine all components into single registry
 const COMPONENT_REGISTRY = {
@@ -44,7 +46,7 @@ interface RenderComponentProps {
 }
 
 export function RenderComponent({ component, isSelected, deviceMode = 'desktop' }: RenderComponentProps) {
-  const { selectComponent, setHoveredComponent, hoveredComponentId } = useCanvasStore();
+  const { selectComponent, setHoveredComponent, hoveredComponentId, updateComponentProps } = useCanvasStore();
 
   const isHovered = hoveredComponentId === component.id;
   const canHaveChildren = ['Container', 'Section', 'Grid', 'Card', 'Form', 'Layout'].includes(
@@ -93,6 +95,7 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     transition: 'opacity 100ms ease-out',
     ...(visibility && { visibility }),
     ...(display && { display }),
+    // NOTE: spacing (margin/padding) is passed to atomic component via props, not applied to wrapper
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -119,6 +122,67 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
   const handleMouseLeave = () => {
     setHoveredComponent(null);
   };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    // Enable text editing for components with text content
+    if (component.type === 'Badge' || component.type === 'Button' || component.type === 'Text' || component.type === 'Heading') {
+      e.stopPropagation();
+
+      // Find the actual component element
+      const wrapper = document.querySelector(`[data-component-id="${component.id}"]`);
+      if (wrapper) {
+        // Find Badge span (or other text element)
+        const textElement = wrapper.querySelector('[data-testid="badge"]') as HTMLElement;
+        if (textElement) {
+          // Make the element itself contentEditable
+          textElement.contentEditable = 'true';
+          textElement.focus();
+
+          // Select all text
+          const range = document.createRange();
+          range.selectNodeContents(textElement);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+
+          // Add visual indicator (outline)
+          textElement.style.outline = '2px solid #3b82f6';
+          textElement.style.outlineOffset = '2px';
+
+          // Save on blur
+          const handleBlur = () => {
+            const newText = textElement.innerText.trim();
+            if (newText && newText !== component.props.children) {
+              updateComponentProps(component.id, {
+                children: newText,
+              });
+            }
+            textElement.contentEditable = 'false';
+            textElement.style.outline = '';
+            textElement.style.outlineOffset = '';
+            textElement.removeEventListener('blur', handleBlur);
+            textElement.removeEventListener('keydown', handleKeyDown);
+          };
+
+          // Save on Enter, cancel on Escape
+          const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              textElement.blur();
+            } else if (e.key === 'Escape') {
+              e.preventDefault();
+              textElement.innerText = String(component.props.children || '');
+              textElement.blur();
+            }
+          };
+
+          textElement.addEventListener('blur', handleBlur);
+          textElement.addEventListener('keydown', handleKeyDown);
+        }
+      }
+    }
+  };
+
 
   // ═══════════════════════════════════════════════════════════════
   // DIRECT ATOMIC COMPONENT RENDERING (NO ADAPTERS)
@@ -201,7 +265,9 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
   return (
     <div
       ref={setDragRef}
+      data-component-id={component.id}
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={style}
@@ -239,8 +305,18 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
         <ComponentToolbar componentId={component.id} position="top-right" />
       )}
 
-      {/* Visual Component */}
-      <div ref={canHaveChildren ? setDropRef : undefined}>
+      {/* Visual Component with Spacing & Border Radius Handles */}
+      <div
+        ref={canHaveChildren ? setDropRef : undefined}
+        className="relative"
+        style={{ pointerEvents: 'auto' }}
+      >
+        {/* Spacing Handles V2 - positioned ON the actual component */}
+        {isSelected && <SpacingHandlesV2 componentId={component.id} />}
+
+        {/* Border Radius Handles - positioned ON the actual component corners */}
+        {isSelected && <BorderRadiusHandles componentId={component.id} />}
+
         {renderVisualComponent()}
       </div>
     </div>

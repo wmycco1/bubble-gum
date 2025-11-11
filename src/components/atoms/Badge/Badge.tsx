@@ -1,5 +1,5 @@
 /**
- * Badge Component - GOD-TIER Enterprise Edition V7.5
+ * Badge Component - GOD-TIER Enterprise Edition V7.6
  *
  * Production-ready badge component with enterprise-grade features:
  * - XSS Protection (DOMPurify sanitization)
@@ -11,7 +11,12 @@
  * - Security Best Practices (OWASP compliance)
  * - WCAG 2.1 AA Accessibility
  *
- * V7.5 NEW FEATURES (2025-11-11):
+ * V7.6 NEW FEATURES (2025-11-11):
+ * - Typography System (fontFamily, fontSize, fontWeight, fontStyle, letterSpacing, textTransform)
+ * - Transform System (rotate, scaleX, scaleY, skewX, skewY)
+ * - Animation System (transitionDuration, transitionTimingFunction)
+ *
+ * V7.5 FEATURES (2025-11-11):
  * - Layout & Positioning System (align: left/center/right/full)
  * - CSS Position control (static/relative/absolute/fixed/sticky)
  * - CSS Display control (inline-flex/block/inline-block/flex/inline/grid/inline-grid/none)
@@ -34,7 +39,7 @@
  * - Opacity Control (0-100% with smooth rendering)
  *
  * @module Badge
- * @version 7.5.0
+ * @version 7.6.0
  * @since 2025-11-11
  *
  * @example Basic Usage
@@ -286,6 +291,57 @@ export interface BadgeProps {
   /** CSS display property */
   display?: 'inline-flex' | 'block' | 'inline-block' | 'flex' | 'inline' | 'grid' | 'inline-grid' | 'none';
 
+  // ============================================
+  // TYPOGRAPHY (V7.6)
+  // ============================================
+
+  /** Font family for text */
+  fontFamily?: 'system-ui' | 'serif' | 'monospace' | 'Inter' | 'Roboto' | 'Open Sans' | 'Lato' | 'Montserrat' | 'Poppins';
+
+  /** Font size in pixels */
+  fontSize?: number;
+
+  /** Font weight */
+  fontWeight?: '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+
+  /** Font style */
+  fontStyle?: 'normal' | 'italic' | 'oblique';
+
+  /** Letter spacing in pixels */
+  letterSpacing?: number;
+
+  /** Text case transformation */
+  textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
+
+  // ============================================
+  // TRANSFORM (V7.6)
+  // ============================================
+
+  /** Rotation angle in degrees */
+  rotate?: number;
+
+  /** Horizontal scale (1 = normal) */
+  scaleX?: number;
+
+  /** Vertical scale (1 = normal) */
+  scaleY?: number;
+
+  /** Horizontal skew angle in degrees */
+  skewX?: number;
+
+  /** Vertical skew angle in degrees */
+  skewY?: number;
+
+  // ============================================
+  // ANIMATION (V7.6)
+  // ============================================
+
+  /** Transition duration in milliseconds */
+  transitionDuration?: number;
+
+  /** Transition timing function */
+  transitionTimingFunction?: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
+
   /** Additional CSS classes */
   className?: string;
 
@@ -417,6 +473,25 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     align,
     position = 'static',
     display = 'inline-flex',
+
+    // V7.6 - Typography
+    fontFamily,
+    fontSize,
+    fontWeight,
+    fontStyle,
+    letterSpacing,
+    textTransform,
+
+    // V7.6 - Transform
+    rotate,
+    scaleX,
+    scaleY,
+    skewX,
+    skewY,
+
+    // V7.6 - Animation
+    transitionDuration = 300,
+    transitionTimingFunction = 'ease',
 
     className = '',
     'data-testid': testId = 'badge',
@@ -726,25 +801,32 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     }
 
     // V7.1 - Margin (smart: individual sides override shorthand)
+    // IMPORTANT: If align is set, margin-left/margin-right are controlled by align, not margin
     if (safeMarginTop !== undefined) {
       styleOverrides.push(`margin-top: ${safeMarginTop}px !important`);
     } else if (safeMargin) {
       styleOverrides.push(`margin-top: ${safeMargin}px !important`);
     }
-    if (safeMarginRight !== undefined) {
-      styleOverrides.push(`margin-right: ${safeMarginRight}px !important`);
-    } else if (safeMargin) {
-      styleOverrides.push(`margin-right: ${safeMargin}px !important`);
+    // Only apply margin-right if align is NOT set
+    if (!align) {
+      if (safeMarginRight !== undefined) {
+        styleOverrides.push(`margin-right: ${safeMarginRight}px !important`);
+      } else if (safeMargin) {
+        styleOverrides.push(`margin-right: ${safeMargin}px !important`);
+      }
     }
     if (safeMarginBottom !== undefined) {
       styleOverrides.push(`margin-bottom: ${safeMarginBottom}px !important`);
     } else if (safeMargin) {
       styleOverrides.push(`margin-bottom: ${safeMargin}px !important`);
     }
-    if (safeMarginLeft !== undefined) {
-      styleOverrides.push(`margin-left: ${safeMarginLeft}px !important`);
-    } else if (safeMargin) {
-      styleOverrides.push(`margin-left: ${safeMargin}px !important`);
+    // Only apply margin-left if align is NOT set
+    if (!align) {
+      if (safeMarginLeft !== undefined) {
+        styleOverrides.push(`margin-left: ${safeMarginLeft}px !important`);
+      } else if (safeMargin) {
+        styleOverrides.push(`margin-left: ${safeMargin}px !important`);
+      }
     }
 
     // V7.1 - Padding (smart: individual sides override shorthand)
@@ -779,7 +861,62 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       styleOverrides.push(`opacity: ${safeOpacity / 100} !important`);
     }
 
-    // V7.5 - Display
+    // V7.5 - Alignment (horizontal alignment or full width)
+    // IMPORTANT: Alignment requires block-level display + width: fit-content
+    if (align) {
+      console.log('🎯 ALIGN ACTIVE:', {
+        align,
+        display,
+        safeMarginLeft,
+        safeMarginRight,
+        safeMargin,
+      });
+
+      switch (align) {
+        case 'left':
+          // For left alignment, keep inline-flex or use block with fit-content
+          if (!display || display === 'inline-flex') {
+            styleOverrides.push(`display: block !important`);
+            styleOverrides.push(`width: fit-content !important`);
+          }
+          styleOverrides.push(`margin-left: 0 !important`);
+          styleOverrides.push(`margin-right: auto !important`);
+          console.log('🎯 ALIGN LEFT: Added display:block, width:fit-content, margin-left:0, margin-right:auto');
+          break;
+        case 'center':
+          // For center, must be block with fit-content
+          if (!display || display === 'inline-flex') {
+            styleOverrides.push(`display: block !important`);
+            styleOverrides.push(`width: fit-content !important`);
+          }
+          styleOverrides.push(`margin-left: auto !important`);
+          styleOverrides.push(`margin-right: auto !important`);
+          console.log('🎯 ALIGN CENTER: Added display:block, width:fit-content, margin:auto');
+          break;
+        case 'right':
+          // For right, must be block with fit-content
+          if (!display || display === 'inline-flex') {
+            styleOverrides.push(`display: block !important`);
+            styleOverrides.push(`width: fit-content !important`);
+          }
+          styleOverrides.push(`margin-left: auto !important`);
+          styleOverrides.push(`margin-right: 0 !important`);
+          console.log('🎯 ALIGN RIGHT: Added display:block, width:fit-content, margin-left:auto, margin-right:0');
+          break;
+        case 'full':
+          // For full width, block with 100%
+          if (!display || display === 'inline-flex') {
+            styleOverrides.push(`display: block !important`);
+          }
+          styleOverrides.push(`width: 100% !important`);
+          styleOverrides.push(`margin-left: 0 !important`);
+          styleOverrides.push(`margin-right: 0 !important`);
+          console.log('🎯 ALIGN FULL: Added display:block, width:100%, margin:0');
+          break;
+      }
+    }
+
+    // V7.5 - Display (applied AFTER align to allow override)
     if (display && display !== 'inline-flex') {
       styleOverrides.push(`display: ${display} !important`);
     }
@@ -789,23 +926,82 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       styleOverrides.push(`position: ${position} !important`);
     }
 
-    // V7.5 - Alignment (horizontal alignment or full width)
-    if (align) {
-      switch (align) {
-        case 'left':
-          styleOverrides.push(`margin-right: auto !important`);
-          break;
-        case 'center':
-          styleOverrides.push(`margin-left: auto !important`);
-          styleOverrides.push(`margin-right: auto !important`);
-          break;
-        case 'right':
-          styleOverrides.push(`margin-left: auto !important`);
-          break;
-        case 'full':
-          styleOverrides.push(`width: 100% !important`);
-          break;
-      }
+    // V7.6 - TYPOGRAPHY
+    if (fontFamily) {
+      // Map font names to actual font stacks
+      const fontMap: Record<string, string> = {
+        'system-ui': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        'serif': 'Georgia, Cambria, "Times New Roman", Times, serif',
+        'monospace': '"Courier New", Courier, Monaco, monospace',
+        'Inter': '"Inter", sans-serif',
+        'Roboto': '"Roboto", sans-serif',
+        'Open Sans': '"Open Sans", sans-serif',
+        'Lato': '"Lato", sans-serif',
+        'Montserrat': '"Montserrat", sans-serif',
+        'Poppins': '"Poppins", sans-serif',
+      };
+      styleOverrides.push(`font-family: ${fontMap[fontFamily] || fontFamily} !important`);
+    }
+
+    if (fontSize !== undefined) {
+      styleOverrides.push(`font-size: ${fontSize}px !important`);
+    }
+
+    if (fontWeight) {
+      styleOverrides.push(`font-weight: ${fontWeight} !important`);
+    }
+
+    if (fontStyle && fontStyle !== 'normal') {
+      styleOverrides.push(`font-style: ${fontStyle} !important`);
+    }
+
+    if (letterSpacing !== undefined) {
+      styleOverrides.push(`letter-spacing: ${letterSpacing}px !important`);
+    }
+
+    if (textTransform && textTransform !== 'none') {
+      styleOverrides.push(`text-transform: ${textTransform} !important`);
+    }
+
+    // V7.6 - TRANSFORM
+    const transforms: string[] = [];
+
+    if (rotate !== undefined && rotate !== 0) {
+      transforms.push(`rotate(${rotate}deg)`);
+    }
+
+    if (scaleX !== undefined && scaleX !== 1) {
+      transforms.push(`scaleX(${scaleX})`);
+    }
+
+    if (scaleY !== undefined && scaleY !== 1) {
+      transforms.push(`scaleY(${scaleY})`);
+    }
+
+    if (skewX !== undefined && skewX !== 0) {
+      transforms.push(`skewX(${skewX}deg)`);
+    }
+
+    if (skewY !== undefined && skewY !== 0) {
+      transforms.push(`skewY(${skewY}deg)`);
+    }
+
+    if (transforms.length > 0) {
+      styleOverrides.push(`transform: ${transforms.join(' ')} !important`);
+    }
+
+    // V7.6 - ANIMATION
+    if (transitionDuration !== undefined && transitionDuration !== 300) {
+      styleOverrides.push(`transition-duration: ${transitionDuration}ms !important`);
+    }
+
+    if (transitionTimingFunction && transitionTimingFunction !== 'ease') {
+      styleOverrides.push(`transition-timing-function: ${transitionTimingFunction} !important`);
+    }
+
+    // Always add transition-property for smooth animations
+    if (transitionDuration || transitionTimingFunction) {
+      styleOverrides.push(`transition-property: all !important`);
     }
 
     return styleOverrides.length > 0 ? styleOverrides.join('; ') : '';
@@ -843,6 +1039,22 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     display,
     position,
     align,
+    // V7.6 - Typography
+    fontFamily,
+    fontSize,
+    fontWeight,
+    fontStyle,
+    letterSpacing,
+    textTransform,
+    // V7.6 - Transform
+    rotate,
+    scaleX,
+    scaleY,
+    skewX,
+    skewY,
+    // V7.6 - Animation
+    transitionDuration,
+    transitionTimingFunction,
   ]);
 
   // Apply inline styles with !important using cssText

@@ -100,6 +100,7 @@ export function Canvas({
     <div className="flex justify-center bg-slate-50 p-8 min-h-screen">
       <div
         ref={setDroppableRef}
+        data-canvas-container
         className={`min-h-[600px] rounded-lg border ${
           isOver ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white'
         } shadow-sm mx-auto transition-colors`}

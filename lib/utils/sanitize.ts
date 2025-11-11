@@ -169,3 +169,76 @@ export function sanitizeURL(url: string): string {
     return '';
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// GOD-TIER BADGE COMPONENT UTILITIES
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Sanitizes string content to prevent XSS attacks
+ * Uses DOMPurify to strip all HTML tags while preserving text content.
+ * For React nodes (JSX), passes through unchanged as React handles escaping.
+ */
+export function sanitizeContent(
+  content: string | React.ReactNode
+): string | React.ReactNode {
+  // React nodes are safe (React auto-escapes), only sanitize strings
+  if (typeof content !== 'string') {
+    return content;
+  }
+
+  if (!DOMPurify) {
+    // Fallback: strip all HTML tags if DOMPurify not loaded
+    return content.replace(/<[^>]*>/g, '').trim();
+  }
+
+  // DOMPurify configuration: strip ALL tags, keep text only
+  return DOMPurify.sanitize(content, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
+    KEEP_CONTENT: true,
+  });
+}
+
+/**
+ * Validates and sanitizes event handler functions
+ * Ensures that event handlers are valid functions and not malicious code.
+ * Prevents string-to-function injection attacks.
+ */
+export function sanitizeEventHandler<T extends Function>(
+  handler: T | undefined
+): T | undefined {
+  // undefined is valid (optional handler)
+  if (handler === undefined) {
+    return undefined;
+  }
+
+  // Must be a function (not string, not object, not anything else)
+  if (typeof handler !== 'function') {
+    console.warn(
+      '[Security Warning] Event handler must be a function, got:',
+      typeof handler
+    );
+    return undefined;
+  }
+
+  // Valid function, return as-is
+  return handler;
+}
+
+/**
+ * Sanitizes className string to prevent CSS injection
+ */
+export function sanitizeClassName(className: string | undefined): string {
+  if (!className || typeof className !== 'string') {
+    return '';
+  }
+
+  // Basic sanitization: trim and remove multiple spaces
+  const sanitized = className
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/[<>'"]/g, '');
+
+  return sanitized;
+}

@@ -57,16 +57,17 @@ interface CanvasStore extends CanvasState {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 /**
- * Remove props with empty string values from an object.
- * This prevents empty strings from overriding default/variant values.
+ * Remove props with empty string or undefined values from an object.
+ * This prevents empty strings and undefined from overriding default/variant values.
  *
  * @param props - Object with props to clean
- * @returns New object with empty string props removed
+ * @returns New object with empty string and undefined props removed
  */
 const cleanEmptyProps = <T extends Record<string, any>>(props: T): T => {
   const cleaned = { ...props };
   Object.keys(cleaned).forEach((key) => {
-    if (cleaned[key] === '') {
+    // Remove empty strings AND undefined values
+    if (cleaned[key] === '' || cleaned[key] === undefined) {
       delete cleaned[key];
     }
   });

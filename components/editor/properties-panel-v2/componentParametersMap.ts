@@ -69,7 +69,7 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     { name: 'color', type: 'color', label: 'Text Color', description: 'Overrides variant color' },
     { name: 'backgroundColor', type: 'color', label: 'Background Color', description: 'Overrides variant' },
 
-    // V7.4 - LAYOUT & POSITIONING
+    // V7.5 - LAYOUT & POSITIONING
     { name: 'align', type: 'select', label: 'Alignment',
       options: ['left', 'center', 'right', 'full'],
       description: 'Horizontal alignment or full width' },
@@ -79,6 +79,43 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     { name: 'display', type: 'select', label: 'Display',
       options: ['inline-flex', 'block', 'inline-block', 'flex', 'inline', 'grid', 'inline-grid', 'none'],
       description: 'CSS display property', defaultValue: 'inline-flex' },
+
+    // V7.6 - TYPOGRAPHY (Text Styling)
+    { name: 'fontFamily', type: 'select', label: 'Font Family',
+      options: ['system-ui', 'serif', 'monospace', 'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins'],
+      description: 'Font family for text' },
+    { name: 'fontSize', type: 'number', label: 'Font Size (px)',
+      description: 'Text size in pixels', min: 8, max: 72 },
+    { name: 'fontWeight', type: 'select', label: 'Font Weight',
+      options: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+      description: 'Text weight (100=thin, 900=black)' },
+    { name: 'fontStyle', type: 'select', label: 'Font Style',
+      options: ['normal', 'italic', 'oblique'],
+      description: 'Text style' },
+    { name: 'letterSpacing', type: 'number', label: 'Letter Spacing (px)',
+      description: 'Space between letters', min: -5, max: 10 },
+    { name: 'textTransform', type: 'select', label: 'Text Transform',
+      options: ['none', 'uppercase', 'lowercase', 'capitalize'],
+      description: 'Text case transformation' },
+
+    // V7.6 - TRANSFORM (2D Transformations)
+    { name: 'rotate', type: 'number', label: 'Rotate (deg)',
+      description: 'Rotation angle in degrees', min: -360, max: 360 },
+    { name: 'scaleX', type: 'number', label: 'Scale X',
+      description: 'Horizontal scale (1 = normal)', min: 0, max: 3 },
+    { name: 'scaleY', type: 'number', label: 'Scale Y',
+      description: 'Vertical scale (1 = normal)', min: 0, max: 3 },
+    { name: 'skewX', type: 'number', label: 'Skew X (deg)',
+      description: 'Horizontal skew angle', min: -45, max: 45 },
+    { name: 'skewY', type: 'number', label: 'Skew Y (deg)',
+      description: 'Vertical skew angle', min: -45, max: 45 },
+
+    // V7.6 - ANIMATION
+    { name: 'transitionDuration', type: 'number', label: 'Transition Duration (ms)',
+      description: 'Animation duration in milliseconds', min: 0, max: 5000, defaultValue: 300 },
+    { name: 'transitionTimingFunction', type: 'select', label: 'Timing Function',
+      options: ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'],
+      description: 'Animation easing function', defaultValue: 'ease' },
   ],
 
   Button: [
