@@ -34,7 +34,7 @@ export function LetterSpacingControl({
   const [isDecrementPressed, setIsDecrementPressed] = React.useState(false);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-  const speedRef = React.useRef(300); // Initial delay
+  const speedRef = React.useRef(100); // Initial delay (faster)
   const valueRef = React.useRef(value); // Track current value
 
   // Update ref when value changes
@@ -65,18 +65,18 @@ export function LetterSpacingControl({
     setIsIncrementPressed(true);
     handleIncrement(); // First click
 
-    speedRef.current = 300; // Reset speed
+    speedRef.current = 100; // Reset speed (faster)
     timeoutRef.current = setTimeout(() => {
       intervalRef.current = setInterval(() => {
         handleIncrement();
-        // Accelerate - reduce delay every iteration
-        if (speedRef.current > 50) {
-          speedRef.current = Math.max(50, speedRef.current - 20);
+        // Accelerate - reduce delay every iteration (more aggressive)
+        if (speedRef.current > 20) {
+          speedRef.current = Math.max(20, speedRef.current - 10);
           if (intervalRef.current) clearInterval(intervalRef.current);
           intervalRef.current = setInterval(handleIncrement, speedRef.current);
         }
       }, speedRef.current);
-    }, 400); // Initial delay before repeat starts
+    }, 200); // Shorter initial delay
   };
 
   // Start decrementing with acceleration
@@ -84,18 +84,18 @@ export function LetterSpacingControl({
     setIsDecrementPressed(true);
     handleDecrement(); // First click
 
-    speedRef.current = 300; // Reset speed
+    speedRef.current = 100; // Reset speed (faster)
     timeoutRef.current = setTimeout(() => {
       intervalRef.current = setInterval(() => {
         handleDecrement();
-        // Accelerate - reduce delay every iteration
-        if (speedRef.current > 50) {
-          speedRef.current = Math.max(50, speedRef.current - 20);
+        // Accelerate - reduce delay every iteration (more aggressive)
+        if (speedRef.current > 20) {
+          speedRef.current = Math.max(20, speedRef.current - 10);
           if (intervalRef.current) clearInterval(intervalRef.current);
           intervalRef.current = setInterval(handleDecrement, speedRef.current);
         }
       }, speedRef.current);
-    }, 400); // Initial delay before repeat starts
+    }, 200); // Shorter initial delay
   };
 
   // Stop incrementing/decrementing
