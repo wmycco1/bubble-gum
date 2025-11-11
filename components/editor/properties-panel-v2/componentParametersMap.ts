@@ -5,7 +5,7 @@
 
 export interface ParameterDefinition {
   name: string;
-  type: 'text' | 'number' | 'boolean' | 'color' | 'select' | 'variant' | 'image' | 'textarea' | 'spacing' | 'shadow' | 'opacity' | 'borderRadius' | 'border' | 'transform' | 'responsive' | 'alignment' | 'fontFamily' | 'fontSize' | 'fontStyle' | 'letterSpacing' | 'textTransform' | 'textShadow' | 'display';
+  type: 'text' | 'number' | 'boolean' | 'color' | 'select' | 'variant' | 'image' | 'textarea' | 'spacing' | 'shadow' | 'opacity' | 'borderRadius' | 'border' | 'transform' | 'responsive' | 'alignment' | 'fontFamily' | 'fontSize' | 'fontStyle' | 'letterSpacing' | 'textTransform' | 'textShadow' | 'display' | 'position';
   label: string;
   description?: string;
   options?: string[];
@@ -72,8 +72,7 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     // V7.5 - LAYOUT & POSITIONING
     { name: 'align', type: 'alignment', label: 'Alignment',
       description: 'Horizontal alignment or full width' },
-    { name: 'position', type: 'select', label: 'Position',
-      options: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
+    { name: 'position', type: 'position', label: 'Position',
       description: 'CSS position property', defaultValue: 'static' },
     { name: 'display', type: 'display', label: 'Display',
       description: 'CSS display property', defaultValue: 'block' },

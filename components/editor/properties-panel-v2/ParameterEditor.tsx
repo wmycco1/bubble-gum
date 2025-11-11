@@ -26,6 +26,7 @@ import { LetterSpacingControl } from './controls/LetterSpacingControl';
 import { TextTransformControl } from './controls/TextTransformControl';
 import { TextShadowControl } from './controls/TextShadowControl';
 import { DisplayControl } from './controls/DisplayControl';
+import { PositionControl } from './controls/PositionControl';
 import { COMPONENT_PARAMETERS, COMMON_PARAMETERS } from './componentParametersMap';
 
 interface ParameterEditorProps {
@@ -461,6 +462,19 @@ function renderControl(
     case 'display':
       return (
         <DisplayControl
+          key={param.name}
+          name={param.name}
+          label={param.label}
+          description={param.description}
+          value={value}
+          onChange={onChange}
+        />
+      );
+
+    // V8.2 - Position Control with Visual Icons
+    case 'position':
+      return (
+        <PositionControl
           key={param.name}
           name={param.name}
           label={param.label}
