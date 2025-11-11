@@ -5,7 +5,7 @@
 
 export interface ParameterDefinition {
   name: string;
-  type: 'text' | 'number' | 'boolean' | 'color' | 'select' | 'image' | 'textarea';
+  type: 'text' | 'number' | 'boolean' | 'color' | 'select' | 'image' | 'textarea' | 'spacing' | 'shadow' | 'opacity' | 'borderRadius' | 'border';
   label: string;
   description?: string;
   options?: string[];
@@ -13,6 +13,10 @@ export interface ParameterDefinition {
   required?: boolean;
   min?: number; // For number type
   max?: number; // For number type
+  // V7.1 - For spacing control
+  paramName?: string; // e.g. 'margin' or 'padding'
+  // V7.1 - For shadow control
+  presetOptions?: string[]; // e.g. ['none', 'sm', 'md', 'lg', 'xl']
 }
 
 export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
@@ -29,11 +33,28 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     { name: 'size', type: 'select', label: 'Size', options: ['sm', 'md', 'lg'] },
     { name: 'rounded', type: 'select', label: 'Shape', options: ['pill', 'rounded', 'square'], defaultValue: 'pill' },
 
-    // Border (Simple Modern UX)
-    { name: 'borderWidth', type: 'number', label: 'Border Width', description: 'Width in pixels', min: 0 },
-    { name: 'borderStyle', type: 'select', label: 'Border Style',
-      options: ['none', 'solid', 'dashed', 'dotted', 'double'] },
-    { name: 'borderColor', type: 'color', label: 'Border Color' },
+    // V7.3 - BORDER SYSTEM (Simple & Advanced modes)
+    { name: 'borderWidth', type: 'border', label: 'Border',
+      description: 'Border width, style & color (Simple: all sides, Advanced: individual sides)' },
+
+    // V7.2 - BORDER RADIUS SYSTEM (Simple & Advanced modes)
+    { name: 'borderRadius', type: 'borderRadius', label: 'Border Radius',
+      description: 'Corner roundness (Simple: all corners, Advanced: individual corners)' },
+
+    // V7.1 - SPACING SYSTEM (Margin & Padding)
+    { name: 'margin', type: 'spacing', label: 'Margin (External)',
+      description: 'Space around the badge', paramName: 'margin' },
+    { name: 'padding', type: 'spacing', label: 'Padding (Internal)',
+      description: 'Space inside the badge', paramName: 'padding' },
+
+    // V7.1 - SHADOW SYSTEM
+    { name: 'shadow', type: 'shadow', label: 'Shadow',
+      description: 'Drop shadow effect',
+      presetOptions: ['none', 'sm', 'md', 'lg', 'xl'] },
+
+    // V7.1 - OPACITY
+    { name: 'opacity', type: 'opacity', label: 'Opacity',
+      description: 'Badge transparency (0-100%)', defaultValue: 100 },
 
     // Icon Settings
     { name: 'icon', type: 'text', label: 'Icon Name', description: 'e.g. star, heart, check, x' },
@@ -47,6 +68,17 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
     // Custom Colors
     { name: 'color', type: 'color', label: 'Text Color', description: 'Overrides variant color' },
     { name: 'backgroundColor', type: 'color', label: 'Background Color', description: 'Overrides variant' },
+
+    // V7.4 - LAYOUT & POSITIONING
+    { name: 'align', type: 'select', label: 'Alignment',
+      options: ['left', 'center', 'right', 'full'],
+      description: 'Horizontal alignment or full width' },
+    { name: 'position', type: 'select', label: 'Position',
+      options: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
+      description: 'CSS position property', defaultValue: 'static' },
+    { name: 'display', type: 'select', label: 'Display',
+      options: ['inline-flex', 'block', 'inline-block', 'flex', 'inline', 'grid', 'inline-grid', 'none'],
+      description: 'CSS display property', defaultValue: 'inline-flex' },
   ],
 
   Button: [
