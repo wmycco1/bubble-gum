@@ -830,8 +830,8 @@ function SpacingBarHandle({
     if (value === 0) return null;
 
     const inset = mode === 'padding';
-    // For padding use white with dark outline, for margin use dark gray
-    const lineColor = inset ? '#ffffff' : '#1f2937';
+    // Both use dark gray, but padding gets white outline for visibility on dark backgrounds
+    const lineColor = '#1f2937';
     // Dynamic opacity based on state - higher for crisp visibility
     const opacity = isDragging ? 1 : isHovered ? 0.95 : 0.8; // Always visible, crisp
 
@@ -839,8 +839,8 @@ function SpacingBarHandle({
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 44,
-      // For padding: add dark outline to white lines for visibility on any background
-      filter: inset ? 'drop-shadow(0 0 0 1.5px rgba(0,0,0,0.8))' : undefined,
+      // For padding: add white outline to dark lines for visibility on any background
+      filter: inset ? 'drop-shadow(0 0 0 1.5px rgba(255,255,255,0.9))' : undefined,
       opacity,
       transition: 'opacity 0.15s ease',
     };
@@ -939,8 +939,8 @@ function SpacingBarHandle({
     if (value === 0) return [];
 
     const inset = mode === 'padding';
-    // For padding use white with dark outline, for margin use dark gray
-    const arrowColor = inset ? '#ffffff' : '#1f2937';
+    // Both use dark gray, but padding gets white outline for visibility on dark backgrounds
+    const arrowColor = '#1f2937';
     const arrowSize = 7; // Slightly larger for better visibility
 
     // Dynamic opacity based on state - higher for crisp visibility
@@ -953,8 +953,8 @@ function SpacingBarHandle({
       border: `${arrowSize}px solid transparent`,
       pointerEvents: 'none',
       zIndex: 45,
-      // For padding: add dark outline to white arrows for visibility on any background
-      filter: inset ? 'drop-shadow(0 0 0 1.5px rgba(0,0,0,0.8))' : undefined,
+      // For padding: add white outline to dark arrows for visibility on any background
+      filter: inset ? 'drop-shadow(0 0 0 1.5px rgba(255,255,255,0.9))' : undefined,
       opacity,
       transition: 'opacity 0.15s ease',
     };
