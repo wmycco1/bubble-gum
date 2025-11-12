@@ -829,15 +829,15 @@ function SpacingBarHandle({
   const getDashedLineStyles = (): React.CSSProperties | null => {
     if (value === 0) return null;
 
-    const lineColor = '#ffffff'; // Always white for visibility
+    const lineColor = '#f97316'; // Orange for high visibility
     // Dynamic opacity based on state
-    const opacity = isDragging ? 1 : isHovered ? 0.8 : 0.5; // Always visible
+    const opacity = isDragging ? 1 : isHovered ? 0.9 : 0.7; // Always visible with strong opacity
 
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 44,
-      filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.5))', // Shadow for contrast
+      filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.9)) drop-shadow(0 0 1px rgba(0,0,0,0.9))', // Strong dark outline
       opacity,
       transition: 'opacity 0.15s ease',
     };
@@ -937,12 +937,12 @@ function SpacingBarHandle({
   const getArrowStyles = (): React.CSSProperties[] => {
     if (value === 0) return [];
 
-    const arrowColor = '#ffffff'; // Always white for visibility on any background
-    const arrowSize = 6;
+    const arrowColor = '#f97316'; // Orange for high visibility on any background
+    const arrowSize = 7; // Slightly larger for better visibility
     const inset = mode === 'padding';
 
     // Dynamic opacity based on state
-    const opacity = isDragging ? 1 : isHovered ? 0.8 : 0.5; // Always visible
+    const opacity = isDragging ? 1 : isHovered ? 0.9 : 0.7; // Always visible with strong opacity
 
     const baseArrowStyle: React.CSSProperties = {
       position: 'absolute',
@@ -951,7 +951,7 @@ function SpacingBarHandle({
       border: `${arrowSize}px solid transparent`,
       pointerEvents: 'none',
       zIndex: 45,
-      filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))', // Shadow for contrast
+      filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.9)) drop-shadow(0 0 1px rgba(0,0,0,0.9))', // Strong dark outline
       opacity,
       transition: 'opacity 0.15s ease',
     };
