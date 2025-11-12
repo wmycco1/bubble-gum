@@ -188,10 +188,10 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
-                top: `${badgeRect.top - topValue}px`,
-                left: `${badgeRect.left}px`,
-                width: `${badgeRect.width}px`,
-                height: `${topValue}px`,
+                top: '0px',
+                left: '0px',
+                width: `${wrapperRect.width}px`,
+                height: `${badgeRect.top}px`,
                 backgroundColor:
                   draggingSide === 'top'
                     ? 'rgba(52, 211, 153, 0.4)' // Dragging: green 40% (more visible)
@@ -200,7 +200,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                     : 'rgba(96, 165, 250, 0.1)', // Idle: blue 10% (reduced 50%)
                 borderTop: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
-                cursor: 'ns-resize',
+                cursor: 's-resize',  // ↓ Push badge DOWN from top edge
                 zIndex: 43,
                 transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
@@ -214,10 +214,10 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
-                top: `${badgeRect.top}px`,
+                top: '0px',
                 left: `${badgeRect.right}px`,
-                width: `${rightValue}px`,
-                height: `${badgeRect.height}px`,
+                width: `${wrapperRect.width - badgeRect.right}px`,
+                height: `${wrapperRect.height}px`,
                 backgroundColor:
                   draggingSide === 'right'
                     ? 'rgba(52, 211, 153, 0.4)'
@@ -226,7 +226,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                     : 'rgba(96, 165, 250, 0.1)',
                 borderRight: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
-                cursor: 'ew-resize',
+                cursor: 'w-resize',  // ← Push badge LEFT from right edge
                 zIndex: 43,
                 transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
@@ -241,9 +241,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
               style={{
                 position: 'absolute',
                 top: `${badgeRect.bottom}px`,
-                left: `${badgeRect.left}px`,
-                width: `${badgeRect.width}px`,
-                height: `${bottomValue}px`,
+                left: '0px',
+                width: `${wrapperRect.width}px`,
+                height: `${wrapperRect.height - badgeRect.bottom}px`,
                 backgroundColor:
                   draggingSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.4)'
@@ -252,7 +252,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                     : 'rgba(96, 165, 250, 0.1)',
                 borderBottom: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
-                cursor: 'ns-resize',
+                cursor: 'n-resize',  // ↑ Push badge UP from bottom edge
                 zIndex: 43,
                 transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
@@ -266,10 +266,10 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
-                top: `${badgeRect.top}px`,
-                left: `${badgeRect.left - leftValue}px`,
-                width: `${leftValue}px`,
-                height: `${badgeRect.height}px`,
+                top: '0px',
+                left: '0px',
+                width: `${badgeRect.left}px`,
+                height: `${wrapperRect.height}px`,
                 backgroundColor:
                   draggingSide === 'left'
                     ? 'rgba(52, 211, 153, 0.4)'
@@ -278,7 +278,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                     : 'rgba(96, 165, 250, 0.1)',
                 borderLeft: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
-                cursor: 'ew-resize',
+                cursor: 'e-resize',  // → Push badge RIGHT from left edge
                 zIndex: 43,
                 transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
@@ -743,12 +743,12 @@ function SpacingBarHandle({
 
   const isVertical = side === 'top' || side === 'bottom';
 
-  // Cursor style: margin mode uses directional arrows (push away), padding uses bidirectional
+  // Cursor style: margin mode uses directional arrows (push away from wrapper edge)
   const cursor = mode === 'margin'
-    ? side === 'top' ? 'n-resize'  // ↑ Push badge down from top
-      : side === 'bottom' ? 's-resize'  // ↓ Push badge up from bottom
-      : side === 'left' ? 'w-resize'  // ← Push badge right from left
-      : 'e-resize'  // → Push badge left from right
+    ? side === 'top' ? 's-resize'     // ↓ Push badge DOWN from top edge
+      : side === 'bottom' ? 'n-resize' // ↑ Push badge UP from bottom edge
+      : side === 'left' ? 'e-resize'   // → Push badge RIGHT from left edge
+      : 'w-resize'                      // ← Push badge LEFT from right edge
     : isVertical ? 'ns-resize' : 'ew-resize';
 
   // Position styles based on side - HANDLE STRETCHES TO FILL SPACING AREA
@@ -1319,7 +1319,10 @@ function SpacingBarHandle({
       {/* Value Tooltip - with directional icons */}
       {(isHovered || isDragging) && (
         <div style={getTooltipStyles()}>
-          {side === 'top' && '↑'} {side === 'right' && '→'} {side === 'bottom' && '↓'} {side === 'left' && '←'} {mode === 'margin' ? 'Margin' : 'Padding'} {side}: {value}px
+          {mode === 'margin'
+            ? (side === 'top' ? '↓' : side === 'bottom' ? '↑' : side === 'left' ? '→' : '←')  // Push away direction
+            : (side === 'top' ? '↑' : side === 'bottom' ? '↓' : side === 'left' ? '←' : '→')  // Original direction
+          } {mode === 'margin' ? 'Margin' : 'Padding'} {side}: {value}px
           {isDragging && (
             <span style={{
               display: 'block',
