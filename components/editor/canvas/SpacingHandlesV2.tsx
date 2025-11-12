@@ -28,6 +28,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
   const [hoveredSide, setHoveredSide] = useState<Side | null>(null);
   const [draggingSide, setDraggingSide] = useState<Side | null>(null);
   const [badgeRect, setBadgeRect] = useState<DOMRect | null>(null);
+  const [wrapperRect, setWrapperRect] = useState<DOMRect | null>(null);
   const rafRef = React.useRef<number | null>(null);
 
   // Enable keyboard shortcuts
@@ -48,18 +49,29 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
       const badgeElement = wrapper.querySelector('[data-testid="badge"]') as HTMLElement;
       if (badgeElement) {
         const rect = badgeElement.getBoundingClientRect();
-        const wrapperRect = wrapper.getBoundingClientRect();
+        const wrapperRectRaw = wrapper.getBoundingClientRect();
+
+        // Save wrapper dimensions (relative coordinates starting at 0,0)
+        const relativeWrapperRect = {
+          top: 0,
+          left: 0,
+          width: wrapperRectRaw.width,
+          height: wrapperRectRaw.height,
+          right: wrapperRectRaw.width,
+          bottom: wrapperRectRaw.height,
+        } as DOMRect;
 
         // Calculate relative position to wrapper
         const relativeRect = {
-          top: rect.top - wrapperRect.top,
-          left: rect.left - wrapperRect.left,
+          top: rect.top - wrapperRectRaw.top,
+          left: rect.left - wrapperRectRaw.left,
           width: rect.width,
           height: rect.height,
-          right: rect.right - wrapperRect.left,
-          bottom: rect.bottom - wrapperRect.top,
+          right: rect.right - wrapperRectRaw.left,
+          bottom: rect.bottom - wrapperRectRaw.top,
         } as DOMRect;
 
+        setWrapperRect(relativeWrapperRect);
         setBadgeRect(relativeRect);
       }
     };
@@ -88,22 +100,33 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
     const badgeElement = wrapper.querySelector('[data-testid="badge"]') as HTMLElement;
     if (badgeElement) {
       const rect = badgeElement.getBoundingClientRect();
-      const wrapperRect = wrapper.getBoundingClientRect();
+      const wrapperRectRaw = wrapper.getBoundingClientRect();
 
-      const relativeRect = {
-        top: rect.top - wrapperRect.top,
-        left: rect.left - wrapperRect.left,
-        width: rect.width,
-        height: rect.height,
-        right: rect.right - wrapperRect.left,
-        bottom: rect.bottom - wrapperRect.top,
+      // Save wrapper dimensions (relative coordinates starting at 0,0)
+      const relativeWrapperRect = {
+        top: 0,
+        left: 0,
+        width: wrapperRectRaw.width,
+        height: wrapperRectRaw.height,
+        right: wrapperRectRaw.width,
+        bottom: wrapperRectRaw.height,
       } as DOMRect;
 
+      const relativeRect = {
+        top: rect.top - wrapperRectRaw.top,
+        left: rect.left - wrapperRectRaw.left,
+        width: rect.width,
+        height: rect.height,
+        right: rect.right - wrapperRectRaw.left,
+        bottom: rect.bottom - wrapperRectRaw.top,
+      } as DOMRect;
+
+      setWrapperRect(relativeWrapperRect);
       setBadgeRect(relativeRect);
     }
   }, [componentId, component?.props]);
 
-  if (!component || !badgeRect) return null;
+  if (!component || !badgeRect || !wrapperRect) return null;
 
   const props = component.props || {};
   const prefix = spacingMode;
@@ -430,6 +453,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         onDragStart={() => setDraggingSide('top')}
         onDragEnd={() => setDraggingSide(null)}
         badgeRect={badgeRect}
+        wrapperRect={wrapperRect}
         mode={spacingMode}
       />
 
@@ -444,6 +468,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         onDragStart={() => setDraggingSide('right')}
         onDragEnd={() => setDraggingSide(null)}
         badgeRect={badgeRect}
+        wrapperRect={wrapperRect}
         mode={spacingMode}
       />
 
@@ -458,6 +483,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         onDragStart={() => setDraggingSide('bottom')}
         onDragEnd={() => setDraggingSide(null)}
         badgeRect={badgeRect}
+        wrapperRect={wrapperRect}
         mode={spacingMode}
       />
 
@@ -472,6 +498,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         onDragStart={() => setDraggingSide('left')}
         onDragEnd={() => setDraggingSide(null)}
         badgeRect={badgeRect}
+        wrapperRect={wrapperRect}
         mode={spacingMode}
       />
     </>
@@ -637,6 +664,7 @@ interface SpacingBarHandleProps {
   onDragStart: () => void; // NEW: trigger dragging state
   onDragEnd: () => void; // NEW: clear dragging state
   badgeRect: DOMRect;
+  wrapperRect: DOMRect;
   mode: SpacingMode;
 }
 
@@ -651,6 +679,7 @@ function SpacingBarHandle({
   onDragStart,
   onDragEnd,
   badgeRect,
+  wrapperRect,
   mode,
 }: SpacingBarHandleProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -745,7 +774,7 @@ function SpacingBarHandle({
     const minHandleSize = 10;
 
     // For padding: handles are INSIDE Badge (on inner edge after padding)
-    // For margin: handles are OUTSIDE Badge (beyond outer edge)
+    // For margin: handles are INSIDE wrapper (between wrapper edge and badge)
     const inset = mode === 'padding';
 
     switch (side) {
@@ -754,10 +783,11 @@ function SpacingBarHandle({
         const handleHeight = Math.max(value, minHandleSize);
         return {
           ...baseStyles,
-          top: inset ? `${badgeRect.top}px` : `${badgeRect.top - handleHeight}px`,
+          // Padding: inside badge at top edge | Margin: from wrapper top to badge top (INSIDE wrapper)
+          top: inset ? `${badgeRect.top}px` : '0px',
           left: `${badgeRect.left}px`,
           width: `${badgeRect.width}px`,
-          height: `${handleHeight}px`,
+          height: inset ? `${handleHeight}px` : `${badgeRect.top}px`,
         };
       }
       case 'right': {
@@ -766,8 +796,9 @@ function SpacingBarHandle({
         return {
           ...baseStyles,
           top: `${badgeRect.top}px`,
+          // Padding: inside badge at right edge | Margin: from badge right to wrapper right (INSIDE wrapper)
           left: inset ? `${badgeRect.right - handleWidth}px` : `${badgeRect.right}px`,
-          width: `${handleWidth}px`,
+          width: inset ? `${handleWidth}px` : `${wrapperRect.width - badgeRect.right}px`,
           height: `${badgeRect.height}px`,
         };
       }
@@ -776,10 +807,11 @@ function SpacingBarHandle({
         const handleHeight = Math.max(value, minHandleSize);
         return {
           ...baseStyles,
+          // Padding: inside badge at bottom edge | Margin: from badge bottom to wrapper bottom (INSIDE wrapper)
           top: inset ? `${badgeRect.bottom - handleHeight}px` : `${badgeRect.bottom}px`,
           left: `${badgeRect.left}px`,
           width: `${badgeRect.width}px`,
-          height: `${handleHeight}px`,
+          height: inset ? `${handleHeight}px` : `${wrapperRect.height - badgeRect.bottom}px`,
         };
       }
       case 'left': {
@@ -788,8 +820,9 @@ function SpacingBarHandle({
         return {
           ...baseStyles,
           top: `${badgeRect.top}px`,
-          left: inset ? `${badgeRect.left}px` : `${badgeRect.left - handleWidth}px`,
-          width: `${handleWidth}px`,
+          // Padding: inside badge at left edge | Margin: from wrapper left to badge left (INSIDE wrapper)
+          left: inset ? `${badgeRect.left}px` : '0px',
+          width: inset ? `${handleWidth}px` : `${badgeRect.left}px`,
           height: `${badgeRect.height}px`,
         };
       }
