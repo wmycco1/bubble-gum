@@ -171,9 +171,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${topValue}px`,
                 backgroundColor:
                   draggingSide === 'top'
-                    ? 'rgba(52, 211, 153, 0.25)' // Dragging: green 25%
+                    ? 'rgba(52, 211, 153, 0.4)' // Dragging: green 40% (more visible)
                     : hoveredSide === 'top'
-                    ? 'rgba(52, 211, 153, 0.15)' // Hover: green 15%
+                    ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25% (more visible)
                     : 'rgba(96, 165, 250, 0.1)', // Idle: blue 10% (reduced 50%)
                 borderTop: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -197,9 +197,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'right'
-                    ? 'rgba(52, 211, 153, 0.25)'
+                    ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'right'
-                    ? 'rgba(52, 211, 153, 0.15)'
+                    ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.1)',
                 borderRight: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -223,9 +223,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${bottomValue}px`,
                 backgroundColor:
                   draggingSide === 'bottom'
-                    ? 'rgba(52, 211, 153, 0.25)'
+                    ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'bottom'
-                    ? 'rgba(52, 211, 153, 0.15)'
+                    ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.1)',
                 borderBottom: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -249,9 +249,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'left'
-                    ? 'rgba(52, 211, 153, 0.25)'
+                    ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'left'
-                    ? 'rgba(52, 211, 153, 0.15)'
+                    ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.1)',
                 borderLeft: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -279,9 +279,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${Math.min(topValue, badgeRect.height / 2)}px`,
                 backgroundColor:
                   draggingSide === 'top'
-                    ? 'rgba(52, 211, 153, 0.25)' // Dragging: green 25%
+                    ? 'rgba(52, 211, 153, 0.4)' // Dragging: green 40% (more visible)
                     : hoveredSide === 'top'
-                    ? 'rgba(52, 211, 153, 0.15)' // Hover: green 15%
+                    ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25% (more visible)
                     : 'rgba(96, 165, 250, 0.1)', // Idle: blue 10% (reduced 50%)
                 borderBottom: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -305,9 +305,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'right'
-                    ? 'rgba(52, 211, 153, 0.25)'
+                    ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'right'
-                    ? 'rgba(52, 211, 153, 0.15)'
+                    ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.1)',
                 borderLeft: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -331,9 +331,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${Math.min(bottomValue, badgeRect.height / 2)}px`,
                 backgroundColor:
                   draggingSide === 'bottom'
-                    ? 'rgba(52, 211, 153, 0.25)'
+                    ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'bottom'
-                    ? 'rgba(52, 211, 153, 0.15)'
+                    ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.1)',
                 borderTop: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -357,9 +357,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'left'
-                    ? 'rgba(52, 211, 153, 0.25)'
+                    ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'left'
-                    ? 'rgba(52, 211, 153, 0.15)'
+                    ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.1)',
                 borderRight: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -825,17 +825,21 @@ function SpacingBarHandle({
     }
   };
 
-  // Get dashed line from text edge to Badge edge with arrows
+  // Get dashed line from text edge to Badge edge with arrows (ALWAYS VISIBLE)
   const getDashedLineStyles = (): React.CSSProperties | null => {
-    if (!isDragging && !isHovered) return null;
     if (value === 0) return null;
 
     const lineColor = '#ffffff'; // Always white for visibility
+    // Dynamic opacity based on state
+    const opacity = isDragging ? 1 : isHovered ? 0.8 : 0.5; // Always visible
+
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 44,
       filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.5))', // Shadow for contrast
+      opacity,
+      transition: 'opacity 0.15s ease',
     };
 
     const inset = mode === 'padding';
@@ -929,14 +933,16 @@ function SpacingBarHandle({
     }
   };
 
-  // Get arrow indicators at line ends
+  // Get arrow indicators at line ends (ALWAYS VISIBLE)
   const getArrowStyles = (): React.CSSProperties[] => {
-    if (!isDragging && !isHovered) return [];
     if (value === 0) return [];
 
     const arrowColor = '#ffffff'; // Always white for visibility on any background
     const arrowSize = 6;
     const inset = mode === 'padding';
+
+    // Dynamic opacity based on state
+    const opacity = isDragging ? 1 : isHovered ? 0.8 : 0.5; // Always visible
 
     const baseArrowStyle: React.CSSProperties = {
       position: 'absolute',
@@ -946,6 +952,8 @@ function SpacingBarHandle({
       pointerEvents: 'none',
       zIndex: 45,
       filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))', // Shadow for contrast
+      opacity,
+      transition: 'opacity 0.15s ease',
     };
 
     if (inset) {
@@ -1103,18 +1111,117 @@ function SpacingBarHandle({
     return [];
   };
 
+  // Get value label positioned between arrows (ALWAYS VISIBLE)
+  const getValueLabelStyles = (): React.CSSProperties | null => {
+    if (value === 0) return null;
+
+    const inset = mode === 'padding';
+    const opacity = isDragging ? 1 : isHovered ? 0.9 : 0.6; // Always visible
+
+    const baseStyles: React.CSSProperties = {
+      position: 'absolute',
+      pointerEvents: 'none',
+      zIndex: 46,
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      color: 'white',
+      padding: '2px 6px',
+      borderRadius: '4px',
+      fontSize: '10px',
+      fontWeight: 600,
+      whiteSpace: 'nowrap',
+      opacity,
+      transition: 'opacity 0.15s ease',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+    };
+
+    // Position label in the middle of the spacing area
+    if (inset) {
+      switch (side) {
+        case 'top':
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top + value / 2}px`,
+            left: `${badgeRect.left + badgeRect.width / 2}px`,
+            transform: 'translate(-50%, -50%)',
+          };
+        case 'right':
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top + badgeRect.height / 2}px`,
+            left: `${badgeRect.right - value / 2}px`,
+            transform: 'translate(-50%, -50%)',
+          };
+        case 'bottom':
+          return {
+            ...baseStyles,
+            top: `${badgeRect.bottom - value / 2}px`,
+            left: `${badgeRect.left + badgeRect.width / 2}px`,
+            transform: 'translate(-50%, -50%)',
+          };
+        case 'left':
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top + badgeRect.height / 2}px`,
+            left: `${badgeRect.left + value / 2}px`,
+            transform: 'translate(-50%, -50%)',
+          };
+      }
+    } else {
+      // Margin mode
+      switch (side) {
+        case 'top':
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top - value / 2}px`,
+            left: `${badgeRect.left + badgeRect.width / 2}px`,
+            transform: 'translate(-50%, -50%)',
+          };
+        case 'right':
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top + badgeRect.height / 2}px`,
+            left: `${badgeRect.right + value / 2}px`,
+            transform: 'translate(-50%, -50%)',
+          };
+        case 'bottom':
+          return {
+            ...baseStyles,
+            top: `${badgeRect.bottom + value / 2}px`,
+            left: `${badgeRect.left + badgeRect.width / 2}px`,
+            transform: 'translate(-50%, -50%)',
+          };
+        case 'left':
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top + badgeRect.height / 2}px`,
+            left: `${badgeRect.left - value / 2}px`,
+            transform: 'translate(-50%, -50%)',
+          };
+      }
+    }
+    return null;
+  };
+
   const dashedLineStyles = getDashedLineStyles();
   const arrowStyles = getArrowStyles();
+  const valueLabelStyles = getValueLabelStyles();
 
   return (
     <>
-      {/* Dashed Line - only when hovering or dragging */}
+      {/* Dashed Line - always visible */}
       {dashedLineStyles && <div style={dashedLineStyles} />}
 
-      {/* Arrows at both ends */}
+      {/* Arrows at both ends - always visible */}
       {arrowStyles.map((arrowStyle, idx) => (
         <div key={idx} style={arrowStyle} />
       ))}
+
+      {/* Value Label between arrows - always visible */}
+      {valueLabelStyles && (
+        <div style={valueLabelStyles}>
+          {value}px
+        </div>
+      )}
 
       {/* Bar Handle */}
       <div
