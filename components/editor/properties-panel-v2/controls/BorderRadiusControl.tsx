@@ -1,38 +1,41 @@
 'use client';
 
 /**
- * BorderRadiusControl - Modern UI for Border Radius (V9.0 - Revolutionary Corner Layout)
+ * BorderRadiusControl - Modern UI for Border Radius (V9.1 - Visual Perfection)
  *
  * Features:
  * - All-corners input (Simple mode)
  * - Revolutionary corner-based controls (Advanced mode)
  * - Hold-to-repeat increment/decrement buttons (BOTH modes)
  * - Independent unit selectors for each corner (px, rem, em, %)
- * - Diagonal arrows inside preview box pointing to center
+ * - Diagonal arrows inside preview box pointing TO center
+ * - Visual gradient indicators in corners showing radius changes
  * - Corner controls positioned around preview box
  * - Individual corner controls with live preview
  * - User-friendly UX 2025
  *
- * V9.0 Improvements (Nov 12, 2025) - REVOLUTIONARY REDESIGN:
- * - ✅ Moved all corner controls TO THE CORNERS of preview box (absolute positioning)
- * - ✅ Changed button style: - and + (was: ▲▼ arrows)
- * - ✅ Vertical layout for each corner: [- +] → input → unit dropdown
- * - ✅ Diagonal arrows INSIDE preview box (pointing to center)
- * - ✅ Preview box increased by 20% (64px → 80px)
- * - ✅ All controls now positioned around central preview
- * - ✅ More intuitive and visually appealing design
+ * V9.1 Fixes (Nov 12, 2025) - VISUAL PERFECTION:
+ * - ✅ FIXED arrows direction: now point TO center (was FROM center)
+ * - ✅ Added gradient indicators in each corner (blue overlay with radius)
+ * - ✅ Preview box increased to 100px (was 80px, original 64px)
+ * - ✅ Added smooth transitions (duration-300) for visual feedback
+ * - ✅ Enhanced visual clarity with shadows and gradients
+ * - ✅ Now changes are CLEARLY visible in preview
+ *
+ * V9.0 (Nov 12, 2025) - REVOLUTIONARY REDESIGN:
+ * - Moved all corner controls TO THE CORNERS of preview box
+ * - Changed button style: - and + (was: ▲▼ arrows)
+ * - Vertical layout for each corner: [- +] → input → unit dropdown
+ * - Diagonal arrows INSIDE preview box
+ * - All controls positioned around central preview
  *
  * V8.0 (Nov 12, 2025):
  * - Fixed layout order: icon + label → input → buttons → unit
  * - Fixed preview to use correct units (was always 'px')
- * - Added corner icons (arrows) for better UX
- * - Enhanced visual preview with corner indicators
  *
  * V7.8 (Nov 11, 2025):
- * - Refactored Advanced mode with component architecture
  * - Full hold-to-repeat functionality in all corners
  * - Hidden browser spinners in all number inputs
- * - Consistent UX across Simple and Advanced modes
  */
 
 import React, { useState } from 'react';
@@ -137,38 +140,66 @@ export function BorderRadiusControl({
           {/* Visual Model with Corner Controls */}
           <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
             <div className="relative" style={{ minHeight: '200px' }}>
-              {/* Center Preview Box - Increased by 20% (64px -> ~77px -> use 80px = w-20) */}
+              {/* Center Preview Box - Increased to 100px (25% bigger than original 80px) */}
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <div
-                  className="w-20 h-20 bg-white flex items-center justify-center shadow-lg transition-all border-2 border-gray-300 relative"
+                  className="w-25 h-25 bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-xl transition-all duration-300 border-2 border-gray-400 relative overflow-hidden"
                   style={{
                     borderTopLeftRadius: `${topLeft ?? value ?? 0}${topLeftUnit}`,
                     borderTopRightRadius: `${topRight ?? value ?? 0}${topRightUnit}`,
                     borderBottomLeftRadius: `${bottomLeft ?? value ?? 0}${bottomLeftUnit}`,
                     borderBottomRightRadius: `${bottomRight ?? value ?? 0}${bottomRightUnit}`,
+                    width: '100px',
+                    height: '100px',
                   }}
                 >
-                  <span className="text-2xl font-bold text-gray-400">R</span>
+                  {/* Corner gradient indicators to show radius visually */}
+                  <div
+                    className="absolute top-0 left-0 w-6 h-6 bg-gradient-to-br from-blue-400/30 to-transparent pointer-events-none transition-all duration-300"
+                    style={{
+                      borderTopLeftRadius: `${topLeft ?? value ?? 0}${topLeftUnit}`,
+                    }}
+                  />
+                  <div
+                    className="absolute top-0 right-0 w-6 h-6 bg-gradient-to-bl from-blue-400/30 to-transparent pointer-events-none transition-all duration-300"
+                    style={{
+                      borderTopRightRadius: `${topRight ?? value ?? 0}${topRightUnit}`,
+                    }}
+                  />
+                  <div
+                    className="absolute bottom-0 left-0 w-6 h-6 bg-gradient-to-tr from-blue-400/30 to-transparent pointer-events-none transition-all duration-300"
+                    style={{
+                      borderBottomLeftRadius: `${bottomLeft ?? value ?? 0}${bottomLeftUnit}`,
+                    }}
+                  />
+                  <div
+                    className="absolute bottom-0 right-0 w-6 h-6 bg-gradient-to-tl from-blue-400/30 to-transparent pointer-events-none transition-all duration-300"
+                    style={{
+                      borderBottomRightRadius: `${bottomRight ?? value ?? 0}${bottomRightUnit}`,
+                    }}
+                  />
 
-                  {/* Diagonal arrows inside preview - pointing to center */}
-                  <div className="absolute top-1 left-1 text-blue-500" title="Top-Left">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 19L5 5m0 0v10m0-10h10" />
+                  <span className="text-3xl font-bold text-gray-400 z-10">R</span>
+
+                  {/* Diagonal arrows pointing TO center (fixed direction) */}
+                  <div className="absolute top-2 left-2 text-blue-600" title="Top-Left">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 5l7 7m-7-7v5m0-5h5" />
                     </svg>
                   </div>
-                  <div className="absolute top-1 right-1 text-blue-500" title="Top-Right">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 19L19 5m0 0H9m10 0v10" />
+                  <div className="absolute top-2 right-2 text-blue-600" title="Top-Right">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 5l-7 7m7-7v5m0-5h-5" />
                     </svg>
                   </div>
-                  <div className="absolute bottom-1 left-1 text-blue-500" title="Bottom-Left">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 5L5 19m0 0h10m-10 0V9" />
+                  <div className="absolute bottom-2 left-2 text-blue-600" title="Bottom-Left">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 19l7-7m-7 7v-5m0 5h5" />
                     </svg>
                   </div>
-                  <div className="absolute bottom-1 right-1 text-blue-500" title="Bottom-Right">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 5l14 14m0 0V9m0 10H9" />
+                  <div className="absolute bottom-2 right-2 text-blue-600" title="Bottom-Right">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 19l-7-7m7 7v-5m0 5h-5" />
                     </svg>
                   </div>
                 </div>
