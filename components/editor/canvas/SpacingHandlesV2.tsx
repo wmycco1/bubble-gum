@@ -838,18 +838,13 @@ function SpacingBarHandle({
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 44,
-      // For padding: crisp outline using multiple drop-shadows without blur
-      // 8-directional white outline, then 8-directional black outline
+      // For padding: single white outline in 4 directions
       filter: inset
         ? `
           drop-shadow(1px 0 0 rgba(255,255,255,1))
           drop-shadow(-1px 0 0 rgba(255,255,255,1))
           drop-shadow(0 1px 0 rgba(255,255,255,1))
           drop-shadow(0 -1px 0 rgba(255,255,255,1))
-          drop-shadow(2px 0 0 rgba(0,0,0,1))
-          drop-shadow(-2px 0 0 rgba(0,0,0,1))
-          drop-shadow(0 2px 0 rgba(0,0,0,1))
-          drop-shadow(0 -2px 0 rgba(0,0,0,1))
         `.trim()
         : undefined,
       opacity,
@@ -963,18 +958,13 @@ function SpacingBarHandle({
       border: `${arrowSize}px solid transparent`,
       pointerEvents: 'none',
       zIndex: 45,
-      // For padding: crisp outline using multiple drop-shadows without blur
-      // 8-directional white outline, then 8-directional black outline
+      // For padding: single white outline in 4 directions
       filter: inset
         ? `
           drop-shadow(1px 0 0 rgba(255,255,255,1))
           drop-shadow(-1px 0 0 rgba(255,255,255,1))
           drop-shadow(0 1px 0 rgba(255,255,255,1))
           drop-shadow(0 -1px 0 rgba(255,255,255,1))
-          drop-shadow(2px 0 0 rgba(0,0,0,1))
-          drop-shadow(-2px 0 0 rgba(0,0,0,1))
-          drop-shadow(0 2px 0 rgba(0,0,0,1))
-          drop-shadow(0 -2px 0 rgba(0,0,0,1))
         `.trim()
         : undefined,
       opacity,
