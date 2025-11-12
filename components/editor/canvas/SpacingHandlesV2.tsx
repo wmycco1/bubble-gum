@@ -17,7 +17,6 @@ import { useSpacingKeyboard } from './useSpacingKeyboard';
 
 type SpacingMode = 'margin' | 'padding';
 type Side = 'top' | 'right' | 'bottom' | 'left';
-type Corner = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 
 interface SpacingHandlesV2Props {
   componentId: string;
@@ -27,7 +26,6 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
   const { components, updateComponentProps } = useCanvasStore();
   const [spacingMode, setSpacingMode] = useState<SpacingMode>('margin');
   const [hoveredSide, setHoveredSide] = useState<Side | null>(null);
-  const [hoveredCorner, setHoveredCorner] = useState<Corner | null>(null);
   const [badgeRect, setBadgeRect] = useState<DOMRect | null>(null);
   const rafRef = React.useRef<number | null>(null);
 
@@ -342,6 +340,15 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         </button>
       </div>
 
+      {/* Center Uniform Handle - for all sides at once (like border-radius) */}
+      <UniformSpacingHandle
+        value={getAverageSpacing()}
+        color={color}
+        onDrag={handleCornerDrag}
+        badgeRect={badgeRect}
+        mode={spacingMode}
+      />
+
       {/* Interactive Handles - with dynamic visual indicators */}
       <SpacingBarHandle
         side="top"
@@ -390,55 +397,136 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         badgeRect={badgeRect}
         mode={spacingMode}
       />
+    </>
+  );
+}
 
-      {/* Corner Handles - for adjusting all sides simultaneously */}
-      <SpacingCornerHandle
-        corner="topLeft"
-        value={getAverageSpacing()}
-        color={color}
-        isHovered={hoveredCorner === 'topLeft'}
-        onHover={() => setHoveredCorner('topLeft')}
-        onLeave={() => setHoveredCorner(null)}
-        onDrag={handleCornerDrag}
-        badgeRect={badgeRect}
-        mode={spacingMode}
-      />
+// ═══════════════════════════════════════════════════════════════
+// UNIFORM SPACING HANDLE (Center handle for all sides at once)
+// ═══════════════════════════════════════════════════════════════
+interface UniformSpacingHandleProps {
+  value: number;
+  color: string;
+  onDrag: (newValue: number) => void;
+  badgeRect: DOMRect;
+  mode: SpacingMode;
+}
 
-      <SpacingCornerHandle
-        corner="topRight"
-        value={getAverageSpacing()}
-        color={color}
-        isHovered={hoveredCorner === 'topRight'}
-        onHover={() => setHoveredCorner('topRight')}
-        onLeave={() => setHoveredCorner(null)}
-        onDrag={handleCornerDrag}
-        badgeRect={badgeRect}
-        mode={spacingMode}
-      />
+function UniformSpacingHandle({
+  value,
+  color,
+  onDrag,
+  badgeRect,
+  mode,
+}: UniformSpacingHandleProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
 
-      <SpacingCornerHandle
-        corner="bottomLeft"
-        value={getAverageSpacing()}
-        color={color}
-        isHovered={hoveredCorner === 'bottomLeft'}
-        onHover={() => setHoveredCorner('bottomLeft')}
-        onLeave={() => setHoveredCorner(null)}
-        onDrag={handleCornerDrag}
-        badgeRect={badgeRect}
-        mode={spacingMode}
-      />
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDragging(true);
+    dragStartRef.current = { x: e.clientX, y: e.clientY, initialValue: value };
 
-      <SpacingCornerHandle
-        corner="bottomRight"
-        value={getAverageSpacing()}
-        color={color}
-        isHovered={hoveredCorner === 'bottomRight'}
-        onHover={() => setHoveredCorner('bottomRight')}
-        onLeave={() => setHoveredCorner(null)}
-        onDrag={handleCornerDrag}
-        badgeRect={badgeRect}
-        mode={spacingMode}
-      />
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!dragStartRef.current) return;
+
+      // Calculate total delta from start position (use both X and Y for diagonal movement)
+      const totalDeltaX = e.clientX - dragStartRef.current.x;
+      const totalDeltaY = e.clientY - dragStartRef.current.y;
+
+      // Average of X and Y deltas for omnidirectional control
+      const delta = (totalDeltaX - totalDeltaY) / 2;
+
+      const newValue = dragStartRef.current.initialValue + delta;
+      onDrag(newValue);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      dragStartRef.current = null;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  // Position at center of Badge
+  const centerX = badgeRect.left + badgeRect.width / 2;
+  const centerY = badgeRect.top + badgeRect.height / 2;
+
+  return (
+    <>
+      {/* Center Handle */}
+      <div
+        onMouseDown={handleMouseDown}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          position: 'absolute',
+          top: `${centerY - 11}px`, // 22px height / 2
+          left: `${centerX - 11}px`, // 22px width / 2
+          width: '22px',
+          height: '22px',
+          borderRadius: '50%',
+          backgroundColor: isDragging ? '#4338ca' : isHovered ? '#4f46e5' : '#6366f1', // Indigo
+          border: '2px solid white',
+          boxShadow: isDragging
+            ? '0 0 20px rgba(99, 102, 241, 0.6)'
+            : '0 4px 12px rgba(0,0,0,0.3)',
+          cursor: 'move',
+          zIndex: 49,
+          transition: isDragging ? 'none' : 'all 0.15s ease',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          animation: isHovered ? 'none' : 'pulse-subtle 2s ease-in-out infinite',
+        }}
+      >
+        {/* 4-arrows icon (all directions) */}
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          {/* Vertical line */}
+          <line x1="8" y1="2" x2="8" y2="14" />
+          {/* Horizontal line */}
+          <line x1="2" y1="8" x2="14" y2="8" />
+          {/* Top arrow */}
+          <polyline points="5,5 8,2 11,5" />
+          {/* Bottom arrow */}
+          <polyline points="5,11 8,14 11,11" />
+          {/* Left arrow */}
+          <polyline points="5,5 2,8 5,11" />
+          {/* Right arrow */}
+          <polyline points="11,5 14,8 11,11" />
+        </svg>
+      </div>
+
+      {/* Tooltip */}
+      {(isHovered || isDragging) && (
+        <div
+          style={{
+            position: 'absolute',
+            top: `${centerY - 40}px`,
+            left: `${centerX}px`,
+            transform: 'translateX(-50%)',
+            backgroundColor: '#1f2937',
+            color: 'white',
+            padding: '6px 10px',
+            borderRadius: '6px',
+            fontSize: '11px',
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            zIndex: 51,
+            boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}
+        >
+          ↔↕ {mode} all: {value}px
+          {isDragging && <span style={{ marginLeft: '4px', color: '#d1d5db' }}>(all sides)</span>}
+        </div>
+      )}
     </>
   );
 }
@@ -899,258 +987,42 @@ function SpacingBarHandle({
         onMouseEnter={onHover}
         onMouseLeave={onLeave}
         style={getPositionStyles()}
-      />
+      >
+        {/* Directional Arrow Icon - shows which direction to drag */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+        }}>
+          <svg
+            width={isVertical ? "10" : "14"}
+            height={isVertical ? "14" : "10"}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              opacity: isDragging ? 1 : isHovered ? 0.9 : 0.7,
+              transition: 'opacity 0.15s ease',
+            }}
+          >
+            {/* Arrow pointing in drag direction */}
+            {side === 'top' && <path d="M12 5v14m-7-7l7-7l7 7" />}
+            {side === 'right' && <path d="M5 12h14m-7-7l7 7l-7 7" />}
+            {side === 'bottom' && <path d="M12 19V5m-7 7l7 7l7-7" />}
+            {side === 'left' && <path d="M19 12H5m7-7l-7 7l7 7" />}
+          </svg>
+        </div>
+      </div>
 
       {/* Value Tooltip */}
       {(isHovered || isDragging) && (
         <div style={getTooltipStyles()}>
           📏 {side}: {value}px
-        </div>
-      )}
-    </>
-  );
-}
-
-// Corner Handle Component - for adjusting all sides simultaneously (Simple mode)
-interface SpacingCornerHandleProps {
-  corner: Corner;
-  value: number;
-  color: string;
-  isHovered: boolean;
-  onHover: () => void;
-  onLeave: () => void;
-  onDrag: (newValue: number) => void;
-  badgeRect: DOMRect;
-  mode: SpacingMode;
-}
-
-function SpacingCornerHandle({
-  corner,
-  value,
-  color,
-  isHovered,
-  onHover,
-  onLeave,
-  onDrag,
-  badgeRect,
-  mode,
-}: SpacingCornerHandleProps) {
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDragging(true);
-    dragStartRef.current = { x: e.clientX, y: e.clientY, initialValue: value };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!dragStartRef.current) return;
-
-      // Calculate total delta from start position
-      const totalDeltaX = e.clientX - dragStartRef.current.x;
-      const totalDeltaY = e.clientY - dragStartRef.current.y;
-
-      // For corners, use diagonal movement (average of X and Y)
-      // This way, dragging diagonally changes all sides proportionally
-      let delta = 0;
-
-      // Calculate delta based on corner position
-      switch (corner) {
-        case 'topLeft':
-          // Drag away from corner (up-left increases, down-right decreases)
-          delta = -(totalDeltaX + totalDeltaY) / 2;
-          break;
-        case 'topRight':
-          // Drag away from corner (up-right increases, down-left decreases)
-          delta = (totalDeltaX - totalDeltaY) / 2;
-          break;
-        case 'bottomLeft':
-          // Drag away from corner (down-left increases, up-right decreases)
-          delta = (-totalDeltaX + totalDeltaY) / 2;
-          break;
-        case 'bottomRight':
-          // Drag away from corner (down-right increases, up-left decreases)
-          delta = (totalDeltaX + totalDeltaY) / 2;
-          break;
-      }
-
-      const newValue = dragStartRef.current.initialValue + delta;
-      onDrag(newValue);
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-      dragStartRef.current = null;
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // Position styles based on corner
-  const getPositionStyles = () => {
-    const handleSize = 12; // Circular handle
-    const inset = mode === 'padding';
-    const offset = inset ? 0 : -handleSize / 2;
-
-    const baseStyles: React.CSSProperties = {
-      position: 'absolute',
-      width: `${handleSize}px`,
-      height: `${handleSize}px`,
-      borderRadius: '50%', // Circular
-      cursor: 'nwse-resize', // Diagonal cursor
-      zIndex: 46, // Above side handles
-      transition: isDragging ? 'none' : 'all 0.15s ease',
-      backgroundColor: isDragging ? '#ef4444' : isHovered ? color : `${color}20`,
-      border: isDragging ? `2px solid ${color}` : isHovered ? `2px solid ${color}` : `2px solid ${color}40`,
-      boxShadow: isDragging ? '0 0 12px rgba(59, 130, 246, 0.5)' : 'none',
-      opacity: isDragging ? 1 : isHovered ? 1 : 0.5,
-    };
-
-    switch (corner) {
-      case 'topLeft':
-        return {
-          ...baseStyles,
-          top: `${badgeRect.top + offset}px`,
-          left: `${badgeRect.left + offset}px`,
-        };
-      case 'topRight':
-        return {
-          ...baseStyles,
-          top: `${badgeRect.top + offset}px`,
-          left: `${badgeRect.right - handleSize / 2}px`,
-        };
-      case 'bottomLeft':
-        return {
-          ...baseStyles,
-          top: `${badgeRect.bottom - handleSize / 2}px`,
-          left: `${badgeRect.left + offset}px`,
-        };
-      case 'bottomRight':
-        return {
-          ...baseStyles,
-          top: `${badgeRect.bottom - handleSize / 2}px`,
-          left: `${badgeRect.right - handleSize / 2}px`,
-        };
-    }
-  };
-
-  // Tooltip position styles
-  const getTooltipStyles = (): React.CSSProperties => {
-    const baseStyles: React.CSSProperties = {
-      position: 'absolute',
-      backgroundColor: '#1f2937',
-      color: 'white',
-      padding: '3px 8px',
-      borderRadius: '4px',
-      fontSize: '11px',
-      fontWeight: 600,
-      whiteSpace: 'nowrap',
-      pointerEvents: 'none',
-      zIndex: 51,
-      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-    };
-
-    switch (corner) {
-      case 'topLeft':
-        return { ...baseStyles, top: '-28px', left: '0' };
-      case 'topRight':
-        return { ...baseStyles, top: '-28px', right: '0' };
-      case 'bottomLeft':
-        return { ...baseStyles, bottom: '-28px', left: '0' };
-      case 'bottomRight':
-        return { ...baseStyles, bottom: '-28px', right: '0' };
-    }
-  };
-
-  // Visual feedback: show all four dashed lines radiating from corner with arrows
-  const getDashedLines = (): React.CSSProperties[] => {
-    if (!isDragging && !isHovered) return [];
-    if (value === 0) return [];
-
-    const lineColor = color;
-    const lines: React.CSSProperties[] = [];
-
-    const inset = mode === 'padding';
-
-    // Top line (vertical)
-    lines.push({
-      position: 'absolute',
-      width: '0',
-      height: `${value}px`,
-      borderLeft: `2px dashed ${lineColor}`, // Thicker for better visibility
-      pointerEvents: 'none',
-      zIndex: 44,
-      top: inset ? `${badgeRect.top}px` : `${badgeRect.top - value}px`,
-      left: `${badgeRect.left + badgeRect.width / 2}px`,
-      opacity: 0.8,
-    });
-
-    // Right line (horizontal)
-    lines.push({
-      position: 'absolute',
-      width: `${value}px`,
-      height: '0',
-      borderTop: `2px dashed ${lineColor}`, // Thicker for better visibility
-      pointerEvents: 'none',
-      zIndex: 44,
-      top: `${badgeRect.top + badgeRect.height / 2}px`,
-      left: inset ? `${badgeRect.right - value}px` : `${badgeRect.right}px`,
-      opacity: 0.8,
-    });
-
-    // Bottom line (vertical)
-    lines.push({
-      position: 'absolute',
-      width: '0',
-      height: `${value}px`,
-      borderLeft: `2px dashed ${lineColor}`, // Thicker for better visibility
-      pointerEvents: 'none',
-      zIndex: 44,
-      top: inset ? `${badgeRect.bottom - value}px` : `${badgeRect.bottom}px`,
-      left: `${badgeRect.left + badgeRect.width / 2}px`,
-      opacity: 0.8,
-    });
-
-    // Left line (horizontal)
-    lines.push({
-      position: 'absolute',
-      width: `${value}px`,
-      height: '0',
-      borderTop: `2px dashed ${lineColor}`, // Thicker for better visibility
-      pointerEvents: 'none',
-      zIndex: 44,
-      top: `${badgeRect.top + badgeRect.height / 2}px`,
-      left: inset ? `${badgeRect.left}px` : `${badgeRect.left - value}px`,
-      opacity: 0.8,
-    });
-
-    return lines;
-  };
-
-  const dashedLines = getDashedLines();
-
-  return (
-    <>
-      {/* Dashed Lines - all four sides */}
-      {dashedLines.map((lineStyle, idx) => (
-        <div key={idx} style={lineStyle} />
-      ))}
-
-      {/* Corner Handle */}
-      <div
-        onMouseDown={handleMouseDown}
-        onMouseEnter={onHover}
-        onMouseLeave={onLeave}
-        style={getPositionStyles()}
-      />
-
-      {/* Value Tooltip */}
-      {(isHovered || isDragging) && (
-        <div style={getTooltipStyles()}>
-          ⬌ all sides: {value}px
         </div>
       )}
     </>
