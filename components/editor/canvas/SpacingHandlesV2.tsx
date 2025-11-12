@@ -830,7 +830,8 @@ function SpacingBarHandle({
     if (value === 0) return null;
 
     const inset = mode === 'padding';
-    const lineColor = '#1f2937'; // Modern dark gray (gray-800)
+    // For padding use white with dark outline, for margin use dark gray
+    const lineColor = inset ? '#ffffff' : '#1f2937';
     // Dynamic opacity based on state - higher for crisp visibility
     const opacity = isDragging ? 1 : isHovered ? 0.95 : 0.8; // Always visible, crisp
 
@@ -838,9 +839,8 @@ function SpacingBarHandle({
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 44,
-      // Smart trick: use mix-blend-mode for padding (inside element with any background)
-      mixBlendMode: inset ? 'difference' : 'normal',
-      // No filter for crisp, sharp appearance
+      // For padding: add dark outline to white lines for visibility on any background
+      filter: inset ? 'drop-shadow(0 0 0 1.5px rgba(0,0,0,0.8))' : undefined,
       opacity,
       transition: 'opacity 0.15s ease',
     };
@@ -938,9 +938,10 @@ function SpacingBarHandle({
   const getArrowStyles = (): React.CSSProperties[] => {
     if (value === 0) return [];
 
-    const arrowColor = '#1f2937'; // Modern dark gray (gray-800) - elegant and highly visible
-    const arrowSize = 7; // Slightly larger for better visibility
     const inset = mode === 'padding';
+    // For padding use white with dark outline, for margin use dark gray
+    const arrowColor = inset ? '#ffffff' : '#1f2937';
+    const arrowSize = 7; // Slightly larger for better visibility
 
     // Dynamic opacity based on state - higher for crisp visibility
     const opacity = isDragging ? 1 : isHovered ? 0.95 : 0.8; // Always visible, crisp
@@ -952,9 +953,8 @@ function SpacingBarHandle({
       border: `${arrowSize}px solid transparent`,
       pointerEvents: 'none',
       zIndex: 45,
-      // Smart trick: use mix-blend-mode for padding (inside element with any background)
-      mixBlendMode: inset ? 'difference' : 'normal',
-      // No filter for crisp, sharp appearance
+      // For padding: add dark outline to white arrows for visibility on any background
+      filter: inset ? 'drop-shadow(0 0 0 1.5px rgba(0,0,0,0.8))' : undefined,
       opacity,
       transition: 'opacity 0.15s ease',
     };
