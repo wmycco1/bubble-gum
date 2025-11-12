@@ -150,6 +150,12 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
 
   return (
     <>
+      {/* Corner Arrows INSIDE element - visual guides */}
+      <CornerArrow corner="topLeft" badgeRect={badgeRect} isHovered={hoveredCorner === 'topLeft'} />
+      <CornerArrow corner="topRight" badgeRect={badgeRect} isHovered={hoveredCorner === 'topRight'} />
+      <CornerArrow corner="bottomLeft" badgeRect={badgeRect} isHovered={hoveredCorner === 'bottomLeft'} />
+      <CornerArrow corner="bottomRight" badgeRect={badgeRect} isHovered={hoveredCorner === 'bottomRight'} />
+
       {/* Center Uniform Border Radius Handle - for grouped control */}
       <UniformBorderRadiusHandle
         value={getAverageBorderRadius()}
@@ -204,6 +210,93 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// CORNER ARROW (Inside element - visual guide)
+// ═══════════════════════════════════════════════════════════════
+interface CornerArrowProps {
+  corner: Corner;
+  badgeRect: DOMRect;
+  isHovered: boolean;
+}
+
+function CornerArrow({ corner, badgeRect, isHovered }: CornerArrowProps) {
+  const inset = 8; // Distance from edge (5-10px as requested)
+  const arrowSize = 20; // SVG viewBox size
+
+  // Position arrow inside element at corner
+  const getArrowPosition = (): React.CSSProperties => {
+    switch (corner) {
+      case 'topLeft':
+        return {
+          top: `${badgeRect.top + inset}px`,
+          left: `${badgeRect.left + inset}px`,
+        };
+      case 'topRight':
+        return {
+          top: `${badgeRect.top + inset}px`,
+          left: `${badgeRect.right - inset - arrowSize}px`,
+        };
+      case 'bottomLeft':
+        return {
+          top: `${badgeRect.bottom - inset - arrowSize}px`,
+          left: `${badgeRect.left + inset}px`,
+        };
+      case 'bottomRight':
+        return {
+          top: `${badgeRect.bottom - inset - arrowSize}px`,
+          left: `${badgeRect.right - inset - arrowSize}px`,
+        };
+    }
+  };
+
+  // Arrow path pointing TO center
+  const getArrowPath = () => {
+    const center = 10; // Center of 20px viewBox
+
+    switch (corner) {
+      case 'topLeft':
+        // Arrow pointing down-right (to center) ↘
+        return `M3 3 L12 12 M12 12 L3 12 M12 12 L12 3`;
+      case 'topRight':
+        // Arrow pointing down-left (to center) ↙
+        return `M17 3 L8 12 M8 12 L17 12 M8 12 L8 3`;
+      case 'bottomLeft':
+        // Arrow pointing up-right (to center) ↗
+        return `M3 17 L12 8 M12 8 L3 8 M12 8 L12 17`;
+      case 'bottomRight':
+        // Arrow pointing up-left (to center) ↖
+        return `M17 17 L8 8 M8 8 L17 8 M8 8 L8 17`;
+    }
+  };
+
+  return (
+    <svg
+      width={arrowSize}
+      height={arrowSize}
+      viewBox={`0 0 ${arrowSize} ${arrowSize}`}
+      style={{
+        position: 'absolute',
+        ...getArrowPosition(),
+        pointerEvents: 'none',
+        zIndex: 45, // Above arc indicators, below handles
+        opacity: isHovered ? 1 : 0.7,
+        transition: 'opacity 0.15s ease',
+      }}
+    >
+      <path
+        d={getArrowPath()}
+        stroke="#6366f1" // Indigo to match center handle
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        style={{
+          filter: 'drop-shadow(0px 1px 3px rgba(0,0,0,0.4))',
+        }}
+      />
+    </svg>
+  );
+}
+
 // UNIFORM BORDER RADIUS HANDLE (Center, for grouped control)
 // ═══════════════════════════════════════════════════════════════
 interface UniformBorderRadiusHandleProps {
@@ -633,26 +726,6 @@ function BorderRadiusHandle({
     }
   };
 
-  // Get arrow direction (pointing TO center) - PROMINENT arrows
-  const getArrowPath = () => {
-    const center = 8; // Center of 16px handle
-
-    switch (corner) {
-      case 'topLeft':
-        // Arrow pointing down-right (to center) ↘ - LARGER
-        return `M2 2 L9 9 L2 9 Z`;
-      case 'topRight':
-        // Arrow pointing down-left (to center) ↙ - LARGER
-        return `M14 2 L7 9 L14 9 Z`;
-      case 'bottomLeft':
-        // Arrow pointing up-right (to center) ↗ - LARGER
-        return `M2 14 L9 7 L2 7 Z`;
-      case 'bottomRight':
-        // Arrow pointing up-left (to center) ↖ - LARGER
-        return `M14 14 L7 7 L14 7 Z`;
-    }
-  };
-
   // Tooltip position
   const getTooltipStyles = (): React.CSSProperties => {
     const baseStyles: React.CSSProperties = {
@@ -747,35 +820,13 @@ function BorderRadiusHandle({
       {/* Visual Arc Indicator - shows border radius effect */}
       {arcIndicatorStyles && <div style={arcIndicatorStyles} />}
 
-      {/* Handle with Arrow */}
+      {/* Handle (no arrow - arrows are separate inside element) */}
       <div
         onMouseDown={handleMouseDown}
         onMouseEnter={onHover}
         onMouseLeave={onLeave}
         style={getPositionStyles()}
-      >
-        {/* Arrow SVG pointing TO center - PROMINENT */}
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            pointerEvents: 'none',
-            filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.3))', // Shadow for visibility
-          }}
-        >
-          <path
-            d={getArrowPath()}
-            fill="white"
-            stroke="rgba(0,0,0,0.2)"
-            strokeWidth="0.5"
-            opacity={1} // Always fully visible
-          />
-        </svg>
-      </div>
+      />
 
       {/* Tooltip */}
       {(isHovered || isDragging) && (
