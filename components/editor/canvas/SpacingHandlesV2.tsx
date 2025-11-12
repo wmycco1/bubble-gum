@@ -838,9 +838,15 @@ function SpacingBarHandle({
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 44,
-      // For padding: double outline (white + black) for universal visibility on ANY background
+      // For padding: multiple drop-shadows in all directions to create double outline
+      // White inner outline + black outer outline for universal visibility
       filter: inset
-        ? 'drop-shadow(0 0 0 2px rgba(255,255,255,0.9)) drop-shadow(0 0 0 3px rgba(0,0,0,0.9))'
+        ? `
+          drop-shadow(0 0 2px rgba(255,255,255,1))
+          drop-shadow(0 0 2px rgba(255,255,255,1))
+          drop-shadow(0 0 4px rgba(0,0,0,1))
+          drop-shadow(0 0 4px rgba(0,0,0,1))
+        `.trim()
         : undefined,
       opacity,
       transition: 'opacity 0.15s ease',
@@ -953,9 +959,15 @@ function SpacingBarHandle({
       border: `${arrowSize}px solid transparent`,
       pointerEvents: 'none',
       zIndex: 45,
-      // For padding: double outline (white + black) for universal visibility on ANY background
+      // For padding: multiple drop-shadows in all directions to create double outline
+      // White inner outline + black outer outline for universal visibility
       filter: inset
-        ? 'drop-shadow(0 0 0 2px rgba(255,255,255,0.9)) drop-shadow(0 0 0 3px rgba(0,0,0,0.9))'
+        ? `
+          drop-shadow(0 0 2px rgba(255,255,255,1))
+          drop-shadow(0 0 2px rgba(255,255,255,1))
+          drop-shadow(0 0 4px rgba(0,0,0,1))
+          drop-shadow(0 0 4px rgba(0,0,0,1))
+        `.trim()
         : undefined,
       opacity,
       transition: 'opacity 0.15s ease',
