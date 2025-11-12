@@ -864,7 +864,7 @@ function SpacingBarHandle({
             left: `${badgeRect.left + badgeRect.width / 2}px`,
             height: `${value}px`,
             width: '0',
-            borderLeft: `1px dashed ${lineColor}`,
+            borderLeft: `2px dashed ${lineColor}`,
           };
         case 'right':
           // Horizontal line at center
@@ -874,7 +874,7 @@ function SpacingBarHandle({
             left: `${badgeRect.right - value}px`,
             width: `${value}px`,
             height: '0',
-            borderTop: `1px dashed ${lineColor}`,
+            borderTop: `2px dashed ${lineColor}`,
           };
         case 'bottom':
           // Vertical line at center
@@ -884,7 +884,7 @@ function SpacingBarHandle({
             left: `${badgeRect.left + badgeRect.width / 2}px`,
             height: `${value}px`,
             width: '0',
-            borderLeft: `1px dashed ${lineColor}`,
+            borderLeft: `2px dashed ${lineColor}`,
           };
         case 'left':
           // Horizontal line at center
@@ -894,7 +894,7 @@ function SpacingBarHandle({
             left: `${badgeRect.left}px`,
             width: `${value}px`,
             height: '0',
-            borderTop: `1px dashed ${lineColor}`,
+            borderTop: `2px dashed ${lineColor}`,
           };
       }
     } else {
@@ -907,7 +907,7 @@ function SpacingBarHandle({
             left: `${badgeRect.left + badgeRect.width / 2}px`,
             height: `${value}px`,
             width: '0',
-            borderLeft: `1px dashed ${lineColor}`,
+            borderLeft: `2px dashed ${lineColor}`,
           };
         case 'right':
           return {
@@ -916,7 +916,7 @@ function SpacingBarHandle({
             left: `${badgeRect.right}px`,
             width: `${value}px`,
             height: '0',
-            borderTop: `1px dashed ${lineColor}`,
+            borderTop: `2px dashed ${lineColor}`,
           };
         case 'bottom':
           return {
@@ -925,7 +925,7 @@ function SpacingBarHandle({
             left: `${badgeRect.left + badgeRect.width / 2}px`,
             height: `${value}px`,
             width: '0',
-            borderLeft: `1px dashed ${lineColor}`,
+            borderLeft: `2px dashed ${lineColor}`,
           };
         case 'left':
           return {
@@ -934,7 +934,7 @@ function SpacingBarHandle({
             left: `${badgeRect.left - value}px`,
             width: `${value}px`,
             height: '0',
-            borderTop: `1px dashed ${lineColor}`,
+            borderTop: `2px dashed ${lineColor}`,
           };
       }
     }
