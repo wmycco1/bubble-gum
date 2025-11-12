@@ -829,6 +829,7 @@ function SpacingBarHandle({
   const getDashedLineStyles = (): React.CSSProperties | null => {
     if (value === 0) return null;
 
+    const inset = mode === 'padding';
     const lineColor = '#1f2937'; // Modern dark gray (gray-800)
     // Dynamic opacity based on state - higher for crisp visibility
     const opacity = isDragging ? 1 : isHovered ? 0.95 : 0.8; // Always visible, crisp
@@ -837,12 +838,12 @@ function SpacingBarHandle({
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 44,
+      // Smart trick: use mix-blend-mode for padding (inside element with any background)
+      mixBlendMode: inset ? 'difference' : 'normal',
       // No filter for crisp, sharp appearance
       opacity,
       transition: 'opacity 0.15s ease',
     };
-
-    const inset = mode === 'padding';
 
     // For left/right: HORIZONTAL lines (←→ show horizontal distance)
     // For top/bottom: VERTICAL lines (↑↓ show vertical distance)
@@ -951,6 +952,8 @@ function SpacingBarHandle({
       border: `${arrowSize}px solid transparent`,
       pointerEvents: 'none',
       zIndex: 45,
+      // Smart trick: use mix-blend-mode for padding (inside element with any background)
+      mixBlendMode: inset ? 'difference' : 'normal',
       // No filter for crisp, sharp appearance
       opacity,
       transition: 'opacity 0.15s ease',
