@@ -829,7 +829,7 @@ function SpacingBarHandle({
   const getDashedLineStyles = (): React.CSSProperties | null => {
     if (value === 0) return null;
 
-    const lineColor = '#f97316'; // Orange for high visibility
+    const lineColor = '#1f2937'; // Modern dark gray (gray-800)
     // Dynamic opacity based on state
     const opacity = isDragging ? 1 : isHovered ? 0.9 : 0.7; // Always visible with strong opacity
 
@@ -837,7 +837,8 @@ function SpacingBarHandle({
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 44,
-      filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.9)) drop-shadow(0 0 1px rgba(0,0,0,0.9))', // Strong dark outline
+      // Elegant double outline: white outside, dark inside for crisp contrast
+      filter: 'drop-shadow(0 0 0 1px rgba(255,255,255,0.9)) drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
       opacity,
       transition: 'opacity 0.15s ease',
     };
@@ -937,7 +938,7 @@ function SpacingBarHandle({
   const getArrowStyles = (): React.CSSProperties[] => {
     if (value === 0) return [];
 
-    const arrowColor = '#f97316'; // Orange for high visibility on any background
+    const arrowColor = '#1f2937'; // Modern dark gray (gray-800) - elegant and highly visible
     const arrowSize = 7; // Slightly larger for better visibility
     const inset = mode === 'padding';
 
@@ -951,7 +952,8 @@ function SpacingBarHandle({
       border: `${arrowSize}px solid transparent`,
       pointerEvents: 'none',
       zIndex: 45,
-      filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.9)) drop-shadow(0 0 1px rgba(0,0,0,0.9))', // Strong dark outline
+      // Elegant double outline: white outside, subtle shadow for depth
+      filter: 'drop-shadow(0 0 0 1px rgba(255,255,255,0.9)) drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
       opacity,
       transition: 'opacity 0.15s ease',
     };
