@@ -841,10 +841,10 @@ function SpacingBarHandle({
       // For padding: single white outline in 4 directions
       filter: inset
         ? `
-          drop-shadow(1px 0 0 rgba(255,255,255,1))
-          drop-shadow(-1px 0 0 rgba(255,255,255,1))
-          drop-shadow(0 1px 0 rgba(255,255,255,1))
-          drop-shadow(0 -1px 0 rgba(255,255,255,1))
+          drop-shadow(1px 0 0 rgba(255,255,255,0.85))
+          drop-shadow(-1px 0 0 rgba(255,255,255,0.85))
+          drop-shadow(0 1px 0 rgba(255,255,255,0.85))
+          drop-shadow(0 -1px 0 rgba(255,255,255,0.85))
         `.trim()
         : undefined,
       opacity,
@@ -961,10 +961,10 @@ function SpacingBarHandle({
       // For padding: single white outline in 4 directions
       filter: inset
         ? `
-          drop-shadow(1px 0 0 rgba(255,255,255,1))
-          drop-shadow(-1px 0 0 rgba(255,255,255,1))
-          drop-shadow(0 1px 0 rgba(255,255,255,1))
-          drop-shadow(0 -1px 0 rgba(255,255,255,1))
+          drop-shadow(1px 0 0 rgba(255,255,255,0.85))
+          drop-shadow(-1px 0 0 rgba(255,255,255,0.85))
+          drop-shadow(0 1px 0 rgba(255,255,255,0.85))
+          drop-shadow(0 -1px 0 rgba(255,255,255,0.85))
         `.trim()
         : undefined,
       opacity,
