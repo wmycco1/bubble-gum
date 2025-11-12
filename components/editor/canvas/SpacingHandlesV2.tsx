@@ -155,9 +155,156 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
 
   // Colors
   const color = spacingMode === 'margin' ? '#3b82f6' : '#10b981'; // blue : green
+  const overlayColor = spacingMode === 'margin' ? 'rgba(96, 165, 250, 0.2)' : 'rgba(52, 211, 153, 0.18)';
+  const borderColor = spacingMode === 'margin' ? '#3b82f6' : '#10b981';
 
   return (
     <>
+      {/* Visual Overlays - Show spacing areas (like properties panel) */}
+      {spacingMode === 'margin' && (
+        <>
+          {/* Top Margin Overlay */}
+          {topValue > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: `${badgeRect.top - topValue}px`,
+                left: `${badgeRect.left}px`,
+                width: `${badgeRect.width}px`,
+                height: `${topValue}px`,
+                backgroundColor: overlayColor,
+                borderTop: `2px solid ${borderColor}`,
+                pointerEvents: 'none',
+                zIndex: 43,
+              }}
+            />
+          )}
+
+          {/* Right Margin Overlay */}
+          {rightValue > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: `${badgeRect.top}px`,
+                left: `${badgeRect.right}px`,
+                width: `${rightValue}px`,
+                height: `${badgeRect.height}px`,
+                backgroundColor: overlayColor,
+                borderRight: `2px solid ${borderColor}`,
+                pointerEvents: 'none',
+                zIndex: 43,
+              }}
+            />
+          )}
+
+          {/* Bottom Margin Overlay */}
+          {bottomValue > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: `${badgeRect.bottom}px`,
+                left: `${badgeRect.left}px`,
+                width: `${badgeRect.width}px`,
+                height: `${bottomValue}px`,
+                backgroundColor: overlayColor,
+                borderBottom: `2px solid ${borderColor}`,
+                pointerEvents: 'none',
+                zIndex: 43,
+              }}
+            />
+          )}
+
+          {/* Left Margin Overlay */}
+          {leftValue > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: `${badgeRect.top}px`,
+                left: `${badgeRect.left - leftValue}px`,
+                width: `${leftValue}px`,
+                height: `${badgeRect.height}px`,
+                backgroundColor: overlayColor,
+                borderLeft: `2px solid ${borderColor}`,
+                pointerEvents: 'none',
+                zIndex: 43,
+              }}
+            />
+          )}
+        </>
+      )}
+
+      {spacingMode === 'padding' && (
+        <>
+          {/* Top Padding Overlay */}
+          {topValue > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: `${badgeRect.top}px`,
+                left: `${badgeRect.left}px`,
+                width: `${badgeRect.width}px`,
+                height: `${Math.min(topValue, badgeRect.height / 2)}px`,
+                backgroundColor: overlayColor,
+                borderBottom: `1px solid ${borderColor}`,
+                pointerEvents: 'none',
+                zIndex: 43,
+              }}
+            />
+          )}
+
+          {/* Right Padding Overlay */}
+          {rightValue > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: `${badgeRect.top}px`,
+                left: `${badgeRect.right - Math.min(rightValue, badgeRect.width / 2)}px`,
+                width: `${Math.min(rightValue, badgeRect.width / 2)}px`,
+                height: `${badgeRect.height}px`,
+                backgroundColor: overlayColor,
+                borderLeft: `1px solid ${borderColor}`,
+                pointerEvents: 'none',
+                zIndex: 43,
+              }}
+            />
+          )}
+
+          {/* Bottom Padding Overlay */}
+          {bottomValue > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: `${badgeRect.bottom - Math.min(bottomValue, badgeRect.height / 2)}px`,
+                left: `${badgeRect.left}px`,
+                width: `${badgeRect.width}px`,
+                height: `${Math.min(bottomValue, badgeRect.height / 2)}px`,
+                backgroundColor: overlayColor,
+                borderTop: `1px solid ${borderColor}`,
+                pointerEvents: 'none',
+                zIndex: 43,
+              }}
+            />
+          )}
+
+          {/* Left Padding Overlay */}
+          {leftValue > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                top: `${badgeRect.top}px`,
+                left: `${badgeRect.left}px`,
+                width: `${Math.min(leftValue, badgeRect.width / 2)}px`,
+                height: `${badgeRect.height}px`,
+                backgroundColor: overlayColor,
+                borderRight: `1px solid ${borderColor}`,
+                pointerEvents: 'none',
+                zIndex: 43,
+              }}
+            />
+          )}
+        </>
+      )}
+
       {/* Mode Toggle - Absolute positioned, inside top-right of Badge */}
       <div
         className="absolute flex gap-0.5 z-50"
