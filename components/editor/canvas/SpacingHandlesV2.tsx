@@ -828,11 +828,12 @@ function SpacingBarHandle({
     if (!isDragging && !isHovered) return null;
     if (value === 0) return null;
 
-    const lineColor = color;
+    const lineColor = '#ffffff'; // Always white for visibility
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 44,
+      filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.5))', // Shadow for contrast
     };
 
     const inset = mode === 'padding';
@@ -931,7 +932,7 @@ function SpacingBarHandle({
     if (!isDragging && !isHovered) return [];
     if (value === 0) return [];
 
-    const arrowColor = color;
+    const arrowColor = '#ffffff'; // Always white for visibility on any background
     const arrowSize = 6;
     const inset = mode === 'padding';
 
@@ -942,6 +943,7 @@ function SpacingBarHandle({
       border: `${arrowSize}px solid transparent`,
       pointerEvents: 'none',
       zIndex: 45,
+      filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))', // Shadow for contrast
     };
 
     if (inset) {
