@@ -717,12 +717,14 @@ function SpacingBarHandle({
 
   // Position styles based on side - HANDLE STRETCHES TO FILL SPACING AREA
   const getPositionStyles = () => {
-    // Subtle handles - almost invisible unless hover/drag
+    // Three-state color system: idle (blue) → hover (green) → dragging (green)
     const bgColor = isDragging
-      ? '#ef4444'
+      ? 'rgba(16, 185, 129, 0.9)' // Dragging: bright green
       : isHovered
-      ? color
-      : `${color}10`; // Very subtle (6% opacity)
+      ? 'rgba(52, 211, 153, 0.7)' // Hover: green
+      : 'rgba(96, 165, 250, 0.3)'; // Idle: blue
+
+    const borderColor = isDragging || isHovered ? '#10b981' : '#60a5fa';
 
     const baseStyles = {
       position: 'absolute' as const,
@@ -730,12 +732,12 @@ function SpacingBarHandle({
       transition: isDragging ? 'none' : 'all 0.15s ease',
       backgroundColor: bgColor,
       border: isDragging
-        ? `2px solid ${color}`
+        ? `2px solid ${borderColor}`
         : isHovered
-        ? `1px solid ${color}`
-        : `1px solid ${color}20`, // Almost invisible
+        ? `2px solid ${borderColor}`
+        : `1px solid rgba(96, 165, 250, 0.5)`,
       cursor,
-      boxShadow: isDragging ? '0 0 8px rgba(59, 130, 246, 0.4)' : 'none',
+      boxShadow: isDragging ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
       opacity: isDragging ? 1 : isHovered ? 0.9 : 0.3, // More transparency when idle
     };
 
