@@ -741,13 +741,15 @@ function SpacingBarHandle({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
+  const isVertical = side === 'top' || side === 'bottom';
+
   // Cursor style: margin mode uses directional arrows (push away), padding uses bidirectional
   const cursor = mode === 'margin'
     ? side === 'top' ? 'n-resize'  // ↑ Push badge down from top
       : side === 'bottom' ? 's-resize'  // ↓ Push badge up from bottom
       : side === 'left' ? 'w-resize'  // ← Push badge right from left
       : 'e-resize'  // → Push badge left from right
-    : (side === 'top' || side === 'bottom') ? 'ns-resize' : 'ew-resize';
+    : isVertical ? 'ns-resize' : 'ew-resize';
 
   // Position styles based on side - HANDLE STRETCHES TO FILL SPACING AREA
   const getPositionStyles = () => {
