@@ -158,7 +158,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
       {/* Visual Overlays - Show spacing areas (like properties panel) - INTERACTIVE */}
       {spacingMode === 'margin' && (
         <>
-          {/* Top Margin Overlay */}
+          {/* Top Margin Overlay - THREE STATES: idle (blue) → hover (green 15%) → dragging (green 25%) */}
           {topValue > 0 && (
             <div
               onMouseEnter={() => setHoveredSide('top')}
@@ -169,12 +169,17 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 left: `${badgeRect.left}px`,
                 width: `${badgeRect.width}px`,
                 height: `${topValue}px`,
-                backgroundColor: hoveredSide === 'top' ? `${borderColor}40` : overlayColor,
-                borderTop: `2px solid ${borderColor}`,
+                backgroundColor:
+                  draggingSide === 'top'
+                    ? 'rgba(52, 211, 153, 0.25)' // Dragging: green 25%
+                    : hoveredSide === 'top'
+                    ? 'rgba(52, 211, 153, 0.15)' // Hover: green 15%
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue
+                borderTop: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ns-resize',
                 zIndex: 43,
-                transition: 'background-color 0.15s ease',
+                transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
@@ -190,12 +195,17 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 left: `${badgeRect.right}px`,
                 width: `${rightValue}px`,
                 height: `${badgeRect.height}px`,
-                backgroundColor: hoveredSide === 'right' ? `${borderColor}40` : overlayColor,
-                borderRight: `2px solid ${borderColor}`,
+                backgroundColor:
+                  draggingSide === 'right'
+                    ? 'rgba(52, 211, 153, 0.25)'
+                    : hoveredSide === 'right'
+                    ? 'rgba(52, 211, 153, 0.15)'
+                    : 'rgba(96, 165, 250, 0.2)',
+                borderRight: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ew-resize',
                 zIndex: 43,
-                transition: 'background-color 0.15s ease',
+                transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
@@ -211,12 +221,17 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 left: `${badgeRect.left}px`,
                 width: `${badgeRect.width}px`,
                 height: `${bottomValue}px`,
-                backgroundColor: hoveredSide === 'bottom' ? `${borderColor}40` : overlayColor,
-                borderBottom: `2px solid ${borderColor}`,
+                backgroundColor:
+                  draggingSide === 'bottom'
+                    ? 'rgba(52, 211, 153, 0.25)'
+                    : hoveredSide === 'bottom'
+                    ? 'rgba(52, 211, 153, 0.15)'
+                    : 'rgba(96, 165, 250, 0.2)',
+                borderBottom: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ns-resize',
                 zIndex: 43,
-                transition: 'background-color 0.15s ease',
+                transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
@@ -232,12 +247,17 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 left: `${badgeRect.left - leftValue}px`,
                 width: `${leftValue}px`,
                 height: `${badgeRect.height}px`,
-                backgroundColor: hoveredSide === 'left' ? `${borderColor}40` : overlayColor,
-                borderLeft: `2px solid ${borderColor}`,
+                backgroundColor:
+                  draggingSide === 'left'
+                    ? 'rgba(52, 211, 153, 0.25)'
+                    : hoveredSide === 'left'
+                    ? 'rgba(52, 211, 153, 0.15)'
+                    : 'rgba(96, 165, 250, 0.2)',
+                borderLeft: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ew-resize',
                 zIndex: 43,
-                transition: 'background-color 0.15s ease',
+                transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
@@ -246,7 +266,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
 
       {spacingMode === 'padding' && (
         <>
-          {/* Top Padding Overlay - THREE STATES: idle (blue) → hover (green) → dragging (dark green) */}
+          {/* Top Padding Overlay - THREE STATES: idle (blue) → hover (green 15%) → dragging (green 25%) */}
           {topValue > 0 && (
             <div
               onMouseEnter={() => setHoveredSide('top')}
@@ -259,10 +279,10 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${Math.min(topValue, badgeRect.height / 2)}px`,
                 backgroundColor:
                   draggingSide === 'top'
-                    ? 'rgba(16, 185, 129, 0.35)' // Dragging: dark green
+                    ? 'rgba(52, 211, 153, 0.25)' // Dragging: green 25%
                     : hoveredSide === 'top'
-                    ? 'rgba(52, 211, 153, 0.18)' // Hover: light green
-                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue like margin
+                    ? 'rgba(52, 211, 153, 0.15)' // Hover: green 15%
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue
                 borderBottom: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ns-resize',
@@ -285,9 +305,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'right'
-                    ? 'rgba(16, 185, 129, 0.35)'
+                    ? 'rgba(52, 211, 153, 0.25)'
                     : hoveredSide === 'right'
-                    ? 'rgba(52, 211, 153, 0.18)'
+                    ? 'rgba(52, 211, 153, 0.15)'
                     : 'rgba(96, 165, 250, 0.2)',
                 borderLeft: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -311,9 +331,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${Math.min(bottomValue, badgeRect.height / 2)}px`,
                 backgroundColor:
                   draggingSide === 'bottom'
-                    ? 'rgba(16, 185, 129, 0.35)'
+                    ? 'rgba(52, 211, 153, 0.25)'
                     : hoveredSide === 'bottom'
-                    ? 'rgba(52, 211, 153, 0.18)'
+                    ? 'rgba(52, 211, 153, 0.15)'
                     : 'rgba(96, 165, 250, 0.2)',
                 borderTop: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
@@ -337,9 +357,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 height: `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'left'
-                    ? 'rgba(16, 185, 129, 0.35)'
+                    ? 'rgba(52, 211, 153, 0.25)'
                     : hoveredSide === 'left'
-                    ? 'rgba(52, 211, 153, 0.18)'
+                    ? 'rgba(52, 211, 153, 0.15)'
                     : 'rgba(96, 165, 250, 0.2)',
                 borderRight: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
