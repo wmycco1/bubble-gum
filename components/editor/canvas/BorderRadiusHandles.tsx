@@ -256,7 +256,7 @@ function UniformBorderRadiusHandle({
   };
 
   // Position handle at center of element
-  const handleSize = 18; // Larger than corner handles
+  const handleSize = 22; // LARGER for prominence (vs 16px corners)
   const handleX = centerX - handleSize / 2;
   const handleY = centerY - handleSize / 2;
 
@@ -283,7 +283,7 @@ function UniformBorderRadiusHandle({
               y1="0"
               x2={centerX - badgeRect.left}
               y2={centerY - badgeRect.top}
-              stroke="#10b981"
+              stroke="#6366f1"
               strokeWidth="2"
               strokeDasharray="4"
             />
@@ -307,7 +307,7 @@ function UniformBorderRadiusHandle({
               y1={centerY - badgeRect.top}
               x2={badgeRect.right - centerX}
               y2="0"
-              stroke="#10b981"
+              stroke="#6366f1"
               strokeWidth="2"
               strokeDasharray="4"
             />
@@ -331,7 +331,7 @@ function UniformBorderRadiusHandle({
               y1={badgeRect.bottom - centerY}
               x2={centerX - badgeRect.left}
               y2="0"
-              stroke="#10b981"
+              stroke="#6366f1"
               strokeWidth="2"
               strokeDasharray="4"
             />
@@ -355,7 +355,7 @@ function UniformBorderRadiusHandle({
               y1="0"
               x2={badgeRect.right - centerX}
               y2={badgeRect.bottom - centerY}
-              stroke="#10b981"
+              stroke="#6366f1"
               strokeWidth="2"
               strokeDasharray="4"
             />
@@ -363,7 +363,7 @@ function UniformBorderRadiusHandle({
         </>
       )}
 
-      {/* Center Uniform Border Radius Handle (PROMINENT) */}
+      {/* Center Uniform Border Radius Handle (PROMINENT - INDIGO COLOR) */}
       <div
         onMouseDown={handleMouseDown}
         onMouseEnter={() => setIsHovered(true)}
@@ -378,22 +378,55 @@ function UniformBorderRadiusHandle({
           cursor: isDragging ? 'grabbing' : 'grab',
           zIndex: 49, // Above corner handles
           transition: isDragging ? 'none' : 'all 0.15s ease',
-          backgroundColor: isDragging ? '#059669' : isHovered ? '#10b981' : '#34d399',
+          // INDIGO (blue-purple) to distinguish from green corners
+          backgroundColor: isDragging ? '#4338ca' : isHovered ? '#4f46e5' : '#6366f1',
           border: '3px solid white',
           boxShadow: isDragging
-            ? '0 0 16px rgba(16, 185, 129, 0.8)'
-            : '0 3px 8px rgba(0,0,0,0.3)',
+            ? '0 0 20px rgba(99, 102, 241, 0.9), 0 0 40px rgba(99, 102, 241, 0.5)'
+            : isHovered
+            ? '0 0 16px rgba(99, 102, 241, 0.7), 0 4px 10px rgba(0,0,0,0.3)'
+            : '0 0 12px rgba(99, 102, 241, 0.5), 0 3px 8px rgba(0,0,0,0.3)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '10px',
-          fontWeight: 'bold',
-          color: 'white',
+          animation: !isDragging ? 'pulse-subtle 2s ease-in-out infinite' : 'none',
         }}
         title="Drag to change all corners uniformly"
       >
-        ⬤
+        {/* 4-arrows icon (all directions) */}
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* Vertical line */}
+          <line x1="8" y1="2" x2="8" y2="14" />
+          {/* Horizontal line */}
+          <line x1="2" y1="8" x2="14" y2="8" />
+          {/* Arrow heads */}
+          <polyline points="5,5 8,2 11,5" /> {/* Top arrow */}
+          <polyline points="5,11 8,14 11,11" /> {/* Bottom arrow */}
+          <polyline points="5,5 2,8 5,11" /> {/* Left arrow */}
+          <polyline points="11,5 14,8 11,11" /> {/* Right arrow */}
+        </svg>
       </div>
+
+      {/* CSS Animation for subtle pulse */}
+      <style>{`
+        @keyframes pulse-subtle {
+          0%, 100% {
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.5), 0 3px 8px rgba(0,0,0,0.3);
+          }
+          50% {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.7), 0 3px 8px rgba(0,0,0,0.3);
+          }
+        }
+      `}</style>
 
       {/* Tooltip */}
       {(isHovered || isDragging) && (
@@ -401,9 +434,9 @@ function UniformBorderRadiusHandle({
           style={{
             position: 'absolute',
             left: `${centerX}px`,
-            top: `${centerY - 30}px`,
+            top: `${centerY - 32}px`,
             transform: 'translateX(-50%)',
-            backgroundColor: '#059669',
+            backgroundColor: '#4f46e5',
             color: 'white',
             padding: '4px 8px',
             borderRadius: '4px',
@@ -415,8 +448,8 @@ function UniformBorderRadiusHandle({
             boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
           }}
         >
-          🔄 all corners: {value}px
-          {isDragging && <span className="ml-1 text-green-200">(uniform)</span>}
+          ↔↕ all corners: {value}px
+          {isDragging && <span className="ml-1 text-indigo-200">(uniform)</span>}
         </div>
       )}
     </>
