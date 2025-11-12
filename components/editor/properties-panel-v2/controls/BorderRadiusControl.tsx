@@ -1,32 +1,38 @@
 'use client';
 
 /**
- * BorderRadiusControl - Modern UI for Border Radius (V8.0 - Optimized Layout & Units)
+ * BorderRadiusControl - Modern UI for Border Radius (V9.0 - Revolutionary Corner Layout)
  *
  * Features:
  * - All-corners input (Simple mode)
- * - Figma-like visual preview (Advanced mode)
+ * - Revolutionary corner-based controls (Advanced mode)
  * - Hold-to-repeat increment/decrement buttons (BOTH modes)
  * - Independent unit selectors for each corner (px, rem, em, %)
- * - Optimized compact layout (reduced height)
+ * - Diagonal arrows inside preview box pointing to center
+ * - Corner controls positioned around preview box
  * - Individual corner controls with live preview
- * - Corner icons for better visual identification
  * - User-friendly UX 2025
  *
- * V8.0 Improvements (Nov 12, 2025):
- * - ✅ Fixed layout order: icon + label → input → buttons → unit (was: input → unit → buttons)
- * - ✅ Fixed preview to use correct units (was always 'px', now uses selected unit)
- * - ✅ Added corner icons (arrows) for better UX
- * - ✅ Enhanced visual preview with corner indicators
- * - ✅ Removed rightAlign prop - unified layout for all corners
- * - ✅ All units (px, rem, em, %) now work correctly
+ * V9.0 Improvements (Nov 12, 2025) - REVOLUTIONARY REDESIGN:
+ * - ✅ Moved all corner controls TO THE CORNERS of preview box (absolute positioning)
+ * - ✅ Changed button style: - and + (was: ▲▼ arrows)
+ * - ✅ Vertical layout for each corner: [- +] → input → unit dropdown
+ * - ✅ Diagonal arrows INSIDE preview box (pointing to center)
+ * - ✅ Preview box increased by 20% (64px → 80px)
+ * - ✅ All controls now positioned around central preview
+ * - ✅ More intuitive and visually appealing design
+ *
+ * V8.0 (Nov 12, 2025):
+ * - Fixed layout order: icon + label → input → buttons → unit
+ * - Fixed preview to use correct units (was always 'px')
+ * - Added corner icons (arrows) for better UX
+ * - Enhanced visual preview with corner indicators
  *
  * V7.8 (Nov 11, 2025):
- * - Refactored Advanced mode with AdvancedCornerInput component
- * - Full hold-to-repeat functionality in all corners (Advanced mode)
+ * - Refactored Advanced mode with component architecture
+ * - Full hold-to-repeat functionality in all corners
  * - Hidden browser spinners in all number inputs
  * - Consistent UX across Simple and Advanced modes
- * - Extracted reusable components for better maintainability
  */
 
 import React, { useState } from 'react';
@@ -125,27 +131,63 @@ export function BorderRadiusControl({
         />
       )}
 
-      {/* Advanced Mode - Compact Figma-style with Visual Preview */}
+      {/* Advanced Mode - Corner Controls Around Preview */}
       {isExpanded && (
         <div className="space-y-2">
-          {/* Compact Visual Model */}
-          <div className="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
-            <div className="flex flex-col items-center gap-1.5">
-              {/* Top Row: TopLeft + TopRight */}
-              <div className="flex items-center justify-between gap-2 w-full">
-                {/* Top Left Corner */}
-                <AdvancedCornerInput
-                  label="TL"
+          {/* Visual Model with Corner Controls */}
+          <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
+            <div className="relative" style={{ minHeight: '200px' }}>
+              {/* Center Preview Box - Increased by 20% (64px -> ~77px -> use 80px = w-20) */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div
+                  className="w-20 h-20 bg-white flex items-center justify-center shadow-lg transition-all border-2 border-gray-300 relative"
+                  style={{
+                    borderTopLeftRadius: `${topLeft ?? value ?? 0}${topLeftUnit}`,
+                    borderTopRightRadius: `${topRight ?? value ?? 0}${topRightUnit}`,
+                    borderBottomLeftRadius: `${bottomLeft ?? value ?? 0}${bottomLeftUnit}`,
+                    borderBottomRightRadius: `${bottomRight ?? value ?? 0}${bottomRightUnit}`,
+                  }}
+                >
+                  <span className="text-2xl font-bold text-gray-400">R</span>
+
+                  {/* Diagonal arrows inside preview - pointing to center */}
+                  <div className="absolute top-1 left-1 text-blue-500" title="Top-Left">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 19L5 5m0 0v10m0-10h10" />
+                    </svg>
+                  </div>
+                  <div className="absolute top-1 right-1 text-blue-500" title="Top-Right">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 19L19 5m0 0H9m10 0v10" />
+                    </svg>
+                  </div>
+                  <div className="absolute bottom-1 left-1 text-blue-500" title="Bottom-Left">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 5L5 19m0 0h10m-10 0V9" />
+                    </svg>
+                  </div>
+                  <div className="absolute bottom-1 right-1 text-blue-500" title="Bottom-Right">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 5l14 14m0 0V9m0 10H9" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Top-Left Corner Control */}
+              <div className="absolute top-0 left-0">
+                <CornerControl
                   corner="TopLeft"
                   value={topLeft ?? value}
                   unit={topLeftUnit}
                   onValueChange={onCornerChange}
                   onUnitChange={onUnitChange}
                 />
+              </div>
 
-                {/* Top Right Corner */}
-                <AdvancedCornerInput
-                  label="TR"
+              {/* Top-Right Corner Control */}
+              <div className="absolute top-0 right-0">
+                <CornerControl
                   corner="TopRight"
                   value={topRight ?? value}
                   unit={topRightUnit}
@@ -154,41 +196,20 @@ export function BorderRadiusControl({
                 />
               </div>
 
-              {/* Center Box with Border Radius Preview - Smaller */}
-              <div className="flex items-center justify-center py-1">
-                <div
-                  className="w-16 h-16 bg-white flex items-center justify-center text-xs font-medium text-gray-400 shadow transition-all border-2 border-gray-300 relative"
-                  style={{
-                    borderTopLeftRadius: `${topLeft ?? value ?? 0}${topLeftUnit}`,
-                    borderTopRightRadius: `${topRight ?? value ?? 0}${topRightUnit}`,
-                    borderBottomLeftRadius: `${bottomLeft ?? value ?? 0}${bottomLeftUnit}`,
-                    borderBottomRightRadius: `${bottomRight ?? value ?? 0}${bottomRightUnit}`,
-                  }}
-                >
-                  <span className="text-xl font-bold text-gray-400">R</span>
-                  {/* Corner indicators */}
-                  <div className="absolute top-0 left-0 w-2 h-2 bg-blue-400 rounded-full opacity-50" />
-                  <div className="absolute top-0 right-0 w-2 h-2 bg-blue-400 rounded-full opacity-50" />
-                  <div className="absolute bottom-0 left-0 w-2 h-2 bg-blue-400 rounded-full opacity-50" />
-                  <div className="absolute bottom-0 right-0 w-2 h-2 bg-blue-400 rounded-full opacity-50" />
-                </div>
-              </div>
-
-              {/* Bottom Row: BottomLeft + BottomRight */}
-              <div className="flex items-center justify-between gap-2 w-full">
-                {/* Bottom Left Corner */}
-                <AdvancedCornerInput
-                  label="BL"
+              {/* Bottom-Left Corner Control */}
+              <div className="absolute bottom-0 left-0">
+                <CornerControl
                   corner="BottomLeft"
                   value={bottomLeft ?? value}
                   unit={bottomLeftUnit}
                   onValueChange={onCornerChange}
                   onUnitChange={onUnitChange}
                 />
+              </div>
 
-                {/* Bottom Right Corner */}
-                <AdvancedCornerInput
-                  label="BR"
+              {/* Bottom-Right Corner Control */}
+              <div className="absolute bottom-0 right-0">
+                <CornerControl
                   corner="BottomRight"
                   value={bottomRight ?? value}
                   unit={bottomRightUnit}
@@ -199,7 +220,7 @@ export function BorderRadiusControl({
             </div>
           </div>
 
-          {/* Helper Text - Smaller */}
+          {/* Helper Text */}
           <p className="text-xs text-gray-500 text-center">
             {hasIndividualValues
               ? 'Individual values override "All corners"'
@@ -374,10 +395,10 @@ function SimpleMode({ value, unit, setUnit, handleShorthandChange, onChange }: S
 }
 
 /**
- * AdvancedCornerInput Component - Hold-to-repeat buttons for individual corners
+ * CornerControl Component - Vertical layout with - and + buttons
+ * Layout: [- +] buttons → input → unit dropdown (vertical)
  */
-interface AdvancedCornerInputProps {
-  label: string;
+interface CornerControlProps {
   corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight';
   value?: number;
   unit: 'px' | 'rem' | 'em' | '%';
@@ -385,41 +406,13 @@ interface AdvancedCornerInputProps {
   onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%') => void;
 }
 
-// Corner icon components
-const CornerIcon = ({ corner }: { corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight' }) => {
-  const icons = {
-    TopLeft: (
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 11l-4-4m0 0l4-4m-4 4h18" />
-      </svg>
-    ),
-    TopRight: (
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 11l4-4m0 0l-4-4m4 4H3" />
-      </svg>
-    ),
-    BottomLeft: (
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 13l-4 4m0 0l4 4m-4-4h18" />
-      </svg>
-    ),
-    BottomRight: (
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 13l4 4m0 0l-4 4m4-4H3" />
-      </svg>
-    ),
-  };
-  return icons[corner];
-};
-
-function AdvancedCornerInput({
-  label,
+function CornerControl({
   corner,
   value,
   unit,
   onValueChange,
   onUnitChange,
-}: AdvancedCornerInputProps) {
+}: CornerControlProps) {
   const [isIncrementPressed, setIsIncrementPressed] = React.useState(false);
   const [isDecrementPressed, setIsDecrementPressed] = React.useState(false);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -509,51 +502,11 @@ function AdvancedCornerInput({
     }
   };
 
-  // Unified layout: icon + label → input → buttons → unit
+  // Vertical layout: buttons (horizontal) → input → dropdown
   return (
-    <div className="flex items-center gap-1">
-      {/* Icon + Label */}
-      <div className="flex items-center gap-0.5 w-9">
-        <div className="text-gray-500">
-          <CornerIcon corner={corner} />
-        </div>
-        <span className="text-xs font-medium text-gray-600">{label}</span>
-      </div>
-
-      {/* Input */}
-      <input
-        type="number"
-        min="0"
-        step={unit === 'px' ? '1' : '0.1'}
-        value={value ?? ''}
-        onChange={handleInputChange}
-        placeholder="0"
-        className="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        style={{ MozAppearance: 'textfield' }}
-      />
-
-      {/* Buttons */}
-      <div className="flex flex-col gap-0.5">
-        <button
-          type="button"
-          onMouseDown={startIncrement}
-          onMouseUp={stopChange}
-          onMouseLeave={stopChange}
-          onTouchStart={startIncrement}
-          onTouchEnd={stopChange}
-          className={`
-            p-0.5 border rounded transition-all
-            ${isIncrementPressed
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
-            }
-          `}
-          title="Increment (hold to repeat)"
-        >
-          <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
-          </svg>
-        </button>
+    <div className="flex flex-col items-center gap-1">
+      {/* - and + buttons (horizontal) */}
+      <div className="flex items-center gap-1">
         <button
           type="button"
           onMouseDown={startDecrement}
@@ -563,7 +516,7 @@ function AdvancedCornerInput({
           onTouchEnd={stopChange}
           disabled={(value ?? 0) <= 0}
           className={`
-            p-0.5 border rounded transition-all
+            px-2 py-0.5 text-sm font-bold border rounded transition-all
             ${isDecrementPressed && (value ?? 0) > 0
               ? 'border-blue-500 bg-blue-50 text-blue-700'
               : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
@@ -572,17 +525,45 @@ function AdvancedCornerInput({
           `}
           title="Decrement (hold to repeat)"
         >
-          <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-          </svg>
+          −
+        </button>
+        <button
+          type="button"
+          onMouseDown={startIncrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startIncrement}
+          onTouchEnd={stopChange}
+          className={`
+            px-2 py-0.5 text-sm font-bold border rounded transition-all
+            ${isIncrementPressed
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+            }
+          `}
+          title="Increment (hold to repeat)"
+        >
+          +
         </button>
       </div>
 
-      {/* Unit selector */}
+      {/* Input field */}
+      <input
+        type="number"
+        min="0"
+        step={unit === 'px' ? '1' : '0.1'}
+        value={value ?? ''}
+        onChange={handleInputChange}
+        placeholder="0"
+        className="w-14 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        style={{ MozAppearance: 'textfield' }}
+      />
+
+      {/* Unit selector dropdown */}
       <select
         value={unit}
         onChange={(e) => onUnitChange?.(corner, e.target.value as 'px' | 'rem' | 'em' | '%')}
-        className="px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+        className="w-14 px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
