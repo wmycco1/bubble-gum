@@ -26,6 +26,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
   const { components, updateComponentProps } = useCanvasStore();
   const [spacingMode, setSpacingMode] = useState<SpacingMode>('margin');
   const [hoveredSide, setHoveredSide] = useState<Side | null>(null);
+  const [draggingSide, setDraggingSide] = useState<Side | null>(null);
   const [badgeRect, setBadgeRect] = useState<DOMRect | null>(null);
   const rafRef = React.useRef<number | null>(null);
 
@@ -245,7 +246,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
 
       {spacingMode === 'padding' && (
         <>
-          {/* Top Padding Overlay */}
+          {/* Top Padding Overlay - THREE STATES: idle (blue) → hover (green) → dragging (dark green) */}
           {topValue > 0 && (
             <div
               onMouseEnter={() => setHoveredSide('top')}
@@ -256,12 +257,17 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 left: `${badgeRect.left}px`,
                 width: `${badgeRect.width}px`,
                 height: `${Math.min(topValue, badgeRect.height / 2)}px`,
-                backgroundColor: hoveredSide === 'top' ? `${borderColor}40` : overlayColor,
-                borderBottom: `1px solid ${borderColor}`,
+                backgroundColor:
+                  draggingSide === 'top'
+                    ? 'rgba(16, 185, 129, 0.35)' // Dragging: dark green
+                    : hoveredSide === 'top'
+                    ? 'rgba(52, 211, 153, 0.18)' // Hover: light green
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue like margin
+                borderBottom: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ns-resize',
                 zIndex: 43,
-                transition: 'background-color 0.15s ease',
+                transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
@@ -277,12 +283,17 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 left: `${badgeRect.right - Math.min(rightValue, badgeRect.width / 2)}px`,
                 width: `${Math.min(rightValue, badgeRect.width / 2)}px`,
                 height: `${badgeRect.height}px`,
-                backgroundColor: hoveredSide === 'right' ? `${borderColor}40` : overlayColor,
-                borderLeft: `1px solid ${borderColor}`,
+                backgroundColor:
+                  draggingSide === 'right'
+                    ? 'rgba(16, 185, 129, 0.35)'
+                    : hoveredSide === 'right'
+                    ? 'rgba(52, 211, 153, 0.18)'
+                    : 'rgba(96, 165, 250, 0.2)',
+                borderLeft: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ew-resize',
                 zIndex: 43,
-                transition: 'background-color 0.15s ease',
+                transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
@@ -298,12 +309,17 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 left: `${badgeRect.left}px`,
                 width: `${badgeRect.width}px`,
                 height: `${Math.min(bottomValue, badgeRect.height / 2)}px`,
-                backgroundColor: hoveredSide === 'bottom' ? `${borderColor}40` : overlayColor,
-                borderTop: `1px solid ${borderColor}`,
+                backgroundColor:
+                  draggingSide === 'bottom'
+                    ? 'rgba(16, 185, 129, 0.35)'
+                    : hoveredSide === 'bottom'
+                    ? 'rgba(52, 211, 153, 0.18)'
+                    : 'rgba(96, 165, 250, 0.2)',
+                borderTop: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ns-resize',
                 zIndex: 43,
-                transition: 'background-color 0.15s ease',
+                transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
@@ -319,12 +335,17 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 left: `${badgeRect.left}px`,
                 width: `${Math.min(leftValue, badgeRect.width / 2)}px`,
                 height: `${badgeRect.height}px`,
-                backgroundColor: hoveredSide === 'left' ? `${borderColor}40` : overlayColor,
-                borderRight: `1px solid ${borderColor}`,
+                backgroundColor:
+                  draggingSide === 'left'
+                    ? 'rgba(16, 185, 129, 0.35)'
+                    : hoveredSide === 'left'
+                    ? 'rgba(52, 211, 153, 0.18)'
+                    : 'rgba(96, 165, 250, 0.2)',
+                borderRight: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ew-resize',
                 zIndex: 43,
-                transition: 'background-color 0.15s ease',
+                transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
@@ -386,6 +407,8 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         onHover={() => setHoveredSide('top')}
         onLeave={() => setHoveredSide(null)}
         onDrag={(newValue) => handleDrag('top', newValue)}
+        onDragStart={() => setDraggingSide('top')}
+        onDragEnd={() => setDraggingSide(null)}
         badgeRect={badgeRect}
         mode={spacingMode}
       />
@@ -398,6 +421,8 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         onHover={() => setHoveredSide('right')}
         onLeave={() => setHoveredSide(null)}
         onDrag={(newValue) => handleDrag('right', newValue)}
+        onDragStart={() => setDraggingSide('right')}
+        onDragEnd={() => setDraggingSide(null)}
         badgeRect={badgeRect}
         mode={spacingMode}
       />
@@ -410,6 +435,8 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         onHover={() => setHoveredSide('bottom')}
         onLeave={() => setHoveredSide(null)}
         onDrag={(newValue) => handleDrag('bottom', newValue)}
+        onDragStart={() => setDraggingSide('bottom')}
+        onDragEnd={() => setDraggingSide(null)}
         badgeRect={badgeRect}
         mode={spacingMode}
       />
@@ -422,6 +449,8 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         onHover={() => setHoveredSide('left')}
         onLeave={() => setHoveredSide(null)}
         onDrag={(newValue) => handleDrag('left', newValue)}
+        onDragStart={() => setDraggingSide('left')}
+        onDragEnd={() => setDraggingSide(null)}
         badgeRect={badgeRect}
         mode={spacingMode}
       />
@@ -585,6 +614,8 @@ interface SpacingBarHandleProps {
   onHover: () => void;
   onLeave: () => void;
   onDrag: (newValue: number) => void;
+  onDragStart: () => void; // NEW: trigger dragging state
+  onDragEnd: () => void; // NEW: clear dragging state
   badgeRect: DOMRect;
   mode: SpacingMode;
 }
@@ -597,6 +628,8 @@ function SpacingBarHandle({
   onHover,
   onLeave,
   onDrag,
+  onDragStart,
+  onDragEnd,
   badgeRect,
   mode,
 }: SpacingBarHandleProps) {
@@ -607,6 +640,7 @@ function SpacingBarHandle({
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDragging(true);
+    onDragStart(); // Trigger dragging state in parent
     // Store initial mouse position AND initial spacing value
     dragStartRef.current = { x: e.clientX, y: e.clientY, initialValue: value };
 
@@ -642,6 +676,7 @@ function SpacingBarHandle({
 
     const handleMouseUp = () => {
       setIsDragging(false);
+      onDragEnd(); // Clear dragging state in parent
       dragStartRef.current = null;
 
       if (rafRef.current) {
@@ -739,22 +774,21 @@ function SpacingBarHandle({
     }
   };
 
-  // Tooltip position styles - LARGE and CLEAR for better UX
+  // Tooltip position styles - Match center handle styling
   const getTooltipStyles = () => {
     const baseStyles = {
       position: 'absolute' as const,
       backgroundColor: '#1f2937',
       color: 'white',
-      padding: '8px 14px', // Larger padding
+      padding: '6px 10px',
       borderRadius: '6px',
-      fontSize: '14px', // LARGER font (was 11px)
-      fontWeight: 700, // Bolder (was 600)
+      fontSize: '11px', // Match center handle size
+      fontWeight: 600,
       whiteSpace: 'nowrap' as const,
       pointerEvents: 'none' as const,
       zIndex: 51,
-      boxShadow: '0 4px 12px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.2)',
-      border: '2px solid rgba(255,255,255,0.15)', // More prominent border
-      letterSpacing: '0.02em', // Slightly spaced for readability
+      boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
+      border: '1px solid rgba(255,255,255,0.1)',
     };
 
     switch (side) {
@@ -1096,14 +1130,14 @@ function SpacingBarHandle({
         </div>
       </div>
 
-      {/* Value Tooltip - LARGE and CLEAR */}
+      {/* Value Tooltip - with directional icons */}
       {(isHovered || isDragging) && (
         <div style={getTooltipStyles()}>
-          {mode === 'margin' ? '↔ Margin' : '↔ Padding'} {side}: {value}px
+          {side === 'top' && '↑'} {side === 'right' && '→'} {side === 'bottom' && '↓'} {side === 'left' && '←'} {mode === 'margin' ? 'Margin' : 'Padding'} {side}: {value}px
           {isDragging && (
             <span style={{
               display: 'block',
-              fontSize: '11px',
+              fontSize: '10px',
               marginTop: '2px',
               color: '#d1d5db',
               fontWeight: 500
