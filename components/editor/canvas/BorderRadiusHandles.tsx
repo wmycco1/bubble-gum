@@ -633,23 +633,23 @@ function BorderRadiusHandle({
     }
   };
 
-  // Get arrow direction (pointing TO center) - LARGER arrows
+  // Get arrow direction (pointing TO center) - PROMINENT arrows
   const getArrowPath = () => {
     const center = 8; // Center of 16px handle
 
     switch (corner) {
       case 'topLeft':
-        // Arrow pointing down-right (to center) ↘
-        return `M3 3 L8 8 L3 8 Z`;
+        // Arrow pointing down-right (to center) ↘ - LARGER
+        return `M2 2 L9 9 L2 9 Z`;
       case 'topRight':
-        // Arrow pointing down-left (to center) ↙
-        return `M13 3 L8 8 L13 8 Z`;
+        // Arrow pointing down-left (to center) ↙ - LARGER
+        return `M14 2 L7 9 L14 9 Z`;
       case 'bottomLeft':
-        // Arrow pointing up-right (to center) ↗
-        return `M3 13 L8 8 L3 8 Z`;
+        // Arrow pointing up-right (to center) ↗ - LARGER
+        return `M2 14 L9 7 L2 7 Z`;
       case 'bottomRight':
-        // Arrow pointing up-left (to center) ↖
-        return `M13 13 L8 8 L13 8 Z`;
+        // Arrow pointing up-left (to center) ↖ - LARGER
+        return `M14 14 L7 7 L14 7 Z`;
     }
   };
 
@@ -754,7 +754,7 @@ function BorderRadiusHandle({
         onMouseLeave={onLeave}
         style={getPositionStyles()}
       >
-        {/* Arrow SVG pointing TO center */}
+        {/* Arrow SVG pointing TO center - PROMINENT */}
         <svg
           width="16"
           height="16"
@@ -764,12 +764,15 @@ function BorderRadiusHandle({
             top: 0,
             left: 0,
             pointerEvents: 'none',
+            filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.3))', // Shadow for visibility
           }}
         >
           <path
             d={getArrowPath()}
             fill="white"
-            opacity={isDragging ? 1 : isHovered ? 0.95 : 0.85}
+            stroke="rgba(0,0,0,0.2)"
+            strokeWidth="0.5"
+            opacity={1} // Always fully visible
           />
         </svg>
       </div>
