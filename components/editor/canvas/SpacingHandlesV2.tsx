@@ -660,7 +660,7 @@ function SpacingBarHandle({
   const isVertical = side === 'top' || side === 'bottom';
   const cursor = isVertical ? 'ns-resize' : 'ew-resize';
 
-  // Position styles based on side - positioned on Badge boundaries
+  // Position styles based on side - HANDLE STRETCHES TO FILL SPACING AREA
   const getPositionStyles = () => {
     // Subtle handles - almost invisible unless hover/drag
     const bgColor = isDragging
@@ -684,22 +684,28 @@ function SpacingBarHandle({
       opacity: isDragging ? 1 : isHovered ? 0.9 : 0.3, // More transparency when idle
     };
 
-    const handleWidth = 16;
+    // Minimum handle size to remain clickable even with small values
+    const minHandleSize = 10;
 
     // For padding: handles are INSIDE Badge (on inner edge after padding)
     // For margin: handles are OUTSIDE Badge (beyond outer edge)
     const inset = mode === 'padding';
 
     switch (side) {
-      case 'top':
+      case 'top': {
+        // Handle height = spacing value (minimum 10px for visibility)
+        const handleHeight = Math.max(value, minHandleSize);
         return {
           ...baseStyles,
-          top: inset ? `${badgeRect.top}px` : `${badgeRect.top - handleWidth}px`,
+          top: inset ? `${badgeRect.top}px` : `${badgeRect.top - handleHeight}px`,
           left: `${badgeRect.left}px`,
           width: `${badgeRect.width}px`,
-          height: `${handleWidth}px`,
+          height: `${handleHeight}px`,
         };
-      case 'right':
+      }
+      case 'right': {
+        // Handle width = spacing value (minimum 10px for visibility)
+        const handleWidth = Math.max(value, minHandleSize);
         return {
           ...baseStyles,
           top: `${badgeRect.top}px`,
@@ -707,15 +713,21 @@ function SpacingBarHandle({
           width: `${handleWidth}px`,
           height: `${badgeRect.height}px`,
         };
-      case 'bottom':
+      }
+      case 'bottom': {
+        // Handle height = spacing value (minimum 10px for visibility)
+        const handleHeight = Math.max(value, minHandleSize);
         return {
           ...baseStyles,
-          top: inset ? `${badgeRect.bottom - handleWidth}px` : `${badgeRect.bottom}px`,
+          top: inset ? `${badgeRect.bottom - handleHeight}px` : `${badgeRect.bottom}px`,
           left: `${badgeRect.left}px`,
           width: `${badgeRect.width}px`,
-          height: `${handleWidth}px`,
+          height: `${handleHeight}px`,
         };
-      case 'left':
+      }
+      case 'left': {
+        // Handle width = spacing value (minimum 10px for visibility)
+        const handleWidth = Math.max(value, minHandleSize);
         return {
           ...baseStyles,
           top: `${badgeRect.top}px`,
@@ -723,6 +735,7 @@ function SpacingBarHandle({
           width: `${handleWidth}px`,
           height: `${badgeRect.height}px`,
         };
+      }
     }
   };
 
