@@ -134,9 +134,11 @@
 
 .badge--clickable:hover {
   opacity: 0.85;
+  transform: translateY(-1px);
 }
 
 .badge--clickable:active {
+  transform: translateY(0);
   opacity: 0.7;
 }
 
