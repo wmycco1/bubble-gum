@@ -281,156 +281,246 @@ export function SpacingControl({
         </button>
       </div>
 
-      {/* Shorthand Input (Simple Mode) */}
+      {/* Shorthand Input (Simple Mode) - WITH HOLD-TO-REPEAT */}
       {!isExpanded && (
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            min="0"
-            step={unit === 'px' ? '1' : '0.1'}
-            value={value ?? ''}
-            onChange={handleShorthandChange}
-            placeholder="All sides"
-            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-          <select
-            value={unit}
-            onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
-            className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
-          >
-            <option value="px">px</option>
-            <option value="rem">rem</option>
-            <option value="em">em</option>
-            <option value="%">%</option>
-          </select>
-        </div>
+        <SpacingSimpleMode
+          value={value}
+          unit={unit}
+          setUnit={setUnit}
+          handleShorthandChange={handleShorthandChange}
+          onChange={onChange}
+          paramName={paramName}
+        />
       )}
 
-      {/* Individual Sides (Advanced Mode) - Compact Figma-style */}
+      {/* Individual Sides (Advanced Mode) - Revolutionary Visual Design */}
       {isExpanded && (
         <div className="space-y-2">
-          {/* Compact Box Model - Reduced padding and gaps */}
-          <div className="p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
-            <div className="flex flex-col items-center gap-1.5">
-              {/* Top Side - Centered */}
-              <div className="flex items-center gap-1">
-                <span className="text-xs font-medium text-gray-600 w-8 text-right">Top</span>
-                <input
-                  type="number"
-                  min="0"
-                  step={topUnit === 'px' ? '1' : '0.1'}
-                  value={top ?? value ?? ''}
-                  onChange={(e) => handleSideChange('Top', e)}
-                  placeholder="0"
-                  className="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                />
-                <select
-                  value={topUnit}
-                  onChange={(e) => onUnitChange?.('Top', e.target.value as 'px' | 'rem' | 'em' | '%')}
-                  className="px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+          {/* Spacing Box Model with Visual Indicators */}
+          <div className="relative p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm" style={{ minHeight: '340px' }}>
+            {/* Center Preview Box - Adaptive */}
+            <div
+              className="absolute"
+              style={{
+                top: '50px',
+                left: '50px',
+                right: '50px',
+                bottom: '50px',
+                margin: '5%',
+                overflow: 'visible',
+              }}
+            >
+              <div className="relative w-full h-full flex items-center justify-center" style={{ overflow: 'visible' }}>
+                {/* Preview Box - Shows Margin + Padding visually */}
+                <div
+                  className="relative bg-white flex items-center justify-center shadow-xl transition-all duration-300 border-2 border-gray-400"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '220px',
+                    maxHeight: '160px',
+                    minWidth: '60px',
+                    minHeight: '50px',
+                    aspectRatio: '1 / 1',
+                    overflow: 'visible',
+                  }}
                 >
-                  <option value="px">px</option>
-                  <option value="rem">rem</option>
-                  <option value="em">em</option>
-                  <option value="%">%</option>
-                </select>
-                {renderButtons(topHandlers, top ?? value)}
-              </div>
+                  {/* Margin Visual Indicators (Blue - Outside) */}
+                  {paramName === 'margin' && (
+                    <>
+                      {/* Top Margin - Blue */}
+                      <div
+                        className="absolute -top-0 left-0 right-0 bg-blue-400/[0.21] transition-all duration-300 pointer-events-none border-t-2 border-blue-500"
+                        style={{
+                          height: `${Math.min((top ?? value ?? 0) * 2, 40)}px`,
+                          transform: 'translateY(-100%)',
+                        }}
+                      />
+                      {/* Right Margin - Blue */}
+                      <div
+                        className="absolute top-0 -right-0 bottom-0 bg-blue-400/[0.21] transition-all duration-300 pointer-events-none border-r-2 border-blue-500"
+                        style={{
+                          width: `${Math.min((right ?? value ?? 0) * 2, 40)}px`,
+                          transform: 'translateX(100%)',
+                        }}
+                      />
+                      {/* Bottom Margin - Blue */}
+                      <div
+                        className="absolute -bottom-0 left-0 right-0 bg-blue-400/[0.21] transition-all duration-300 pointer-events-none border-b-2 border-blue-500"
+                        style={{
+                          height: `${Math.min((bottom ?? value ?? 0) * 2, 40)}px`,
+                          transform: 'translateY(100%)',
+                        }}
+                      />
+                      {/* Left Margin - Blue */}
+                      <div
+                        className="absolute top-0 -left-0 bottom-0 bg-blue-400/[0.21] transition-all duration-300 pointer-events-none border-l-2 border-blue-500"
+                        style={{
+                          width: `${Math.min((left ?? value ?? 0) * 2, 40)}px`,
+                          transform: 'translateX(-100%)',
+                        }}
+                      />
+                    </>
+                  )}
 
-              {/* Middle Row: Left + Center Box + Right */}
-              <div className="flex items-center gap-1.5 w-full justify-center">
-                {/* Left Side */}
-                <div className="flex flex-col items-end gap-1">
-                  <span className="text-xs font-medium text-gray-600">Left</span>
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      min="0"
-                      step={leftUnit === 'px' ? '1' : '0.1'}
-                      value={left ?? value ?? ''}
-                      onChange={(e) => handleSideChange('Left', e)}
-                      placeholder="0"
-                      className="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                    />
-                    <select
-                      value={leftUnit}
-                      onChange={(e) => onUnitChange?.('Left', e.target.value as 'px' | 'rem' | 'em' | '%')}
-                      className="px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                    >
-                      <option value="px">px</option>
-                      <option value="rem">rem</option>
-                      <option value="em">em</option>
-                      <option value="%">%</option>
-                    </select>
-                    {renderButtons(leftHandlers, left ?? value)}
+                  {/* Padding Visual Indicators (Green - Inside) */}
+                  {paramName === 'padding' && (
+                    <>
+                      {/* Top Padding - Green */}
+                      <div
+                        className="absolute top-0 left-0 right-0 bg-green-400/[0.18] transition-all duration-300 pointer-events-none border-b border-green-500"
+                        style={{
+                          height: `${Math.min((top ?? value ?? 0) * 2, 40)}px`,
+                        }}
+                      />
+                      {/* Right Padding - Green */}
+                      <div
+                        className="absolute top-0 right-0 bottom-0 bg-green-400/[0.18] transition-all duration-300 pointer-events-none border-l border-green-500"
+                        style={{
+                          width: `${Math.min((right ?? value ?? 0) * 2, 40)}px`,
+                        }}
+                      />
+                      {/* Bottom Padding - Green */}
+                      <div
+                        className="absolute bottom-0 left-0 right-0 bg-green-400/[0.18] transition-all duration-300 pointer-events-none border-t border-green-500"
+                        style={{
+                          height: `${Math.min((bottom ?? value ?? 0) * 2, 40)}px`,
+                        }}
+                      />
+                      {/* Left Padding - Green */}
+                      <div
+                        className="absolute top-0 left-0 bottom-0 bg-green-400/[0.18] transition-all duration-300 pointer-events-none border-r border-green-500"
+                        style={{
+                          width: `${Math.min((left ?? value ?? 0) * 2, 40)}px`,
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {/* Content area label */}
+                  <span className="text-2xl font-bold text-gray-400 z-10 relative">
+                    {paramName === 'margin' ? 'M' : 'P'}
+                  </span>
+
+                  {/* Arrows pointing to sides - Margin (outside) vs Padding (inside) */}
+
+                  {/* Top Arrow */}
+                  <div
+                    className={`absolute left-1/2 transform -translate-x-1/2 pointer-events-none z-20 rounded-full bg-white shadow-sm text-gray-900 ${
+                      paramName === 'padding'
+                        ? 'top-2'
+                        : '-top-4'
+                    }`}
+                    title="Top"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {/* Margin: arrow points UP (outward) | Padding: arrow points DOWN (inward) */}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={paramName === 'padding' ? 'M12 5v14m-7-7l7 7l7-7' : 'M12 19V5m-7 7l7-7l7 7'} />
+                    </svg>
+                  </div>
+
+                  {/* Right Arrow */}
+                  <div
+                    className={`absolute top-1/2 transform -translate-y-1/2 pointer-events-none z-20 rounded-full bg-white shadow-sm text-gray-900 ${
+                      paramName === 'padding'
+                        ? 'right-2'
+                        : '-right-4'
+                    }`}
+                    title="Right"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {/* Margin: arrow points RIGHT (outward) | Padding: arrow points LEFT (inward) */}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={paramName === 'padding' ? 'M19 12H5m7-7l-7 7l7 7' : 'M5 12h14m-7-7l7 7l-7 7'} />
+                    </svg>
+                  </div>
+
+                  {/* Bottom Arrow */}
+                  <div
+                    className={`absolute left-1/2 transform -translate-x-1/2 pointer-events-none z-20 rounded-full bg-white shadow-sm text-gray-900 ${
+                      paramName === 'padding'
+                        ? 'bottom-2'
+                        : '-bottom-4'
+                    }`}
+                    title="Bottom"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {/* Margin: arrow points DOWN (outward) | Padding: arrow points UP (inward) */}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={paramName === 'padding' ? 'M12 19V5m-7 7l7-7l7 7' : 'M12 5v14m-7-7l7 7l7-7'} />
+                    </svg>
+                  </div>
+
+                  {/* Left Arrow */}
+                  <div
+                    className={`absolute top-1/2 transform -translate-y-1/2 pointer-events-none z-20 rounded-full bg-white shadow-sm text-gray-900 ${
+                      paramName === 'padding'
+                        ? 'left-2'
+                        : '-left-4'
+                    }`}
+                    title="Left"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {/* Margin: arrow points LEFT (outward) | Padding: arrow points RIGHT (inward) */}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={paramName === 'padding' ? 'M5 12h14m-7-7l7 7l-7 7' : 'M19 12H5m7-7l-7 7l7 7'} />
+                    </svg>
                   </div>
                 </div>
-
-                {/* Center Box - Smaller */}
-                <div className="flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white flex items-center justify-center rounded shadow border-2 border-gray-300">
-                    <span className="text-xl font-bold text-gray-400">
-                      {paramName === 'margin' ? 'M' : 'P'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Right Side */}
-                <div className="flex flex-col items-start gap-1">
-                  <span className="text-xs font-medium text-gray-600">Right</span>
-                  <div className="flex items-center gap-1">
-                    {renderButtons(rightHandlers, right ?? value)}
-                    <input
-                      type="number"
-                      min="0"
-                      step={rightUnit === 'px' ? '1' : '0.1'}
-                      value={right ?? value ?? ''}
-                      onChange={(e) => handleSideChange('Right', e)}
-                      placeholder="0"
-                      className="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                    />
-                    <select
-                      value={rightUnit}
-                      onChange={(e) => onUnitChange?.('Right', e.target.value as 'px' | 'rem' | 'em' | '%')}
-                      className="px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                    >
-                      <option value="px">px</option>
-                      <option value="rem">rem</option>
-                      <option value="em">em</option>
-                      <option value="%">%</option>
-                    </select>
-                  </div>
-                </div>
               </div>
+            </div>
 
-              {/* Bottom Side - Centered */}
-              <div className="flex items-center gap-1">
-                <span className="text-xs font-medium text-gray-600 w-8 text-right">Bot</span>
-                <input
-                  type="number"
-                  min="0"
-                  step={bottomUnit === 'px' ? '1' : '0.1'}
-                  value={bottom ?? value ?? ''}
-                  onChange={(e) => handleSideChange('Bottom', e)}
-                  placeholder="0"
-                  className="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                />
-                <select
-                  value={bottomUnit}
-                  onChange={(e) => onUnitChange?.('Bottom', e.target.value as 'px' | 'rem' | 'em' | '%')}
-                  className="px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                >
-                  <option value="px">px</option>
-                  <option value="rem">rem</option>
-                  <option value="em">em</option>
-                  <option value="%">%</option>
-                </select>
-                {renderButtons(bottomHandlers, bottom ?? value)}
-              </div>
+            {/* Top Control */}
+            <div className="absolute" style={{ top: '2%', left: '50%', transform: 'translateX(-50%)' }}>
+              <SideControl
+                side="Top"
+                value={top ?? value}
+                unit={topUnit}
+                handlers={topHandlers}
+                onValueChange={onSideChange}
+                onUnitChange={onUnitChange}
+                handleSideChange={handleSideChange}
+              />
+            </div>
+
+            {/* Right Control */}
+            <div className="absolute" style={{ top: '50%', right: '2%', transform: 'translateY(-50%)' }}>
+              <SideControl
+                side="Right"
+                value={right ?? value}
+                unit={rightUnit}
+                handlers={rightHandlers}
+                onValueChange={onSideChange}
+                onUnitChange={onUnitChange}
+                handleSideChange={handleSideChange}
+              />
+            </div>
+
+            {/* Bottom Control */}
+            <div className="absolute" style={{ bottom: '2%', left: '50%', transform: 'translateX(-50%)' }}>
+              <SideControl
+                side="Bottom"
+                value={bottom ?? value}
+                unit={bottomUnit}
+                handlers={bottomHandlers}
+                onValueChange={onSideChange}
+                onUnitChange={onUnitChange}
+                handleSideChange={handleSideChange}
+              />
+            </div>
+
+            {/* Left Control */}
+            <div className="absolute" style={{ top: '50%', left: '2%', transform: 'translateY(-50%)' }}>
+              <SideControl
+                side="Left"
+                value={left ?? value}
+                unit={leftUnit}
+                handlers={leftHandlers}
+                onValueChange={onSideChange}
+                onUnitChange={onUnitChange}
+                handleSideChange={handleSideChange}
+              />
             </div>
           </div>
 
-          {/* Helper Text - Smaller */}
+          {/* Helper Text */}
           <p className="text-xs text-gray-500 text-center">
             {hasIndividualValues
               ? 'Individual values override "All sides"'
@@ -438,6 +528,263 @@ export function SpacingControl({
           </p>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * SideControl Component - Compact control for each side
+ */
+interface SideControlProps {
+  side: 'Top' | 'Right' | 'Bottom' | 'Left';
+  value?: number;
+  unit: 'px' | 'rem' | 'em' | '%';
+  handlers: ReturnType<typeof createHoldToRepeatHandlers>;
+  onValueChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', value: number | undefined) => void;
+  onUnitChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%') => void;
+  handleSideChange: (side: 'Top' | 'Right' | 'Bottom' | 'Left', e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function SideControl({
+  side,
+  value,
+  unit,
+  handlers,
+  onValueChange,
+  onUnitChange,
+  handleSideChange,
+}: SideControlProps) {
+  // Vertical layout: [- +] → input → unit
+  return (
+    <div className="flex flex-col items-center gap-1">
+      {/* - and + buttons (horizontal) */}
+      <div className="flex items-center gap-0.5">
+        <button
+          type="button"
+          onMouseDown={handlers.startDecrement}
+          onMouseUp={handlers.stopChange}
+          onMouseLeave={handlers.stopChange}
+          onTouchStart={handlers.startDecrement}
+          onTouchEnd={handlers.stopChange}
+          disabled={(value ?? 0) <= 0}
+          className={`
+            px-1.5 py-0.5 text-sm font-bold border rounded transition-all
+            ${handlers.isDecrementPressed && (value ?? 0) > 0
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+            }
+            disabled:opacity-40 disabled:cursor-not-allowed
+          `}
+          title="Decrement (hold to repeat)"
+        >
+          −
+        </button>
+        <button
+          type="button"
+          onMouseDown={handlers.startIncrement}
+          onMouseUp={handlers.stopChange}
+          onMouseLeave={handlers.stopChange}
+          onTouchStart={handlers.startIncrement}
+          onTouchEnd={handlers.stopChange}
+          className={`
+            px-1.5 py-0.5 text-sm font-bold border rounded transition-all
+            ${handlers.isIncrementPressed
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+            }
+          `}
+          title="Increment (hold to repeat)"
+        >
+          +
+        </button>
+      </div>
+
+      {/* Input field */}
+      <input
+        type="number"
+        min="0"
+        step={unit === 'px' ? '1' : '0.1'}
+        value={value ?? ''}
+        onChange={(e) => handleSideChange(side, e)}
+        placeholder="0"
+        className="w-14 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        style={{ MozAppearance: 'textfield' }}
+      />
+
+      {/* Unit selector dropdown */}
+      <select
+        value={unit}
+        onChange={(e) => onUnitChange?.(side, e.target.value as 'px' | 'rem' | 'em' | '%')}
+        className="w-14 px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+      >
+        <option value="px">px</option>
+        <option value="rem">rem</option>
+        <option value="em">em</option>
+        <option value="%">%</option>
+      </select>
+    </div>
+  );
+}
+
+/**
+ * SpacingSimpleMode Component - Hold-to-repeat buttons (like NumberControl)
+ */
+interface SpacingSimpleModeProps {
+  value?: number;
+  unit: 'px' | 'rem' | 'em' | '%';
+  setUnit: (unit: 'px' | 'rem' | 'em' | '%') => void;
+  handleShorthandChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (name: string, value: number | undefined) => void;
+  paramName: string;
+}
+
+function SpacingSimpleMode({ value, unit, setUnit, handleShorthandChange, onChange, paramName }: SpacingSimpleModeProps) {
+  const [isIncrementPressed, setIsIncrementPressed] = React.useState(false);
+  const [isDecrementPressed, setIsDecrementPressed] = React.useState(false);
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const speedRef = React.useRef(100);
+  const valueRef = React.useRef(value);
+
+  React.useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  const handleIncrement = React.useCallback(() => {
+    const currentValue = valueRef.current || 0;
+    const newValue = currentValue + 1;
+    onChange(paramName, newValue);
+    valueRef.current = newValue;
+  }, [onChange, paramName]);
+
+  const handleDecrement = React.useCallback(() => {
+    const currentValue = valueRef.current || 0;
+    const newValue = Math.max(0, currentValue - 1);
+    onChange(paramName, newValue);
+    valueRef.current = newValue;
+  }, [onChange, paramName]);
+
+  const startIncrement = () => {
+    setIsIncrementPressed(true);
+    handleIncrement();
+    speedRef.current = 100;
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        handleIncrement();
+        if (speedRef.current > 20) {
+          speedRef.current = Math.max(20, speedRef.current - 10);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = setInterval(handleIncrement, speedRef.current);
+        }
+      }, speedRef.current);
+    }, 200);
+  };
+
+  const startDecrement = () => {
+    setIsDecrementPressed(true);
+    handleDecrement();
+    speedRef.current = 100;
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        handleDecrement();
+        if (speedRef.current > 20) {
+          speedRef.current = Math.max(20, speedRef.current - 10);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = setInterval(handleDecrement, speedRef.current);
+        }
+      }, speedRef.current);
+    }, 200);
+  };
+
+  const stopChange = () => {
+    setIsIncrementPressed(false);
+    setIsDecrementPressed(false);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    speedRef.current = 100;
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="relative flex-1">
+        <input
+          type="number"
+          min="0"
+          step={unit === 'px' ? '1' : '0.1'}
+          value={value ?? ''}
+          onChange={handleShorthandChange}
+          placeholder="All sides"
+          className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          style={{ MozAppearance: 'textfield' }}
+        />
+      </div>
+      <select
+        value={unit}
+        onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
+        className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+      >
+        <option value="px">px</option>
+        <option value="rem">rem</option>
+        <option value="em">em</option>
+        <option value="%">%</option>
+      </select>
+      <div className="flex flex-col gap-0.5">
+        <button
+          type="button"
+          onMouseDown={startIncrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startIncrement}
+          onTouchEnd={stopChange}
+          className={`
+            p-1.5 border-2 rounded-md transition-all shadow-sm
+            ${isIncrementPressed
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+            }
+          `}
+          title="Increment (hold to repeat)"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onMouseDown={startDecrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startDecrement}
+          onTouchEnd={stopChange}
+          disabled={(value || 0) <= 0}
+          className={`
+            p-1.5 border-2 rounded-md transition-all shadow-sm
+            ${isDecrementPressed && (value || 0) > 0
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+            }
+            disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+          `}
+          title="Decrement (hold to repeat)"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }

@@ -126,8 +126,8 @@ export function NumberControl({
           </span>
         )}
       </label>
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
+      <div className="flex items-start gap-2">
+        <div className="flex-1">
           <input
             type="number"
             value={value}
@@ -144,7 +144,7 @@ export function NumberControl({
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-0.5 pt-0.5">
           <button
             type="button"
             onMouseDown={startIncrement}

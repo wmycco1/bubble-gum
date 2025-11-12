@@ -53,7 +53,7 @@ export function TextShadowControl({
     { value: 'sm', label: 'Small', description: 'Subtle text shadow' },
     { value: 'md', label: 'Medium', description: 'Default text shadow' },
     { value: 'lg', label: 'Large', description: 'Pronounced text shadow' },
-    { value: 'xl', label: 'Extra Large', description: 'Strong text shadow' },
+    { value: 'xl', label: 'Extra', description: 'Strong text shadow' },
   ];
 
   const handlePresetSelect = (value: 'none' | 'sm' | 'md' | 'lg' | 'xl') => {

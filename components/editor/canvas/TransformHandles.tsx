@@ -540,6 +540,7 @@ function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentS
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const dragStartRef = React.useRef<{ x: number; y: number; initialScaleX: number; initialScaleY: number } | null>(null);
+  const rafRef = React.useRef<number | null>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -554,58 +555,112 @@ function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentS
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragStartRef.current) return;
 
-      const deltaX = e.clientX - dragStartRef.current.x;
-      const deltaY = e.clientY - dragStartRef.current.y;
-
-      // Calculate scale change based on corner
-      // Moving outward increases scale, inward decreases
-      let scaleChangeX = 0;
-      let scaleChangeY = 0;
-
-      const scaleFactor = 0.01; // Sensitivity
-
-      switch (corner) {
-        case 'topLeft':
-          scaleChangeX = -deltaX * scaleFactor;
-          scaleChangeY = -deltaY * scaleFactor;
-          break;
-        case 'topRight':
-          scaleChangeX = deltaX * scaleFactor;
-          scaleChangeY = -deltaY * scaleFactor;
-          break;
-        case 'bottomLeft':
-          scaleChangeX = -deltaX * scaleFactor;
-          scaleChangeY = deltaY * scaleFactor;
-          break;
-        case 'bottomRight':
-          scaleChangeX = deltaX * scaleFactor;
-          scaleChangeY = deltaY * scaleFactor;
-          break;
+      // Cancel previous animation frame
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
       }
 
-      // Uniform scale if Shift is held
-      if (e.shiftKey) {
-        const avgChange = (scaleChangeX + scaleChangeY) / 2;
-        scaleChangeX = avgChange;
-        scaleChangeY = avgChange;
-      }
+      // Throttle updates using requestAnimationFrame for smooth 60fps
+      rafRef.current = requestAnimationFrame(() => {
+        if (!dragStartRef.current) return;
 
-      let newScaleX = Math.max(0.1, dragStartRef.current.initialScaleX + scaleChangeX);
-      let newScaleY = Math.max(0.1, dragStartRef.current.initialScaleY + scaleChangeY);
+        const deltaX = e.clientX - dragStartRef.current.x;
+        const deltaY = e.clientY - dragStartRef.current.y;
 
-      // Round to 2 decimal places
-      newScaleX = Math.round(newScaleX * 100) / 100;
-      newScaleY = Math.round(newScaleY * 100) / 100;
+        // Calculate scale change based on corner
+        // Moving outward increases scale, inward decreases
+        let scaleChangeX = 0;
+        let scaleChangeY = 0;
 
-      updateComponentProps(componentId, {
-        scaleX: newScaleX,
-        scaleY: newScaleY,
+        const scaleFactor = 0.01; // Sensitivity
+
+        switch (corner) {
+          case 'topLeft':
+            scaleChangeX = -deltaX * scaleFactor;
+            scaleChangeY = -deltaY * scaleFactor;
+            break;
+          case 'topRight':
+            scaleChangeX = deltaX * scaleFactor;
+            scaleChangeY = -deltaY * scaleFactor;
+            break;
+          case 'bottomLeft':
+            scaleChangeX = -deltaX * scaleFactor;
+            scaleChangeY = deltaY * scaleFactor;
+            break;
+          case 'bottomRight':
+            scaleChangeX = deltaX * scaleFactor;
+            scaleChangeY = deltaY * scaleFactor;
+            break;
+        }
+
+        // Uniform scale if Shift is held
+        if (e.shiftKey) {
+          const avgChange = (scaleChangeX + scaleChangeY) / 2;
+          scaleChangeX = avgChange;
+          scaleChangeY = avgChange;
+        }
+
+        let newScaleX = Math.max(0.1, dragStartRef.current.initialScaleX + scaleChangeX);
+        let newScaleY = Math.max(0.1, dragStartRef.current.initialScaleY + scaleChangeY);
+
+        // NO rounding during drag for smooth animation
+        updateComponentProps(componentId, {
+          scaleX: newScaleX,
+          scaleY: newScaleY,
+        });
       });
     };
 
     const handleMouseUp = () => {
+      // Final update with rounded values
+      if (dragStartRef.current && window.event) {
+        const deltaX = (window.event as MouseEvent).clientX - dragStartRef.current.x;
+        const deltaY = (window.event as MouseEvent).clientY - dragStartRef.current.y;
+
+        let scaleChangeX = 0;
+        let scaleChangeY = 0;
+        const scaleFactor = 0.01;
+
+        switch (corner) {
+          case 'topLeft':
+            scaleChangeX = -deltaX * scaleFactor;
+            scaleChangeY = -deltaY * scaleFactor;
+            break;
+          case 'topRight':
+            scaleChangeX = deltaX * scaleFactor;
+            scaleChangeY = -deltaY * scaleFactor;
+            break;
+          case 'bottomLeft':
+            scaleChangeX = -deltaX * scaleFactor;
+            scaleChangeY = deltaY * scaleFactor;
+            break;
+          case 'bottomRight':
+            scaleChangeX = deltaX * scaleFactor;
+            scaleChangeY = deltaY * scaleFactor;
+            break;
+        }
+
+        let newScaleX = Math.max(0.1, dragStartRef.current.initialScaleX + scaleChangeX);
+        let newScaleY = Math.max(0.1, dragStartRef.current.initialScaleY + scaleChangeY);
+
+        // Round to 2 decimal places ONLY on mouseUp
+        newScaleX = Math.round(newScaleX * 100) / 100;
+        newScaleY = Math.round(newScaleY * 100) / 100;
+
+        updateComponentProps(componentId, {
+          scaleX: newScaleX,
+          scaleY: newScaleY,
+        });
+      }
+
       setIsDragging(false);
       dragStartRef.current = null;
+
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };

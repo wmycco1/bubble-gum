@@ -69,31 +69,27 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
     };
   }, [componentId]);
 
-  // Debounced update when props change
+  // Immediate update when props change (removed debouncing for smooth dragging)
   React.useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const wrapper = document.querySelector(`[data-component-id="${componentId}"]`);
-      if (!wrapper) return;
+    const wrapper = document.querySelector(`[data-component-id="${componentId}"]`);
+    if (!wrapper) return;
 
-      const badgeElement = wrapper.querySelector('[data-testid="badge"]') as HTMLElement;
-      if (badgeElement) {
-        const rect = badgeElement.getBoundingClientRect();
-        const wrapperRect = wrapper.getBoundingClientRect();
+    const badgeElement = wrapper.querySelector('[data-testid="badge"]') as HTMLElement;
+    if (badgeElement) {
+      const rect = badgeElement.getBoundingClientRect();
+      const wrapperRect = wrapper.getBoundingClientRect();
 
-        const relativeRect = {
-          top: rect.top - wrapperRect.top,
-          left: rect.left - wrapperRect.left,
-          width: rect.width,
-          height: rect.height,
-          right: rect.right - wrapperRect.left,
-          bottom: rect.bottom - wrapperRect.top,
-        } as DOMRect;
+      const relativeRect = {
+        top: rect.top - wrapperRect.top,
+        left: rect.left - wrapperRect.left,
+        width: rect.width,
+        height: rect.height,
+        right: rect.right - wrapperRect.left,
+        bottom: rect.bottom - wrapperRect.top,
+      } as DOMRect;
 
-        setBadgeRect(relativeRect);
-      }
-    }, 50);
-
-    return () => clearTimeout(timeoutId);
+      setBadgeRect(relativeRect);
+    }
   }, [componentId, component?.props]);
 
   if (!component || !badgeRect) return null;
@@ -115,13 +111,16 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
   const bottomLeftValue = getValue('bottomLeft');
   const bottomRightValue = getValue('bottomRight');
 
-  // Handle individual corner drag
-  const handleCornerDrag = (corner: Corner, newValue: number) => {
+  // Handle individual corner drag (optimized for smooth dragging)
+  const handleCornerDrag = (corner: Corner, newValue: number, isFinished: boolean = false) => {
     const capitalizedCorner = corner.charAt(0).toUpperCase() + corner.slice(1);
     const propName = `borderRadius${capitalizedCorner}`;
 
+    // Round only when drag is finished for smooth dragging
+    const finalValue = isFinished ? Math.max(0, Math.round(newValue)) : Math.max(0, newValue);
+
     updateComponentProps(componentId, {
-      [propName]: Math.max(0, Math.round(newValue)),
+      [propName]: finalValue,
     });
   };
 
@@ -167,7 +166,7 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
         isHovered={hoveredCorner === 'topLeft'}
         onHover={() => setHoveredCorner('topLeft')}
         onLeave={() => setHoveredCorner(null)}
-        onDrag={(newValue) => handleCornerDrag('topLeft', newValue)}
+        onDrag={(newValue, isFinished) => handleCornerDrag('topLeft', newValue, isFinished)}
         badgeRect={badgeRect}
       />
 
@@ -177,7 +176,7 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
         isHovered={hoveredCorner === 'topRight'}
         onHover={() => setHoveredCorner('topRight')}
         onLeave={() => setHoveredCorner(null)}
-        onDrag={(newValue) => handleCornerDrag('topRight', newValue)}
+        onDrag={(newValue, isFinished) => handleCornerDrag('topRight', newValue, isFinished)}
         badgeRect={badgeRect}
       />
 
@@ -187,7 +186,7 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
         isHovered={hoveredCorner === 'bottomLeft'}
         onHover={() => setHoveredCorner('bottomLeft')}
         onLeave={() => setHoveredCorner(null)}
-        onDrag={(newValue) => handleCornerDrag('bottomLeft', newValue)}
+        onDrag={(newValue, isFinished) => handleCornerDrag('bottomLeft', newValue, isFinished)}
         badgeRect={badgeRect}
       />
 
@@ -197,7 +196,7 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
         isHovered={hoveredCorner === 'bottomRight'}
         onHover={() => setHoveredCorner('bottomRight')}
         onLeave={() => setHoveredCorner(null)}
-        onDrag={(newValue) => handleCornerDrag('bottomRight', newValue)}
+        onDrag={(newValue, isFinished) => handleCornerDrag('bottomRight', newValue, isFinished)}
         badgeRect={badgeRect}
       />
     </>
@@ -433,7 +432,7 @@ interface BorderRadiusHandleProps {
   isHovered: boolean;
   onHover: () => void;
   onLeave: () => void;
-  onDrag: (newValue: number) => void;
+  onDrag: (newValue: number, isFinished?: boolean) => void;
   badgeRect: DOMRect;
 }
 
@@ -448,6 +447,7 @@ function BorderRadiusHandle({
 }: BorderRadiusHandleProps) {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
+  const rafRef = React.useRef<number | null>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -457,44 +457,85 @@ function BorderRadiusHandle({
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragStartRef.current) return;
 
-      const totalDeltaX = e.clientX - dragStartRef.current.x;
-      const totalDeltaY = e.clientY - dragStartRef.current.y;
-
-      // FIXED: Inverted logic for intuitive behavior
-      // Drag OUTWARD (away from center) → radius DECREASES (sharper corner)
-      // Drag INWARD (towards center) → radius INCREASES (rounder corner)
-      let delta = 0;
-
-      switch (corner) {
-        case 'topLeft':
-          // Drag up-left (outward) = negative delta → decrease radius
-          // Drag down-right (inward) = positive delta → increase radius
-          delta = (totalDeltaX + totalDeltaY) / 2;
-          break;
-        case 'topRight':
-          // Drag up-right (outward) = negative delta → decrease radius
-          // Drag down-left (inward) = positive delta → increase radius
-          delta = -(totalDeltaX - totalDeltaY) / 2;
-          break;
-        case 'bottomLeft':
-          // Drag down-left (outward) = negative delta → decrease radius
-          // Drag up-right (inward) = positive delta → increase radius
-          delta = (totalDeltaX - totalDeltaY) / 2;
-          break;
-        case 'bottomRight':
-          // Drag down-right (outward) = negative delta → decrease radius
-          // Drag up-left (inward) = positive delta → increase radius
-          delta = -(totalDeltaX + totalDeltaY) / 2;
-          break;
+      // Cancel previous animation frame
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
       }
 
-      const newValue = dragStartRef.current.initialValue + delta;
-      onDrag(newValue);
+      // Throttle updates using requestAnimationFrame for smooth 60fps
+      rafRef.current = requestAnimationFrame(() => {
+        if (!dragStartRef.current) return;
+
+        const totalDeltaX = e.clientX - dragStartRef.current.x;
+        const totalDeltaY = e.clientY - dragStartRef.current.y;
+
+        // FIXED: Inverted logic for intuitive behavior
+        // Drag OUTWARD (away from center) → radius DECREASES (sharper corner)
+        // Drag INWARD (towards center) → radius INCREASES (rounder corner)
+        let delta = 0;
+
+        switch (corner) {
+          case 'topLeft':
+            // Drag up-left (outward) = negative delta → decrease radius
+            // Drag down-right (inward) = positive delta → increase radius
+            delta = (totalDeltaX + totalDeltaY) / 2;
+            break;
+          case 'topRight':
+            // Drag up-right (outward) = negative delta → decrease radius
+            // Drag down-left (inward) = positive delta → increase radius
+            delta = -(totalDeltaX - totalDeltaY) / 2;
+            break;
+          case 'bottomLeft':
+            // Drag down-left (outward) = negative delta → decrease radius
+            // Drag up-right (inward) = positive delta → increase radius
+            delta = (totalDeltaX - totalDeltaY) / 2;
+            break;
+          case 'bottomRight':
+            // Drag down-right (outward) = negative delta → decrease radius
+            // Drag up-left (inward) = positive delta → increase radius
+            delta = -(totalDeltaX + totalDeltaY) / 2;
+            break;
+        }
+
+        const newValue = dragStartRef.current.initialValue + delta;
+        onDrag(newValue, false); // Not finished yet
+      });
     };
 
     const handleMouseUp = () => {
+      // Final update with rounded value
+      if (dragStartRef.current) {
+        const totalDeltaX = window.event ? (window.event as MouseEvent).clientX - dragStartRef.current.x : 0;
+        const totalDeltaY = window.event ? (window.event as MouseEvent).clientY - dragStartRef.current.y : 0;
+
+        let delta = 0;
+        switch (corner) {
+          case 'topLeft':
+            delta = (totalDeltaX + totalDeltaY) / 2;
+            break;
+          case 'topRight':
+            delta = -(totalDeltaX - totalDeltaY) / 2;
+            break;
+          case 'bottomLeft':
+            delta = (totalDeltaX - totalDeltaY) / 2;
+            break;
+          case 'bottomRight':
+            delta = -(totalDeltaX + totalDeltaY) / 2;
+            break;
+        }
+
+        const newValue = dragStartRef.current.initialValue + delta;
+        onDrag(newValue, true); // Finished, will round
+      }
+
       setIsDragging(false);
       dragStartRef.current = null;
+
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
@@ -503,23 +544,28 @@ function BorderRadiusHandle({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Position handle at corner
+  // Position handle at corner (like scale handles - green squares)
   const getPositionStyles = () => {
-    const handleSize = 10; // Small square handle
-    const offset = 3; // Offset from corner
+    const handleSize = 16;
+    const offset = -8; // Negative offset like scale handles
 
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
       width: `${handleSize}px`,
       height: `${handleSize}px`,
-      borderRadius: '2px', // Slightly rounded square
+      borderRadius: '3px', // Slightly rounded squares like scale
       cursor: 'nwse-resize',
-      zIndex: 47, // Above spacing handles
+      zIndex: 47,
       transition: isDragging ? 'none' : 'all 0.15s ease',
-      backgroundColor: isDragging ? '#10b981' : isHovered ? '#3b82f6' : '#93c5fd',
-      border: isDragging ? '2px solid #059669' : isHovered ? '2px solid #2563eb' : '2px solid #60a5fa',
-      boxShadow: isDragging ? '0 0 12px rgba(16, 185, 129, 0.5)' : 'none',
-      opacity: isDragging ? 1 : isHovered ? 1 : 0.6,
+      backgroundColor: isDragging ? '#10b981' : isHovered ? '#34d399' : '#6ee7b7', // Green like scale
+      border: '3px solid white',
+      boxShadow: isDragging ? '0 0 16px rgba(16, 185, 129, 0.7)' : '0 3px 8px rgba(0,0,0,0.3)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '10px',
+      fontWeight: 'bold',
+      color: 'white',
     };
 
     switch (corner) {
@@ -528,25 +574,49 @@ function BorderRadiusHandle({
           ...baseStyles,
           top: `${badgeRect.top + offset}px`,
           left: `${badgeRect.left + offset}px`,
+          cursor: 'nwse-resize',
         };
       case 'topRight':
         return {
           ...baseStyles,
           top: `${badgeRect.top + offset}px`,
           left: `${badgeRect.right - handleSize - offset}px`,
+          cursor: 'nesw-resize',
         };
       case 'bottomLeft':
         return {
           ...baseStyles,
           top: `${badgeRect.bottom - handleSize - offset}px`,
           left: `${badgeRect.left + offset}px`,
+          cursor: 'nesw-resize',
         };
       case 'bottomRight':
         return {
           ...baseStyles,
           top: `${badgeRect.bottom - handleSize - offset}px`,
           left: `${badgeRect.right - handleSize - offset}px`,
+          cursor: 'nwse-resize',
         };
+    }
+  };
+
+  // Get arrow direction (pointing TO center) - LARGER arrows
+  const getArrowPath = () => {
+    const center = 8; // Center of 16px handle
+
+    switch (corner) {
+      case 'topLeft':
+        // Arrow pointing down-right (to center) ↘
+        return `M3 3 L8 8 L3 8 Z`;
+      case 'topRight':
+        // Arrow pointing down-left (to center) ↙
+        return `M13 3 L8 8 L13 8 Z`;
+      case 'bottomLeft':
+        // Arrow pointing up-right (to center) ↗
+        return `M3 13 L8 8 L3 8 Z`;
+      case 'bottomRight':
+        // Arrow pointing up-left (to center) ↖
+        return `M13 13 L8 8 L13 8 Z`;
     }
   };
 
@@ -644,13 +714,32 @@ function BorderRadiusHandle({
       {/* Visual Arc Indicator - shows border radius effect */}
       {arcIndicatorStyles && <div style={arcIndicatorStyles} />}
 
-      {/* Handle */}
+      {/* Handle with Arrow */}
       <div
         onMouseDown={handleMouseDown}
         onMouseEnter={onHover}
         onMouseLeave={onLeave}
         style={getPositionStyles()}
-      />
+      >
+        {/* Arrow SVG pointing TO center */}
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            pointerEvents: 'none',
+          }}
+        >
+          <path
+            d={getArrowPath()}
+            fill="white"
+            opacity={isDragging ? 1 : isHovered ? 0.95 : 0.85}
+          />
+        </svg>
+      </div>
 
       {/* Tooltip */}
       {(isHovered || isDragging) && (

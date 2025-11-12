@@ -55,7 +55,7 @@ export function ShadowControl({
     { value: 'sm', label: 'Small', description: 'Subtle shadow' },
     { value: 'md', label: 'Medium', description: 'Default shadow' },
     { value: 'lg', label: 'Large', description: 'Pronounced shadow' },
-    { value: 'xl', label: 'Extra Large', description: 'Strong shadow' },
+    { value: 'xl', label: 'Extra', description: 'Strong shadow' },
   ];
 
   const handlePresetSelect = (value: 'none' | 'sm' | 'md' | 'lg' | 'xl') => {
@@ -97,26 +97,51 @@ export function ShadowControl({
       {/* Preset Mode */}
       {!showCustom && (
         <div className="space-y-3">
-          {/* Preset Selector */}
-          <div className="grid grid-cols-5 gap-1">
-            {presets.map((p) => (
-              <button
-                key={p.value}
-                type="button"
-                onClick={() => handlePresetSelect(p.value)}
-                className={`
-                  px-2 py-2 text-xs font-medium rounded-md border transition-all
-                  ${
-                    preset === p.value
-                      ? 'ring-2 ring-blue-500 bg-blue-50 text-blue-600 border-blue-500'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:shadow-sm'
-                  }
-                `}
-                title={p.description}
-              >
-                {p.label}
-              </button>
-            ))}
+          {/* Preset Selector - Visual Preview Buttons */}
+          <div className="grid grid-cols-5 gap-2">
+            {presets.map((p) => {
+              // Get the box shadow for this preset
+              let shadowStyle = 'none';
+              switch (p.value) {
+                case 'sm':
+                  shadowStyle = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                  break;
+                case 'md':
+                  shadowStyle = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+                  break;
+                case 'lg':
+                  shadowStyle = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+                  break;
+                case 'xl':
+                  shadowStyle = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+                  break;
+              }
+
+              return (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => handlePresetSelect(p.value)}
+                  className={`
+                    flex flex-col items-center justify-center p-3 rounded-md border-2 transition-all
+                    ${
+                      preset === p.value
+                        ? 'ring-2 ring-blue-500 bg-blue-50 border-blue-500'
+                        : 'bg-white border-gray-300 hover:border-blue-400 hover:shadow-sm'
+                    }
+                  `}
+                  title={p.description}
+                >
+                  {/* Visual Box Preview with Shadow */}
+                  <div
+                    className="w-16 h-12 bg-white rounded-md mb-1 border border-gray-100"
+                    style={{ boxShadow: shadowStyle }}
+                  />
+                  {/* Label */}
+                  <span className="text-xs text-gray-600">{p.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Live Preview - Enhanced */}

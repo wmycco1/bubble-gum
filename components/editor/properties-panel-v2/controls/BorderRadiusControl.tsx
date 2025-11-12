@@ -134,120 +134,135 @@ export function BorderRadiusControl({
         />
       )}
 
-      {/* Advanced Mode - Corner Controls Around Preview */}
+      {/* Advanced Mode - Controls in Corners Around Preview */}
       {isExpanded && (
         <div className="space-y-2">
-          {/* Visual Model with Corner Controls */}
-          <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
-            <div className="relative" style={{ minHeight: '200px' }}>
-              {/* Center Preview Box - Increased to 100px (25% bigger than original 80px) */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          {/* Corner-based Layout with Preview in Center */}
+          <div className="relative p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm" style={{ minHeight: '280px' }}>
+            {/* Center Preview Box - Adaptive with 5% margin */}
+            <div
+              className="absolute"
+              style={{
+                top: '50px',
+                left: '50px',
+                right: '50px',
+                bottom: '50px',
+                margin: '5%', // 5% отступ со всех сторон
+              }}
+            >
+              <div className="relative w-full h-full flex items-center justify-center">
+                {/* Preview Box - Adaptive, maintains aspect ratio */}
                 <div
-                  className="w-25 h-25 bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-xl transition-all duration-300 border-2 border-gray-400 relative overflow-hidden"
+                  className="bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-xl transition-all duration-300 border-2 border-gray-400 relative"
                   style={{
                     borderTopLeftRadius: `${topLeft ?? value ?? 0}${topLeftUnit}`,
                     borderTopRightRadius: `${topRight ?? value ?? 0}${topRightUnit}`,
                     borderBottomLeftRadius: `${bottomLeft ?? value ?? 0}${bottomLeftUnit}`,
                     borderBottomRightRadius: `${bottomRight ?? value ?? 0}${bottomRightUnit}`,
-                    width: '100px',
-                    height: '100px',
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '200px',
+                    maxHeight: '200px',
+                    minWidth: '80px',
+                    minHeight: '80px',
+                    aspectRatio: '1 / 1',
                   }}
                 >
-                  {/* Corner gradient indicators to show radius visually */}
+                  {/* Corner gradient indicators */}
                   <div
-                    className="absolute top-0 left-0 w-6 h-6 bg-gradient-to-br from-blue-400/30 to-transparent pointer-events-none transition-all duration-300"
+                    className="absolute top-0 left-0 w-8 h-8 bg-gradient-to-br from-blue-400/40 to-transparent pointer-events-none transition-all duration-300"
                     style={{
                       borderTopLeftRadius: `${topLeft ?? value ?? 0}${topLeftUnit}`,
                     }}
                   />
                   <div
-                    className="absolute top-0 right-0 w-6 h-6 bg-gradient-to-bl from-blue-400/30 to-transparent pointer-events-none transition-all duration-300"
+                    className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-blue-400/40 to-transparent pointer-events-none transition-all duration-300"
                     style={{
                       borderTopRightRadius: `${topRight ?? value ?? 0}${topRightUnit}`,
                     }}
                   />
                   <div
-                    className="absolute bottom-0 left-0 w-6 h-6 bg-gradient-to-tr from-blue-400/30 to-transparent pointer-events-none transition-all duration-300"
+                    className="absolute bottom-0 left-0 w-8 h-8 bg-gradient-to-tr from-blue-400/40 to-transparent pointer-events-none transition-all duration-300"
                     style={{
                       borderBottomLeftRadius: `${bottomLeft ?? value ?? 0}${bottomLeftUnit}`,
                     }}
                   />
                   <div
-                    className="absolute bottom-0 right-0 w-6 h-6 bg-gradient-to-tl from-blue-400/30 to-transparent pointer-events-none transition-all duration-300"
+                    className="absolute bottom-0 right-0 w-8 h-8 bg-gradient-to-tl from-blue-400/40 to-transparent pointer-events-none transition-all duration-300"
                     style={{
                       borderBottomRightRadius: `${bottomRight ?? value ?? 0}${bottomRightUnit}`,
                     }}
                   />
 
-                  <span className="text-3xl font-bold text-gray-400 z-10">R</span>
+                  <span className="text-3xl font-bold text-gray-400 z-10 relative">R</span>
 
-                  {/* Diagonal arrows pointing TO center (fixed direction) */}
-                  <div className="absolute top-2 left-2 text-blue-600" title="Top-Left">
+                  {/* Arrows OUTSIDE preview box pointing INWARD (to center) */}
+                  <div className="absolute -top-4 -left-4 text-blue-600 pointer-events-none z-20" title="Top-Left">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 5l7 7m-7-7v5m0-5h5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3L18 18M18 18v-6M18 18h-6" />
                     </svg>
                   </div>
-                  <div className="absolute top-2 right-2 text-blue-600" title="Top-Right">
+                  <div className="absolute -top-4 -right-4 text-blue-600 pointer-events-none z-20" title="Top-Right">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 5l-7 7m7-7v5m0-5h-5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 3L6 18M6 18v-6M6 18h6" />
                     </svg>
                   </div>
-                  <div className="absolute bottom-2 left-2 text-blue-600" title="Bottom-Left">
+                  <div className="absolute -bottom-4 -left-4 text-blue-600 pointer-events-none z-20" title="Bottom-Left">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 19l7-7m-7 7v-5m0 5h5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21L18 6M18 6v6M18 6h-6" />
                     </svg>
                   </div>
-                  <div className="absolute bottom-2 right-2 text-blue-600" title="Bottom-Right">
+                  <div className="absolute -bottom-4 -right-4 text-blue-600 pointer-events-none z-20" title="Bottom-Right">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 19l-7-7m7 7v-5m0 5h-5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21L6 6M6 6v6M6 6h6" />
                     </svg>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Top-Left Corner Control */}
-              <div className="absolute top-0 left-0">
-                <CornerControl
-                  corner="TopLeft"
-                  value={topLeft ?? value}
-                  unit={topLeftUnit}
-                  onValueChange={onCornerChange}
-                  onUnitChange={onUnitChange}
-                />
-              </div>
+            {/* Top-Left Corner Control - Aligned with arrow */}
+            <div className="absolute" style={{ top: '5px', left: '5px' }}>
+              <CornerControl
+                corner="TopLeft"
+                value={topLeft ?? value}
+                unit={topLeftUnit}
+                onValueChange={onCornerChange}
+                onUnitChange={onUnitChange}
+              />
+            </div>
 
-              {/* Top-Right Corner Control */}
-              <div className="absolute top-0 right-0">
-                <CornerControl
-                  corner="TopRight"
-                  value={topRight ?? value}
-                  unit={topRightUnit}
-                  onValueChange={onCornerChange}
-                  onUnitChange={onUnitChange}
-                />
-              </div>
+            {/* Top-Right Corner Control - Aligned with arrow */}
+            <div className="absolute" style={{ top: '5px', right: '5px' }}>
+              <CornerControl
+                corner="TopRight"
+                value={topRight ?? value}
+                unit={topRightUnit}
+                onValueChange={onCornerChange}
+                onUnitChange={onUnitChange}
+              />
+            </div>
 
-              {/* Bottom-Left Corner Control */}
-              <div className="absolute bottom-0 left-0">
-                <CornerControl
-                  corner="BottomLeft"
-                  value={bottomLeft ?? value}
-                  unit={bottomLeftUnit}
-                  onValueChange={onCornerChange}
-                  onUnitChange={onUnitChange}
-                />
-              </div>
+            {/* Bottom-Left Corner Control - Aligned with arrow */}
+            <div className="absolute" style={{ bottom: '5px', left: '5px' }}>
+              <CornerControl
+                corner="BottomLeft"
+                value={bottomLeft ?? value}
+                unit={bottomLeftUnit}
+                onValueChange={onCornerChange}
+                onUnitChange={onUnitChange}
+              />
+            </div>
 
-              {/* Bottom-Right Corner Control */}
-              <div className="absolute bottom-0 right-0">
-                <CornerControl
-                  corner="BottomRight"
-                  value={bottomRight ?? value}
-                  unit={bottomRightUnit}
-                  onValueChange={onCornerChange}
-                  onUnitChange={onUnitChange}
-                />
-              </div>
+            {/* Bottom-Right Corner Control - Aligned with arrow */}
+            <div className="absolute" style={{ bottom: '5px', right: '5px' }}>
+              <CornerControl
+                corner="BottomRight"
+                value={bottomRight ?? value}
+                unit={bottomRightUnit}
+                onValueChange={onCornerChange}
+                onUnitChange={onUnitChange}
+              />
             </div>
           </div>
 
@@ -421,6 +436,194 @@ function SimpleMode({ value, unit, setUnit, handleShorthandChange, onChange }: S
           </svg>
         </button>
       </div>
+    </div>
+  );
+}
+
+/**
+ * CompactCornerControl Component - Horizontal layout for best practices
+ * Layout: label → input → [- +] buttons → unit dropdown (horizontal)
+ * Used in V10.0 best practices layout (Figma/DevTools style)
+ */
+interface CompactCornerControlProps {
+  label: string;
+  corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight';
+  value?: number;
+  unit: 'px' | 'rem' | 'em' | '%';
+  onValueChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined) => void;
+  onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%') => void;
+}
+
+function CompactCornerControl({
+  label,
+  corner,
+  value,
+  unit,
+  onValueChange,
+  onUnitChange,
+}: CompactCornerControlProps) {
+  const [isIncrementPressed, setIsIncrementPressed] = React.useState(false);
+  const [isDecrementPressed, setIsDecrementPressed] = React.useState(false);
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const speedRef = React.useRef(100);
+  const valueRef = React.useRef(value ?? 0);
+
+  React.useEffect(() => {
+    valueRef.current = value ?? 0;
+  }, [value]);
+
+  const handleIncrement = React.useCallback(() => {
+    const currentValue = valueRef.current;
+    const newValue = currentValue + 1;
+    if (onValueChange) {
+      onValueChange(corner, newValue);
+      valueRef.current = newValue;
+    }
+  }, [corner, onValueChange]);
+
+  const handleDecrement = React.useCallback(() => {
+    const currentValue = valueRef.current;
+    const newValue = Math.max(0, currentValue - 1);
+    if (onValueChange) {
+      onValueChange(corner, newValue);
+      valueRef.current = newValue;
+    }
+  }, [corner, onValueChange]);
+
+  const startIncrement = () => {
+    setIsIncrementPressed(true);
+    handleIncrement();
+    speedRef.current = 100;
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        handleIncrement();
+        if (speedRef.current > 20) {
+          speedRef.current = Math.max(20, speedRef.current - 10);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = setInterval(handleIncrement, speedRef.current);
+        }
+      }, speedRef.current);
+    }, 200);
+  };
+
+  const startDecrement = () => {
+    setIsDecrementPressed(true);
+    handleDecrement();
+    speedRef.current = 100;
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        handleDecrement();
+        if (speedRef.current > 20) {
+          speedRef.current = Math.max(20, speedRef.current - 10);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = setInterval(handleDecrement, speedRef.current);
+        }
+      }, speedRef.current);
+    }, 200);
+  };
+
+  const stopChange = () => {
+    setIsIncrementPressed(false);
+    setIsDecrementPressed(false);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    speedRef.current = 100;
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value === '' ? undefined : Number(e.target.value);
+    if (onValueChange) {
+      onValueChange(corner, newValue);
+    }
+  };
+
+  // Horizontal compact layout: label → input → [- +] → unit
+  return (
+    <div className="flex items-center gap-2">
+      {/* Label */}
+      <label className="text-xs font-medium text-gray-600 w-20 flex-shrink-0">
+        {label}
+      </label>
+
+      {/* Input field */}
+      <input
+        type="number"
+        min="0"
+        step={unit === 'px' ? '1' : '0.1'}
+        value={value ?? ''}
+        onChange={handleInputChange}
+        placeholder="0"
+        className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        style={{ MozAppearance: 'textfield' }}
+      />
+
+      {/* - and + buttons (horizontal) */}
+      <div className="flex items-center gap-0.5">
+        <button
+          type="button"
+          onMouseDown={startDecrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startDecrement}
+          onTouchEnd={stopChange}
+          disabled={(value ?? 0) <= 0}
+          className={`
+            px-1.5 py-0.5 text-sm font-bold border rounded transition-all
+            ${isDecrementPressed && (value ?? 0) > 0
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+            }
+            disabled:opacity-40 disabled:cursor-not-allowed
+          `}
+          title="Decrement (hold to repeat)"
+        >
+          −
+        </button>
+        <button
+          type="button"
+          onMouseDown={startIncrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startIncrement}
+          onTouchEnd={stopChange}
+          className={`
+            px-1.5 py-0.5 text-sm font-bold border rounded transition-all
+            ${isIncrementPressed
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+            }
+          `}
+          title="Increment (hold to repeat)"
+        >
+          +
+        </button>
+      </div>
+
+      {/* Unit selector dropdown */}
+      <select
+        value={unit}
+        onChange={(e) => onUnitChange?.(corner, e.target.value as 'px' | 'rem' | 'em' | '%')}
+        className="px-2 py-1 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+      >
+        <option value="px">px</option>
+        <option value="rem">rem</option>
+        <option value="em">em</option>
+        <option value="%">%</option>
+      </select>
     </div>
   );
 }
