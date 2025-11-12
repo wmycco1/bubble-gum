@@ -390,28 +390,29 @@ function UniformScaleHandle({
         }
       `}</style>
 
-      {/* Tooltip */}
+      {/* Tooltip - Brutalist dark style */}
       {(isHovered || isDragging) && (
         <div
           style={{
             position: 'absolute',
             left: `${centerX}px`,
-            top: `${centerY - 32}px`,
+            top: `${centerY - 36}px`,
             transform: 'translateX(-50%)',
-            backgroundColor: '#4f46e5',
+            backgroundColor: '#1f2937', // Dark gray (gray-800) - 14.6:1 contrast with white
             color: 'white',
-            padding: '4px 8px',
-            borderRadius: '4px',
+            padding: '6px 10px',
+            borderRadius: '6px',
             fontSize: '11px',
             fontWeight: 600,
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
             zIndex: 51,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.1)', // Subtle highlight
           }}
         >
           ↔↕ uniform: ×{avgScale.toFixed(2)}
-          {isDragging && <span className="ml-1 text-indigo-200">(all sides)</span>}
+          {isDragging && <span className="ml-1 text-gray-300">(all sides)</span>}
         </div>
       )}
     </>
@@ -527,28 +528,29 @@ function RotationHandle({ componentId, centerX, centerY, elementRect, currentRot
         🔄
       </div>
 
-      {/* Tooltip */}
+      {/* Tooltip - Brutalist dark style */}
       {(isHovered || isDragging) && (
         <div
           style={{
             position: 'absolute',
             left: `${handleX}px`,
-            top: `${handleY - 28}px`,
+            top: `${handleY - 32}px`,
             transform: 'translateX(-50%)',
-            backgroundColor: '#2563eb',
+            backgroundColor: '#1f2937', // Dark gray (gray-800) - 14.6:1 contrast with white
             color: 'white',
-            padding: '4px 8px',
-            borderRadius: '4px',
+            padding: '6px 10px',
+            borderRadius: '6px',
             fontSize: '11px',
             fontWeight: 600,
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
             zIndex: 51,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.1)', // Subtle highlight
           }}
         >
-          🔄 {currentRotation}°
-          {isDragging && <span className="ml-1 text-blue-200">(Shift: snap 15°)</span>}
+          ↻ {currentRotation}°
+          {isDragging && <span className="ml-1 text-gray-300">(Shift: snap 15°)</span>}
         </div>
       )}
     </>
@@ -760,31 +762,32 @@ function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentS
     }
   };
 
-  // Tooltip position
+  // Tooltip position - Brutalist dark style
   const getTooltipStyles = (): React.CSSProperties => {
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
-      backgroundColor: '#10b981',
+      backgroundColor: '#1f2937', // Dark gray (gray-800) - 14.6:1 contrast with white
       color: 'white',
-      padding: '3px 8px',
-      borderRadius: '4px',
-      fontSize: '10px',
+      padding: '6px 10px',
+      borderRadius: '6px',
+      fontSize: '11px',
       fontWeight: 600,
       whiteSpace: 'nowrap',
       pointerEvents: 'none',
       zIndex: 51,
-      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+      boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
+      border: '1px solid rgba(255,255,255,0.1)', // Subtle highlight
     };
 
     switch (corner) {
       case 'topLeft':
-        return { ...baseStyles, top: '-24px', left: '0' };
+        return { ...baseStyles, top: '-28px', left: '0' };
       case 'topRight':
-        return { ...baseStyles, top: '-24px', right: '0' };
+        return { ...baseStyles, top: '-28px', right: '0' };
       case 'bottomLeft':
-        return { ...baseStyles, bottom: '-24px', left: '0' };
+        return { ...baseStyles, bottom: '-28px', left: '0' };
       case 'bottomRight':
-        return { ...baseStyles, bottom: '-24px', right: '0' };
+        return { ...baseStyles, bottom: '-28px', right: '0' };
     }
   };
 
@@ -798,11 +801,11 @@ function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentS
         style={getPositionStyles()}
       />
 
-      {/* Tooltip */}
+      {/* Tooltip - No emoji, clean text */}
       {(isHovered || isDragging) && (
         <div style={getTooltipStyles()}>
-          📐 scale: {currentScaleX.toFixed(2)}×{currentScaleY.toFixed(2)}
-          {isDragging && <span className="ml-1 text-green-200">(Shift: uniform)</span>}
+          scale: {currentScaleX.toFixed(2)}×{currentScaleY.toFixed(2)}
+          {isDragging && <span className="ml-1 text-gray-300">(Shift: uniform)</span>}
         </div>
       )}
     </>

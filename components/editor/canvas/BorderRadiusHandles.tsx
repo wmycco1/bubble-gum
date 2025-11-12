@@ -521,28 +521,29 @@ function UniformBorderRadiusHandle({
         }
       `}</style>
 
-      {/* Tooltip */}
+      {/* Tooltip - Brutalist dark style */}
       {(isHovered || isDragging) && (
         <div
           style={{
             position: 'absolute',
             left: `${centerX}px`,
-            top: `${centerY - 32}px`,
+            top: `${centerY - 36}px`,
             transform: 'translateX(-50%)',
-            backgroundColor: '#4f46e5',
+            backgroundColor: '#1f2937', // Dark gray (gray-800) - 14.6:1 contrast with white
             color: 'white',
-            padding: '4px 8px',
-            borderRadius: '4px',
+            padding: '6px 10px',
+            borderRadius: '6px',
             fontSize: '11px',
             fontWeight: 600,
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
             zIndex: 51,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.1)', // Subtle highlight
           }}
         >
           ↔↕ all corners: {value}px
-          {isDragging && <span className="ml-1 text-indigo-200">(uniform)</span>}
+          {isDragging && <span className="ml-1 text-gray-300">(uniform)</span>}
         </div>
       )}
     </>
@@ -726,31 +727,46 @@ function BorderRadiusHandle({
     }
   };
 
-  // Tooltip position
+  // Tooltip arrow symbol for each corner
+  const getTooltipArrow = (): string => {
+    switch (corner) {
+      case 'topLeft':
+        return '↘'; // Down-right
+      case 'topRight':
+        return '↙'; // Down-left
+      case 'bottomLeft':
+        return '↗'; // Up-right
+      case 'bottomRight':
+        return '↖'; // Up-left
+    }
+  };
+
+  // Tooltip position - Brutalist dark style
   const getTooltipStyles = (): React.CSSProperties => {
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
-      backgroundColor: '#10b981',
+      backgroundColor: '#1f2937', // Dark gray (gray-800) - 14.6:1 contrast with white
       color: 'white',
-      padding: '3px 8px',
-      borderRadius: '4px',
-      fontSize: '10px',
+      padding: '6px 10px',
+      borderRadius: '6px',
+      fontSize: '11px',
       fontWeight: 600,
       whiteSpace: 'nowrap',
       pointerEvents: 'none',
       zIndex: 51,
-      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+      boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
+      border: '1px solid rgba(255,255,255,0.1)', // Subtle highlight
     };
 
     switch (corner) {
       case 'topLeft':
-        return { ...baseStyles, top: '-22px', left: '0' };
+        return { ...baseStyles, top: '-26px', left: '0' };
       case 'topRight':
-        return { ...baseStyles, top: '-22px', right: '0' };
+        return { ...baseStyles, top: '-26px', right: '0' };
       case 'bottomLeft':
-        return { ...baseStyles, bottom: '-22px', left: '0' };
+        return { ...baseStyles, bottom: '-26px', left: '0' };
       case 'bottomRight':
-        return { ...baseStyles, bottom: '-22px', right: '0' };
+        return { ...baseStyles, bottom: '-26px', right: '0' };
     }
   };
 
@@ -831,7 +847,7 @@ function BorderRadiusHandle({
       {/* Tooltip */}
       {(isHovered || isDragging) && (
         <div style={getTooltipStyles()}>
-          🔄 radius: {value}px
+          {getTooltipArrow()} radius: {value}px
         </div>
       )}
     </>
