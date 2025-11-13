@@ -1057,9 +1057,8 @@ function UniformSpacingHandle({
         const totalDeltaX = e.clientX - dragStartRef.current.x;
         const totalDeltaY = e.clientY - dragStartRef.current.y;
 
-        // V7.11: Use average of absolute deltas for proportional omnidirectional control
-        // Positive movement (right/down) = increase, negative movement (left/up) = decrease
-        const delta = (totalDeltaX + totalDeltaY) / 2;
+        // Average of X and Y deltas for omnidirectional control
+        const delta = (totalDeltaX - totalDeltaY) / 2;
 
         const newValue = dragStartRef.current.initialValue + delta;
         onDrag(newValue);
