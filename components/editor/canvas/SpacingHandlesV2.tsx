@@ -1437,7 +1437,7 @@ function SpacingBarHandle({
       fontWeight: 600,
       whiteSpace: 'nowrap',
       pointerEvents: 'none',
-      zIndex: 9999, // Very high z-index to ensure tooltip is always on top
+      zIndex: 51,
       boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
       border: '1px solid rgba(255,255,255,0.1)',
     };
