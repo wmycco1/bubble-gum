@@ -292,60 +292,9 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
     const capitalizedSide = side.charAt(0).toUpperCase() + side.slice(1);
     let clampedValue = Math.max(0, Math.round(newValue));
 
-    // V7.6: Figma-like constraint system (auto-adjust opposite margin)
-    // In Visual Mode, simulate Figma's constraints by auto-adjusting opposite margin
-    // This makes margin-right ACTUALLY MOVE the Badge left (like Figma)
-    if (spacingMode === 'margin' && !cssCompliantMode && badgeRect) {
-      const wrapperWidth = (badgeRect as any).wrapperWidth || 0;
-      const wrapperHeight = (badgeRect as any).wrapperHeight || 0;
-
-      // Mathematical principle: margin-left + badgeWidth + margin-right = wrapperWidth
-      const availableWidth = wrapperWidth - badgeRect.width;
-      const availableHeight = wrapperHeight - badgeRect.height;
-
-      // Clamp to available space
-      const maxHorizontal = Math.max(0, availableWidth);
-      const maxVertical = Math.max(0, availableHeight);
-
-      switch (side) {
-        case 'left':
-          clampedValue = Math.min(clampedValue, maxHorizontal);
-          // Auto-adjust margin-right to maintain constraint
-          const newMarginRight = availableWidth - clampedValue;
-          updateComponentProps(componentId, {
-            [`${prefix}Left`]: clampedValue,
-            [`${prefix}Right`]: Math.max(0, newMarginRight),
-          });
-          return; // Skip normal update
-        case 'right':
-          clampedValue = Math.min(clampedValue, maxHorizontal);
-          // Auto-adjust margin-left to maintain constraint (THIS MOVES BADGE LEFT!)
-          const newMarginLeft = availableWidth - clampedValue;
-          updateComponentProps(componentId, {
-            [`${prefix}Right`]: clampedValue,
-            [`${prefix}Left`]: Math.max(0, newMarginLeft),
-          });
-          return; // Skip normal update
-        case 'top':
-          clampedValue = Math.min(clampedValue, maxVertical);
-          // Auto-adjust margin-bottom to maintain constraint
-          const newMarginBottom = availableHeight - clampedValue;
-          updateComponentProps(componentId, {
-            [`${prefix}Top`]: clampedValue,
-            [`${prefix}Bottom`]: Math.max(0, newMarginBottom),
-          });
-          return; // Skip normal update
-        case 'bottom':
-          clampedValue = Math.min(clampedValue, maxVertical);
-          // Auto-adjust margin-top to maintain constraint (THIS MOVES BADGE UP!)
-          const newMarginTop = availableHeight - clampedValue;
-          updateComponentProps(componentId, {
-            [`${prefix}Bottom`]: clampedValue,
-            [`${prefix}Top`]: Math.max(0, newMarginTop),
-          });
-          return; // Skip normal update
-      }
-    }
+    // V7.10: Simple margin behavior - NO auto-adjustment
+    // Each margin is independent, wrapper expands naturally
+    // This matches corner handle behavior and allows wrapper to grow
 
     updateComponentProps(componentId, {
       [`${prefix}${capitalizedSide}`]: clampedValue,
