@@ -26,6 +26,10 @@ export function ComponentToolbar({ componentId, position = 'top-right' }: Compon
   const visualEditingMode = useCanvasStore((state) => state.visualEditingMode);
   const setVisualEditingMode = useCanvasStore((state) => state.setVisualEditingMode);
 
+  // CSS-compliant mode state
+  const cssCompliantMode = useCanvasStore((state) => state.cssCompliantMode);
+  const setCSSCompliantMode = useCanvasStore((state) => state.setCSSCompliantMode);
+
   const handleDuplicate = (e: React.MouseEvent) => {
     e.stopPropagation();
     duplicateComponent(componentId);
@@ -57,15 +61,28 @@ export function ComponentToolbar({ componentId, position = 'top-right' }: Compon
   // ═══════════════════════════════════════════════════════════════
   const editingModes = [
     {
-      id: 'spacing',
-      mode: 'spacing' as EditingMode,
+      id: 'margin',
+      mode: 'margin' as EditingMode,
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          <rect x="4" y="4" width="16" height="16" strokeWidth={2} />
+          <rect x="7" y="7" width="10" height="10" strokeWidth={1} strokeDasharray="2,2" />
         </svg>
       ),
-      label: 'Spacing (M/P)',
-      description: 'Edit margin & padding',
+      label: 'Margin',
+      description: 'Edit outer spacing',
+    },
+    {
+      id: 'padding',
+      mode: 'padding' as EditingMode,
+      icon: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <rect x="4" y="4" width="16" height="16" strokeWidth={1} strokeDasharray="2,2" />
+          <rect x="7" y="7" width="10" height="10" strokeWidth={2} fill="currentColor" fillOpacity="0.1" />
+        </svg>
+      ),
+      label: 'Padding',
+      description: 'Edit inner spacing',
     },
     {
       id: 'borderRadius',
@@ -180,7 +197,54 @@ export function ComponentToolbar({ componentId, position = 'top-right' }: Compon
           );
         })}
 
-        {/* Divider between editing modes and actions */}
+        {/* Divider between editing modes and CSS mode */}
+        <div className="w-px h-6 bg-slate-200 mx-0.5" />
+
+        {/* ═══════════════════════════════════════════════════════════════
+            CSS-COMPLIANT MODE TOGGLE (V7.0)
+            ═══════════════════════════════════════════════════════════════ */}
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setCSSCompliantMode(!cssCompliantMode);
+            }}
+            onMouseEnter={() => setShowTooltip('css-mode')}
+            onMouseLeave={() => setShowTooltip(null)}
+            className={`
+              px-2 py-1 rounded text-xs font-medium transition-all duration-150
+              ${cssCompliantMode
+                ? 'bg-purple-500 text-white shadow-md'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }
+              hover:scale-105 active:scale-95
+            `}
+            aria-label={cssCompliantMode ? 'CSS Mode' : 'Visual Mode'}
+            aria-pressed={cssCompliantMode}
+          >
+            {cssCompliantMode ? '⚙️ CSS' : '🎨 Visual'}
+          </button>
+
+          {/* Tooltip */}
+          {showTooltip === 'css-mode' && (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-3 py-2 bg-slate-900 text-white text-xs rounded whitespace-nowrap pointer-events-none z-[100] max-w-xs">
+              <div className="font-semibold mb-1">
+                {cssCompliantMode ? 'CSS-compliant Mode' : 'Visual Mode'}
+              </div>
+              <div className="text-slate-300 text-[10px]">
+                {cssCompliantMode
+                  ? 'Margin behaves like real CSS (may collapse with parent)'
+                  : 'Margin stays inside component (like Figma)'}
+              </div>
+              {/* Arrow */}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+                <div className="border-4 border-transparent border-t-slate-900" />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Divider between CSS mode and actions */}
         <div className="w-px h-6 bg-slate-200 mx-0.5" />
 
         {/* ═══════════════════════════════════════════════════════════════

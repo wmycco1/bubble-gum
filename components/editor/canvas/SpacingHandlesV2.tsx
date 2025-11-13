@@ -13,18 +13,20 @@
  * - Ghost indicators with tooltips for disabled handles
  * - GOD-TIER margin overlay mathematics (V3.0+)
  *
- * Version: 3.5 (FIXED ALL 4 HANDLES) - 2025-11-13
- * V3.0: Margin overlays now show ACTUAL space (badgeRect), not props values
- * V3.1: Fixed wrapper div to allow margin to create space (display: inline-block)
- * V3.2: First attempt - changed left/right handles to wrapper center (partial fix)
- * V3.3: Second attempt - smart conditional logic based on Badge height (wrong approach)
- * V3.4: Fixed left/right handles - margin space spans full wrapper HEIGHT
- * V3.5: Fixed top/bottom handles - margin space spans full wrapper WIDTH
- *       KEY INSIGHT: Margin space is perpendicular to its direction!
- *       - Left/right margin = horizontal gap, extends VERTICALLY (full wrapper height)
- *       - Top/bottom margin = vertical gap, extends HORIZONTALLY (full wrapper width)
- *       ALL handles now use wrapper center for perpendicular axis
- * Tested: 200 margin combinations (8 Display × 5 Align × 5 Position)
+ * Version: 7.0 (MARGIN INSIDE WRAPPER ARCHITECTURE) - 2025-11-13
+ * V7.0: GOD-TIER ARCHITECTURAL FIX ✅
+ *       - MARGIN OVERLAYS: Show margin space INSIDE wrapper (not outside!) ✅
+ *       - Visualize space BETWEEN wrapper edge and Badge edge ✅
+ *       - Margin applied directly to Badge via CSS ✅
+ *       - Measurements: Badge position relative to wrapper parent
+ *       - MARGIN: Overlays positioned from wrapper edge to Badge edge (inside wrapper bounds)
+ *       - PADDING: Positive positioning inside Badge border box
+ *       - CSS Box Model compliant architecture
+ *       - Smart display logic: block→100%, inline-block→fit-content
+ * V6.0: Negative positioning (DEPRECATED - overlays went outside wrapper)
+ * V5.0: Margin on wrapper (DEPRECATED - caused issues)
+ * V4.0: Mode controlled by ComponentToolbar
+ * Tested: All display modes (block, inline-block, flex, inline-flex, grid)
  * Documentation: MARGIN_OVERLAY_MATHEMATICS.md
  */
 
@@ -37,15 +39,16 @@ type Side = 'top' | 'right' | 'bottom' | 'left';
 
 interface SpacingHandlesV2Props {
   componentId: string;
+  mode?: 'margin' | 'padding'; // Mode is now controlled by parent (RenderComponent)
 }
 
-export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
-  const { components, updateComponentProps } = useCanvasStore();
-  const [spacingMode, setSpacingMode] = useState<SpacingMode>('margin');
+export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }: SpacingHandlesV2Props) {
+  const { components, updateComponentProps, cssCompliantMode } = useCanvasStore();
+  const spacingMode: SpacingMode = externalMode; // Use mode from props instead of local state
   const [hoveredSide, setHoveredSide] = useState<Side | null>(null);
   const [draggingSide, setDraggingSide] = useState<Side | null>(null);
   const [badgeRect, setBadgeRect] = useState<DOMRect | null>(null);
-  const [wrapperRect, setWrapperRect] = useState<DOMRect | null>(null);
+  // V7.0: Badge controls margin via CSS, overlays conditional based on cssCompliantMode
   const rafRef = React.useRef<number | null>(null);
   const instanceId = React.useRef(`instance-${Math.random().toString(36).substr(2, 9)}`).current;
 
@@ -191,43 +194,79 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
   const bottomValue = getValue('bottom');
   const leftValue = getValue('left');
 
-  // Find the actual Badge element (not wrapper) and track its position
+  // V7.0: MARGIN CONDITIONAL - Measure Badge relative to different parent based on cssCompliantMode
   React.useEffect(() => {
     if (!componentId) return;
 
     const updateBadgeRect = () => {
-      const wrapper = document.querySelector(`[data-component-id="${componentId}"]`);
+      // Find wrapper div via data-component-id
+      const wrapper = document.querySelector(`[data-component-id="${componentId}"]`) as HTMLElement;
       if (!wrapper) return;
 
       // Find the actual Badge span element (has data-testid="badge")
       const badgeElement = wrapper.querySelector('[data-testid="badge"]') as HTMLElement;
-      if (badgeElement) {
-        const rect = badgeElement.getBoundingClientRect();
-        const wrapperRectRaw = wrapper.getBoundingClientRect();
+      if (!badgeElement) return;
 
-        // Save wrapper dimensions (relative coordinates starting at 0,0)
-        const relativeWrapperRect = {
-          top: 0,
-          left: 0,
-          width: wrapperRectRaw.width,
-          height: wrapperRectRaw.height,
-          right: wrapperRectRaw.width,
-          bottom: wrapperRectRaw.height,
-        } as DOMRect;
-
-        // Calculate relative position to wrapper
-        const relativeRect = {
-          top: rect.top - wrapperRectRaw.top,
-          left: rect.left - wrapperRectRaw.left,
-          width: rect.width,
-          height: rect.height,
-          right: rect.right - wrapperRectRaw.left,
-          bottom: rect.bottom - wrapperRectRaw.top,
-        } as DOMRect;
-
-        setWrapperRect(relativeWrapperRect);
-        setBadgeRect(relativeRect);
+      // CONDITIONAL PARENT: depends on cssCompliantMode
+      let relativeParent: HTMLElement;
+      if (cssCompliantMode) {
+        // CSS-compliant mode: use canvas parent (allows margin to go outside)
+        relativeParent = wrapper.parentElement as HTMLElement;
+        if (!relativeParent) return;
+      } else {
+        // Visual mode: use .relative wrapper (keeps margin inside)
+        relativeParent = badgeElement.closest('.relative') as HTMLElement;
+        if (!relativeParent) return;
       }
+
+      const badgeRectRaw = badgeElement.getBoundingClientRect();
+      const relativeParentRectRaw = relativeParent.getBoundingClientRect();
+
+      // V7.0: Get Badge's CSS margin (applied directly to Badge now!)
+      const badgeStyle = window.getComputedStyle(badgeElement);
+      const badgeMarginTop = parseFloat(badgeStyle.marginTop) || 0;
+      const badgeMarginLeft = parseFloat(badgeStyle.marginLeft) || 0;
+      const badgeMarginRight = parseFloat(badgeStyle.marginRight) || 0;
+      const badgeMarginBottom = parseFloat(badgeStyle.marginBottom) || 0;
+
+      console.log('🔍 V7.0 MARGIN INSIDE WRAPPER DEBUG:', {
+        componentId,
+        mode: spacingMode,
+        // Badge info (has BOTH margin and padding!)
+        'Badge CSS marginTop': badgeMarginTop,
+        'Badge CSS marginLeft': badgeMarginLeft,
+        'Badge rect': {
+          top: badgeRectRaw.top,
+          left: badgeRectRaw.left,
+          width: badgeRectRaw.width,
+          height: badgeRectRaw.height
+        },
+        // Relative parent info (position: relative container)
+        'Relative parent rect': {
+          top: relativeParentRectRaw.top,
+          left: relativeParentRectRaw.left,
+          width: relativeParentRectRaw.width,
+          height: relativeParentRectRaw.height
+        },
+      });
+
+      // V7.0: Badge rect RELATIVE TO position: relative parent (not canvas!)
+      // This is CRITICAL because overlays use position: absolute and are positioned relative to this parent
+      // For MARGIN mode: Overlays show space INSIDE wrapper (between wrapper edge and Badge edge)
+      // For PADDING mode: Overlays show space INSIDE Badge (positive positioning)
+      const relativeBadgeRect = {
+        top: badgeRectRaw.top - relativeParentRectRaw.top,
+        left: badgeRectRaw.left - relativeParentRectRaw.left,
+        width: badgeRectRaw.width,
+        height: badgeRectRaw.height,
+        right: badgeRectRaw.right - relativeParentRectRaw.left,
+        bottom: badgeRectRaw.bottom - relativeParentRectRaw.top,
+        // ✅ V7.0 CRITICAL: Also store wrapper dimensions for right/bottom margin calculation
+        wrapperWidth: relativeParentRectRaw.width,
+        wrapperHeight: relativeParentRectRaw.height,
+      } as DOMRect & { wrapperWidth: number; wrapperHeight: number };
+
+      setBadgeRect(relativeBadgeRect);
     };
 
     updateBadgeRect();
@@ -244,9 +283,9 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
       window.removeEventListener('resize', handleUpdate);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [componentId, topValue, rightValue, bottomValue, leftValue]); // Re-run when margins change for instant updates!
+  }, [componentId, topValue, rightValue, bottomValue, leftValue, cssCompliantMode]); // Re-run when margins change OR mode switches!
 
-  if (!badgeRect || !wrapperRect) return null;
+  if (!badgeRect) return null;
 
   // Handle drag - receives absolute new value, not delta
   const handleDrag = (side: Side, newValue: number) => {
@@ -282,11 +321,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
   const overlayColor = spacingMode === 'margin' ? 'rgba(96, 165, 250, 0.2)' : 'rgba(52, 211, 153, 0.18)';
   const borderColor = spacingMode === 'margin' ? '#3b82f6' : '#10b981';
 
-  // Check if badge is within wrapper bounds (prevent overlay from entering badge during fast changes)
-  const isBadgeInBounds = badgeRect.top >= 0 &&
-                          badgeRect.left >= 0 &&
-                          badgeRect.right <= wrapperRect.width &&
-                          badgeRect.bottom <= wrapperRect.height;
+  // V6.0: No bounds check needed - Badge is the only element
 
   console.log(`🔍 SpacingHandlesV2 RENDER [${instanceId}]:`, {
     componentId,
@@ -301,12 +336,28 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
 
   return (
     <>
+      {/* Badge Border Outline - Shows Badge border box in margin mode */}
+      {spacingMode === 'margin' && badgeRect && (
+        <div
+          style={{
+            position: 'absolute',
+            top: `${badgeRect.top}px`,
+            left: `${badgeRect.left}px`,
+            width: `${badgeRect.width}px`,
+            height: `${badgeRect.height}px`,
+            border: '2px dashed #ef4444', // RED dashed border around Badge border box
+            pointerEvents: 'none',
+            zIndex: 48, // Above overlays (43) but below handles (49+)
+          }}
+        />
+      )}
+
       {/* Visual Overlays - Show spacing areas (like properties panel) - INTERACTIVE */}
       {spacingMode === 'margin' && (
         <>
-          {console.log('✅ MARGIN MODE ACTIVE - rendering margin overlays')}
-          {/* Top Margin Overlay - Shows ACTUAL margin space between wrapper top and Badge top */}
-          {applicableSides.top && badgeRect.top > 0 && (
+          {console.log(`✅ V7.0 MARGIN MODE - ${cssCompliantMode ? 'CSS-compliant' : 'Visual'} mode`)}
+          {/* V7.0: Top Margin Overlay - CONDITIONAL positioning based on cssCompliantMode */}
+          {applicableSides.top && topValue > 0 && (
             <div
               data-overlay-type="margin-top"
               data-instance-id={instanceId}
@@ -314,18 +365,19 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
-                top: '0px',
-                left: '0px',
-                width: `${wrapperRect.width}px`,
-                height: `${badgeRect.top}px`, // ✅ CORRECT: Use ACTUAL distance from wrapper to Badge
+                // CONDITIONAL: Visual mode (inside), CSS mode (outside with negative)
+                top: cssCompliantMode ? `-${topValue}px` : '0px',
+                left: cssCompliantMode ? '0px' : `${badgeRect.left}px`,
+                width: cssCompliantMode ? `${badgeRect.width}px` : `${badgeRect.width}px`,
+                height: cssCompliantMode ? `${topValue}px` : `${badgeRect.top}px`,
                 backgroundColor:
                   draggingSide === 'top'
                     ? 'rgba(52, 211, 153, 0.4)' // Dragging: green 40%
                     : hoveredSide === 'top'
                     ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25%
-                    : 'rgba(96, 165, 250, 0.35)', // Idle: blue 35% - MARGIN space OUTSIDE Badge
+                    : 'rgba(96, 165, 250, 0.35)', // Idle: blue 35%
                 borderTop: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
-                borderBottom: `2px dashed ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`, // Dashed border at bottom = Badge top edge
+                borderBottom: `2px dashed ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 's-resize',
                 zIndex: 43,
@@ -334,8 +386,8 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
             />
           )}
 
-          {/* Right Margin Overlay - Shows ACTUAL margin space between Badge right and wrapper right */}
-          {applicableSides.right && (wrapperRect.width - badgeRect.right) > 0 && (
+          {/* V7.0: Right Margin Overlay - CONDITIONAL positioning based on cssCompliantMode */}
+          {applicableSides.right && rightValue > 0 && badgeRect.wrapperWidth && (
             <div
               data-overlay-type="margin-right"
               data-instance-id={instanceId}
@@ -343,18 +395,18 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
-                top: '0px',
-                right: '0px',
-                width: `${wrapperRect.width - badgeRect.right}px`, // ✅ CORRECT: Distance from Badge right edge to wrapper right edge
-                height: `${wrapperRect.height}px`,
+                top: cssCompliantMode ? `-${topValue}px` : `${badgeRect.top}px`,
+                left: cssCompliantMode ? `${badgeRect.right}px` : `${badgeRect.right}px`,
+                width: cssCompliantMode ? `${rightValue}px` : `${badgeRect.wrapperWidth - badgeRect.right}px`,
+                height: cssCompliantMode ? `${badgeRect.height + topValue + bottomValue}px` : `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'right'
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'right'
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.35)',
+                borderLeft: `2px dashed ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
                 borderRight: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
-                borderLeft: `2px dashed ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`, // Dashed border at left = Badge right edge
                 pointerEvents: 'auto',
                 cursor: 'w-resize',
                 zIndex: 43,
@@ -363,8 +415,8 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
             />
           )}
 
-          {/* Bottom Margin Overlay - Shows ACTUAL margin space between Badge bottom and wrapper bottom */}
-          {applicableSides.bottom && (wrapperRect.height - badgeRect.bottom) > 0 && (
+          {/* V7.0: Bottom Margin Overlay - CONDITIONAL positioning based on cssCompliantMode */}
+          {applicableSides.bottom && bottomValue > 0 && badgeRect.wrapperHeight && (
             <div
               data-overlay-type="margin-bottom"
               data-instance-id={instanceId}
@@ -372,18 +424,18 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
-                bottom: '0px',
-                left: '0px',
-                width: `${wrapperRect.width}px`,
-                height: `${wrapperRect.height - badgeRect.bottom}px`, // ✅ CORRECT: Distance from Badge bottom edge to wrapper bottom edge
+                top: cssCompliantMode ? `${badgeRect.bottom}px` : `${badgeRect.bottom}px`,
+                left: cssCompliantMode ? '0px' : `${badgeRect.left}px`,
+                width: cssCompliantMode ? `${badgeRect.width}px` : `${badgeRect.width}px`,
+                height: cssCompliantMode ? `${bottomValue}px` : `${badgeRect.wrapperHeight - badgeRect.bottom}px`,
                 backgroundColor:
                   draggingSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.35)',
+                borderTop: `2px dashed ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
                 borderBottom: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
-                borderTop: `2px dashed ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`, // Dashed border at top = Badge bottom edge
                 pointerEvents: 'auto',
                 cursor: 'n-resize',
                 zIndex: 43,
@@ -392,8 +444,8 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
             />
           )}
 
-          {/* Left Margin Overlay - Shows ACTUAL margin space between wrapper left and Badge left */}
-          {applicableSides.left && badgeRect.left > 0 && (
+          {/* V7.0: Left Margin Overlay - CONDITIONAL positioning based on cssCompliantMode */}
+          {applicableSides.left && leftValue > 0 && (
             <div
               data-overlay-type="margin-left"
               data-instance-id={instanceId}
@@ -401,10 +453,10 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
-                top: '0px',
-                left: '0px',
-                width: `${badgeRect.left}px`, // ✅ CORRECT: Distance from wrapper left edge to Badge left edge
-                height: `${wrapperRect.height}px`,
+                top: cssCompliantMode ? `-${topValue}px` : `${badgeRect.top}px`,
+                left: cssCompliantMode ? `-${leftValue}px` : '0px',
+                width: cssCompliantMode ? `${leftValue}px` : `${badgeRect.left}px`,
+                height: cssCompliantMode ? `${badgeRect.height + topValue + bottomValue}px` : `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'left'
                     ? 'rgba(52, 211, 153, 0.4)'
@@ -412,7 +464,7 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.35)',
                 borderLeft: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
-                borderRight: `2px dashed ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`, // Dashed border at right = Badge left edge
+                borderRight: `2px dashed ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'e-resize',
                 zIndex: 43,
@@ -801,50 +853,12 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         </>
       )}
 
-      {/* Mode Toggle - Absolute positioned, inside top-right of Badge */}
-      <div
-        className="absolute flex gap-0.5 z-50"
-        style={{
-          pointerEvents: 'auto',
-          top: `${badgeRect.top + 4}px`,
-          left: `${badgeRect.right - 46}px`, // 2 buttons (20px each) + gap (2px) + padding (4px)
-        }}
-      >
-        <button
-          onClick={() => setSpacingMode('margin')}
-          title="Margin"
-          className="w-5 h-5 rounded text-[9px] font-bold transition-all shadow-sm"
-          style={{
-            border: '1.5px solid',
-            borderColor: spacingMode === 'margin' ? '#3b82f6' : '#d1d5db',
-            backgroundColor: spacingMode === 'margin' ? '#3b82f6' : 'rgba(255,255,255,0.95)',
-            color: spacingMode === 'margin' ? 'white' : '#9ca3af',
-          }}
-        >
-          M
-        </button>
-        <button
-          onClick={() => setSpacingMode('padding')}
-          title="Padding"
-          className="w-5 h-5 rounded text-[9px] font-bold transition-all shadow-sm"
-          style={{
-            border: '1.5px solid',
-            borderColor: spacingMode === 'padding' ? '#10b981' : '#d1d5db',
-            backgroundColor: spacingMode === 'padding' ? '#10b981' : 'rgba(255,255,255,0.95)',
-            color: spacingMode === 'padding' ? 'white' : '#9ca3af',
-          }}
-        >
-          P
-        </button>
-      </div>
-
       {/* Center Uniform Handle - for all sides at once (like border-radius) */}
       <UniformSpacingHandle
         value={getAverageSpacing()}
         color={color}
         onDrag={handleCornerDrag}
         badgeRect={badgeRect}
-        wrapperRect={wrapperRect}
         mode={spacingMode}
         topMargin={topValue}
         rightMargin={rightValue}
@@ -866,7 +880,6 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
           onDragStart={() => setDraggingSide('top')}
           onDragEnd={() => setDraggingSide(null)}
           badgeRect={badgeRect}
-          wrapperRect={wrapperRect}
           mode={spacingMode}
           topMargin={topValue}
           rightMargin={rightValue}
@@ -887,7 +900,6 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
           onDragStart={() => setDraggingSide('right')}
           onDragEnd={() => setDraggingSide(null)}
           badgeRect={badgeRect}
-          wrapperRect={wrapperRect}
           mode={spacingMode}
           topMargin={topValue}
           rightMargin={rightValue}
@@ -908,7 +920,6 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
           onDragStart={() => setDraggingSide('bottom')}
           onDragEnd={() => setDraggingSide(null)}
           badgeRect={badgeRect}
-          wrapperRect={wrapperRect}
           mode={spacingMode}
           topMargin={topValue}
           rightMargin={rightValue}
@@ -929,7 +940,6 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
           onDragStart={() => setDraggingSide('left')}
           onDragEnd={() => setDraggingSide(null)}
           badgeRect={badgeRect}
-          wrapperRect={wrapperRect}
           mode={spacingMode}
           topMargin={topValue}
           rightMargin={rightValue}
@@ -949,7 +959,6 @@ interface UniformSpacingHandleProps {
   color: string;
   onDrag: (newValue: number) => void;
   badgeRect: DOMRect;
-  wrapperRect: DOMRect;
   mode: SpacingMode;
   topMargin: number;
   rightMargin: number;
@@ -962,7 +971,6 @@ function UniformSpacingHandle({
   color,
   onDrag,
   badgeRect,
-  wrapperRect,
   mode,
   topMargin,
   rightMargin,
@@ -1020,16 +1028,13 @@ function UniformSpacingHandle({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Position at center of Badge element itself (not the spacing area!)
-  // NOTE: badgeRect is ALREADY in wrapper-relative coordinates (see lines 66-73)
-  // So we can calculate center directly from badgeRect without further conversion
+  // V6.0: Position at center of Badge (badgeRect is in parent-relative coordinates)
   const centerX = badgeRect.left + badgeRect.width / 2;
   const centerY = badgeRect.top + badgeRect.height / 2;
 
-  console.log('🎯 CENTER HANDLE DEBUG:', {
+  console.log('🎯 V6.0 CENTER HANDLE DEBUG:', {
     mode,
     badgeRect: { left: badgeRect.left, top: badgeRect.top, width: badgeRect.width, height: badgeRect.height },
-    wrapperRect: { left: wrapperRect.left, top: wrapperRect.top, width: wrapperRect.width, height: wrapperRect.height },
     margins: { top: topMargin, right: rightMargin, bottom: bottomMargin, left: leftMargin },
     calculatedCenter: { x: centerX, y: centerY },
   });
@@ -1120,7 +1125,6 @@ interface SpacingBarHandleProps {
   onDragStart: () => void; // NEW: trigger dragging state
   onDragEnd: () => void; // NEW: clear dragging state
   badgeRect: DOMRect;
-  wrapperRect: DOMRect;
   mode: SpacingMode;
   // Margin values for correct positioning in margin mode
   topMargin: number;
@@ -1140,7 +1144,6 @@ function SpacingBarHandle({
   onDragStart,
   onDragEnd,
   badgeRect,
-  wrapperRect,
   mode,
   topMargin,
   rightMargin,
@@ -1255,14 +1258,28 @@ function SpacingBarHandle({
       case 'top': {
         // Handle height = spacing value (minimum 10px for visibility)
         const handleHeight = Math.max(value, minHandleSize);
-        return {
-          ...baseStyles,
-          // Padding: inside badge at top edge | Margin: from wrapper top (using margin value)
-          top: inset ? `${badgeRect.top}px` : '0px',
-          left: inset ? `${badgeRect.left}px` : `${leftMargin}px`, // Margin: start after left margin
-          width: inset ? `${badgeRect.width}px` : `${wrapperRect.width - leftMargin - rightMargin}px`, // Margin: full width minus side margins
-          height: inset ? `${handleHeight}px` : `${value}px`, // Margin: use margin value directly
-        };
+
+        if (inset) {
+          // Padding mode: inside badge at top edge
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top}px`,
+            left: `${badgeRect.left}px`,
+            width: `${badgeRect.width}px`,
+            height: `${handleHeight}px`,
+          };
+        } else {
+          // ✅ V6.0: Margin mode - MEASURED position with 4px gap from Badge
+          const marginSpace = badgeRect.top;
+          const handleHeightWithGap = Math.max(marginSpace - 4, minHandleSize); // 4px gap from Badge edge
+          return {
+            ...baseStyles,
+            top: '0px', // Start from parent canvas top
+            left: `${badgeRect.left}px`, // Align with Badge left
+            width: `${badgeRect.width}px`, // Match Badge width
+            height: `${handleHeightWithGap}px`, // ✅ Stops 4px before Badge!
+          };
+        }
       }
       case 'right': {
         // Handle width = spacing value (minimum 10px for visibility)
@@ -1278,13 +1295,15 @@ function SpacingBarHandle({
             height: `${badgeRect.height}px`,
           };
         } else {
-          // Margin mode: use RIGHT positioning (same as overlay) for perfect alignment
+          // ✅ V6.0: Margin mode - position RIGHT of Badge (margin space)
+          // For right margin, we can't easily know parent width, so position relative to Badge
+          const handleWidthWithGap = Math.max(value - 4, minHandleSize); // Use margin value directly
           return {
             ...baseStyles,
-            top: '0px', // FULL HEIGHT from wrapper top
-            right: '0px', // Position from right edge (same as overlay!)
-            width: `${value}px`,
-            height: `${wrapperRect.height}px`, // FULL HEIGHT wrapper
+            top: `${badgeRect.top}px`, // Align with Badge top
+            left: `${badgeRect.right + 4}px`, // 4px gap from Badge right edge
+            width: `${handleWidthWithGap}px`,
+            height: `${badgeRect.height}px`, // Match Badge height
           };
         }
       }
@@ -1302,27 +1321,42 @@ function SpacingBarHandle({
             height: `${handleHeight}px`,
           };
         } else {
-          // Margin mode: use BOTTOM positioning (same as overlay) for perfect alignment
+          // ✅ V6.0: Margin mode - position BELOW Badge (margin space)
+          const handleHeightWithGap = Math.max(value - 4, minHandleSize); // Use margin value directly
           return {
             ...baseStyles,
-            bottom: '0px', // Position from bottom edge (same as overlay!)
-            left: '0px',
-            width: `${wrapperRect.width}px`,
-            height: `${value}px`,
+            top: `${badgeRect.bottom + 4}px`, // 4px gap from Badge bottom edge
+            left: `${badgeRect.left}px`, // Align with Badge left
+            width: `${badgeRect.width}px`, // Match Badge width
+            height: `${handleHeightWithGap}px`,
           };
         }
       }
       case 'left': {
         // Handle width = spacing value (minimum 10px for visibility)
         const handleWidth = Math.max(value, minHandleSize);
-        return {
-          ...baseStyles,
-          top: inset ? `${badgeRect.top}px` : '0px', // FULL HEIGHT from wrapper top
-          // Padding: inside badge at left edge | Margin: from wrapper left edge (using margin value)
-          left: inset ? `${badgeRect.left}px` : '0px',
-          width: inset ? `${handleWidth}px` : `${value}px`, // Margin: use margin value directly
-          height: inset ? `${badgeRect.height}px` : `${wrapperRect.height}px`, // FULL HEIGHT wrapper
-        };
+
+        if (inset) {
+          // Padding mode: inside badge at left edge
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top}px`,
+            left: `${badgeRect.left}px`,
+            width: `${handleWidth}px`,
+            height: `${badgeRect.height}px`,
+          };
+        } else {
+          // ✅ V6.0: Margin mode - position LEFT of Badge (margin space)
+          const marginSpace = badgeRect.left;
+          const handleWidthWithGap = Math.max(marginSpace - 4, minHandleSize); // 4px gap from Badge edge
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top}px`, // Align with Badge top
+            left: '0px', // Start from parent canvas left
+            width: `${handleWidthWithGap}px`, // ✅ Stops 4px before Badge!
+            height: `${badgeRect.height}px`, // Match Badge height
+          };
+        }
       }
     }
   };
@@ -1429,57 +1463,52 @@ function SpacingBarHandle({
           };
       }
     } else {
-      // Margin mode: line from wrapper edge (static) to badge edge (CALCULATED from margins)
-      // Calculate badge position from margin values (more accurate than badgeRect)
-      const calculatedBadgeLeft = leftMargin;
-      const calculatedBadgeTop = topMargin;
-      const calculatedBadgeRight = wrapperRect.width - rightMargin;
-      const calculatedBadgeBottom = wrapperRect.height - bottomMargin;
-      const calculatedBadgeWidth = wrapperRect.width - leftMargin - rightMargin;
-      const calculatedBadgeHeight = wrapperRect.height - topMargin - bottomMargin;
+      // ✅ V3.6 (GOD-TIER): Margin mode - use MEASURED badgeRect positions, not calculated!
+      // Margin = space between wrapper edge and Badge edge
+      // Use actual measured Badge position (just like overlays do!)
 
       switch (side) {
         case 'top':
-          // ✅ FIX (V3.5): Top/bottom margin space ALWAYS spans full wrapper width
+          // Vertical line from wrapper top (0) to Badge top (badgeRect.top)
+          // ✅ Margin space spans full wrapper width → line at wrapper center
           return {
             ...baseStyles,
-            top: '0px', // Start from wrapper top edge (static)
-            left: `${wrapperRect.width / 2}px`, // Wrapper center (margin space spans full width)
-            height: `${topMargin}px`, // Use margin value directly
+            top: '0px', // Start from wrapper top edge
+            left: `${badgeRect.left + badgeRect.width / 2}px`, // Badge center horizontally
+            height: `${badgeRect.top}px`, // ✅ MEASURED distance to Badge
             width: '0',
             borderLeft: `2px dashed ${lineColor}`,
           };
         case 'right':
-          // Horizontal line from badge right edge to wrapper right edge
-          // ✅ FIX (V3.4): Left/right margin space ALWAYS spans full wrapper height
-          const rightLineTop = wrapperRect.height / 2; // Wrapper center
+          // Horizontal line from Badge right edge to wrapper right edge
+          // ✅ Margin space spans full wrapper height → line at wrapper center
           return {
             ...baseStyles,
-            top: `${rightLineTop}px`,
-            right: '0px', // Position from wrapper right edge (same as bar handle!)
-            width: `${rightMargin}px`, // Use margin value directly
+            top: `${badgeRect.top + badgeRect.height / 2}px`, // Badge center vertically
+            right: '0px', // Start from wrapper right edge
+            width: `${value}px`, // Use margin value directly (right margin width)
             height: '0',
             borderTop: `2px dashed ${lineColor}`,
           };
         case 'bottom':
-          // Vertical line from badge bottom edge to wrapper bottom edge
-          // ✅ FIX (V3.5): Top/bottom margin space ALWAYS spans full wrapper width
+          // Vertical line from Badge bottom edge to wrapper bottom edge
+          // ✅ Margin space spans full wrapper width → line at wrapper center
           return {
             ...baseStyles,
-            bottom: '0px', // Position from wrapper bottom edge (same as bar handle!)
-            left: `${wrapperRect.width / 2}px`, // Wrapper center (margin space spans full width)
-            height: `${bottomMargin}px`, // Use margin value directly
+            bottom: '0px', // Start from wrapper bottom edge
+            left: `${badgeRect.left + badgeRect.width / 2}px`, // Badge center horizontally
+            height: `${value}px`, // Use margin value directly (bottom margin height)
             width: '0',
             borderLeft: `2px dashed ${lineColor}`,
           };
         case 'left':
-          // ✅ FIX (V3.4): Left/right margin space ALWAYS spans full wrapper height
-          const leftLineTop = wrapperRect.height / 2; // Wrapper center
+          // Horizontal line from wrapper left edge to Badge left edge
+          // ✅ Margin space spans full wrapper height → line at wrapper center
           return {
             ...baseStyles,
-            top: `${leftLineTop}px`,
-            left: '0px', // Start from wrapper left edge (static)
-            width: `${leftMargin}px`, // Use margin value directly
+            top: `${badgeRect.top + badgeRect.height / 2}px`, // Badge center vertically
+            left: '0px', // Start from wrapper left edge
+            width: `${badgeRect.left}px`, // ✅ MEASURED distance to Badge
             height: '0',
             borderTop: `2px dashed ${lineColor}`,
           };
@@ -1594,20 +1623,14 @@ function SpacingBarHandle({
           ];
       }
     } else {
-      // Margin mode arrows: wrapper edge arrow is STATIC, badge edge arrow is CALCULATED from margins
-      // Calculate badge position from margin values
-      const calculatedBadgeLeft = leftMargin;
-      const calculatedBadgeTop = topMargin;
-      const calculatedBadgeRight = wrapperRect.width - rightMargin;
-      const calculatedBadgeBottom = wrapperRect.height - bottomMargin;
-      const calculatedBadgeWidth = wrapperRect.width - leftMargin - rightMargin;
-      const calculatedBadgeHeight = wrapperRect.height - topMargin - bottomMargin;
+      // ✅ V3.6 (GOD-TIER): Margin mode - use MEASURED badgeRect positions, not calculated!
+      // Arrows at wrapper edge and Badge edge - Badge edge is MEASURED!
 
       switch (side) {
         case 'top':
-          // Arrows pointing toward each other (↓ at wrapper top, ↑ at badge top)
-          // ✅ FIX (V3.5): Top/bottom margin space ALWAYS spans full wrapper width
-          const topArrowLeft = wrapperRect.width / 2 - arrowSize; // Wrapper center
+          // Arrows pointing toward each other (↓ at wrapper top, ↑ at Badge top)
+          // ✅ Margin space spans full wrapper width → arrows at wrapper center
+          const topArrowLeft = badgeRect.left + badgeRect.width / 2 - arrowSize; // Badge center
           return [
             {
               ...baseArrowStyle,
@@ -1618,56 +1641,56 @@ function SpacingBarHandle({
             },
             {
               ...baseArrowStyle,
-              top: `${calculatedBadgeTop - arrowSize}px`, // Calculated badge top edge
+              top: `${badgeRect.top - arrowSize}px`, // ✅ MEASURED Badge top edge
               left: `${topArrowLeft}px`,
               borderTopColor: arrowColor, // ↑ pointing up
               borderBottomWidth: 0,
             },
           ];
         case 'right':
-          // Arrows pointing toward each other (→ at badge right, ← at wrapper right)
-          // ✅ FIX (V3.4): Left/right margin space ALWAYS spans full wrapper height
-          const rightArrowTop = wrapperRect.height / 2 - arrowSize; // Wrapper center
+          // Arrows pointing toward each other (→ at Badge right, ← at wrapper right)
+          // ✅ Margin space spans full wrapper height → arrows at wrapper center
+          const rightArrowTop = badgeRect.top + badgeRect.height / 2 - arrowSize; // Badge center
           return [
             {
               ...baseArrowStyle,
               top: `${rightArrowTop}px`,
-              right: `${rightMargin - arrowSize}px`, // Position from wrapper right edge - shifted inside by arrowSize!
+              left: `${badgeRect.right}px`, // ✅ MEASURED Badge right edge
               borderRightColor: arrowColor, // → pointing right
               borderLeftWidth: 0,
             },
             {
               ...baseArrowStyle,
               top: `${rightArrowTop}px`,
-              right: '0px', // Position from wrapper right edge (same as bar handle!)
+              right: '0px', // Static at wrapper right edge
               borderLeftColor: arrowColor, // ← pointing left
               borderRightWidth: 0,
             },
           ];
         case 'bottom':
-          // Arrows pointing toward each other (↑ at badge bottom, ↓ at wrapper bottom)
-          // ✅ FIX (V3.5): Top/bottom margin space ALWAYS spans full wrapper width
-          const bottomArrowLeft = wrapperRect.width / 2 - arrowSize; // Wrapper center
+          // Arrows pointing toward each other (↑ at Badge bottom, ↓ at wrapper bottom)
+          // ✅ Margin space spans full wrapper width → arrows at wrapper center
+          const bottomArrowLeft = badgeRect.left + badgeRect.width / 2 - arrowSize; // Badge center
           return [
             {
               ...baseArrowStyle,
-              bottom: `${bottomMargin - arrowSize}px`, // Position from wrapper bottom edge - shifted inside by arrowSize!
+              top: `${badgeRect.bottom}px`, // ✅ MEASURED Badge bottom edge
               left: `${bottomArrowLeft}px`,
               borderBottomColor: arrowColor, // ↓ pointing down
               borderTopWidth: 0,
             },
             {
               ...baseArrowStyle,
-              bottom: '0px', // Position from wrapper bottom edge (same as bar handle!)
+              bottom: '0px', // Static at wrapper bottom edge
               left: `${bottomArrowLeft}px`,
               borderTopColor: arrowColor, // ↑ pointing up
               borderBottomWidth: 0,
             },
           ];
         case 'left':
-          // Arrows pointing toward each other (← at wrapper left, → at badge left)
-          // ✅ FIX (V3.4): Left/right margin space ALWAYS spans full wrapper height
-          const leftArrowTop = wrapperRect.height / 2 - arrowSize; // Wrapper center
+          // Arrows pointing toward each other (← at wrapper left, → at Badge left)
+          // ✅ Margin space spans full wrapper height → arrows at wrapper center
+          const leftArrowTop = badgeRect.top + badgeRect.height / 2 - arrowSize; // Badge center
           return [
             {
               ...baseArrowStyle,
@@ -1679,7 +1702,7 @@ function SpacingBarHandle({
             {
               ...baseArrowStyle,
               top: `${leftArrowTop}px`,
-              left: `${calculatedBadgeLeft - arrowSize}px`, // Calculated badge left edge
+              left: `${badgeRect.left - arrowSize}px`, // ✅ MEASURED Badge left edge
               borderLeftColor: arrowColor, // ← pointing left
               borderRightWidth: 0,
             },
@@ -1745,47 +1768,38 @@ function SpacingBarHandle({
           };
       }
     } else {
-      // Margin mode: label positioned between wrapper edge (static) and badge edge (CALCULATED)
-      // Calculate badge position from margin values
-      const calculatedBadgeLeft = leftMargin;
-      const calculatedBadgeTop = topMargin;
-      const calculatedBadgeRight = wrapperRect.width - rightMargin;
-      const calculatedBadgeBottom = wrapperRect.height - bottomMargin;
-      const calculatedBadgeWidth = wrapperRect.width - leftMargin - rightMargin;
-      const calculatedBadgeHeight = wrapperRect.height - topMargin - bottomMargin;
+      // ✅ V3.6 (GOD-TIER): Margin mode - use MEASURED badgeRect positions, not calculated!
+      // Label positioned in MIDDLE of margin space (between wrapper edge and Badge edge)
+      // Use actual measured Badge position (just like overlays and dashed lines!)
 
       switch (side) {
         case 'top':
           return {
             ...baseStyles,
-            top: `${topMargin / 2}px`, // Middle between wrapper top (0) and badge top
-            left: `${wrapperRect.width / 2}px`, // ✅ FIX (V3.5): Wrapper center (margin space spans full width)
+            top: `${badgeRect.top / 2}px`, // ✅ MEASURED: Middle of TOP margin space (0 to badgeRect.top)
+            left: `${badgeRect.left + badgeRect.width / 2}px`, // Badge center horizontally
             transform: 'translate(-50%, -50%)',
           };
         case 'right':
           return {
             ...baseStyles,
-            // ✅ FIX (V3.4): Left/right margin space ALWAYS spans full wrapper height
-            // Use wrapper center, NOT Badge center (margin space is vertical)
-            top: `${wrapperRect.height / 2}px`, // Wrapper center (margin space spans full height)
-            right: `${rightMargin / 2}px`, // Middle between badge right and wrapper right (from wrapper edge!)
-            transform: 'translateY(-50%)',
+            top: `${badgeRect.top + badgeRect.height / 2}px`, // Badge center vertically
+            left: `${badgeRect.right + value / 2}px`, // Middle of RIGHT margin space
+            transform: 'translate(-50%, -50%)',
           };
         case 'bottom':
           return {
             ...baseStyles,
-            bottom: `${bottomMargin / 2}px`, // Middle between badge bottom and wrapper bottom (from wrapper edge!)
-            left: `${wrapperRect.width / 2}px`, // ✅ FIX (V3.5): Wrapper center (margin space spans full width)
-            transform: 'translateX(-50%)',
+            top: `${badgeRect.bottom + value / 2}px`, // Middle of BOTTOM margin space
+            left: `${badgeRect.left + badgeRect.width / 2}px`, // Badge center horizontally
+            transform: 'translate(-50%, -50%)',
           };
         case 'left':
           return {
             ...baseStyles,
-            // ✅ FIX (V3.4): Left/right margin space ALWAYS spans full wrapper height
-            // Use wrapper center, NOT Badge center (margin space is vertical)
-            top: `${wrapperRect.height / 2}px`, // Wrapper center (margin space spans full height)
-            left: `${leftMargin / 2}px`, // Middle between wrapper left (0) and badge left
-            transform: 'translateY(-50%)',
+            top: `${badgeRect.top + badgeRect.height / 2}px`, // Badge center vertically
+            left: `${badgeRect.left / 2}px`, // ✅ MEASURED: Middle of LEFT margin space (0 to badgeRect.left)
+            transform: 'translate(-50%, -50%)',
           };
       }
     }

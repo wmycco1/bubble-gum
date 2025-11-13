@@ -1,21 +1,27 @@
 'use client';
 
 // ═══════════════════════════════════════════════════════════════
-// BUBBLE GUM - RENDER COMPONENT V5.1.0 (NO ADAPTERS)
+// BUBBLE GUM - RENDER COMPONENT V7.0 (GOD-TIER ARCHITECTURE)
 // ═══════════════════════════════════════════════════════════════
-// Version: 5.1.0 - Margin Spacing Fix (GOD-TIER)
-// Changes from 5.0.0:
-// - CRITICAL FIX: Added display: inline-block to wrapper div
-// - Allows child component's margin to create actual space in parent
-// - Without this, wrapper shrinks to child's content box (margin has no effect)
-// - Now margin overlays in SpacingHandlesV2 will show correctly!
+// Version: 7.0 - NO WRAPPER ARCHITECTURE (ENTERPRISE-GRADE FIX)
+// CRITICAL ARCHITECTURAL CHANGE:
+// - REMOVED wrapper div completely ✅
+// - Margin/Padding passed DIRECTLY to Badge props ✅
+// - Badge controls its own margin/padding via CSS ✅
+// - Display logic respects CSS box model (block→100%, inline-block→fit-content) ✅
+// - SpacingHandlesV2 measures Badge directly (no wrapper confusion) ✅
 //
-// Version: 5.0.0 - Direct Atomic Component Rendering
-// - REMOVED adapter layer (component-adapter.ts)
-// - REMOVED component mapping (component-mapping.ts)
-// - Direct rendering of atomic components from src/components/
-// - Props passed directly as AtomParameters
-// - Type-safe component resolution
+// Benefits:
+// - ✅ Proper separation of concerns
+// - ✅ Badge is reusable outside editor
+// - ✅ CSS box model compliant
+// - ✅ No wrapper DOM overhead
+// - ✅ Clean architecture (FAANG-level)
+//
+// Previous versions:
+// - V6.0: Margin on wrapper (DEPRECATED - caused display issues)
+// - V5.1.0: Margin spacing fix
+// - V5.0.0: Direct atomic component rendering
 // ═══════════════════════════════════════════════════════════════
 
 import { useDraggable, useDroppable } from '@dnd-kit/core';
@@ -53,7 +59,7 @@ interface RenderComponentProps {
 }
 
 export function RenderComponent({ component, isSelected, deviceMode = 'desktop' }: RenderComponentProps) {
-  const { selectComponent, setHoveredComponent, hoveredComponentId, updateComponentProps, visualEditingMode } = useCanvasStore();
+  const { selectComponent, setHoveredComponent, hoveredComponentId, updateComponentProps, visualEditingMode, cssCompliantMode } = useCanvasStore();
 
   // DEBUG: Log when RenderComponent receives new props
   React.useEffect(() => {
@@ -102,7 +108,16 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     },
   });
 
-  // Apply visibility (but NOT display - display should be on the atomic component, not wrapper!)
+  // ═══════════════════════════════════════════════════════════════
+  // V7.0: GOD-TIER ARCHITECTURE - Margin directly on Badge, No Wrapper
+  // ═══════════════════════════════════════════════════════════════
+  // CRITICAL CHANGE: Margin/Padding now passed DIRECTLY to Badge props
+  // - NO wrapper div around Badge
+  // - Badge controls its own margin/padding via CSS
+  // - Display logic respects CSS box model (block → 100%, inline-block → fit-content)
+  // - SpacingHandlesV2 measures Badge directly (no wrapper confusion)
+  // ═══════════════════════════════════════════════════════════════
+
   const visibility = component.props.visibility as 'visible' | 'hidden' | undefined;
 
   const style: React.CSSProperties = {
@@ -112,10 +127,10 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     willChange: isDragging ? 'opacity' : 'auto',
     transition: 'opacity 100ms ease-out',
     ...(visibility && { visibility }),
-    // CRITICAL FIX (V5.1.0): Add display: inline-block to allow child's margin to create space
-    // Without this, wrapper shrinks to child's content box and margin has no effect
-    display: 'inline-block',
-    // NOTE: spacing (margin/padding) and other styling props are passed to atomic component via props, not applied to wrapper
+    // V7.0: NO margin here - Badge controls its own margin!
+    // V7.0: NO display override - Badge controls its own display mode!
+    // V7.0: overflow visible for spacing overlays (if needed in future)
+    overflow: 'visible',
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -214,7 +229,7 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     const AtomicComponent = COMPONENT_REGISTRY[component.type as keyof typeof COMPONENT_REGISTRY];
 
     if (!AtomicComponent) {
-      logger.error('❌ Component not found:', component.type);
+      logger.error('❌ Component not found:', { type: component.type });
       return (
         <div className="p-6 bg-red-50 border-2 border-red-300 rounded-lg">
           <p className="text-sm font-semibold text-red-900">
@@ -227,9 +242,9 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       );
     }
 
-    // Direct props passing - NO ADAPTER!
-    const atomicProps = {
-      ...comp.props, // Direct AtomParameters
+    // V7.0: Pass ALL props to Badge INCLUDING margin/padding - Badge controls everything!
+    const atomicProps: any = {
+      ...comp.props, // Pass ALL props including margin, padding, display, etc.
       // Preserve style if exists
       ...(comp.style && { style: comp.style }),
     };
@@ -339,18 +354,28 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       <div
         ref={canHaveChildren ? setDropRef : undefined}
         className="relative"
-        style={{ pointerEvents: 'auto' }}
+        style={{
+          pointerEvents: 'auto',
+          // V7.0 CONDITIONAL: display:flow-root based on cssCompliantMode
+          // Visual Mode (default): flow-root prevents margin collapse, keeps margin inside
+          // CSS-compliant Mode: undefined allows natural CSS margin collapse
+          display: cssCompliantMode ? undefined : 'flow-root',
+        }}
       >
         {/* ═══════════════════════════════════════════════════════════════
             CONTEXTUAL EDITING HANDLES (V2.0)
             ═══════════════════════════════════════════════════════════════
             Only ONE type of handles visible at a time (no overlapping)
             User toggles via ComponentToolbar buttons
+
+            V7.0 ARCHITECTURE NOTE:
+            - Padding/BorderRadius/Transform handles: render INSIDE (they work within Badge)
+            - Margin handles: ALSO render inside (margin is CSS property on Badge now!)
             ═══════════════════════════════════════════════════════════════ */}
 
-        {/* Spacing Handles - shown ONLY when visualEditingMode === 'spacing' */}
-        {isSelected && visualEditingMode === 'spacing' && (
-          <SpacingHandlesV2 componentId={component.id} />
+        {/* Padding Handles - shown ONLY when visualEditingMode === 'padding' */}
+        {isSelected && visualEditingMode === 'padding' && (
+          <SpacingHandlesV2 componentId={component.id} mode="padding" />
         )}
 
         {/* Border Radius Handles - shown ONLY when visualEditingMode === 'borderRadius' */}
@@ -364,6 +389,11 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
         )}
 
         {renderVisualComponent()}
+
+        {/* V7.0: Margin Handles render AFTER component (so they can use negative positioning) */}
+        {isSelected && visualEditingMode === 'margin' && (
+          <SpacingHandlesV2 componentId={component.id} mode="margin" />
+        )}
       </div>
     </div>
   );

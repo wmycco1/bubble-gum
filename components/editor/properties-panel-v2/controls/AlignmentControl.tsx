@@ -22,11 +22,20 @@ interface AlignmentControlProps {
 export function AlignmentControl({
   name,
   label,
-  value = 'left',
+  value,
   onChange,
   description,
 }: AlignmentControlProps) {
   const alignments = [
+    {
+      value: 'none',
+      label: 'None',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      ),
+    },
     {
       value: 'left',
       label: 'Left',
@@ -75,7 +84,7 @@ export function AlignmentControl({
           </span>
         )}
       </label>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-5 gap-2">
         {alignments.map((alignment) => (
           <button
             key={alignment.value}

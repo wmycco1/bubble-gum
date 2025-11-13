@@ -51,6 +51,7 @@ interface CanvasStore extends CanvasState {
   // ═══════════════════════════════════════════════════════════════
   setEditorMode: (mode: 'simple' | 'advanced') => void;
   setVisualEditingMode: (mode: EditingMode) => void;
+  setCSSCompliantMode: (mode: boolean) => void;
 
   // Utility actions
   clearCanvas: () => void;
@@ -1419,6 +1420,7 @@ const initialState: CanvasState = {
   deviceMode: 'desktop',
   editorMode: 'advanced', // Default to advanced mode (full properties panel)
   visualEditingMode: 'none', // Default: only selection bounds + toolbar (clean UI)
+  cssCompliantMode: false, // Default: Visual Mode (margin inside wrapper, beginner-friendly)
 };
 
 // Initial store state (extends initialState with internal flags)
@@ -1807,6 +1809,7 @@ export const useCanvasStore = create<CanvasStore>()(
         // ═══════════════════════════════════════════════════════════════
         setEditorMode: (editorMode) => set({ editorMode }),
         setVisualEditingMode: (visualEditingMode) => set({ visualEditingMode }),
+        setCSSCompliantMode: (cssCompliantMode) => set({ cssCompliantMode }),
 
         // Utility
         clearCanvas: () => set({ ...initialState }),

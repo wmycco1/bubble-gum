@@ -587,11 +587,12 @@ export interface CanvasComponent {
  *
  * @example
  * - 'none' → Only selection bounds + toolbar (default)
- * - 'spacing' → M/P buttons + spacing handles (margin/padding)
+ * - 'margin' → Margin handles only (blue overlays)
+ * - 'padding' → Padding handles only (green overlays)
  * - 'borderRadius' → Corner handles for border-radius
  * - 'transform' → Rotation/scale handles (future)
  */
-export type EditingMode = 'none' | 'spacing' | 'borderRadius' | 'transform';
+export type EditingMode = 'none' | 'margin' | 'padding' | 'borderRadius' | 'transform';
 
 export interface CanvasState {
   // Components tree
@@ -631,6 +632,21 @@ export interface CanvasState {
    * User toggles via ComponentToolbar buttons
    */
   visualEditingMode: EditingMode;
+
+  /**
+   * CSS-compliant mode toggle (V7.0 - 2025-11-13)
+   * Controls how margin behaves in the visual editor
+   *
+   * - false (default): Visual Mode - margin stays inside wrapper (like Figma)
+   *   → Uses display:flow-root to prevent margin collapse
+   *   → Easier for beginners, more intuitive
+   *
+   * - true: CSS-compliant Mode - margin behaves like real CSS
+   *   → Allows natural margin collapse with parent
+   *   → Overlays show margin outside wrapper
+   *   → For advanced users who understand CSS Box Model
+   */
+  cssCompliantMode: boolean;
 }
 
 export interface DragItem {
