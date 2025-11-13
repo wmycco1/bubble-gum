@@ -1234,14 +1234,25 @@ function SpacingBarHandle({
         const totalDeltaY = e.clientY - dragStartRef.current.y;
 
         // Calculate new value based on initial value + delta
-        // V7.3: Fixed margin-right/bottom delta direction
+        // V7.7: TRUE Figma-like drag direction (different for margin vs padding!)
         const isVertical = side === 'top' || side === 'bottom';
         let delta = 0;
 
-        if (side === 'top') delta = -totalDeltaY; // Drag up = increase (push down from top edge)
-        else if (side === 'bottom') delta = -totalDeltaY; // Drag up = increase (push up from bottom edge)
-        else if (side === 'left') delta = -totalDeltaX; // Drag left = increase (push right from left edge)
-        else if (side === 'right') delta = -totalDeltaX; // Drag left = increase (push left from right edge)
+        if (mode === 'margin') {
+          // MARGIN: Handle is BETWEEN wrapper edge and Badge edge
+          // Dragging TOWARDS wrapper edge = increase margin (push element away)
+          if (side === 'top') delta = -totalDeltaY; // Drag UP (towards wrapper top) = increase
+          else if (side === 'bottom') delta = totalDeltaY; // Drag DOWN (towards wrapper bottom) = increase
+          else if (side === 'left') delta = -totalDeltaX; // Drag LEFT (towards wrapper left) = increase
+          else if (side === 'right') delta = totalDeltaX; // Drag RIGHT (towards wrapper right) = increase
+        } else {
+          // PADDING: Handle is INSIDE element on inner edge
+          // Dragging INWARD (into element) = increase padding
+          if (side === 'top') delta = totalDeltaY; // Drag DOWN (into element) = increase
+          else if (side === 'bottom') delta = -totalDeltaY; // Drag UP (into element) = increase
+          else if (side === 'left') delta = totalDeltaX; // Drag RIGHT (into element) = increase
+          else if (side === 'right') delta = -totalDeltaX; // Drag LEFT (into element) = increase
+        }
 
         const newValue = dragStartRef.current.initialValue + delta;
         onDrag(newValue);
