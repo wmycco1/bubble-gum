@@ -1295,14 +1295,14 @@ function SpacingBarHandle({
             height: `${badgeRect.height}px`,
           };
         } else {
-          // ✅ V6.0: Margin mode - position RIGHT of Badge (margin space)
-          // For right margin, we can't easily know parent width, so position relative to Badge
-          const handleWidthWithGap = Math.max(value - 4, minHandleSize); // Use margin value directly
+          // ✅ V7.1: Margin mode - MEASURED position with 4px gap from Badge
+          const marginSpace = (badgeRect as any).wrapperWidth - badgeRect.right; // ✅ MEASURED distance!
+          const handleWidthWithGap = Math.max(marginSpace - 4, minHandleSize); // 4px gap from Badge edge
           return {
             ...baseStyles,
             top: `${badgeRect.top}px`, // Align with Badge top
             left: `${badgeRect.right + 4}px`, // 4px gap from Badge right edge
-            width: `${handleWidthWithGap}px`,
+            width: `${handleWidthWithGap}px`, // ✅ Stops 4px before wrapper edge!
             height: `${badgeRect.height}px`, // Match Badge height
           };
         }
@@ -1321,14 +1321,15 @@ function SpacingBarHandle({
             height: `${handleHeight}px`,
           };
         } else {
-          // ✅ V6.0: Margin mode - position BELOW Badge (margin space)
-          const handleHeightWithGap = Math.max(value - 4, minHandleSize); // Use margin value directly
+          // ✅ V7.1: Margin mode - MEASURED position with 4px gap from Badge
+          const marginSpace = (badgeRect as any).wrapperHeight - badgeRect.bottom; // ✅ MEASURED distance!
+          const handleHeightWithGap = Math.max(marginSpace - 4, minHandleSize); // 4px gap from Badge edge
           return {
             ...baseStyles,
             top: `${badgeRect.bottom + 4}px`, // 4px gap from Badge bottom edge
             left: `${badgeRect.left}px`, // Align with Badge left
             width: `${badgeRect.width}px`, // Match Badge width
-            height: `${handleHeightWithGap}px`,
+            height: `${handleHeightWithGap}px`, // ✅ Stops 4px before wrapper edge!
           };
         }
       }
