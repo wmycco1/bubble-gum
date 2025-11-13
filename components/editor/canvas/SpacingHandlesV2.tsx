@@ -339,18 +339,29 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
     });
   };
 
-  // Handle corner drag - updates all sides simultaneously (Simple mode)
+  // Handle corner drag - updates all sides simultaneously (Uniform mode)
   const handleCornerDrag = (newValue: number) => {
     const clampedValue = Math.max(0, Math.round(newValue));
 
-    updateComponentProps(componentId, {
-      // Set shorthand property and clear individual sides
-      [prefix]: clampedValue,
-      [`${prefix}Top`]: undefined,
-      [`${prefix}Right`]: undefined,
-      [`${prefix}Bottom`]: undefined,
-      [`${prefix}Left`]: undefined,
-    });
+    // V7.11: For margin mode, set individual sides to maintain hybrid constraint system
+    // For padding mode, use shorthand (simpler)
+    if (spacingMode === 'margin') {
+      updateComponentProps(componentId, {
+        marginTop: clampedValue,
+        marginRight: clampedValue,
+        marginBottom: clampedValue,
+        marginLeft: clampedValue,
+      });
+    } else {
+      updateComponentProps(componentId, {
+        // Set shorthand property and clear individual sides
+        padding: clampedValue,
+        paddingTop: undefined,
+        paddingRight: undefined,
+        paddingBottom: undefined,
+        paddingLeft: undefined,
+      });
+    }
   };
 
   // Get average spacing value for corner display
