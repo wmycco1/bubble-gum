@@ -1213,13 +1213,14 @@ function SpacingBarHandle({
         const totalDeltaY = e.clientY - dragStartRef.current.y;
 
         // Calculate new value based on initial value + delta
+        // V7.3: Fixed margin-right/bottom delta direction
         const isVertical = side === 'top' || side === 'bottom';
         let delta = 0;
 
-        if (side === 'top') delta = -totalDeltaY; // Drag up = increase
-        else if (side === 'bottom') delta = totalDeltaY; // Drag down = increase
-        else if (side === 'left') delta = -totalDeltaX; // Drag left = increase
-        else if (side === 'right') delta = totalDeltaX; // Drag right = increase
+        if (side === 'top') delta = -totalDeltaY; // Drag up = increase (push down from top edge)
+        else if (side === 'bottom') delta = -totalDeltaY; // Drag up = increase (push up from bottom edge)
+        else if (side === 'left') delta = -totalDeltaX; // Drag left = increase (push right from left edge)
+        else if (side === 'right') delta = -totalDeltaX; // Drag left = increase (push left from right edge)
 
         const newValue = dragStartRef.current.initialValue + delta;
         onDrag(newValue);
