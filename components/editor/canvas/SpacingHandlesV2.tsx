@@ -434,7 +434,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                 position: 'absolute',
                 top: cssCompliantMode ? `-${topValue}px` : `${badgeRect.top}px`,
                 left: cssCompliantMode ? `${badgeRect.right}px` : `${badgeRect.right}px`,
-                width: cssCompliantMode ? `${rightValue}px` : `${badgeRect.wrapperWidth - badgeRect.right}px`,
+                width: cssCompliantMode ? `${rightValue}px` : `${badgeRect.wrapperWidth - badgeRect.right - 2}px`,
                 height: cssCompliantMode ? `${badgeRect.height + topValue + bottomValue}px` : `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'right'
@@ -463,7 +463,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                 top: cssCompliantMode ? `${badgeRect.bottom}px` : `${badgeRect.bottom}px`,
                 left: cssCompliantMode ? '0px' : `${badgeRect.left}px`,
                 width: cssCompliantMode ? `${badgeRect.width}px` : `${badgeRect.width}px`,
-                height: cssCompliantMode ? `${bottomValue}px` : `${badgeRect.wrapperHeight - badgeRect.bottom}px`,
+                height: cssCompliantMode ? `${bottomValue}px` : `${badgeRect.wrapperHeight - badgeRect.bottom - 2}px`,
                 backgroundColor:
                   draggingSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.4)'
