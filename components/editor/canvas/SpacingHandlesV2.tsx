@@ -1441,9 +1441,11 @@ function SpacingBarHandle({
       fontWeight: 600,
       whiteSpace: 'nowrap',
       pointerEvents: 'none',
-      zIndex: 51,
-      boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
-      border: '1px solid rgba(255,255,255,0.1)',
+      zIndex: 9999, // Much higher z-index to ensure it's on top of everything
+      boxShadow: '0 4px 12px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3)', // Stronger shadow
+      border: '1px solid rgba(255,255,255,0.2)', // More visible border
+      backdropFilter: 'none', // Ensure no backdrop blur effect
+      WebkitBackdropFilter: 'none', // Safari
     };
 
     // If we have mouse position, show near cursor with smart positioning
