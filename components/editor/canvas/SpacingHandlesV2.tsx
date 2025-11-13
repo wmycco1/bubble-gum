@@ -13,13 +13,17 @@
  * - Ghost indicators with tooltips for disabled handles
  * - GOD-TIER margin overlay mathematics (V3.0+)
  *
- * Version: 3.4 (FIXED LEFT/RIGHT HANDLES) - 2025-11-13
+ * Version: 3.5 (FIXED ALL 4 HANDLES) - 2025-11-13
  * V3.0: Margin overlays now show ACTUAL space (badgeRect), not props values
  * V3.1: Fixed wrapper div to allow margin to create space (display: inline-block)
  * V3.2: First attempt - changed left/right handles to wrapper center (partial fix)
  * V3.3: Second attempt - smart conditional logic based on Badge height (wrong approach)
- * V3.4: CORRECT FIX - left/right margin space ALWAYS spans full wrapper height
- *       Use wrapper center for ALL display modes (block/flex/inline-block/grid)
+ * V3.4: Fixed left/right handles - margin space spans full wrapper HEIGHT
+ * V3.5: Fixed top/bottom handles - margin space spans full wrapper WIDTH
+ *       KEY INSIGHT: Margin space is perpendicular to its direction!
+ *       - Left/right margin = horizontal gap, extends VERTICALLY (full wrapper height)
+ *       - Top/bottom margin = vertical gap, extends HORIZONTALLY (full wrapper width)
+ *       ALL handles now use wrapper center for perpendicular axis
  * Tested: 200 margin combinations (8 Display × 5 Align × 5 Position)
  * Documentation: MARGIN_OVERLAY_MATHEMATICS.md
  */
@@ -1436,10 +1440,11 @@ function SpacingBarHandle({
 
       switch (side) {
         case 'top':
+          // ✅ FIX (V3.5): Top/bottom margin space ALWAYS spans full wrapper width
           return {
             ...baseStyles,
             top: '0px', // Start from wrapper top edge (static)
-            left: `${badgeRect.left + badgeRect.width / 2}px`, // Center of BADGE element (horizontal)
+            left: `${wrapperRect.width / 2}px`, // Wrapper center (margin space spans full width)
             height: `${topMargin}px`, // Use margin value directly
             width: '0',
             borderLeft: `2px dashed ${lineColor}`,
@@ -1458,10 +1463,11 @@ function SpacingBarHandle({
           };
         case 'bottom':
           // Vertical line from badge bottom edge to wrapper bottom edge
+          // ✅ FIX (V3.5): Top/bottom margin space ALWAYS spans full wrapper width
           return {
             ...baseStyles,
             bottom: '0px', // Position from wrapper bottom edge (same as bar handle!)
-            left: `${badgeRect.left + badgeRect.width / 2}px`, // Center of BADGE element (horizontal)
+            left: `${wrapperRect.width / 2}px`, // Wrapper center (margin space spans full width)
             height: `${bottomMargin}px`, // Use margin value directly
             width: '0',
             borderLeft: `2px dashed ${lineColor}`,
@@ -1600,18 +1606,20 @@ function SpacingBarHandle({
       switch (side) {
         case 'top':
           // Arrows pointing toward each other (↓ at wrapper top, ↑ at badge top)
+          // ✅ FIX (V3.5): Top/bottom margin space ALWAYS spans full wrapper width
+          const topArrowLeft = wrapperRect.width / 2 - arrowSize; // Wrapper center
           return [
             {
               ...baseArrowStyle,
               top: '0px', // Static at wrapper top edge
-              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`, // Center of BADGE element (horizontal)
+              left: `${topArrowLeft}px`,
               borderBottomColor: arrowColor, // ↓ pointing down
               borderTopWidth: 0,
             },
             {
               ...baseArrowStyle,
               top: `${calculatedBadgeTop - arrowSize}px`, // Calculated badge top edge
-              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`, // Center of BADGE element (horizontal)
+              left: `${topArrowLeft}px`,
               borderTopColor: arrowColor, // ↑ pointing up
               borderBottomWidth: 0,
             },
@@ -1638,18 +1646,20 @@ function SpacingBarHandle({
           ];
         case 'bottom':
           // Arrows pointing toward each other (↑ at badge bottom, ↓ at wrapper bottom)
+          // ✅ FIX (V3.5): Top/bottom margin space ALWAYS spans full wrapper width
+          const bottomArrowLeft = wrapperRect.width / 2 - arrowSize; // Wrapper center
           return [
             {
               ...baseArrowStyle,
               bottom: `${bottomMargin - arrowSize}px`, // Position from wrapper bottom edge - shifted inside by arrowSize!
-              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`, // Center of BADGE element (horizontal)
+              left: `${bottomArrowLeft}px`,
               borderBottomColor: arrowColor, // ↓ pointing down
               borderTopWidth: 0,
             },
             {
               ...baseArrowStyle,
               bottom: '0px', // Position from wrapper bottom edge (same as bar handle!)
-              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`, // Center of BADGE element (horizontal)
+              left: `${bottomArrowLeft}px`,
               borderTopColor: arrowColor, // ↑ pointing up
               borderBottomWidth: 0,
             },
@@ -1749,7 +1759,7 @@ function SpacingBarHandle({
           return {
             ...baseStyles,
             top: `${topMargin / 2}px`, // Middle between wrapper top (0) and badge top
-            left: `${badgeRect.left + badgeRect.width / 2}px`, // Center of BADGE element (horizontal)
+            left: `${wrapperRect.width / 2}px`, // ✅ FIX (V3.5): Wrapper center (margin space spans full width)
             transform: 'translate(-50%, -50%)',
           };
         case 'right':
@@ -1765,7 +1775,7 @@ function SpacingBarHandle({
           return {
             ...baseStyles,
             bottom: `${bottomMargin / 2}px`, // Middle between badge bottom and wrapper bottom (from wrapper edge!)
-            left: `${badgeRect.left + badgeRect.width / 2}px`, // Center of BADGE element (horizontal)
+            left: `${wrapperRect.width / 2}px`, // ✅ FIX (V3.5): Wrapper center (margin space spans full width)
             transform: 'translateX(-50%)',
           };
         case 'left':
