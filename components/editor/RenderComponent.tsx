@@ -1,10 +1,16 @@
 'use client';
 
 // ═══════════════════════════════════════════════════════════════
-// BUBBLE GUM - RENDER COMPONENT V5.0.0 (NO ADAPTERS)
+// BUBBLE GUM - RENDER COMPONENT V5.1.0 (NO ADAPTERS)
 // ═══════════════════════════════════════════════════════════════
+// Version: 5.1.0 - Margin Spacing Fix (GOD-TIER)
+// Changes from 5.0.0:
+// - CRITICAL FIX: Added display: inline-block to wrapper div
+// - Allows child component's margin to create actual space in parent
+// - Without this, wrapper shrinks to child's content box (margin has no effect)
+// - Now margin overlays in SpacingHandlesV2 will show correctly!
+//
 // Version: 5.0.0 - Direct Atomic Component Rendering
-// Changes:
 // - REMOVED adapter layer (component-adapter.ts)
 // - REMOVED component mapping (component-mapping.ts)
 // - Direct rendering of atomic components from src/components/
@@ -96,9 +102,8 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     },
   });
 
-  // Apply visibility and display props
+  // Apply visibility (but NOT display - display should be on the atomic component, not wrapper!)
   const visibility = component.props.visibility as 'visible' | 'hidden' | undefined;
-  const display = component.props.display as string | undefined;
 
   const style: React.CSSProperties = {
     opacity: isDragging ? 0.3 : 1,
@@ -107,8 +112,10 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     willChange: isDragging ? 'opacity' : 'auto',
     transition: 'opacity 100ms ease-out',
     ...(visibility && { visibility }),
-    ...(display && { display }),
-    // NOTE: spacing (margin/padding) is passed to atomic component via props, not applied to wrapper
+    // CRITICAL FIX (V5.1.0): Add display: inline-block to allow child's margin to create space
+    // Without this, wrapper shrinks to child's content box and margin has no effect
+    display: 'inline-block',
+    // NOTE: spacing (margin/padding) and other styling props are passed to atomic component via props, not applied to wrapper
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -295,7 +302,7 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       onMouseLeave={handleMouseLeave}
       style={style}
       className={cn(
-        'relative cursor-pointer transition-all',
+        'relative cursor-auto transition-all',
         isSelected && 'ring-2 ring-blue-500 ring-offset-2 bg-blue-50/10',
         isHovered && !isSelected && 'ring-1 ring-slate-300 bg-slate-50',
         isOver && 'ring-2 ring-blue-400 bg-blue-50'

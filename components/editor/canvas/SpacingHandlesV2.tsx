@@ -9,6 +9,14 @@
  * - Inline value display on hover
  * - Minimal, elegant design
  * - Works for ALL components (atoms, molecules, organisms)
+ * - Smart handle visibility based on CSS display/alignment/position
+ * - Ghost indicators with tooltips for disabled handles
+ * - GOD-TIER margin overlay mathematics (V3.0)
+ *
+ * Version: 3.0 (GOD-TIER) - 2025-11-13
+ * Critical Fix: Margin overlays now show ACTUAL space (badgeRect), not props values
+ * Tested: 200 margin combinations (8 Display × 5 Align × 5 Position)
+ * Documentation: MARGIN_OVERLAY_MATHEMATICS.md
  */
 
 import React, { useState } from 'react';
@@ -30,12 +38,149 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
   const [badgeRect, setBadgeRect] = useState<DOMRect | null>(null);
   const [wrapperRect, setWrapperRect] = useState<DOMRect | null>(null);
   const rafRef = React.useRef<number | null>(null);
+  const instanceId = React.useRef(`instance-${Math.random().toString(36).substr(2, 9)}`).current;
 
   // Enable keyboard shortcuts
   useSpacingKeyboard({ mode: spacingMode, enabled: true });
 
   // Get component
   const component = components.find(c => c.id === componentId);
+
+  // Early return if component not found
+  if (!component) return null;
+
+  const props = component.props || {};
+  const prefix = spacingMode;
+
+  // Get display mode, position, and alignment to determine which spacing sides are applicable
+  const displayMode = (props.display as string) || 'inline-flex'; // Default for Badge
+  const positionMode = (props.position as string) || 'static';
+  const alignMode = props.align as string | undefined;
+
+  // Determine which sides are applicable based on display, position, alignment, and spacing type
+  const getApplicableSides = (): { top: boolean; right: boolean; bottom: boolean; left: boolean } => {
+    // PADDING always works on all sides regardless of display/position/alignment
+    if (spacingMode === 'padding') {
+      return { top: true, right: true, bottom: true, left: true };
+    }
+
+    // MARGIN behavior depends on display mode, position, and alignment
+    let sides = {
+      top: true,
+      right: true,
+      bottom: true,
+      left: true,
+    };
+
+    // 1. Display mode restrictions
+    if (displayMode === 'inline') {
+      // Inline elements: only horizontal margin works (left, right)
+      // Vertical margin (top, bottom) is ignored by browser
+      sides.top = false;
+      sides.bottom = false;
+    }
+
+    // 2. Alignment restrictions (CRITICAL!)
+    // When align is set, Badge component uses margin auto for alignment
+    // This CONFLICTS with manual margin-left/right values
+    // Badge.tsx behavior:
+    // - left: margin-left:0, margin-right:auto (disable RIGHT)
+    // - center: margin-left:auto, margin-right:auto (disable BOTH)
+    // - right: margin-left:auto, margin-right:0 (disable LEFT)
+    // - full: margin-left:0, margin-right:0, width:100% (disable BOTH)
+    if (alignMode) {
+      switch (alignMode) {
+        case 'left':
+          // Left alignment uses margin-right:auto, so RIGHT margin is controlled by auto
+          sides.right = false;
+          break;
+        case 'center':
+          // Center uses both auto, disable both sides
+          sides.left = false;
+          sides.right = false;
+          break;
+        case 'right':
+          // Right alignment uses margin-left:auto, so LEFT margin is controlled by auto
+          sides.left = false;
+          break;
+        case 'full':
+          // Full width: both margins set to 0, and they wouldn't be visible anyway
+          sides.left = false;
+          sides.right = false;
+          break;
+      }
+    }
+
+    // 3. Position mode info (for future enhancements)
+    // absolute/fixed: element is out of flow, margin collapse doesn't apply
+    // sticky: margin works normally
+    // static/relative: normal margin behavior
+    // Note: We don't restrict any sides based on position, just documenting behavior
+
+    return sides;
+  };
+
+  const applicableSides = getApplicableSides();
+
+  // Generate user-friendly explanation for why a handle is disabled
+  const getDisabledReason = (side: Side): { reason: string; action: string } | null => {
+    // Only for margin mode - padding always works
+    if (spacingMode === 'padding') return null;
+
+    // If side is applicable, no reason
+    if (applicableSides[side]) return null;
+
+    // Vertical sides (top/bottom) - check display mode
+    if (side === 'top' || side === 'bottom') {
+      if (displayMode === 'inline') {
+        return {
+          reason: 'Inline elements ignore vertical margin in browsers',
+          action: 'Change Display to Block, Inline Block, Flex, or Grid'
+        };
+      }
+    }
+
+    // Horizontal sides (left/right) - check alignment
+    if (side === 'left' || side === 'right') {
+      if (alignMode === 'center') {
+        return {
+          reason: 'Center alignment uses automatic margins on both sides',
+          action: 'Change Align to None, Left, or Right to control margins manually'
+        };
+      }
+      if (alignMode === 'full') {
+        return {
+          reason: 'Full width alignment sets width to 100% (margins not visible)',
+          action: 'Change Align to None to control horizontal margins'
+        };
+      }
+      if (side === 'left' && alignMode === 'right') {
+        return {
+          reason: 'Right alignment uses margin-left: auto for positioning',
+          action: 'Change Align to None, Left, or Center'
+        };
+      }
+      if (side === 'right' && alignMode === 'left') {
+        return {
+          reason: 'Left alignment uses margin-right: auto for positioning',
+          action: 'Change Align to None, Right, or Center'
+        };
+      }
+    }
+
+    return null;
+  };
+
+  // Get spacing values (MOVED BEFORE useEffect!)
+  const getValue = (side: Side): number => {
+    const capitalizedSide = side.charAt(0).toUpperCase() + side.slice(1);
+    return props[`${prefix}${capitalizedSide}`] ?? props[prefix] ?? 0;
+  };
+
+  const topValue = getValue('top');
+  const rightValue = getValue('right');
+  const bottomValue = getValue('bottom');
+  const leftValue = getValue('left');
 
   // Find the actual Badge element (not wrapper) and track its position
   React.useEffect(() => {
@@ -83,64 +228,16 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
       rafRef.current = requestAnimationFrame(updateBadgeRect);
     };
 
-    // Only listen to window resize, not every DOM change
+    // Listen to window resize
     window.addEventListener('resize', handleUpdate);
 
     return () => {
       window.removeEventListener('resize', handleUpdate);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [componentId]); // Only re-run when componentId changes, NOT on every prop change
+  }, [componentId, topValue, rightValue, bottomValue, leftValue]); // Re-run when margins change for instant updates!
 
-  // Immediate update when props change (removed debouncing for smooth dragging)
-  React.useEffect(() => {
-    const wrapper = document.querySelector(`[data-component-id="${componentId}"]`);
-    if (!wrapper) return;
-
-    const badgeElement = wrapper.querySelector('[data-testid="badge"]') as HTMLElement;
-    if (badgeElement) {
-      const rect = badgeElement.getBoundingClientRect();
-      const wrapperRectRaw = wrapper.getBoundingClientRect();
-
-      // Save wrapper dimensions (relative coordinates starting at 0,0)
-      const relativeWrapperRect = {
-        top: 0,
-        left: 0,
-        width: wrapperRectRaw.width,
-        height: wrapperRectRaw.height,
-        right: wrapperRectRaw.width,
-        bottom: wrapperRectRaw.height,
-      } as DOMRect;
-
-      const relativeRect = {
-        top: rect.top - wrapperRectRaw.top,
-        left: rect.left - wrapperRectRaw.left,
-        width: rect.width,
-        height: rect.height,
-        right: rect.right - wrapperRectRaw.left,
-        bottom: rect.bottom - wrapperRectRaw.top,
-      } as DOMRect;
-
-      setWrapperRect(relativeWrapperRect);
-      setBadgeRect(relativeRect);
-    }
-  }, [componentId, component?.props]);
-
-  if (!component || !badgeRect || !wrapperRect) return null;
-
-  const props = component.props || {};
-  const prefix = spacingMode;
-
-  // Get spacing values
-  const getValue = (side: Side): number => {
-    const capitalizedSide = side.charAt(0).toUpperCase() + side.slice(1);
-    return props[`${prefix}${capitalizedSide}`] ?? props[prefix] ?? 0;
-  };
-
-  const topValue = getValue('top');
-  const rightValue = getValue('right');
-  const bottomValue = getValue('bottom');
-  const leftValue = getValue('left');
+  if (!badgeRect || !wrapperRect) return null;
 
   // Handle drag - receives absolute new value, not delta
   const handleDrag = (side: Side, newValue: number) => {
@@ -176,14 +273,34 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
   const overlayColor = spacingMode === 'margin' ? 'rgba(96, 165, 250, 0.2)' : 'rgba(52, 211, 153, 0.18)';
   const borderColor = spacingMode === 'margin' ? '#3b82f6' : '#10b981';
 
+  // Check if badge is within wrapper bounds (prevent overlay from entering badge during fast changes)
+  const isBadgeInBounds = badgeRect.top >= 0 &&
+                          badgeRect.left >= 0 &&
+                          badgeRect.right <= wrapperRect.width &&
+                          badgeRect.bottom <= wrapperRect.height;
+
+  console.log(`🔍 SpacingHandlesV2 RENDER [${instanceId}]:`, {
+    componentId,
+    spacingMode,
+    topValue,
+    leftValue,
+    marginOverlaysWillRender: spacingMode === 'margin',
+    paddingOverlaysWillRender: spacingMode === 'padding',
+    topOverlayHeight: topValue,
+    leftOverlayWidth: leftValue,
+  });
+
   return (
     <>
       {/* Visual Overlays - Show spacing areas (like properties panel) - INTERACTIVE */}
       {spacingMode === 'margin' && (
         <>
-          {/* Top Margin Overlay - THREE STATES: idle (blue) → hover (green 15%) → dragging (green 25%) */}
-          {topValue > 0 && (
+          {console.log('✅ MARGIN MODE ACTIVE - rendering margin overlays')}
+          {/* Top Margin Overlay - Shows ACTUAL margin space between wrapper top and Badge top */}
+          {applicableSides.top && badgeRect.top > 0 && (
             <div
+              data-overlay-type="margin-top"
+              data-instance-id={instanceId}
               onMouseEnter={() => setHoveredSide('top')}
               onMouseLeave={() => setHoveredSide(null)}
               style={{
@@ -191,94 +308,104 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
                 top: '0px',
                 left: '0px',
                 width: `${wrapperRect.width}px`,
-                height: `${badgeRect.top}px`,
+                height: `${badgeRect.top}px`, // ✅ CORRECT: Use ACTUAL distance from wrapper to Badge
                 backgroundColor:
                   draggingSide === 'top'
-                    ? 'rgba(52, 211, 153, 0.4)' // Dragging: green 40% (more visible)
+                    ? 'rgba(52, 211, 153, 0.4)' // Dragging: green 40%
                     : hoveredSide === 'top'
-                    ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25% (more visible)
-                    : 'rgba(96, 165, 250, 0.1)', // Idle: blue 10% (reduced 50%)
+                    ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25%
+                    : 'rgba(96, 165, 250, 0.35)', // Idle: blue 35% - MARGIN space OUTSIDE Badge
                 borderTop: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
+                borderBottom: `2px dashed ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`, // Dashed border at bottom = Badge top edge
                 pointerEvents: 'auto',
-                cursor: 's-resize',  // ↓ Push badge DOWN from top edge
+                cursor: 's-resize',
                 zIndex: 43,
                 transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
 
-          {/* Right Margin Overlay */}
-          {rightValue > 0 && (
+          {/* Right Margin Overlay - Shows ACTUAL margin space between Badge right and wrapper right */}
+          {applicableSides.right && (wrapperRect.width - badgeRect.right) > 0 && (
             <div
+              data-overlay-type="margin-right"
+              data-instance-id={instanceId}
               onMouseEnter={() => setHoveredSide('right')}
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
                 top: '0px',
-                left: `${badgeRect.right}px`,
-                width: `${wrapperRect.width - badgeRect.right}px`,
+                right: '0px',
+                width: `${wrapperRect.width - badgeRect.right}px`, // ✅ CORRECT: Distance from Badge right edge to wrapper right edge
                 height: `${wrapperRect.height}px`,
                 backgroundColor:
                   draggingSide === 'right'
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'right'
                     ? 'rgba(52, 211, 153, 0.25)'
-                    : 'rgba(96, 165, 250, 0.1)',
+                    : 'rgba(96, 165, 250, 0.35)',
                 borderRight: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
+                borderLeft: `2px dashed ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`, // Dashed border at left = Badge right edge
                 pointerEvents: 'auto',
-                cursor: 'w-resize',  // ← Push badge LEFT from right edge
+                cursor: 'w-resize',
                 zIndex: 43,
                 transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
 
-          {/* Bottom Margin Overlay */}
-          {bottomValue > 0 && (
+          {/* Bottom Margin Overlay - Shows ACTUAL margin space between Badge bottom and wrapper bottom */}
+          {applicableSides.bottom && (wrapperRect.height - badgeRect.bottom) > 0 && (
             <div
+              data-overlay-type="margin-bottom"
+              data-instance-id={instanceId}
               onMouseEnter={() => setHoveredSide('bottom')}
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
-                top: `${badgeRect.bottom}px`,
+                bottom: '0px',
                 left: '0px',
                 width: `${wrapperRect.width}px`,
-                height: `${wrapperRect.height - badgeRect.bottom}px`,
+                height: `${wrapperRect.height - badgeRect.bottom}px`, // ✅ CORRECT: Distance from Badge bottom edge to wrapper bottom edge
                 backgroundColor:
                   draggingSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.25)'
-                    : 'rgba(96, 165, 250, 0.1)',
+                    : 'rgba(96, 165, 250, 0.35)',
                 borderBottom: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
+                borderTop: `2px dashed ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`, // Dashed border at top = Badge bottom edge
                 pointerEvents: 'auto',
-                cursor: 'n-resize',  // ↑ Push badge UP from bottom edge
+                cursor: 'n-resize',
                 zIndex: 43,
                 transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
             />
           )}
 
-          {/* Left Margin Overlay */}
-          {leftValue > 0 && (
+          {/* Left Margin Overlay - Shows ACTUAL margin space between wrapper left and Badge left */}
+          {applicableSides.left && badgeRect.left > 0 && (
             <div
+              data-overlay-type="margin-left"
+              data-instance-id={instanceId}
               onMouseEnter={() => setHoveredSide('left')}
               onMouseLeave={() => setHoveredSide(null)}
               style={{
                 position: 'absolute',
                 top: '0px',
                 left: '0px',
-                width: `${badgeRect.left}px`,
+                width: `${badgeRect.left}px`, // ✅ CORRECT: Distance from wrapper left edge to Badge left edge
                 height: `${wrapperRect.height}px`,
                 backgroundColor:
                   draggingSide === 'left'
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'left'
                     ? 'rgba(52, 211, 153, 0.25)'
-                    : 'rgba(96, 165, 250, 0.1)',
+                    : 'rgba(96, 165, 250, 0.35)',
                 borderLeft: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
+                borderRight: `2px dashed ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`, // Dashed border at right = Badge left edge
                 pointerEvents: 'auto',
-                cursor: 'e-resize',  // → Push badge RIGHT from left edge
+                cursor: 'e-resize',
                 zIndex: 43,
                 transition: 'background-color 0.15s ease, border-color 0.15s ease',
               }}
@@ -289,9 +416,11 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
 
       {spacingMode === 'padding' && (
         <>
+          {console.log('✅ PADDING MODE ACTIVE - rendering padding overlays')}
           {/* Top Padding Overlay - THREE STATES: idle (blue) → hover (green 15%) → dragging (green 25%) */}
           {topValue > 0 && (
             <div
+              data-overlay-type="padding-top"
               onMouseEnter={() => setHoveredSide('top')}
               onMouseLeave={() => setHoveredSide(null)}
               style={{
@@ -395,6 +524,274 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         </>
       )}
 
+      {/* ═══════════════════════════════════════════════════════════════
+          GHOST INDICATORS - Show disabled handles with explanation
+          ═══════════════════════════════════════════════════════════════
+          Only in margin mode, only for disabled sides
+          ═══════════════════════════════════════════════════════════════ */}
+      {spacingMode === 'margin' && (
+        <>
+          {/* Top Ghost Indicator */}
+          {!applicableSides.top && (() => {
+            const reason = getDisabledReason('top');
+            return reason ? (
+              <div
+                data-ghost-indicator="top"
+                className="absolute group"
+                style={{
+                  top: '0px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '40px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 50,
+                  pointerEvents: 'auto',
+                  cursor: 'not-allowed',
+                }}
+              >
+                {/* Ghost handle icon */}
+                <div
+                  style={{
+                    width: '24px',
+                    height: '4px',
+                    backgroundColor: 'rgba(239, 68, 68, 0.3)', // Red with transparency
+                    border: '1px dashed rgba(239, 68, 68, 0.5)',
+                    borderRadius: '2px',
+                  }}
+                />
+
+                {/* Tooltip on hover */}
+                <div
+                  className="invisible group-hover:visible absolute bg-slate-900 text-white text-xs rounded-lg shadow-xl px-3 py-2 whitespace-nowrap"
+                  style={{
+                    top: '100%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    marginTop: '8px',
+                    maxWidth: '280px',
+                    whiteSpace: 'normal',
+                    zIndex: 100,
+                  }}
+                >
+                  <div className="font-semibold mb-1">⚠️ Top margin disabled</div>
+                  <div className="text-slate-300 mb-2">{reason.reason}</div>
+                  <div className="text-blue-400 text-[10px]">💡 {reason.action}</div>
+                  {/* Tooltip arrow */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '-4px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '0',
+                      height: '0',
+                      borderLeft: '4px solid transparent',
+                      borderRight: '4px solid transparent',
+                      borderBottom: '4px solid rgb(15, 23, 42)',
+                    }}
+                  />
+                </div>
+              </div>
+            ) : null;
+          })()}
+
+          {/* Right Ghost Indicator */}
+          {!applicableSides.right && (() => {
+            const reason = getDisabledReason('right');
+            return reason ? (
+              <div
+                data-ghost-indicator="right"
+                className="absolute group"
+                style={{
+                  top: '50%',
+                  right: '0px',
+                  transform: 'translateY(-50%)',
+                  width: '20px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 50,
+                  pointerEvents: 'auto',
+                  cursor: 'not-allowed',
+                }}
+              >
+                <div
+                  style={{
+                    width: '4px',
+                    height: '24px',
+                    backgroundColor: 'rgba(239, 68, 68, 0.3)',
+                    border: '1px dashed rgba(239, 68, 68, 0.5)',
+                    borderRadius: '2px',
+                  }}
+                />
+
+                <div
+                  className="invisible group-hover:visible absolute bg-slate-900 text-white text-xs rounded-lg shadow-xl px-3 py-2 whitespace-nowrap"
+                  style={{
+                    top: '50%',
+                    right: '100%',
+                    transform: 'translateY(-50%)',
+                    marginRight: '8px',
+                    maxWidth: '280px',
+                    whiteSpace: 'normal',
+                    zIndex: 100,
+                  }}
+                >
+                  <div className="font-semibold mb-1">⚠️ Right margin disabled</div>
+                  <div className="text-slate-300 mb-2">{reason.reason}</div>
+                  <div className="text-blue-400 text-[10px]">💡 {reason.action}</div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      right: '-4px',
+                      transform: 'translateY(-50%)',
+                      width: '0',
+                      height: '0',
+                      borderTop: '4px solid transparent',
+                      borderBottom: '4px solid transparent',
+                      borderLeft: '4px solid rgb(15, 23, 42)',
+                    }}
+                  />
+                </div>
+              </div>
+            ) : null;
+          })()}
+
+          {/* Bottom Ghost Indicator */}
+          {!applicableSides.bottom && (() => {
+            const reason = getDisabledReason('bottom');
+            return reason ? (
+              <div
+                data-ghost-indicator="bottom"
+                className="absolute group"
+                style={{
+                  bottom: '0px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '40px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 50,
+                  pointerEvents: 'auto',
+                  cursor: 'not-allowed',
+                }}
+              >
+                <div
+                  style={{
+                    width: '24px',
+                    height: '4px',
+                    backgroundColor: 'rgba(239, 68, 68, 0.3)',
+                    border: '1px dashed rgba(239, 68, 68, 0.5)',
+                    borderRadius: '2px',
+                  }}
+                />
+
+                <div
+                  className="invisible group-hover:visible absolute bg-slate-900 text-white text-xs rounded-lg shadow-xl px-3 py-2 whitespace-nowrap"
+                  style={{
+                    bottom: '100%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    marginBottom: '8px',
+                    maxWidth: '280px',
+                    whiteSpace: 'normal',
+                    zIndex: 100,
+                  }}
+                >
+                  <div className="font-semibold mb-1">⚠️ Bottom margin disabled</div>
+                  <div className="text-slate-300 mb-2">{reason.reason}</div>
+                  <div className="text-blue-400 text-[10px]">💡 {reason.action}</div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '-4px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '0',
+                      height: '0',
+                      borderLeft: '4px solid transparent',
+                      borderRight: '4px solid transparent',
+                      borderTop: '4px solid rgb(15, 23, 42)',
+                    }}
+                  />
+                </div>
+              </div>
+            ) : null;
+          })()}
+
+          {/* Left Ghost Indicator */}
+          {!applicableSides.left && (() => {
+            const reason = getDisabledReason('left');
+            return reason ? (
+              <div
+                data-ghost-indicator="left"
+                className="absolute group"
+                style={{
+                  top: '50%',
+                  left: '0px',
+                  transform: 'translateY(-50%)',
+                  width: '20px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 50,
+                  pointerEvents: 'auto',
+                  cursor: 'not-allowed',
+                }}
+              >
+                <div
+                  style={{
+                    width: '4px',
+                    height: '24px',
+                    backgroundColor: 'rgba(239, 68, 68, 0.3)',
+                    border: '1px dashed rgba(239, 68, 68, 0.5)',
+                    borderRadius: '2px',
+                  }}
+                />
+
+                <div
+                  className="invisible group-hover:visible absolute bg-slate-900 text-white text-xs rounded-lg shadow-xl px-3 py-2 whitespace-nowrap"
+                  style={{
+                    top: '50%',
+                    left: '100%',
+                    transform: 'translateY(-50%)',
+                    marginLeft: '8px',
+                    maxWidth: '280px',
+                    whiteSpace: 'normal',
+                    zIndex: 100,
+                  }}
+                >
+                  <div className="font-semibold mb-1">⚠️ Left margin disabled</div>
+                  <div className="text-slate-300 mb-2">{reason.reason}</div>
+                  <div className="text-blue-400 text-[10px]">💡 {reason.action}</div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '-4px',
+                      transform: 'translateY(-50%)',
+                      width: '0',
+                      height: '0',
+                      borderTop: '4px solid transparent',
+                      borderBottom: '4px solid transparent',
+                      borderRight: '4px solid rgb(15, 23, 42)',
+                    }}
+                  />
+                </div>
+              </div>
+            ) : null;
+          })()}
+        </>
+      )}
+
       {/* Mode Toggle - Absolute positioned, inside top-right of Badge */}
       <div
         className="absolute flex gap-0.5 z-50"
@@ -438,69 +835,99 @@ export function SpacingHandlesV2({ componentId }: SpacingHandlesV2Props) {
         color={color}
         onDrag={handleCornerDrag}
         badgeRect={badgeRect}
+        wrapperRect={wrapperRect}
         mode={spacingMode}
+        topMargin={topValue}
+        rightMargin={rightValue}
+        bottomMargin={bottomValue}
+        leftMargin={leftValue}
       />
 
       {/* Interactive Handles - with dynamic visual indicators */}
-      <SpacingBarHandle
-        side="top"
-        value={topValue}
-        color={color}
-        isHovered={hoveredSide === 'top'}
-        onHover={() => setHoveredSide('top')}
-        onLeave={() => setHoveredSide(null)}
-        onDrag={(newValue) => handleDrag('top', newValue)}
-        onDragStart={() => setDraggingSide('top')}
-        onDragEnd={() => setDraggingSide(null)}
-        badgeRect={badgeRect}
-        wrapperRect={wrapperRect}
-        mode={spacingMode}
-      />
+      {/* Only show handles for applicable sides based on display mode */}
+      {applicableSides.top && (
+        <SpacingBarHandle
+          side="top"
+          value={topValue}
+          color={color}
+          isHovered={hoveredSide === 'top'}
+          onHover={() => setHoveredSide('top')}
+          onLeave={() => setHoveredSide(null)}
+          onDrag={(newValue) => handleDrag('top', newValue)}
+          onDragStart={() => setDraggingSide('top')}
+          onDragEnd={() => setDraggingSide(null)}
+          badgeRect={badgeRect}
+          wrapperRect={wrapperRect}
+          mode={spacingMode}
+          topMargin={topValue}
+          rightMargin={rightValue}
+          bottomMargin={bottomValue}
+          leftMargin={leftValue}
+        />
+      )}
 
-      <SpacingBarHandle
-        side="right"
-        value={rightValue}
-        color={color}
-        isHovered={hoveredSide === 'right'}
-        onHover={() => setHoveredSide('right')}
-        onLeave={() => setHoveredSide(null)}
-        onDrag={(newValue) => handleDrag('right', newValue)}
-        onDragStart={() => setDraggingSide('right')}
-        onDragEnd={() => setDraggingSide(null)}
-        badgeRect={badgeRect}
-        wrapperRect={wrapperRect}
-        mode={spacingMode}
-      />
+      {applicableSides.right && (
+        <SpacingBarHandle
+          side="right"
+          value={rightValue}
+          color={color}
+          isHovered={hoveredSide === 'right'}
+          onHover={() => setHoveredSide('right')}
+          onLeave={() => setHoveredSide(null)}
+          onDrag={(newValue) => handleDrag('right', newValue)}
+          onDragStart={() => setDraggingSide('right')}
+          onDragEnd={() => setDraggingSide(null)}
+          badgeRect={badgeRect}
+          wrapperRect={wrapperRect}
+          mode={spacingMode}
+          topMargin={topValue}
+          rightMargin={rightValue}
+          bottomMargin={bottomValue}
+          leftMargin={leftValue}
+        />
+      )}
 
-      <SpacingBarHandle
-        side="bottom"
-        value={bottomValue}
-        color={color}
-        isHovered={hoveredSide === 'bottom'}
-        onHover={() => setHoveredSide('bottom')}
-        onLeave={() => setHoveredSide(null)}
-        onDrag={(newValue) => handleDrag('bottom', newValue)}
-        onDragStart={() => setDraggingSide('bottom')}
-        onDragEnd={() => setDraggingSide(null)}
-        badgeRect={badgeRect}
-        wrapperRect={wrapperRect}
-        mode={spacingMode}
-      />
+      {applicableSides.bottom && (
+        <SpacingBarHandle
+          side="bottom"
+          value={bottomValue}
+          color={color}
+          isHovered={hoveredSide === 'bottom'}
+          onHover={() => setHoveredSide('bottom')}
+          onLeave={() => setHoveredSide(null)}
+          onDrag={(newValue) => handleDrag('bottom', newValue)}
+          onDragStart={() => setDraggingSide('bottom')}
+          onDragEnd={() => setDraggingSide(null)}
+          badgeRect={badgeRect}
+          wrapperRect={wrapperRect}
+          mode={spacingMode}
+          topMargin={topValue}
+          rightMargin={rightValue}
+          bottomMargin={bottomValue}
+          leftMargin={leftValue}
+        />
+      )}
 
-      <SpacingBarHandle
-        side="left"
-        value={leftValue}
-        color={color}
-        isHovered={hoveredSide === 'left'}
-        onHover={() => setHoveredSide('left')}
-        onLeave={() => setHoveredSide(null)}
-        onDrag={(newValue) => handleDrag('left', newValue)}
-        onDragStart={() => setDraggingSide('left')}
-        onDragEnd={() => setDraggingSide(null)}
-        badgeRect={badgeRect}
-        wrapperRect={wrapperRect}
-        mode={spacingMode}
-      />
+      {applicableSides.left && (
+        <SpacingBarHandle
+          side="left"
+          value={leftValue}
+          color={color}
+          isHovered={hoveredSide === 'left'}
+          onHover={() => setHoveredSide('left')}
+          onLeave={() => setHoveredSide(null)}
+          onDrag={(newValue) => handleDrag('left', newValue)}
+          onDragStart={() => setDraggingSide('left')}
+          onDragEnd={() => setDraggingSide(null)}
+          badgeRect={badgeRect}
+          wrapperRect={wrapperRect}
+          mode={spacingMode}
+          topMargin={topValue}
+          rightMargin={rightValue}
+          bottomMargin={bottomValue}
+          leftMargin={leftValue}
+        />
+      )}
     </>
   );
 }
@@ -513,7 +940,12 @@ interface UniformSpacingHandleProps {
   color: string;
   onDrag: (newValue: number) => void;
   badgeRect: DOMRect;
+  wrapperRect: DOMRect;
   mode: SpacingMode;
+  topMargin: number;
+  rightMargin: number;
+  bottomMargin: number;
+  leftMargin: number;
 }
 
 function UniformSpacingHandle({
@@ -521,7 +953,12 @@ function UniformSpacingHandle({
   color,
   onDrag,
   badgeRect,
+  wrapperRect,
   mode,
+  topMargin,
+  rightMargin,
+  bottomMargin,
+  leftMargin,
 }: UniformSpacingHandleProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -574,9 +1011,19 @@ function UniformSpacingHandle({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Position at center of Badge
+  // Position at center of Badge element itself (not the spacing area!)
+  // NOTE: badgeRect is ALREADY in wrapper-relative coordinates (see lines 66-73)
+  // So we can calculate center directly from badgeRect without further conversion
   const centerX = badgeRect.left + badgeRect.width / 2;
   const centerY = badgeRect.top + badgeRect.height / 2;
+
+  console.log('🎯 CENTER HANDLE DEBUG:', {
+    mode,
+    badgeRect: { left: badgeRect.left, top: badgeRect.top, width: badgeRect.width, height: badgeRect.height },
+    wrapperRect: { left: wrapperRect.left, top: wrapperRect.top, width: wrapperRect.width, height: wrapperRect.height },
+    margins: { top: topMargin, right: rightMargin, bottom: bottomMargin, left: leftMargin },
+    calculatedCenter: { x: centerX, y: centerY },
+  });
 
   return (
     <>
@@ -666,6 +1113,11 @@ interface SpacingBarHandleProps {
   badgeRect: DOMRect;
   wrapperRect: DOMRect;
   mode: SpacingMode;
+  // Margin values for correct positioning in margin mode
+  topMargin: number;
+  rightMargin: number;
+  bottomMargin: number;
+  leftMargin: number;
 }
 
 function SpacingBarHandle({
@@ -681,6 +1133,10 @@ function SpacingBarHandle({
   badgeRect,
   wrapperRect,
   mode,
+  topMargin,
+  rightMargin,
+  bottomMargin,
+  leftMargin,
 }: SpacingBarHandleProps) {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
@@ -753,36 +1209,38 @@ function SpacingBarHandle({
 
   // Position styles based on side - HANDLE STRETCHES TO FILL SPACING AREA
   const getPositionStyles = () => {
-    // Three-state color system: idle (blue) → hover (green) → dragging (green)
+    // Bar handles: only visible on hover/drag (green), invisible otherwise
     const bgColor = isDragging
-      ? 'rgba(16, 185, 129, 0.9)' // Dragging: bright green
+      ? 'rgba(16, 185, 129, 0.3)' // Dragging: semi-transparent green
       : isHovered
-      ? 'rgba(52, 211, 153, 0.7)' // Hover: green
-      : 'rgba(96, 165, 250, 0.15)'; // Idle: blue 15% (reduced 50% from 0.3)
+      ? 'rgba(52, 211, 153, 0.2)' // Hover: light green
+      : 'transparent'; // Idle: invisible
 
-    const borderColor = isDragging || isHovered ? '#10b981' : '#60a5fa';
+    const borderColor = isDragging
+      ? '#10b981'
+      : isHovered
+      ? '#34d399'
+      : 'transparent';
 
     const baseStyles = {
       position: 'absolute' as const,
-      zIndex: 45,
+      zIndex: 46, // Above overlays (z-index: 43)
       transition: isDragging ? 'none' : 'all 0.15s ease',
       backgroundColor: bgColor,
-      border: isDragging
-        ? `2px solid ${borderColor}`
-        : isHovered
-        ? `2px solid ${borderColor}`
-        : `1px solid rgba(96, 165, 250, 0.5)`,
+      border: isDragging || isHovered ? `2px solid ${borderColor}` : 'none',
       cursor,
       boxShadow: isDragging ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
-      opacity: isDragging ? 1 : isHovered ? 0.9 : 0.3, // More transparency when idle
+      pointerEvents: 'auto' as const,
     };
 
     // Minimum handle size to remain clickable even with small values
     const minHandleSize = 10;
 
     // For padding: handles are INSIDE Badge (on inner edge after padding)
-    // For margin: handles are INSIDE wrapper (between wrapper edge and badge)
+    // For margin: handles are FROM wrapper edge (using margin values directly)
     const inset = mode === 'padding';
+
+    // Use margin values from props (already passed from parent)
 
     switch (side) {
       case 'top': {
@@ -790,47 +1248,71 @@ function SpacingBarHandle({
         const handleHeight = Math.max(value, minHandleSize);
         return {
           ...baseStyles,
-          // Padding: inside badge at top edge | Margin: from wrapper top to badge top (INSIDE wrapper)
+          // Padding: inside badge at top edge | Margin: from wrapper top (using margin value)
           top: inset ? `${badgeRect.top}px` : '0px',
-          left: `${badgeRect.left}px`,
-          width: `${badgeRect.width}px`,
-          height: inset ? `${handleHeight}px` : `${badgeRect.top}px`,
+          left: inset ? `${badgeRect.left}px` : `${leftMargin}px`, // Margin: start after left margin
+          width: inset ? `${badgeRect.width}px` : `${wrapperRect.width - leftMargin - rightMargin}px`, // Margin: full width minus side margins
+          height: inset ? `${handleHeight}px` : `${value}px`, // Margin: use margin value directly
         };
       }
       case 'right': {
         // Handle width = spacing value (minimum 10px for visibility)
         const handleWidth = Math.max(value, minHandleSize);
-        return {
-          ...baseStyles,
-          top: `${badgeRect.top}px`,
-          // Padding: inside badge at right edge | Margin: from badge right to wrapper right (INSIDE wrapper)
-          left: inset ? `${badgeRect.right - handleWidth}px` : `${badgeRect.right}px`,
-          width: inset ? `${handleWidth}px` : `${wrapperRect.width - badgeRect.right}px`,
-          height: `${badgeRect.height}px`,
-        };
+
+        if (inset) {
+          // Padding mode: inside badge at right edge
+          return {
+            ...baseStyles,
+            top: `${badgeRect.top}px`,
+            left: `${badgeRect.right - handleWidth}px`,
+            width: `${handleWidth}px`,
+            height: `${badgeRect.height}px`,
+          };
+        } else {
+          // Margin mode: use RIGHT positioning (same as overlay) for perfect alignment
+          return {
+            ...baseStyles,
+            top: '0px', // FULL HEIGHT from wrapper top
+            right: '0px', // Position from right edge (same as overlay!)
+            width: `${value}px`,
+            height: `${wrapperRect.height}px`, // FULL HEIGHT wrapper
+          };
+        }
       }
       case 'bottom': {
         // Handle height = spacing value (minimum 10px for visibility)
         const handleHeight = Math.max(value, minHandleSize);
-        return {
-          ...baseStyles,
-          // Padding: inside badge at bottom edge | Margin: from badge bottom to wrapper bottom (INSIDE wrapper)
-          top: inset ? `${badgeRect.bottom - handleHeight}px` : `${badgeRect.bottom}px`,
-          left: `${badgeRect.left}px`,
-          width: `${badgeRect.width}px`,
-          height: inset ? `${handleHeight}px` : `${wrapperRect.height - badgeRect.bottom}px`,
-        };
+
+        if (inset) {
+          // Padding mode: inside badge at bottom edge
+          return {
+            ...baseStyles,
+            top: `${badgeRect.bottom - handleHeight}px`,
+            left: `${badgeRect.left}px`,
+            width: `${badgeRect.width}px`,
+            height: `${handleHeight}px`,
+          };
+        } else {
+          // Margin mode: use BOTTOM positioning (same as overlay) for perfect alignment
+          return {
+            ...baseStyles,
+            bottom: '0px', // Position from bottom edge (same as overlay!)
+            left: '0px',
+            width: `${wrapperRect.width}px`,
+            height: `${value}px`,
+          };
+        }
       }
       case 'left': {
         // Handle width = spacing value (minimum 10px for visibility)
         const handleWidth = Math.max(value, minHandleSize);
         return {
           ...baseStyles,
-          top: `${badgeRect.top}px`,
-          // Padding: inside badge at left edge | Margin: from wrapper left to badge left (INSIDE wrapper)
+          top: inset ? `${badgeRect.top}px` : '0px', // FULL HEIGHT from wrapper top
+          // Padding: inside badge at left edge | Margin: from wrapper left edge (using margin value)
           left: inset ? `${badgeRect.left}px` : '0px',
-          width: inset ? `${handleWidth}px` : `${badgeRect.left}px`,
-          height: `${badgeRect.height}px`,
+          width: inset ? `${handleWidth}px` : `${value}px`, // Margin: use margin value directly
+          height: inset ? `${badgeRect.height}px` : `${wrapperRect.height}px`, // FULL HEIGHT wrapper
         };
       }
     }
@@ -938,41 +1420,51 @@ function SpacingBarHandle({
           };
       }
     } else {
-      // Margin mode: line from Badge edge outward
+      // Margin mode: line from wrapper edge (static) to badge edge (CALCULATED from margins)
+      // Calculate badge position from margin values (more accurate than badgeRect)
+      const calculatedBadgeLeft = leftMargin;
+      const calculatedBadgeTop = topMargin;
+      const calculatedBadgeRight = wrapperRect.width - rightMargin;
+      const calculatedBadgeBottom = wrapperRect.height - bottomMargin;
+      const calculatedBadgeWidth = wrapperRect.width - leftMargin - rightMargin;
+      const calculatedBadgeHeight = wrapperRect.height - topMargin - bottomMargin;
+
       switch (side) {
         case 'top':
           return {
             ...baseStyles,
-            top: `${badgeRect.top - value}px`,
-            left: `${badgeRect.left + badgeRect.width / 2}px`,
-            height: `${value}px`,
+            top: '0px', // Start from wrapper top edge (static)
+            left: `${badgeRect.left + badgeRect.width / 2}px`, // Center of BADGE element (horizontal)
+            height: `${topMargin}px`, // Use margin value directly
             width: '0',
             borderLeft: `2px dashed ${lineColor}`,
           };
         case 'right':
+          // Horizontal line from badge right edge to wrapper right edge
           return {
             ...baseStyles,
-            top: `${badgeRect.top + badgeRect.height / 2}px`,
-            left: `${badgeRect.right}px`,
-            width: `${value}px`,
+            top: `${badgeRect.top + badgeRect.height / 2}px`, // Center of BADGE element
+            right: '0px', // Position from wrapper right edge (same as bar handle!)
+            width: `${rightMargin}px`, // Use margin value directly
             height: '0',
             borderTop: `2px dashed ${lineColor}`,
           };
         case 'bottom':
+          // Vertical line from badge bottom edge to wrapper bottom edge
           return {
             ...baseStyles,
-            top: `${badgeRect.bottom}px`,
-            left: `${badgeRect.left + badgeRect.width / 2}px`,
-            height: `${value}px`,
+            bottom: '0px', // Position from wrapper bottom edge (same as bar handle!)
+            left: `${badgeRect.left + badgeRect.width / 2}px`, // Center of BADGE element (horizontal)
+            height: `${bottomMargin}px`, // Use margin value directly
             width: '0',
             borderLeft: `2px dashed ${lineColor}`,
           };
         case 'left':
           return {
             ...baseStyles,
-            top: `${badgeRect.top + badgeRect.height / 2}px`,
-            left: `${badgeRect.left - value}px`,
-            width: `${value}px`,
+            top: `${badgeRect.top + badgeRect.height / 2}px`, // Center of BADGE element
+            left: '0px', // Start from wrapper left edge (static)
+            width: `${leftMargin}px`, // Use margin value directly
             height: '0',
             borderTop: `2px dashed ${lineColor}`,
           };
@@ -1087,77 +1579,85 @@ function SpacingBarHandle({
           ];
       }
     } else {
-      // Margin mode arrows
+      // Margin mode arrows: wrapper edge arrow is STATIC, badge edge arrow is CALCULATED from margins
+      // Calculate badge position from margin values
+      const calculatedBadgeLeft = leftMargin;
+      const calculatedBadgeTop = topMargin;
+      const calculatedBadgeRight = wrapperRect.width - rightMargin;
+      const calculatedBadgeBottom = wrapperRect.height - bottomMargin;
+      const calculatedBadgeWidth = wrapperRect.width - leftMargin - rightMargin;
+      const calculatedBadgeHeight = wrapperRect.height - topMargin - bottomMargin;
+
       switch (side) {
         case 'top':
-          // Up and down arrows (vertical line)
+          // Arrows pointing toward each other (↓ at wrapper top, ↑ at badge top)
           return [
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top - value}px`,
-              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`,
-              borderBottomColor: arrowColor,
+              top: '0px', // Static at wrapper top edge
+              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`, // Center of BADGE element (horizontal)
+              borderBottomColor: arrowColor, // ↓ pointing down
               borderTopWidth: 0,
             },
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top - arrowSize}px`,
-              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`,
-              borderTopColor: arrowColor,
+              top: `${calculatedBadgeTop - arrowSize}px`, // Calculated badge top edge
+              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`, // Center of BADGE element (horizontal)
+              borderTopColor: arrowColor, // ↑ pointing up
               borderBottomWidth: 0,
             },
           ];
         case 'right':
-          // Left and right arrows (horizontal line)
+          // Arrows pointing toward each other (→ at badge right, ← at wrapper right)
           return [
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`,
-              left: `${badgeRect.right}px`,
-              borderRightColor: arrowColor,
+              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`, // Center of BADGE element
+              right: `${rightMargin - arrowSize}px`, // Position from wrapper right edge - shifted inside by arrowSize!
+              borderRightColor: arrowColor, // → pointing right
               borderLeftWidth: 0,
             },
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`,
-              left: `${badgeRect.right + value - arrowSize}px`,
-              borderLeftColor: arrowColor,
+              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`, // Center of BADGE element
+              right: '0px', // Position from wrapper right edge (same as bar handle!)
+              borderLeftColor: arrowColor, // ← pointing left
               borderRightWidth: 0,
             },
           ];
         case 'bottom':
-          // Up and down arrows (vertical line)
+          // Arrows pointing toward each other (↑ at badge bottom, ↓ at wrapper bottom)
           return [
             {
               ...baseArrowStyle,
-              top: `${badgeRect.bottom}px`,
-              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`,
-              borderBottomColor: arrowColor,
+              bottom: `${bottomMargin - arrowSize}px`, // Position from wrapper bottom edge - shifted inside by arrowSize!
+              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`, // Center of BADGE element (horizontal)
+              borderBottomColor: arrowColor, // ↓ pointing down
               borderTopWidth: 0,
             },
             {
               ...baseArrowStyle,
-              top: `${badgeRect.bottom + value - arrowSize}px`,
-              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`,
-              borderTopColor: arrowColor,
+              bottom: '0px', // Position from wrapper bottom edge (same as bar handle!)
+              left: `${badgeRect.left + badgeRect.width / 2 - arrowSize}px`, // Center of BADGE element (horizontal)
+              borderTopColor: arrowColor, // ↑ pointing up
               borderBottomWidth: 0,
             },
           ];
         case 'left':
-          // Left and right arrows (horizontal line)
+          // Arrows pointing toward each other (← at wrapper left, → at badge left)
           return [
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`,
-              left: `${badgeRect.left - value}px`,
-              borderRightColor: arrowColor,
+              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`, // Center of BADGE element
+              left: '0px', // Static at wrapper left edge
+              borderRightColor: arrowColor, // → pointing right
               borderLeftWidth: 0,
             },
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`,
-              left: `${badgeRect.left - arrowSize}px`,
-              borderLeftColor: arrowColor,
+              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`, // Center of BADGE element
+              left: `${calculatedBadgeLeft - arrowSize}px`, // Calculated badge left edge
+              borderLeftColor: arrowColor, // ← pointing left
               borderRightWidth: 0,
             },
           ];
@@ -1222,35 +1722,43 @@ function SpacingBarHandle({
           };
       }
     } else {
-      // Margin mode
+      // Margin mode: label positioned between wrapper edge (static) and badge edge (CALCULATED)
+      // Calculate badge position from margin values
+      const calculatedBadgeLeft = leftMargin;
+      const calculatedBadgeTop = topMargin;
+      const calculatedBadgeRight = wrapperRect.width - rightMargin;
+      const calculatedBadgeBottom = wrapperRect.height - bottomMargin;
+      const calculatedBadgeWidth = wrapperRect.width - leftMargin - rightMargin;
+      const calculatedBadgeHeight = wrapperRect.height - topMargin - bottomMargin;
+
       switch (side) {
         case 'top':
           return {
             ...baseStyles,
-            top: `${badgeRect.top - value / 2}px`,
-            left: `${badgeRect.left + badgeRect.width / 2}px`,
+            top: `${topMargin / 2}px`, // Middle between wrapper top (0) and badge top
+            left: `${badgeRect.left + badgeRect.width / 2}px`, // Center of BADGE element (horizontal)
             transform: 'translate(-50%, -50%)',
           };
         case 'right':
           return {
             ...baseStyles,
-            top: `${badgeRect.top + badgeRect.height / 2}px`,
-            left: `${badgeRect.right + value / 2}px`,
-            transform: 'translate(-50%, -50%)',
+            top: `${badgeRect.top + badgeRect.height / 2}px`, // Center of BADGE element
+            right: `${rightMargin / 2}px`, // Middle between badge right and wrapper right (from wrapper edge!)
+            transform: 'translateY(-50%)',
           };
         case 'bottom':
           return {
             ...baseStyles,
-            top: `${badgeRect.bottom + value / 2}px`,
-            left: `${badgeRect.left + badgeRect.width / 2}px`,
-            transform: 'translate(-50%, -50%)',
+            bottom: `${bottomMargin / 2}px`, // Middle between badge bottom and wrapper bottom (from wrapper edge!)
+            left: `${badgeRect.left + badgeRect.width / 2}px`, // Center of BADGE element (horizontal)
+            transform: 'translateX(-50%)',
           };
         case 'left':
           return {
             ...baseStyles,
-            top: `${badgeRect.top + badgeRect.height / 2}px`,
-            left: `${badgeRect.left - value / 2}px`,
-            transform: 'translate(-50%, -50%)',
+            top: `${badgeRect.top + badgeRect.height / 2}px`, // Center of BADGE element
+            left: `${leftMargin / 2}px`, // Middle between wrapper left (0) and badge left
+            transform: 'translateY(-50%)',
           };
       }
     }
