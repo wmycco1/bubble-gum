@@ -390,22 +390,6 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
 
   return (
     <>
-      {/* Badge Border Outline - Shows Badge border box in margin mode */}
-      {spacingMode === 'margin' && badgeRect && (
-        <div
-          style={{
-            position: 'absolute',
-            top: `${badgeRect.top}px`,
-            left: `${badgeRect.left}px`,
-            width: `${badgeRect.width}px`,
-            height: `${badgeRect.height}px`,
-            border: '2px dashed #ef4444', // RED dashed border around Badge border box
-            pointerEvents: 'none',
-            zIndex: 48, // Above overlays (43) but below handles (49+)
-          }}
-        />
-      )}
-
       {/* Visual Overlays - Show spacing areas (like properties panel) - INTERACTIVE */}
       {spacingMode === 'margin' && (
         <>
