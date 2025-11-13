@@ -434,7 +434,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                 position: 'absolute',
                 top: cssCompliantMode ? `-${topValue}px` : `${badgeRect.top}px`,
                 left: cssCompliantMode ? `${badgeRect.right}px` : `${badgeRect.right}px`,
-                width: cssCompliantMode ? `${rightValue}px` : `${badgeRect.wrapperWidth - badgeRect.right - 2}px`,
+                width: cssCompliantMode ? `${rightValue}px` : `${badgeRect.wrapperWidth - badgeRect.right}px`,
                 height: cssCompliantMode ? `${badgeRect.height + topValue + bottomValue}px` : `${badgeRect.height}px`,
                 backgroundColor:
                   draggingSide === 'right'
@@ -442,7 +442,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     : hoveredSide === 'right'
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
-                borderLeft: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
+                borderLeft: (draggingSide === 'right' || hoveredSide === 'right') ? 'none' : '2px solid #3b82f6',
                 pointerEvents: 'auto',
                 cursor: 'w-resize',
                 zIndex: 43,
@@ -463,14 +463,14 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                 top: cssCompliantMode ? `${badgeRect.bottom}px` : `${badgeRect.bottom}px`,
                 left: cssCompliantMode ? '0px' : `${badgeRect.left}px`,
                 width: cssCompliantMode ? `${badgeRect.width}px` : `${badgeRect.width}px`,
-                height: cssCompliantMode ? `${bottomValue}px` : `${badgeRect.wrapperHeight - badgeRect.bottom - 2}px`,
+                height: cssCompliantMode ? `${bottomValue}px` : `${badgeRect.wrapperHeight - badgeRect.bottom}px`,
                 backgroundColor:
                   draggingSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
-                borderTop: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
+                borderTop: (draggingSide === 'bottom' || hoveredSide === 'bottom') ? 'none' : '2px solid #3b82f6',
                 pointerEvents: 'auto',
                 cursor: 'n-resize',
                 zIndex: 43,
