@@ -429,7 +429,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.4)' // Dragging: green 40%
                     : hoveredSide === 'top'
                     ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25%
-                    : 'rgba(96, 165, 250, 0.15)', // Idle: blue 15% (reduced from 35%)
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
                 borderBottom: `1px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`, // Only bottom border (opposite side)
                 pointerEvents: 'auto',
                 cursor: 's-resize',
@@ -457,7 +457,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'right'
                     ? 'rgba(52, 211, 153, 0.25)'
-                    : 'rgba(96, 165, 250, 0.15)', // Idle: blue 15% (reduced from 35%)
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
                 borderLeft: `1px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`, // Only left border (opposite side)
                 pointerEvents: 'auto',
                 cursor: 'w-resize',
@@ -485,7 +485,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.25)'
-                    : 'rgba(96, 165, 250, 0.15)', // Idle: blue 15% (reduced from 35%)
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
                 borderTop: `1px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`, // Only top border (opposite side)
                 pointerEvents: 'auto',
                 cursor: 'n-resize',
@@ -513,7 +513,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'left'
                     ? 'rgba(52, 211, 153, 0.25)'
-                    : 'rgba(96, 165, 250, 0.15)', // Idle: blue 15% (reduced from 35%)
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
                 borderRight: `1px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`, // Only right border (opposite side)
                 pointerEvents: 'auto',
                 cursor: 'e-resize',
