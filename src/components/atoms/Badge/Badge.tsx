@@ -118,6 +118,109 @@ import {
   generateTextShadow
 } from '@/lib/utils/validation';
 
+// ═══════════════════════════════════════════════════════════════
+// V8.1 - CONSTANTS & UTILITIES (Enterprise-grade refactor)
+// ═══════════════════════════════════════════════════════════════
+
+/** Alignment values constant */
+export const ALIGNMENT_VALUES = {
+  NONE: 'none',
+  LEFT: 'left',
+  CENTER: 'center',
+  RIGHT: 'right',
+  FULL: 'full',
+} as const;
+
+/** Development mode flag for conditional logging */
+const IS_DEV = process.env.NODE_ENV === 'development';
+
+/**
+ * Development-only logging utility
+ * @param message - Log message
+ * @param data - Optional data to log
+ */
+const devLog = (message: string, data?: any) => {
+  if (IS_DEV) {
+    console.log(message, data !== undefined ? data : '');
+  }
+};
+
+/**
+ * Get smart width based on display mode (extracted for performance)
+ * CRITICAL: Block-level displays WITHOUT align should use fit-content
+ * so that margin-left/right can actually move the element
+ *
+ * @param displayMode - CSS display value
+ * @returns Smart width value
+ */
+const getSmartWidth = (displayMode: string): string => {
+  // Block-level displays (shrink to content, allows margin to work)
+  if (displayMode === 'block' || displayMode === 'flex' || displayMode === 'grid') {
+    return 'fit-content';
+  }
+
+  // Inline-level displays (shrink-to-fit behavior)
+  if (displayMode === 'inline-block' || displayMode === 'inline-flex' ||
+      displayMode === 'inline-grid' || displayMode === 'inline') {
+    return 'fit-content';
+  }
+
+  // Default: fit-content (so margin can work)
+  return 'fit-content';
+};
+
+/**
+ * Apply spacing value (margin or padding) with smart fallback logic
+ * DRY utility to avoid code duplication
+ *
+ * @param params - Spacing parameters
+ * @returns Array of CSS style overrides
+ */
+interface ApplySpacingParams {
+  specificValue: number | undefined;
+  fallbackValue: number | undefined;
+  property: string; // e.g., 'margin-left', 'padding-top'
+  align?: string;
+  allowedAligns?: string[]; // Which align values allow this property
+  debugLabel?: string;
+}
+
+const applySpacing = (params: ApplySpacingParams): string[] => {
+  const {
+    specificValue,
+    fallbackValue,
+    property,
+    align,
+    allowedAligns = [ALIGNMENT_VALUES.NONE, ''],
+    debugLabel = property,
+  } = params;
+
+  const styles: string[] = [];
+
+  // Check if alignment allows this property
+  const isAlignAllowed = !align || allowedAligns.includes(align);
+
+  if (!isAlignAllowed) {
+    devLog(`🚫 V8.1 ${debugLabel.toUpperCase()} SKIPPED: align="${align}" is set (controlled by alignment logic)`);
+    return styles;
+  }
+
+  // Apply specific value or fallback
+  if (specificValue !== undefined) {
+    styles.push(`${property}: ${specificValue}px !important`);
+    devLog(`✅ V8.1 ${debugLabel.toUpperCase()} APPLIED: ${specificValue}px (align="${align}")`);
+  } else if (fallbackValue !== undefined) {
+    styles.push(`${property}: ${fallbackValue}px !important`);
+    devLog(`✅ V8.1 ${debugLabel.toUpperCase()} APPLIED (from fallback): ${fallbackValue}px (align="${align}")`);
+  } else {
+    devLog(`⚠️ V8.1 ${debugLabel.toUpperCase()} NOT APPLIED: specificValue=${specificValue}, fallbackValue=${fallbackValue} (align="${align}")`);
+  }
+
+  return styles;
+};
+
+// ═══════════════════════════════════════════════════════════════
+
 /**
  * Props for Badge component
  *
@@ -398,8 +501,8 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
 
   // Debug logging in development - V7.5 GOD-TIER with layout & positioning
   if (process.env.NODE_ENV === 'development') {
-    console.log('🏷️ Badge V7.5 [GOD-TIER] received ALL params:', params);
-    console.log('🏷️ Badge V7.5 styling params:', {
+    devLog('🏷️ Badge V7.5 [GOD-TIER] received ALL params:', params);
+    devLog('🏷️ Badge V7.5 styling params:', {
       variant: params.variant,
       color: params.color,
       backgroundColor: params.backgroundColor,
@@ -777,7 +880,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
    * - Smart border radius (individual corners override shorthand)
    */
   const inlineStyleString = React.useMemo(() => {
-    console.log('🔄 V8.1 Badge: inlineStyleString useMemo recalculating...', {
+    devLog('🔄 V8.1 Badge: inlineStyleString useMemo recalculating...', {
       // V8.1 DEBUG: Margin & Align props
       align,
       marginLeft,
@@ -804,10 +907,10 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     const styleOverrides: string[] = [];
 
     // V8.1 - COMPREHENSIVE DEBUG (TOP OF FUNCTION)
-    console.log('═══════════════════════════════════════════════════════════════');
-    console.log('🎯 V8.1 INLINE STYLE STRING CALCULATION STARTED');
-    console.log('═══════════════════════════════════════════════════════════════');
-    console.log('Props received:', {
+    devLog('═══════════════════════════════════════════════════════════════');
+    devLog('🎯 V8.1 INLINE STYLE STRING CALCULATION STARTED');
+    devLog('═══════════════════════════════════════════════════════════════');
+    devLog('Props received:', {
       display,
       align,
       position,
@@ -899,46 +1002,44 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       styleOverrides.push(`border-bottom-right-radius: ${safeBorderRadius}px !important`);
     }
 
-    // V7.1 - Margin (smart: individual sides override shorthand)
+    // V8.1 - Margin (smart: individual sides override shorthand, using DRY utility)
     // IMPORTANT: If align is set, margin-left/margin-right are controlled by align, not margin
-    if (safeMarginTop !== undefined) {
-      styleOverrides.push(`margin-top: ${safeMarginTop}px !important`);
-    } else if (safeMargin) {
-      styleOverrides.push(`margin-top: ${safeMargin}px !important`);
-    }
-    // Only apply margin-right if align is NOT set or is 'none'
-    if (!align || align === '' || align === 'none') {
-      if (safeMarginRight !== undefined) {
-        styleOverrides.push(`margin-right: ${safeMarginRight}px !important`);
-        console.log(`✅ V8.1 MARGIN-RIGHT APPLIED: ${safeMarginRight}px (align="${align}", marginRight prop=${marginRight})`);
-      } else if (safeMargin) {
-        styleOverrides.push(`margin-right: ${safeMargin}px !important`);
-        console.log(`✅ V8.1 MARGIN-RIGHT APPLIED (from margin): ${safeMargin}px (align="${align}", margin prop=${margin})`);
-      } else {
-        console.log(`⚠️ V8.1 MARGIN-RIGHT NOT APPLIED: safeMarginRight=${safeMarginRight}, safeMargin=${safeMargin} (align="${align}")`);
-      }
-    } else {
-      console.log(`🚫 V8.1 MARGIN-RIGHT SKIPPED: align="${align}" is set (will be controlled by alignment logic)`);
-    }
-    if (safeMarginBottom !== undefined) {
-      styleOverrides.push(`margin-bottom: ${safeMarginBottom}px !important`);
-    } else if (safeMargin) {
-      styleOverrides.push(`margin-bottom: ${safeMargin}px !important`);
-    }
-    // Only apply margin-left if align is NOT set or is 'none'
-    if (!align || align === '' || align === 'none') {
-      if (safeMarginLeft !== undefined) {
-        styleOverrides.push(`margin-left: ${safeMarginLeft}px !important`);
-        console.log(`✅ V8.1 MARGIN-LEFT APPLIED: ${safeMarginLeft}px (align="${align}", marginLeft prop=${marginLeft})`);
-      } else if (safeMargin) {
-        styleOverrides.push(`margin-left: ${safeMargin}px !important`);
-        console.log(`✅ V8.1 MARGIN-LEFT APPLIED (from margin): ${safeMargin}px (align="${align}", margin prop=${margin})`);
-      } else {
-        console.log(`⚠️ V8.1 MARGIN-LEFT NOT APPLIED: safeMarginLeft=${safeMarginLeft}, safeMargin=${safeMargin} (align="${align}")`);
-      }
-    } else {
-      console.log(`🚫 V8.1 MARGIN-LEFT SKIPPED: align="${align}" is set (will be controlled by alignment logic)`);
-    }
+    // Top & Bottom: Always apply (alignment doesn't affect vertical margins)
+    styleOverrides.push(...applySpacing({
+      specificValue: safeMarginTop,
+      fallbackValue: safeMargin,
+      property: 'margin-top',
+      allowedAligns: undefined, // Always allowed (no align check)
+      debugLabel: 'margin-top',
+    }));
+
+    // Right: Only apply if align is NOT set or is 'none'
+    styleOverrides.push(...applySpacing({
+      specificValue: safeMarginRight,
+      fallbackValue: safeMargin,
+      property: 'margin-right',
+      align,
+      allowedAligns: [ALIGNMENT_VALUES.NONE, ''],
+      debugLabel: 'margin-right',
+    }));
+
+    styleOverrides.push(...applySpacing({
+      specificValue: safeMarginBottom,
+      fallbackValue: safeMargin,
+      property: 'margin-bottom',
+      allowedAligns: undefined, // Always allowed (no align check)
+      debugLabel: 'margin-bottom',
+    }));
+
+    // Left: Only apply if align is NOT set or is 'none'
+    styleOverrides.push(...applySpacing({
+      specificValue: safeMarginLeft,
+      fallbackValue: safeMargin,
+      property: 'margin-left',
+      align,
+      allowedAligns: [ALIGNMENT_VALUES.NONE, ''],
+      debugLabel: 'margin-left',
+    }));
 
     // V7.1 - Padding (smart: individual sides override shorthand)
     if (safePaddingTop !== undefined) {
@@ -1007,15 +1108,15 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     // V8.1 - Alignment (horizontal alignment or full width)
     // CRITICAL: Alignment logic must respect display mode
     // 'none' is treated as no alignment (allows manual margin control)
-    if (align && align !== 'none') {
-      console.log('🎯 V8.1 ALIGN ACTIVE:', {
+    if (align && align !== ALIGNMENT_VALUES.NONE) {
+      devLog('🎯 V8.1 ALIGN ACTIVE:', {
         align,
         display: effectiveDisplay,
         smartWidth: getSmartWidth(effectiveDisplay),
       });
 
       switch (align) {
-        case 'left':
+        case ALIGNMENT_VALUES.LEFT:
           // Left alignment: margin-left:0, margin-right:auto
           // Width depends on display mode (block → fit-content, inline-block → auto)
           if (effectiveDisplay === 'block' || effectiveDisplay === 'flex' || effectiveDisplay === 'grid') {
@@ -1023,10 +1124,10 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
           }
           styleOverrides.push(`margin-left: 0 !important`);
           styleOverrides.push(`margin-right: auto !important`);
-          console.log('🎯 V8.0 ALIGN LEFT: margin-left:0, margin-right:auto');
+          devLog('🎯 V8.1 ALIGN LEFT: margin-left:0, margin-right:auto');
           break;
 
-        case 'center':
+        case ALIGNMENT_VALUES.CENTER:
           // Center alignment: margin-left:auto, margin-right:auto
           // Requires fit-content width for block-level displays
           if (effectiveDisplay === 'block' || effectiveDisplay === 'flex' || effectiveDisplay === 'grid') {
@@ -1034,10 +1135,10 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
           }
           styleOverrides.push(`margin-left: auto !important`);
           styleOverrides.push(`margin-right: auto !important`);
-          console.log('🎯 V8.0 ALIGN CENTER: margin:auto');
+          devLog('🎯 V8.1 ALIGN CENTER: margin:auto');
           break;
 
-        case 'right':
+        case ALIGNMENT_VALUES.RIGHT:
           // Right alignment: margin-left:auto, margin-right:0
           // Requires fit-content width for block-level displays
           if (effectiveDisplay === 'block' || effectiveDisplay === 'flex' || effectiveDisplay === 'grid') {
@@ -1045,10 +1146,10 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
           }
           styleOverrides.push(`margin-left: auto !important`);
           styleOverrides.push(`margin-right: 0 !important`);
-          console.log('🎯 V8.0 ALIGN RIGHT: margin-left:auto, margin-right:0');
+          devLog('🎯 V8.1 ALIGN RIGHT: margin-left:auto, margin-right:0');
           break;
 
-        case 'full':
+        case ALIGNMENT_VALUES.FULL:
           // Full width alignment: force 100% width
           // Override display to block if needed
           if (effectiveDisplay === 'inline-flex' || effectiveDisplay === 'inline-block' ||
@@ -1058,17 +1159,17 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
           styleOverrides.push(`width: 100% !important`);
           styleOverrides.push(`margin-left: 0 !important`);
           styleOverrides.push(`margin-right: 0 !important`);
-          console.log('🎯 V8.0 ALIGN FULL: display:block, width:100%, margin:0');
+          devLog('🎯 V8.1 ALIGN FULL: display:block, width:100%, margin:0');
           break;
       }
     } else {
-      // V8.0 - NO align set: Always use fit-content to allow margin to work
+      // V8.1 - NO align set: Always use fit-content to allow margin to work
       // CRITICAL FIX: Without this, margin-left/right won't visually move the element
       // because it would take full width (100%) and have nowhere to move
       // If user wants full width, they should explicitly use align="full"
       const smartWidth = getSmartWidth(effectiveDisplay);
       styleOverrides.push(`width: ${smartWidth} !important`);
-      console.log(`🎯 V8.0 NO ALIGN: Smart width applied: ${smartWidth} for display: ${effectiveDisplay} (allows margin to work)`);
+      devLog(`🎯 V8.1 NO ALIGN: Smart width applied: ${smartWidth} for display: ${effectiveDisplay} (allows margin to work)`);
     }
 
     // V7.5 - Position
@@ -1161,12 +1262,12 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
 
     // V8.1 - FINAL DEBUG (END OF FUNCTION)
     const finalStyleString = styleOverrides.length > 0 ? styleOverrides.join('; ') : '';
-    console.log('═══════════════════════════════════════════════════════════════');
-    console.log('🎯 V8.1 INLINE STYLE STRING CALCULATION COMPLETE');
-    console.log('═══════════════════════════════════════════════════════════════');
-    console.log('Final style string length:', finalStyleString.length);
-    console.log('Final style string:', finalStyleString);
-    console.log('═══════════════════════════════════════════════════════════════\n');
+    devLog('═══════════════════════════════════════════════════════════════');
+    devLog('🎯 V8.1 INLINE STYLE STRING CALCULATION COMPLETE');
+    devLog('═══════════════════════════════════════════════════════════════');
+    devLog('Final style string length:', finalStyleString.length);
+    devLog('Final style string:', finalStyleString);
+    devLog('═══════════════════════════════════════════════════════════════\n');
 
     return finalStyleString;
   }, [
@@ -1225,17 +1326,17 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
   // Apply inline styles with !important using cssText
   // V7.7 FIXED: Clear ONLY props that are actually set, preserve CSS class styles
   React.useEffect(() => {
-    console.log('🔥 Badge useEffect [APPLY STYLES] triggered', {
+    devLog('🔥 Badge useEffect [APPLY STYLES] triggered', {
       hasSpanRef: !!spanRef.current,
       inlineStyleString,
     });
 
     if (spanRef.current) {
-      console.log('📍 Badge useEffect: spanRef.current EXISTS');
+      devLog('📍 Badge useEffect: spanRef.current EXISTS');
 
       // Get cssText BEFORE clearing
       const cssTextBefore = spanRef.current.style.cssText;
-      console.log('📍 cssText BEFORE clearing:', cssTextBefore);
+      devLog('📍 cssText BEFORE clearing:', cssTextBefore);
 
       // V7.7 FIXED: Clear ONLY props that are SET (prevent clearing CSS class styles)
       // This fixes the issue where border-radius from rounded='pill' was being cleared
@@ -1316,33 +1417,33 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
 
       // Get cssText AFTER clearing
       const cssTextAfterClearing = spanRef.current.style.cssText;
-      console.log('📍 cssText AFTER clearing:', cssTextAfterClearing);
+      devLog('📍 cssText AFTER clearing:', cssTextAfterClearing);
 
       // Apply new styles if any
       if (inlineStyleString) {
-        console.log('📍 Applying inlineStyleString:', inlineStyleString);
+        devLog('📍 Applying inlineStyleString:', inlineStyleString);
         spanRef.current.style.cssText += '; ' + inlineStyleString;
 
         // Get cssText AFTER applying
         const cssTextAfter = spanRef.current.style.cssText;
-        console.log('📍 cssText AFTER applying:', cssTextAfter);
+        devLog('📍 cssText AFTER applying:', cssTextAfter);
 
         // Check actual computed border radius
-        console.log('📍 Actual borderBottomLeftRadius property:', spanRef.current.style.borderBottomLeftRadius);
-        console.log('📍 Actual borderTopLeftRadius property:', spanRef.current.style.borderTopLeftRadius);
-        console.log('📍 Actual borderTopRightRadius property:', spanRef.current.style.borderTopRightRadius);
-        console.log('📍 Actual borderBottomRightRadius property:', spanRef.current.style.borderBottomRightRadius);
+        devLog('📍 Actual borderBottomLeftRadius property:', spanRef.current.style.borderBottomLeftRadius);
+        devLog('📍 Actual borderTopLeftRadius property:', spanRef.current.style.borderTopLeftRadius);
+        devLog('📍 Actual borderTopRightRadius property:', spanRef.current.style.borderTopRightRadius);
+        devLog('📍 Actual borderBottomRightRadius property:', spanRef.current.style.borderBottomRightRadius);
       } else {
-        console.log('📍 NO inlineStyleString to apply');
+        devLog('📍 NO inlineStyleString to apply');
       }
     } else {
-      console.log('❌ Badge useEffect: spanRef.current is NULL!');
+      devLog('❌ Badge useEffect: spanRef.current is NULL!');
     }
   }, [inlineStyleString, color, backgroundColor, borderWidth, borderTopWidth, borderRightWidth, borderBottomWidth, borderLeftWidth, borderStyle, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius, borderRadiusTopLeft, borderRadiusTopRight, borderRadiusBottomLeft, borderRadiusBottomRight, margin, marginTop, marginRight, marginBottom, marginLeft, padding, paddingTop, paddingRight, paddingBottom, paddingLeft, shadow, opacity, display, align, position, fontFamily, fontSize, fontWeight, fontStyle, letterSpacing, textTransform, textShadow, textShadowOffsetX, textShadowOffsetY, textShadowBlur, textShadowColor, textShadowOpacity, rotate, scaleX, scaleY, skewX, skewY, transitionDuration, transitionTimingFunction]);
 
   // Debug custom styles
   if (process.env.NODE_ENV === 'development') {
-    console.log('🏷️ Badge V7.0 [GOD-TIER] inline styles:', inlineStyleString);
+    devLog('🏷️ Badge V7.0 [GOD-TIER] inline styles:', inlineStyleString);
   }
 
   // ============================================
