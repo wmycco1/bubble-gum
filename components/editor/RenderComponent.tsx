@@ -318,7 +318,7 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       style={style}
       className={cn(
         'relative cursor-auto transition-all',
-        isSelected && 'ring-2 ring-blue-500 ring-offset-2 bg-blue-50/10',
+        isSelected && 'ring-2 ring-blue-500 bg-blue-50/10',
         isHovered && !isSelected && 'ring-1 ring-slate-300 bg-slate-50',
         isOver && 'ring-2 ring-blue-400 bg-blue-50'
       )}
