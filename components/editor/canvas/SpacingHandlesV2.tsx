@@ -292,8 +292,8 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
     const capitalizedSide = side.charAt(0).toUpperCase() + side.slice(1);
     let clampedValue = Math.max(0, Math.round(newValue));
 
-    // V7.3: For MARGIN mode in Visual Mode, clamp to available space
-    // to allow Badge to move to wrapper edges while staying inside
+    // V7.4: For MARGIN mode in Visual Mode, clamp to available space
+    // Ensures margin-left + badgeWidth + margin-right <= wrapperWidth
     if (spacingMode === 'margin' && !cssCompliantMode && badgeRect) {
       const wrapperWidth = (badgeRect as any).wrapperWidth || 0;
       const wrapperHeight = (badgeRect as any).wrapperHeight || 0;
@@ -301,26 +301,26 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
       switch (side) {
         case 'left':
           // Max left margin = wrapper width - badge width - right margin
-          // (Badge can move right until it touches right edge minus right margin)
+          // Ensures: margin-left + badgeWidth + margin-right <= wrapperWidth
           const maxLeft = wrapperWidth - badgeRect.width - rightValue;
           clampedValue = Math.min(clampedValue, Math.max(0, maxLeft));
           break;
         case 'right':
-          // Max right margin = distance from Badge right edge to wrapper right edge
-          // (Badge can move right until its right edge touches wrapper right edge)
-          const maxRight = wrapperWidth - badgeRect.right;
+          // Max right margin = wrapper width - badge width - left margin
+          // Ensures: margin-left + badgeWidth + margin-right <= wrapperWidth
+          const maxRight = wrapperWidth - badgeRect.width - leftValue;
           clampedValue = Math.min(clampedValue, Math.max(0, maxRight));
           break;
         case 'top':
           // Max top margin = wrapper height - badge height - bottom margin
-          // (Badge can move down until it touches bottom edge minus bottom margin)
+          // Ensures: margin-top + badgeHeight + margin-bottom <= wrapperHeight
           const maxTop = wrapperHeight - badgeRect.height - bottomValue;
           clampedValue = Math.min(clampedValue, Math.max(0, maxTop));
           break;
         case 'bottom':
-          // Max bottom margin = distance from Badge bottom edge to wrapper bottom edge
-          // (Badge can move down until its bottom edge touches wrapper bottom edge)
-          const maxBottom = wrapperHeight - badgeRect.bottom;
+          // Max bottom margin = wrapper height - badge height - top margin
+          // Ensures: margin-top + badgeHeight + margin-bottom <= wrapperHeight
+          const maxBottom = wrapperHeight - badgeRect.height - topValue;
           clampedValue = Math.min(clampedValue, Math.max(0, maxBottom));
           break;
       }
