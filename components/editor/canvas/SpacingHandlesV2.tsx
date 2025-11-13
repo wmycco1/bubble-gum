@@ -1486,7 +1486,7 @@ function SpacingBarHandle({
             ...baseStyles,
             top: `${badgeRect.top + badgeRect.height / 2}px`, // Badge center vertically
             right: '0px', // Start from wrapper right edge
-            width: `${value}px`, // Use margin value directly (right margin width)
+            width: `${(badgeRect as any).wrapperWidth - badgeRect.right}px`, // ✅ MEASURED distance from Badge right to wrapper right
             height: '0',
             borderTop: `2px dashed ${lineColor}`,
           };
@@ -1497,7 +1497,7 @@ function SpacingBarHandle({
             ...baseStyles,
             bottom: '0px', // Start from wrapper bottom edge
             left: `${badgeRect.left + badgeRect.width / 2}px`, // Badge center horizontally
-            height: `${value}px`, // Use margin value directly (bottom margin height)
+            height: `${(badgeRect as any).wrapperHeight - badgeRect.bottom}px`, // ✅ MEASURED distance from Badge bottom to wrapper bottom
             width: '0',
             borderLeft: `2px dashed ${lineColor}`,
           };

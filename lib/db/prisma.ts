@@ -7,10 +7,16 @@
 import { PrismaClient } from '@prisma/client';
 
 const prismaClientSingleton = () => {
+  // Controllable logging via environment variable
+  // Set PRISMA_LOG_QUERIES=true in .env.local to enable SQL query logging
+  const enableQueryLogs = process.env.PRISMA_LOG_QUERIES === 'true';
+
   return new PrismaClient({
     log:
       process.env.NODE_ENV === 'development'
-        ? ['query', 'error', 'warn']
+        ? enableQueryLogs
+          ? ['query', 'error', 'warn']
+          : ['error', 'warn']
         : ['error'],
   });
 };
