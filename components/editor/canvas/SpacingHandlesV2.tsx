@@ -2008,21 +2008,10 @@ function SpacingBarHandle({
         </div>
       </div>
 
-      {/* Value Tooltip - "Drag to adjust [direction]" - Rendered via Portal */}
+      {/* Value Tooltip - Simple direction text - Rendered via Portal */}
       {(isHovered || isDragging) && typeof document !== 'undefined' && createPortal(
         <div style={getTooltipStyles()}>
-          Drag to adjust {getDirectionName()}
-          {isDragging && (
-            <span style={{
-              display: 'block',
-              fontSize: '10px',
-              marginTop: '2px',
-              color: '#d1d5db',
-              fontWeight: 500
-            }}>
-              drag to adjust
-            </span>
-          )}
+          {getDirectionName()}
         </div>,
         document.body
       )}
