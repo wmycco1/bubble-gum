@@ -1961,35 +1961,6 @@ function SpacingBarHandle({
         }}
         style={getPositionStyles()}
       >
-        {/* Directional Arrow Icon - shows which direction to drag */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100%',
-        }}>
-          <svg
-            width={isVertical ? "10" : "14"}
-            height={isVertical ? "14" : "10"}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{
-              opacity: isDragging ? 1 : isHovered ? 0.9 : 0.7,
-              transition: 'opacity 0.15s ease',
-            }}
-          >
-            {/* Arrow pointing in drag direction */}
-            {side === 'top' && <path d="M12 5v14m-7-7l7-7l7 7" />}
-            {side === 'right' && <path d="M5 12h14m-7-7l7 7l-7 7" />}
-            {side === 'bottom' && <path d="M12 19V5m-7 7l7 7l7-7" />}
-            {side === 'left' && <path d="M19 12H5m7-7l-7 7l7 7" />}
-          </svg>
-        </div>
       </div>
 
       {/* Value Tooltip - "Drag to adjust [direction]" - Rendered via Portal */}
