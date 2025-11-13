@@ -290,9 +290,40 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
   // Handle drag - receives absolute new value, not delta
   const handleDrag = (side: Side, newValue: number) => {
     const capitalizedSide = side.charAt(0).toUpperCase() + side.slice(1);
+    let clampedValue = Math.max(0, Math.round(newValue));
+
+    // V7.2: For MARGIN mode in Visual Mode, clamp to available space
+    // to prevent margin from pushing element outside wrapper
+    if (spacingMode === 'margin' && !cssCompliantMode && badgeRect) {
+      const wrapperWidth = (badgeRect as any).wrapperWidth || 0;
+      const wrapperHeight = (badgeRect as any).wrapperHeight || 0;
+
+      switch (side) {
+        case 'left':
+          // Max left margin = wrapper width - badge width - right margin
+          const maxLeft = wrapperWidth - badgeRect.width - rightValue;
+          clampedValue = Math.min(clampedValue, Math.max(0, maxLeft));
+          break;
+        case 'right':
+          // Max right margin = wrapper width - badge width - left margin
+          const maxRight = wrapperWidth - badgeRect.width - leftValue;
+          clampedValue = Math.min(clampedValue, Math.max(0, maxRight));
+          break;
+        case 'top':
+          // Max top margin = wrapper height - badge height - bottom margin
+          const maxTop = wrapperHeight - badgeRect.height - bottomValue;
+          clampedValue = Math.min(clampedValue, Math.max(0, maxTop));
+          break;
+        case 'bottom':
+          // Max bottom margin = wrapper height - badge height - top margin
+          const maxBottom = wrapperHeight - badgeRect.height - topValue;
+          clampedValue = Math.min(clampedValue, Math.max(0, maxBottom));
+          break;
+      }
+    }
 
     updateComponentProps(componentId, {
-      [`${prefix}${capitalizedSide}`]: Math.max(0, Math.round(newValue)),
+      [`${prefix}${capitalizedSide}`]: clampedValue,
     });
   };
 
