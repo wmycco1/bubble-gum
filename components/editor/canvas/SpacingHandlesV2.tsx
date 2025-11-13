@@ -415,7 +415,6 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25%
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
                 borderBottom: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
-                boxSizing: 'border-box',
                 pointerEvents: 'auto',
                 cursor: 's-resize',
                 zIndex: 43,
@@ -444,7 +443,6 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
                 borderLeft: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
-                boxSizing: 'border-box',
                 pointerEvents: 'auto',
                 cursor: 'w-resize',
                 zIndex: 43,
@@ -473,7 +471,6 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
                 borderTop: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
-                boxSizing: 'border-box',
                 pointerEvents: 'auto',
                 cursor: 'n-resize',
                 zIndex: 43,
@@ -502,7 +499,6 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
                 borderRight: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
-                boxSizing: 'border-box',
                 pointerEvents: 'auto',
                 cursor: 'e-resize',
                 zIndex: 43,
@@ -535,7 +531,6 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25% (more visible)
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20% (consistent with margin)
                 borderBottom: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
-                boxSizing: 'border-box',
                 pointerEvents: 'auto',
                 cursor: 'ns-resize',
                 zIndex: 43,
@@ -562,7 +557,6 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20% (consistent with margin)
                 borderLeft: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
-                boxSizing: 'border-box',
                 pointerEvents: 'auto',
                 cursor: 'ew-resize',
                 zIndex: 43,
@@ -589,7 +583,6 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20% (consistent with margin)
                 borderTop: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
-                boxSizing: 'border-box',
                 pointerEvents: 'auto',
                 cursor: 'ns-resize',
                 zIndex: 43,
@@ -616,7 +609,6 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20% (consistent with margin)
                 borderRight: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
-                boxSizing: 'border-box',
                 pointerEvents: 'auto',
                 cursor: 'ew-resize',
                 zIndex: 43,
