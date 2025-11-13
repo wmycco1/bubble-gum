@@ -299,7 +299,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
     // VERTICAL (top/bottom): Independent margins → wrapper expands ✅
     // ═══════════════════════════════════════════════════════════════
 
-    if (mode === 'margin') {
+    if (spacingMode === 'margin') {
       // HORIZONTAL MARGINS: Apply Figma-like constraint system
       if (side === 'right') {
         // When margin-right increases → auto-decrease margin-left → Badge moves left
