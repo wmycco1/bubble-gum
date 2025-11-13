@@ -1286,7 +1286,7 @@ function SpacingBarHandle({
       zIndex: 46, // Above overlays (z-index: 43)
       transition: isDragging ? 'none' : 'all 0.15s ease',
       backgroundColor: bgColor,
-      border: isDragging || isHovered ? `2px solid ${borderColor}` : 'none',
+      border: 'none',
       cursor,
       boxShadow: isDragging ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
       pointerEvents: 'auto' as const,
