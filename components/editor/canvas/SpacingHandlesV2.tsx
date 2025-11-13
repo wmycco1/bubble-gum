@@ -1193,6 +1193,7 @@ function SpacingBarHandle({
   leftMargin,
 }: SpacingBarHandleProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
   const rafRef = React.useRef<number | null>(null);
 
@@ -1416,7 +1417,7 @@ function SpacingBarHandle({
     }
   };
 
-  // Tooltip position styles - Match center handle styling
+  // Tooltip position styles - Follow cursor with 10px offset
   const getTooltipStyles = () => {
     const baseStyles = {
       position: 'absolute' as const,
@@ -1424,7 +1425,7 @@ function SpacingBarHandle({
       color: 'white',
       padding: '6px 10px',
       borderRadius: '6px',
-      fontSize: '11px', // Match center handle size
+      fontSize: '11px',
       fontWeight: 600,
       whiteSpace: 'nowrap' as const,
       pointerEvents: 'none' as const,
@@ -1433,6 +1434,16 @@ function SpacingBarHandle({
       border: '1px solid rgba(255,255,255,0.1)',
     };
 
+    // If we have mouse position, show near cursor
+    if (mousePos) {
+      return {
+        ...baseStyles,
+        left: `${mousePos.x}px`,
+        top: `${mousePos.y + 10}px`, // 10px offset below cursor
+      };
+    }
+
+    // Fallback to centered position
     switch (side) {
       case 'top':
         return { ...baseStyles, top: '-40px', left: '50%', transform: 'translateX(-50%)' };
@@ -1443,6 +1454,17 @@ function SpacingBarHandle({
       case 'left':
         return { ...baseStyles, left: '-68px', top: '50%', transform: 'translateY(-50%)' };
     }
+  };
+
+  // Get direction name for tooltip
+  const getDirectionName = () => {
+    const directions: Record<Side, string> = {
+      top: 'top',
+      right: 'right',
+      bottom: 'bottom',
+      left: 'left',
+    };
+    return directions[side];
   };
 
   // Get dashed line from text edge to Badge edge with arrows (ALWAYS VISIBLE)
@@ -1886,7 +1908,18 @@ function SpacingBarHandle({
       <div
         onMouseDown={handleMouseDown}
         onMouseEnter={onHover}
-        onMouseLeave={onLeave}
+        onMouseLeave={() => {
+          onLeave();
+          setMousePos(null);
+        }}
+        onMouseMove={(e) => {
+          // Track mouse position for tooltip
+          const rect = e.currentTarget.getBoundingClientRect();
+          setMousePos({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+          });
+        }}
         style={getPositionStyles()}
       >
         {/* Directional Arrow Icon - shows which direction to drag */}
@@ -1920,13 +1953,10 @@ function SpacingBarHandle({
         </div>
       </div>
 
-      {/* Value Tooltip - with directional icons */}
+      {/* Value Tooltip - "Drag to adjust [direction]" */}
       {(isHovered || isDragging) && (
         <div style={getTooltipStyles()}>
-          {mode === 'margin'
-            ? (side === 'top' ? '↓' : side === 'bottom' ? '↑' : side === 'left' ? '→' : '←')  // Push away direction
-            : (side === 'top' ? '↑' : side === 'bottom' ? '↓' : side === 'left' ? '←' : '→')  // Original direction
-          } {mode === 'margin' ? 'Margin' : 'Padding'} {side}: {value}px
+          Drag to adjust {getDirectionName()}
           {isDragging && (
             <span style={{
               display: 'block',
