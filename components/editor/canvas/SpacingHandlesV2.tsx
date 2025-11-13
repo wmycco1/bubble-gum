@@ -1443,7 +1443,8 @@ function SpacingBarHandle({
           // Horizontal line from badge right edge to wrapper right edge
           return {
             ...baseStyles,
-            top: `${badgeRect.top + badgeRect.height / 2}px`, // Center of BADGE element
+            // ✅ FIX (V3.2): Position line at wrapper vertical center (margin spans full height)
+            top: `${wrapperRect.height / 2}px`, // ✅ Center of WRAPPER
             right: '0px', // Position from wrapper right edge (same as bar handle!)
             width: `${rightMargin}px`, // Use margin value directly
             height: '0',
@@ -1462,7 +1463,8 @@ function SpacingBarHandle({
         case 'left':
           return {
             ...baseStyles,
-            top: `${badgeRect.top + badgeRect.height / 2}px`, // Center of BADGE element
+            // ✅ FIX (V3.2): Position line at wrapper vertical center (margin spans full height)
+            top: `${wrapperRect.height / 2}px`, // ✅ Center of WRAPPER
             left: '0px', // Start from wrapper left edge (static)
             width: `${leftMargin}px`, // Use margin value directly
             height: '0',
@@ -1612,14 +1614,16 @@ function SpacingBarHandle({
           return [
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`, // Center of BADGE element
+              // ✅ FIX (V3.2): Position arrow at wrapper vertical center (margin spans full height)
+              top: `${wrapperRect.height / 2 - arrowSize}px`, // ✅ Center of WRAPPER
               right: `${rightMargin - arrowSize}px`, // Position from wrapper right edge - shifted inside by arrowSize!
               borderRightColor: arrowColor, // → pointing right
               borderLeftWidth: 0,
             },
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`, // Center of BADGE element
+              // ✅ FIX (V3.2): Position arrow at wrapper vertical center (margin spans full height)
+              top: `${wrapperRect.height / 2 - arrowSize}px`, // ✅ Center of WRAPPER
               right: '0px', // Position from wrapper right edge (same as bar handle!)
               borderLeftColor: arrowColor, // ← pointing left
               borderRightWidth: 0,
@@ -1648,14 +1652,16 @@ function SpacingBarHandle({
           return [
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`, // Center of BADGE element
+              // ✅ FIX (V3.2): Position arrow at wrapper vertical center (margin spans full height)
+              top: `${wrapperRect.height / 2 - arrowSize}px`, // ✅ Center of WRAPPER
               left: '0px', // Static at wrapper left edge
               borderRightColor: arrowColor, // → pointing right
               borderLeftWidth: 0,
             },
             {
               ...baseArrowStyle,
-              top: `${badgeRect.top + badgeRect.height / 2 - arrowSize}px`, // Center of BADGE element
+              // ✅ FIX (V3.2): Position arrow at wrapper vertical center (margin spans full height)
+              top: `${wrapperRect.height / 2 - arrowSize}px`, // ✅ Center of WRAPPER
               left: `${calculatedBadgeLeft - arrowSize}px`, // Calculated badge left edge
               borderLeftColor: arrowColor, // ← pointing left
               borderRightWidth: 0,
@@ -1742,7 +1748,9 @@ function SpacingBarHandle({
         case 'right':
           return {
             ...baseStyles,
-            top: `${badgeRect.top + badgeRect.height / 2}px`, // Center of BADGE element
+            // ✅ FIX (V3.2): Position label in CENTER of margin space vertically
+            // NOT at Badge center! Should be at wrapper vertical center (margin spans full height)
+            top: `${wrapperRect.height / 2}px`, // ✅ Center of WRAPPER (margin space spans full height)
             right: `${rightMargin / 2}px`, // Middle between badge right and wrapper right (from wrapper edge!)
             transform: 'translateY(-50%)',
           };
@@ -1756,7 +1764,9 @@ function SpacingBarHandle({
         case 'left':
           return {
             ...baseStyles,
-            top: `${badgeRect.top + badgeRect.height / 2}px`, // Center of BADGE element
+            // ✅ FIX (V3.2): Position label in CENTER of margin space vertically
+            // NOT at Badge center! Should be at wrapper vertical center (margin spans full height)
+            top: `${wrapperRect.height / 2}px`, // ✅ Center of WRAPPER (margin space spans full height)
             left: `${leftMargin / 2}px`, // Middle between wrapper left (0) and badge left
             transform: 'translateY(-50%)',
           };
