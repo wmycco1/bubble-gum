@@ -1834,7 +1834,7 @@ function SpacingBarHandle({
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
       pointerEvents: 'none',
-      zIndex: 46,
+      zIndex: 47, // Above arrows (45) to prevent visual overlap
       backgroundColor: 'rgb(31, 41, 55)', // Solid gray-800 color (no transparency)
       color: 'white',
       padding: '2px 6px',
