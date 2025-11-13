@@ -1288,7 +1288,6 @@ function SpacingBarHandle({
       backgroundColor: bgColor,
       border: 'none',
       cursor,
-      boxShadow: 'none',
       pointerEvents: 'auto' as const,
     };
 
