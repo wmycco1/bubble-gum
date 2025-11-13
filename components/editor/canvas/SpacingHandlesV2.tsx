@@ -1417,29 +1417,68 @@ function SpacingBarHandle({
     }
   };
 
-  // Tooltip position styles - Follow cursor with 10px offset
-  const getTooltipStyles = () => {
-    const baseStyles = {
-      position: 'absolute' as const,
+  // Tooltip position styles - Follow cursor with smart positioning
+  const getTooltipStyles = (): React.CSSProperties => {
+    const baseStyles: React.CSSProperties = {
+      position: 'absolute',
       backgroundColor: '#1f2937',
       color: 'white',
       padding: '6px 10px',
       borderRadius: '6px',
       fontSize: '11px',
       fontWeight: 600,
-      whiteSpace: 'nowrap' as const,
-      pointerEvents: 'none' as const,
+      whiteSpace: 'nowrap',
+      pointerEvents: 'none',
       zIndex: 51,
       boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
       border: '1px solid rgba(255,255,255,0.1)',
     };
 
-    // If we have mouse position, show near cursor
+    // If we have mouse position, show near cursor with smart positioning
     if (mousePos) {
+      // Tooltip dimensions (approximate)
+      const tooltipWidth = 120; // Approximate width for "Drag to adjust [direction]"
+      const tooltipHeight = 30; // Approximate height
+      const offset = 10; // Gap between cursor and tooltip
+
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Cursor position (absolute viewport coordinates)
+      const cursorX = mousePos.x;
+      const cursorY = mousePos.y;
+
+      // Default: center horizontally, 10px below cursor
+      let left = cursorX;
+      let top = cursorY + offset;
+      let transform = 'translateX(-50%)'; // Center horizontally
+
+      // Check if tooltip fits below cursor
+      if (top + tooltipHeight > viewportHeight) {
+        // Not enough space below, show above cursor
+        top = cursorY - tooltipHeight - offset;
+      }
+
+      // Check horizontal boundaries
+      const leftEdge = cursorX - tooltipWidth / 2;
+      const rightEdge = cursorX + tooltipWidth / 2;
+
+      if (leftEdge < 0) {
+        // Too close to left edge, align to left
+        left = offset;
+        transform = 'translateX(0)';
+      } else if (rightEdge > viewportWidth) {
+        // Too close to right edge, align to right
+        left = viewportWidth - tooltipWidth - offset;
+        transform = 'translateX(0)';
+      }
+
       return {
         ...baseStyles,
-        left: `${mousePos.x}px`,
-        top: `${mousePos.y + 10}px`, // 10px offset below cursor
+        position: 'fixed', // Use fixed to position relative to viewport
+        left: `${left}px`,
+        top: `${top}px`,
+        transform,
       };
     }
 
@@ -1453,6 +1492,8 @@ function SpacingBarHandle({
         return { ...baseStyles, bottom: '-40px', left: '50%', transform: 'translateX(-50%)' };
       case 'left':
         return { ...baseStyles, left: '-68px', top: '50%', transform: 'translateY(-50%)' };
+      default:
+        return baseStyles;
     }
   };
 
@@ -1913,11 +1954,10 @@ function SpacingBarHandle({
           setMousePos(null);
         }}
         onMouseMove={(e) => {
-          // Track mouse position for tooltip
-          const rect = e.currentTarget.getBoundingClientRect();
+          // Track absolute mouse position for tooltip (relative to viewport)
           setMousePos({
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top,
+            x: e.clientX,
+            y: e.clientY,
           });
         }}
         style={getPositionStyles()}
