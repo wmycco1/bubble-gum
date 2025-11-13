@@ -1441,10 +1441,13 @@ function SpacingBarHandle({
           };
         case 'right':
           // Horizontal line from badge right edge to wrapper right edge
+          // ✅ FIX (V3.3): Smart vertical positioning
+          const rightLineTop = badgeRect.height >= wrapperRect.height * 0.9
+            ? badgeRect.top + badgeRect.height / 2 // Badge center
+            : wrapperRect.height / 2; // Wrapper center
           return {
             ...baseStyles,
-            // ✅ FIX (V3.2): Position line at wrapper vertical center (margin spans full height)
-            top: `${wrapperRect.height / 2}px`, // ✅ Center of WRAPPER
+            top: `${rightLineTop}px`,
             right: '0px', // Position from wrapper right edge (same as bar handle!)
             width: `${rightMargin}px`, // Use margin value directly
             height: '0',
@@ -1461,10 +1464,13 @@ function SpacingBarHandle({
             borderLeft: `2px dashed ${lineColor}`,
           };
         case 'left':
+          // ✅ FIX (V3.3): Smart vertical positioning
+          const leftLineTop = badgeRect.height >= wrapperRect.height * 0.9
+            ? badgeRect.top + badgeRect.height / 2 // Badge center
+            : wrapperRect.height / 2; // Wrapper center
           return {
             ...baseStyles,
-            // ✅ FIX (V3.2): Position line at wrapper vertical center (margin spans full height)
-            top: `${wrapperRect.height / 2}px`, // ✅ Center of WRAPPER
+            top: `${leftLineTop}px`,
             left: '0px', // Start from wrapper left edge (static)
             width: `${leftMargin}px`, // Use margin value directly
             height: '0',
@@ -1611,19 +1617,21 @@ function SpacingBarHandle({
           ];
         case 'right':
           // Arrows pointing toward each other (→ at badge right, ← at wrapper right)
+          // ✅ FIX (V3.3): Smart vertical positioning
+          const rightArrowTop = badgeRect.height >= wrapperRect.height * 0.9
+            ? badgeRect.top + badgeRect.height / 2 - arrowSize // Badge center
+            : wrapperRect.height / 2 - arrowSize; // Wrapper center
           return [
             {
               ...baseArrowStyle,
-              // ✅ FIX (V3.2): Position arrow at wrapper vertical center (margin spans full height)
-              top: `${wrapperRect.height / 2 - arrowSize}px`, // ✅ Center of WRAPPER
+              top: `${rightArrowTop}px`,
               right: `${rightMargin - arrowSize}px`, // Position from wrapper right edge - shifted inside by arrowSize!
               borderRightColor: arrowColor, // → pointing right
               borderLeftWidth: 0,
             },
             {
               ...baseArrowStyle,
-              // ✅ FIX (V3.2): Position arrow at wrapper vertical center (margin spans full height)
-              top: `${wrapperRect.height / 2 - arrowSize}px`, // ✅ Center of WRAPPER
+              top: `${rightArrowTop}px`,
               right: '0px', // Position from wrapper right edge (same as bar handle!)
               borderLeftColor: arrowColor, // ← pointing left
               borderRightWidth: 0,
@@ -1649,19 +1657,21 @@ function SpacingBarHandle({
           ];
         case 'left':
           // Arrows pointing toward each other (← at wrapper left, → at badge left)
+          // ✅ FIX (V3.3): Smart vertical positioning
+          const leftArrowTop = badgeRect.height >= wrapperRect.height * 0.9
+            ? badgeRect.top + badgeRect.height / 2 - arrowSize // Badge center
+            : wrapperRect.height / 2 - arrowSize; // Wrapper center
           return [
             {
               ...baseArrowStyle,
-              // ✅ FIX (V3.2): Position arrow at wrapper vertical center (margin spans full height)
-              top: `${wrapperRect.height / 2 - arrowSize}px`, // ✅ Center of WRAPPER
+              top: `${leftArrowTop}px`,
               left: '0px', // Static at wrapper left edge
               borderRightColor: arrowColor, // → pointing right
               borderLeftWidth: 0,
             },
             {
               ...baseArrowStyle,
-              // ✅ FIX (V3.2): Position arrow at wrapper vertical center (margin spans full height)
-              top: `${wrapperRect.height / 2 - arrowSize}px`, // ✅ Center of WRAPPER
+              top: `${leftArrowTop}px`,
               left: `${calculatedBadgeLeft - arrowSize}px`, // Calculated badge left edge
               borderLeftColor: arrowColor, // ← pointing left
               borderRightWidth: 0,
@@ -1748,9 +1758,12 @@ function SpacingBarHandle({
         case 'right':
           return {
             ...baseStyles,
-            // ✅ FIX (V3.2): Position label in CENTER of margin space vertically
-            // NOT at Badge center! Should be at wrapper vertical center (margin spans full height)
-            top: `${wrapperRect.height / 2}px`, // ✅ Center of WRAPPER (margin space spans full height)
+            // ✅ FIX (V3.3): Smart vertical positioning based on Badge height
+            // If Badge fills wrapper (block/flex/grid), use Badge center
+            // If Badge is smaller (inline-block), use wrapper center
+            top: badgeRect.height >= wrapperRect.height * 0.9
+              ? `${badgeRect.top + badgeRect.height / 2}px` // Badge center (fills wrapper)
+              : `${wrapperRect.height / 2}px`, // Wrapper center (margin space exists)
             right: `${rightMargin / 2}px`, // Middle between badge right and wrapper right (from wrapper edge!)
             transform: 'translateY(-50%)',
           };
@@ -1764,9 +1777,12 @@ function SpacingBarHandle({
         case 'left':
           return {
             ...baseStyles,
-            // ✅ FIX (V3.2): Position label in CENTER of margin space vertically
-            // NOT at Badge center! Should be at wrapper vertical center (margin spans full height)
-            top: `${wrapperRect.height / 2}px`, // ✅ Center of WRAPPER (margin space spans full height)
+            // ✅ FIX (V3.3): Smart vertical positioning based on Badge height
+            // If Badge fills wrapper (block/flex/grid), use Badge center
+            // If Badge is smaller (inline-block), use wrapper center
+            top: badgeRect.height >= wrapperRect.height * 0.9
+              ? `${badgeRect.top + badgeRect.height / 2}px` // Badge center (fills wrapper)
+              : `${wrapperRect.height / 2}px`, // Wrapper center (margin space exists)
             left: `${leftMargin / 2}px`, // Middle between wrapper left (0) and badge left
             transform: 'translateY(-50%)',
           };
