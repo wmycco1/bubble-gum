@@ -1288,7 +1288,7 @@ function SpacingBarHandle({
       backgroundColor: bgColor,
       border: 'none',
       cursor,
-      boxShadow: isDragging ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
+      boxShadow: 'none',
       pointerEvents: 'auto' as const,
     };
 
