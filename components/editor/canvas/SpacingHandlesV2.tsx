@@ -292,10 +292,47 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
     const capitalizedSide = side.charAt(0).toUpperCase() + side.slice(1);
     let clampedValue = Math.max(0, Math.round(newValue));
 
-    // V7.10: Simple margin behavior - NO auto-adjustment
-    // Each margin is independent, wrapper expands naturally
-    // This matches corner handle behavior and allows wrapper to grow
+    // ═══════════════════════════════════════════════════════════════
+    // V7.11: HYBRID SOLUTION - Best of Both Worlds
+    // ═══════════════════════════════════════════════════════════════
+    // HORIZONTAL (left/right): Apply constraint system → margin-right moves Badge ✅
+    // VERTICAL (top/bottom): Independent margins → wrapper expands ✅
+    // ═══════════════════════════════════════════════════════════════
 
+    if (mode === 'margin') {
+      // HORIZONTAL MARGINS: Apply Figma-like constraint system
+      if (side === 'right') {
+        // When margin-right increases → auto-decrease margin-left → Badge moves left
+        const availableWidth = wrapperRect.width - badgeRect.width;
+        clampedValue = Math.min(clampedValue, availableWidth);
+        const newMarginLeft = availableWidth - clampedValue;
+
+        updateComponentProps(componentId, {
+          marginRight: clampedValue,
+          marginLeft: Math.max(0, newMarginLeft),
+        });
+        return;
+      }
+
+      if (side === 'left') {
+        // When margin-left increases → auto-decrease margin-right → Badge moves right
+        const availableWidth = wrapperRect.width - badgeRect.width;
+        clampedValue = Math.min(clampedValue, availableWidth);
+        const newMarginRight = availableWidth - clampedValue;
+
+        updateComponentProps(componentId, {
+          marginLeft: clampedValue,
+          marginRight: Math.max(0, newMarginRight),
+        });
+        return;
+      }
+
+      // VERTICAL MARGINS: Independent (allow wrapper expansion)
+      // margin-top and margin-bottom work independently
+      // Wrapper height expands naturally (like corner handle)
+    }
+
+    // Default: Simple independent behavior (padding + vertical margins)
     updateComponentProps(componentId, {
       [`${prefix}${capitalizedSide}`]: clampedValue,
     });
