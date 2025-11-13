@@ -545,7 +545,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.4)' // Dragging: green 40% (more visible)
                     : hoveredSide === 'top'
                     ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25% (more visible)
-                    : 'rgba(96, 165, 250, 0.1)', // Idle: blue 10% (reduced 50%)
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20% (consistent with margin)
                 borderBottom: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ns-resize',
@@ -571,7 +571,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'right'
                     ? 'rgba(52, 211, 153, 0.25)'
-                    : 'rgba(96, 165, 250, 0.1)',
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20% (consistent with margin)
                 borderLeft: `2px solid ${draggingSide === 'right' ? '#10b981' : hoveredSide === 'right' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ew-resize',
@@ -597,7 +597,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'bottom'
                     ? 'rgba(52, 211, 153, 0.25)'
-                    : 'rgba(96, 165, 250, 0.1)',
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20% (consistent with margin)
                 borderTop: `2px solid ${draggingSide === 'bottom' ? '#10b981' : hoveredSide === 'bottom' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ns-resize',
@@ -623,7 +623,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     ? 'rgba(52, 211, 153, 0.4)'
                     : hoveredSide === 'left'
                     ? 'rgba(52, 211, 153, 0.25)'
-                    : 'rgba(96, 165, 250, 0.1)',
+                    : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20% (consistent with margin)
                 borderRight: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
                 pointerEvents: 'auto',
                 cursor: 'ew-resize',
