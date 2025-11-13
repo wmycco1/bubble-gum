@@ -303,7 +303,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
       // HORIZONTAL MARGINS: Apply Figma-like constraint system
       if (side === 'right') {
         // When margin-right increases → auto-decrease margin-left → Badge moves left
-        const availableWidth = wrapperRect.width - badgeRect.width;
+        const availableWidth = badgeRect.wrapperWidth - badgeRect.width;
         clampedValue = Math.min(clampedValue, availableWidth);
         const newMarginLeft = availableWidth - clampedValue;
 
@@ -316,7 +316,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
 
       if (side === 'left') {
         // When margin-left increases → auto-decrease margin-right → Badge moves right
-        const availableWidth = wrapperRect.width - badgeRect.width;
+        const availableWidth = badgeRect.wrapperWidth - badgeRect.width;
         clampedValue = Math.min(clampedValue, availableWidth);
         const newMarginRight = availableWidth - clampedValue;
 
