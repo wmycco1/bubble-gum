@@ -1835,7 +1835,7 @@ function SpacingBarHandle({
       position: 'absolute',
       pointerEvents: 'none',
       zIndex: 46,
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      backgroundColor: 'rgb(31, 41, 55)', // Solid gray-800 color (no transparency)
       color: 'white',
       padding: '2px 6px',
       borderRadius: '4px',
