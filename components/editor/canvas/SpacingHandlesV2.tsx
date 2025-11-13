@@ -31,6 +31,7 @@
  */
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 import { useSpacingKeyboard } from './useSpacingKeyboard';
 
@@ -1473,6 +1474,8 @@ function SpacingBarHandle({
         transform = 'translateX(0)';
       }
 
+      console.log('📍 Tooltip position:', { cursorX, cursorY, left, top, transform });
+
       return {
         ...baseStyles,
         position: 'fixed', // Use fixed to position relative to viewport
@@ -1955,9 +1958,14 @@ function SpacingBarHandle({
         }}
         onMouseMove={(e) => {
           // Track absolute mouse position for tooltip (relative to viewport)
+          const mouseX = e.clientX;
+          const mouseY = e.clientY;
+
+          console.log('🖱️ Mouse position:', { mouseX, mouseY, side });
+
           setMousePos({
-            x: e.clientX,
-            y: e.clientY,
+            x: mouseX,
+            y: mouseY,
           });
         }}
         style={getPositionStyles()}
@@ -1993,8 +2001,8 @@ function SpacingBarHandle({
         </div>
       </div>
 
-      {/* Value Tooltip - "Drag to adjust [direction]" */}
-      {(isHovered || isDragging) && (
+      {/* Value Tooltip - "Drag to adjust [direction]" - Rendered via Portal */}
+      {(isHovered || isDragging) && typeof document !== 'undefined' && createPortal(
         <div style={getTooltipStyles()}>
           Drag to adjust {getDirectionName()}
           {isDragging && (
@@ -2008,7 +2016,8 @@ function SpacingBarHandle({
               drag to adjust
             </span>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
