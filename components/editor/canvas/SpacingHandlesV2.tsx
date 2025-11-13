@@ -1433,7 +1433,7 @@ function SpacingBarHandle({
   const getTooltipStyles = (): React.CSSProperties => {
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
-      backgroundColor: '#1f2937',
+      backgroundColor: 'rgb(31, 41, 55)', // Fully opaque gray-800
       color: 'white',
       padding: '6px 10px',
       borderRadius: '6px',
