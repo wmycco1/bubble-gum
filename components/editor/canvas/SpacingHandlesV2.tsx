@@ -1429,17 +1429,17 @@ function SpacingBarHandle({
   const getTooltipStyles = (): React.CSSProperties => {
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
-      backgroundColor: '#000000', // Pure black for maximum contrast against blue overlay
+      backgroundColor: 'rgb(31, 41, 55)', // Fully opaque gray-800
       color: 'white',
-      padding: '8px 12px',
+      padding: '6px 10px',
       borderRadius: '6px',
-      fontSize: '12px',
+      fontSize: '11px',
       fontWeight: 600,
       whiteSpace: 'nowrap',
       pointerEvents: 'none',
-      zIndex: 9999, // Very high z-index to ensure it's on top
-      boxShadow: '0 6px 16px rgba(0,0,0,0.6), 0 3px 8px rgba(0,0,0,0.5)', // Strong shadow for depth
-      border: '2px solid rgba(255,255,255,0.4)', // Thicker white border for clear definition
+      zIndex: 51,
+      boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
+      border: '1px solid rgba(255,255,255,0.1)',
     };
 
     // If we have mouse position, show near cursor with smart positioning
