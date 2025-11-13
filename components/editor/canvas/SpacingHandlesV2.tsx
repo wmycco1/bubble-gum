@@ -414,7 +414,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     : hoveredSide === 'top'
                     ? 'rgba(52, 211, 153, 0.25)' // Hover: green 25%
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
-                borderBottom: `2px solid ${draggingSide === 'top' ? '#10b981' : hoveredSide === 'top' ? '#10b981' : '#3b82f6'}`,
+                borderBottom: (draggingSide === 'top' || hoveredSide === 'top') ? 'none' : '2px solid #3b82f6',
                 pointerEvents: 'auto',
                 cursor: 's-resize',
                 zIndex: 43,
@@ -498,7 +498,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
                     : hoveredSide === 'left'
                     ? 'rgba(52, 211, 153, 0.25)'
                     : 'rgba(96, 165, 250, 0.2)', // Idle: blue 20%
-                borderRight: `2px solid ${draggingSide === 'left' ? '#10b981' : hoveredSide === 'left' ? '#10b981' : '#3b82f6'}`,
+                borderRight: (draggingSide === 'left' || hoveredSide === 'left') ? 'none' : '2px solid #3b82f6',
                 pointerEvents: 'auto',
                 cursor: 'e-resize',
                 zIndex: 43,
