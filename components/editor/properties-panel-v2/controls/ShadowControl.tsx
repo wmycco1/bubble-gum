@@ -88,8 +88,8 @@ function formatDisplayValue(value: number): string {
  * ShadowControl - Modern Shadow UI (V7.1)
  *
  * Features:
- * - Preset selector (none, sm, md, lg, xl)
- * - Custom shadow mode
+ * - Simple mode with presets (none, sm, md, lg, xl)
+ * - Advanced mode for custom shadow parameters
  * - Live preview
  * - Opacity control (0-100%)
  * - User-friendly UX 2025
@@ -289,9 +289,9 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
 
 interface ShadowControlProps {
   label: string;
-  /** Shadow preset */
+  /** Shadow mode: simple presets or 'custom' for advanced mode */
   preset?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'custom';
-  /** Custom shadow parameters (for preset='custom') */
+  /** Advanced mode shadow parameters (for preset='custom') */
   offsetX?: number;
   offsetY?: number;
   blur?: number;
@@ -304,9 +304,9 @@ interface ShadowControlProps {
   offsetYUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   blurUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   spreadUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
-  /** Callback for preset change */
+  /** Callback for mode change */
   onPresetChange: (preset: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'custom') => void;
-  /** Callback for custom parameter change */
+  /** Callback for advanced mode parameter change */
   onCustomChange?: (param: 'offsetX' | 'offsetY' | 'blur' | 'spread' | 'color', value: number | string) => void;
   /** Callback for unit change */
   onUnitChange?: (param: 'offsetX' | 'offsetY' | 'blur' | 'spread', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
@@ -334,7 +334,7 @@ export function ShadowControl({
   onOpacityChange,
   description,
 }: ShadowControlProps) {
-  const [showCustom, setShowCustom] = useState(preset === 'custom');
+  const [showAdvanced, setShowAdvanced] = useState(preset === 'custom');
 
   const presets: Array<{ value: 'none' | 'sm' | 'md' | 'lg' | 'xl'; label: string; description: string }> = [
     { value: 'none', label: 'None', description: 'No shadow' },
@@ -345,16 +345,16 @@ export function ShadowControl({
   ];
 
   const handlePresetSelect = (value: 'none' | 'sm' | 'md' | 'lg' | 'xl') => {
-    setShowCustom(false);
+    setShowAdvanced(false);
     onPresetChange(value);
   };
 
-  const handleCustomToggle = () => {
-    if (!showCustom) {
-      setShowCustom(true);
+  const handleAdvancedToggle = () => {
+    if (!showAdvanced) {
+      setShowAdvanced(true);
       onPresetChange('custom');
     } else {
-      setShowCustom(false);
+      setShowAdvanced(false);
       onPresetChange('md'); // Default preset
     }
   };
@@ -373,15 +373,15 @@ export function ShadowControl({
         </label>
         <button
           type="button"
-          onClick={handleCustomToggle}
+          onClick={handleAdvancedToggle}
           className="text-xs text-blue-600 hover:text-blue-700 font-medium"
         >
-          {showCustom ? 'Presets' : 'Custom'}
+          {showAdvanced ? 'Simple' : 'Advanced'}
         </button>
       </div>
 
-      {/* Preset Mode */}
-      {!showCustom && (
+      {/* Simple Mode */}
+      {!showAdvanced && (
         <div className="space-y-3">
           {/* Preset Selector - Visual Preview Buttons */}
           <div className="grid grid-cols-5 gap-2">
@@ -456,8 +456,8 @@ export function ShadowControl({
         </div>
       )}
 
-      {/* Custom Mode - Compact Integrated Design with Responsive Grid */}
-      {showCustom && (
+      {/* Advanced Mode - Compact Integrated Design with Responsive Grid */}
+      {showAdvanced && (
         <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
           {/* Live Preview at Top */}
           <div className="flex justify-center items-center mb-4 py-3">
@@ -543,8 +543,8 @@ export function ShadowControl({
         </div>
       )}
 
-      {/* Opacity Slider (Preset Mode Only - Custom has it integrated) */}
-      {preset !== 'none' && !showCustom && (
+      {/* Opacity Slider (Simple Mode Only - Advanced has it integrated) */}
+      {preset !== 'none' && !showAdvanced && (
         <div className="mt-3">
           <label className="block text-xs text-gray-600 mb-1">
             Shadow Opacity: {opacity}%
