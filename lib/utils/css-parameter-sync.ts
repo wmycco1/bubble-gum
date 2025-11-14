@@ -339,6 +339,12 @@ export function syncParametersToCSS(
   // Track which params we've processed
   const processedParams = new Set<string>();
 
+  // ✨ NEW: Check if Advanced mode is used for spacing (individual sides set)
+  const hasIndividualPadding = params.paddingTop !== undefined || params.paddingRight !== undefined ||
+                                params.paddingBottom !== undefined || params.paddingLeft !== undefined;
+  const hasIndividualMargin = params.marginTop !== undefined || params.marginRight !== undefined ||
+                               params.marginBottom !== undefined || params.marginLeft !== undefined;
+
   for (const [paramName, paramValue] of Object.entries(params)) {
     // Skip fontSizeUnit - it's handled with fontSize
     if (paramName === 'fontSizeUnit') {
@@ -351,6 +357,20 @@ export function syncParametersToCSS(
         paramName === 'shadowBlur' || paramName === 'shadowSpread' ||
         paramName === 'shadowColor') {
       processedParams.add(paramName);
+      continue;
+    }
+
+    // ✨ NEW: Skip general padding if Advanced mode (individual sides) is used
+    if (paramName === 'padding' && hasIndividualPadding) {
+      processedParams.add(paramName);
+      console.log('🔄 Params Sync: Skipping general padding (Advanced mode with individual sides detected)');
+      continue;
+    }
+
+    // ✨ NEW: Skip general margin if Advanced mode (individual sides) is used
+    if (paramName === 'margin' && hasIndividualMargin) {
+      processedParams.add(paramName);
+      console.log('🔄 Params Sync: Skipping general margin (Advanced mode with individual sides detected)');
       continue;
     }
 
