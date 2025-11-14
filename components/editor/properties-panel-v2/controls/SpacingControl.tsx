@@ -54,12 +54,12 @@ interface SpacingControlProps {
   paramName: string;
   description?: string;
   /** Unit selectors for each side (Advanced mode) */
-  topUnit?: 'px' | 'rem' | 'em' | '%';
-  rightUnit?: 'px' | 'rem' | 'em' | '%';
-  bottomUnit?: 'px' | 'rem' | 'em' | '%';
-  leftUnit?: 'px' | 'rem' | 'em' | '%';
+  topUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  rightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  bottomUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  leftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   /** Callback for unit change */
-  onUnitChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%') => void;
+  onUnitChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
 }
 
 export function SpacingControl({
@@ -80,7 +80,7 @@ export function SpacingControl({
   onUnitChange,
 }: SpacingControlProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [unit, setUnit] = useState<'px' | 'rem' | 'em' | '%'>('px');
+  const [unit, setUnit] = useState<'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'>('px');
 
   // Check if any individual sides are set
   const hasIndividualValues = top !== undefined || right !== undefined || bottom !== undefined || left !== undefined;
@@ -538,10 +538,10 @@ export function SpacingControl({
 interface SideControlProps {
   side: 'Top' | 'Right' | 'Bottom' | 'Left';
   value?: number;
-  unit: 'px' | 'rem' | 'em' | '%';
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   handlers: ReturnType<typeof createHoldToRepeatHandlers>;
   onValueChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', value: number | undefined) => void;
-  onUnitChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%') => void;
+  onUnitChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
   handleSideChange: (side: 'Top' | 'Right' | 'Bottom' | 'Left', e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -614,13 +614,15 @@ function SideControl({
       {/* Unit selector dropdown */}
       <select
         value={unit}
-        onChange={(e) => onUnitChange?.(side, e.target.value as 'px' | 'rem' | 'em' | '%')}
+        onChange={(e) => onUnitChange?.(side, e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw')}
         className="w-14 px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
         <option value="em">em</option>
         <option value="%">%</option>
+        <option value="vh">vh</option>
+        <option value="vw">vw</option>
       </select>
     </div>
   );
@@ -631,8 +633,8 @@ function SideControl({
  */
 interface SpacingSimpleModeProps {
   value?: number;
-  unit: 'px' | 'rem' | 'em' | '%';
-  setUnit: (unit: 'px' | 'rem' | 'em' | '%') => void;
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  setUnit: (unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
   handleShorthandChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onChange: (name: string, value: number | undefined) => void;
   paramName: string;
@@ -733,13 +735,15 @@ function SpacingSimpleMode({ value, unit, setUnit, handleShorthandChange, onChan
       </div>
       <select
         value={unit}
-        onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
+        onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw')}
         className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
         <option value="em">em</option>
         <option value="%">%</option>
+        <option value="vh">vh</option>
+        <option value="vw">vw</option>
       </select>
       <div className="flex flex-col gap-0.5">
         <button

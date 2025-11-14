@@ -151,10 +151,10 @@ function renderControl(
       const left = allParams[`${paramName}Left`];
 
       // Get units for each side (default to 'px')
-      const topUnit = allParams[`${paramName}TopUnit`] as 'px' | 'rem' | 'em' | '%' || 'px';
-      const rightUnit = allParams[`${paramName}RightUnit`] as 'px' | 'rem' | 'em' | '%' || 'px';
-      const bottomUnit = allParams[`${paramName}BottomUnit`] as 'px' | 'rem' | 'em' | '%' || 'px';
-      const leftUnit = allParams[`${paramName}LeftUnit`] as 'px' | 'rem' | 'em' | '%' || 'px';
+      const topUnit = allParams[`${paramName}TopUnit`] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+      const rightUnit = allParams[`${paramName}RightUnit`] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+      const bottomUnit = allParams[`${paramName}BottomUnit`] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+      const leftUnit = allParams[`${paramName}LeftUnit`] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
 
       return (
         <SpacingControl
@@ -176,7 +176,7 @@ function renderControl(
             // Handle individual side changes
             onChange(`${paramName}${side}`, sideValue);
           }}
-          onUnitChange={(side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%') => {
+          onUnitChange={(side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => {
             // Handle unit changes
             onChange(`${paramName}${side}Unit`, unit);
           }}
