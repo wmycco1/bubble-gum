@@ -512,11 +512,11 @@ export function ShadowControl({
             />
           </div>
 
-          {/* Color and Opacity - separate rows for proper containment */}
-          <div className="space-y-2">
+          {/* Color and Opacity - flexible row with wrap */}
+          <div className="flex items-center gap-3 flex-wrap">
             {/* Color */}
-            <div className="flex items-center gap-2">
-              <label className="text-xs text-gray-600 whitespace-nowrap min-w-[50px]">Color:</label>
+            <div className="flex items-center gap-2 shrink-0">
+              <label className="text-xs text-gray-600 whitespace-nowrap">Color:</label>
               <input
                 type="color"
                 value={color}
@@ -526,18 +526,18 @@ export function ShadowControl({
               />
             </div>
 
-            {/* Opacity */}
-            <div className="flex items-center gap-2 w-full">
-              <label className="text-xs text-gray-600 whitespace-nowrap min-w-[50px]">Opacity:</label>
-              <span className="text-xs text-gray-700 font-medium min-w-[36px]">{opacity}%</span>
+            {/* Opacity - flexible with value after slider */}
+            <div className="flex items-center gap-2 min-w-0 flex-1 basis-[200px]">
+              <label className="text-xs text-gray-600 whitespace-nowrap shrink-0">Opacity:</label>
               <input
                 type="range"
                 min="0"
                 max="100"
                 value={opacity}
                 onChange={(e) => onOpacityChange?.(Number(e.target.value))}
-                className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                className="flex-1 min-w-0 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
               />
+              <span className="text-xs text-gray-700 font-medium shrink-0 min-w-[36px]">{opacity}%</span>
             </div>
           </div>
         </div>
