@@ -115,8 +115,9 @@ export function TextShadowControl({
       {!showCustom && (
         <div className="space-y-3">
           {/* Preset Selector - Visual Preview Buttons */}
-          <div className="grid grid-cols-5 gap-2">
-            {presets.map((p) => {
+          <div className="@container">
+            <div className="grid grid-cols-3 @[301px]:grid-cols-5 gap-2">
+              {presets.map((p) => {
               // Get the text shadow for this preset
               let shadowStyle = 'none';
               switch (p.value) {
@@ -161,6 +162,7 @@ export function TextShadowControl({
                 </button>
               );
             })}
+            </div>
           </div>
 
           {/* Live Preview - Text with Shadow */}

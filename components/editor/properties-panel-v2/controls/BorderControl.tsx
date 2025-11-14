@@ -631,8 +631,9 @@ export function BorderControl({
           {/* Visual Border Style Selector */}
           <div>
             <label className="block text-xs text-gray-600 mb-2">Style</label>
-            <div className="grid grid-cols-5 gap-1">
-              {BORDER_STYLES.map((style) => (
+            <div className="@container">
+              <div className="grid grid-cols-3 @[301px]:grid-cols-5 gap-1">
+                {BORDER_STYLES.map((style) => (
                 <button
                   key={style.value}
                   type="button"
@@ -647,7 +648,7 @@ export function BorderControl({
                   title={style.label}
                 >
                   {/* Visual Preview */}
-                  <div className="w-full h-8 flex items-center justify-center mb-1">
+                  <div className="w-full h-8 flex items-center justify-center mb-0.5">
                     {style.value === 'none' ? (
                       <div className="w-full h-0.5 bg-gray-200 relative">
                         <span className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">×</span>
@@ -667,6 +668,7 @@ export function BorderControl({
                   </span>
                 </button>
               ))}
+              </div>
             </div>
           </div>
 
@@ -737,8 +739,9 @@ export function BorderControl({
           {/* Visual Border Style Selector */}
           <div>
             <label className="block text-xs text-gray-600 mb-2">Style</label>
-            <div className="grid grid-cols-5 gap-1">
-              {BORDER_STYLES.map((style) => (
+            <div className="@container">
+              <div className="grid grid-cols-3 @[301px]:grid-cols-5 gap-1">
+                {BORDER_STYLES.map((style) => (
                 <button
                   key={style.value}
                   type="button"
@@ -752,7 +755,7 @@ export function BorderControl({
                   `}
                   title={style.label}
                 >
-                  <div className="w-full h-8 flex items-center justify-center mb-1">
+                  <div className="w-full h-8 flex items-center justify-center mb-0.5">
                     {style.value === 'none' ? (
                       <div className="w-full h-0.5 bg-gray-200 relative">
                         <span className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">×</span>
@@ -771,6 +774,7 @@ export function BorderControl({
                   </span>
                 </button>
               ))}
+              </div>
             </div>
           </div>
 

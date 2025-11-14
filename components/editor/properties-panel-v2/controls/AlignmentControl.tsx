@@ -84,9 +84,10 @@ export function AlignmentControl({
           </span>
         )}
       </label>
-      <div className="grid grid-cols-5 gap-2">
-        {alignments.map((alignment) => (
-          <button
+      <div className="@container">
+        <div className="grid grid-cols-3 @[301px]:grid-cols-5 gap-2">
+          {alignments.map((alignment) => (
+            <button
             key={alignment.value}
             type="button"
             onClick={() => onChange(name, alignment.value)}
@@ -103,6 +104,7 @@ export function AlignmentControl({
             <span className="text-xs font-medium mt-1">{alignment.label}</span>
           </button>
         ))}
+        </div>
       </div>
     </div>
   );

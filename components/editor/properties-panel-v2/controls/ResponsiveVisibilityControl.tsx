@@ -34,7 +34,7 @@ export function ResponsiveVisibilityControl({
       id: 'mobile' as const,
       label: 'Mobile',
       icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <rect x="5" y="2" width="14" height="20" rx="2" ry="2" strokeWidth="2"/>
           <line x1="12" y1="18" x2="12" y2="18" strokeWidth="2" strokeLinecap="round"/>
         </svg>
@@ -45,7 +45,7 @@ export function ResponsiveVisibilityControl({
       id: 'tablet' as const,
       label: 'Tablet',
       icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <rect x="3" y="4" width="18" height="16" rx="2" ry="2" strokeWidth="2"/>
           <line x1="12" y1="17" x2="12" y2="17" strokeWidth="2" strokeLinecap="round"/>
         </svg>
@@ -56,7 +56,7 @@ export function ResponsiveVisibilityControl({
       id: 'desktop' as const,
       label: 'Desktop',
       icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <rect x="2" y="3" width="20" height="14" rx="2" ry="2" strokeWidth="2"/>
           <line x1="8" y1="21" x2="16" y2="21" strokeWidth="2" strokeLinecap="round"/>
           <line x1="12" y1="17" x2="12" y2="21" strokeWidth="2"/>
@@ -89,7 +89,7 @@ export function ResponsiveVisibilityControl({
               flex flex-col items-center justify-center p-3 rounded-md border-2 transition-all duration-200
               ${device.isHidden
                 ? 'border-red-300 bg-red-50 text-red-600'
-                : 'border-green-300 bg-green-50 text-green-600'
+                : 'border-green-300 bg-green-50/50 text-green-600'
               }
               hover:shadow-md
             `}

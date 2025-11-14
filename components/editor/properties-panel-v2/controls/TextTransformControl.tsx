@@ -58,7 +58,7 @@ export function TextTransformControl({
             `}
             title={transform.label}
           >
-            <span className="text-base font-medium mb-1" style={{ textTransform: transform.value as any }}>
+            <span className="text-base font-medium mb-0.5" style={{ textTransform: transform.value as any }}>
               Aa
             </span>
             <span className="text-xs">{transform.label}</span>

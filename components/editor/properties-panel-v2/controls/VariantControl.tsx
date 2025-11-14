@@ -82,8 +82,9 @@ export function VariantControl({
       </label>
 
       {/* Variant Grid */}
-      <div className="grid grid-cols-4 gap-2">
-        {options.map((variant) => {
+      <div className="@container">
+        <div className="grid grid-cols-3 @[320px]:grid-cols-4 @[380px]:grid-cols-6 gap-2">
+          {options.map((variant) => {
           const colors = VARIANT_COLORS[variant];
           const isSelected = value === variant;
 
@@ -132,6 +133,7 @@ export function VariantControl({
             </button>
           );
         })}
+        </div>
       </div>
     </div>
   );

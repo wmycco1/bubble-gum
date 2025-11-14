@@ -226,12 +226,38 @@ export function generateShadow(
     return `${x}px ${y}px ${blur}px ${spread}px ${finalColor}`;
   }
 
-  // Preset shadow with optional opacity override
+  // Preset shadow with optional opacity and color override
   let shadowValue = SHADOW_PRESETS[preset as keyof typeof SHADOW_PRESETS];
 
-  if (opacity !== undefined && opacity !== 100) {
+  // If custom color is provided for preset, replace black with custom color
+  if (params?.color && isValidCSSColor(params.color)) {
+    const customColor = params.color;
+    const finalOpacity = opacity !== undefined ? sanitizeOpacity(opacity) / 100 : undefined;
+
+    // Convert custom color to rgb values
+    let r = 0, g = 0, b = 0;
+    if (customColor.startsWith('#')) {
+      const hex = customColor.replace('#', '');
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+    } else if (customColor.startsWith('rgb')) {
+      const rgbMatch = customColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      if (rgbMatch) {
+        r = parseInt(rgbMatch[1]);
+        g = parseInt(rgbMatch[2]);
+        b = parseInt(rgbMatch[3]);
+      }
+    }
+
+    // Replace rgba(0, 0, 0, X) with rgba(r, g, b, X) or custom opacity
+    shadowValue = shadowValue.replace(/rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/g, (match, _r, _g, _b, a) => {
+      const alpha = finalOpacity !== undefined ? finalOpacity : parseFloat(a);
+      return `rgba(${r},${g},${b},${alpha})`;
+    });
+  } else if (opacity !== undefined && opacity !== 100) {
+    // Only opacity override (no color change)
     const finalOpacity = sanitizeOpacity(opacity) / 100;
-    // Adjust opacity in preset shadow
     shadowValue = shadowValue.replace(/rgba\(([^,]+),([^,]+),([^,]+),([^)]+)\)/g, (match, r, g, b) => {
       return `rgba(${r},${g},${b},${finalOpacity})`;
     });

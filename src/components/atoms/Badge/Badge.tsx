@@ -827,6 +827,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
   /**
    * Generate shadow value - V7.1
    * Supports presets (sm, md, lg, xl) and custom parameters
+   * Updated: Always pass color param to support custom colors with presets
    */
   const safeShadow = React.useMemo(() => {
     return generateShadow(
@@ -837,7 +838,10 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
         blur: shadowBlur,
         spread: shadowSpread,
         color: shadowColor,
-      } : undefined,
+      } : {
+        // For presets, still pass color to allow custom colored shadows
+        color: shadowColor,
+      },
       shadowOpacity
     );
   }, [shadow, shadowOffsetX, shadowOffsetY, shadowBlur, shadowSpread, shadowColor, shadowOpacity]);

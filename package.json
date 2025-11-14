@@ -47,6 +47,7 @@
     "@radix-ui/react-select": "^2.1.15",
     "@radix-ui/react-slot": "^1.1.15",
     "@radix-ui/react-toast": "^1.2.15",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/postcss": "^4.1.16",
     "@tanstack/react-query": "^5.90.6",
     "@trpc/client": "^11.7.1",

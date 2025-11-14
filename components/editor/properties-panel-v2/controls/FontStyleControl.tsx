@@ -57,7 +57,7 @@ export function FontStyleControl({
             `}
             title={styleItem.label}
           >
-            <span className="text-lg font-medium mb-1" style={{ fontStyle: styleItem.style }}>
+            <span className="text-lg font-medium mb-0.5" style={{ fontStyle: styleItem.style }}>
               Aa
             </span>
             <span className="text-xs">{styleItem.label}</span>

@@ -12,6 +12,8 @@
 
 import type { CanvasComponent } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
+import { generateShadow } from '@/lib/utils/validation';
+import { useMemo } from 'react';
 
 interface BadgeComponentProps {
   component: CanvasComponent;
@@ -26,6 +28,40 @@ export function BadgeComponent({ component }: BadgeComponentProps) {
   const size = (props.size as 'sm' | 'md' | 'lg') || 'md';
   const dot = (props.dot as boolean) ?? false;
   const pulse = (props.pulse as boolean) ?? false;
+
+  // Generate boxShadow from shadow parameters (V7.1)
+  const boxShadow = useMemo(() => {
+    const shadow = props.shadow as 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'custom' | undefined;
+    if (!shadow || shadow === 'none') return undefined;
+
+    // Get color with fallback to black if not set
+    const shadowColor = (props.shadowColor as string | undefined) || '#000000';
+
+    console.log('[BadgeComponent] Shadow params:', {
+      shadow,
+      shadowColor,
+      propsColor: props.shadowColor,
+      opacity: props.shadowOpacity,
+    });
+
+    const result = generateShadow(
+      shadow,
+      shadow === 'custom' ? {
+        offsetX: props.shadowOffsetX as number | undefined,
+        offsetY: props.shadowOffsetY as number | undefined,
+        blur: props.shadowBlur as number | undefined,
+        spread: props.shadowSpread as number | undefined,
+        color: shadowColor,
+      } : {
+        // For presets, pass color to allow custom colored shadows
+        color: shadowColor,
+      },
+      props.shadowOpacity as number | undefined
+    );
+
+    console.log('[BadgeComponent] Generated boxShadow:', result);
+    return result;
+  }, [props.shadow, props.shadowColor, props.shadowOffsetX, props.shadowOffsetY, props.shadowBlur, props.shadowSpread, props.shadowOpacity]);
 
   // Variant colors
   const getVariantStyles = () => {
@@ -80,8 +116,14 @@ export function BadgeComponent({ component }: BadgeComponentProps) {
   const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
   const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
+  // Merge generated boxShadow with style
+  const finalStyle = {
+    ...cleanedStyle,
+    ...(boxShadow && { boxShadow }),
+  } as React.CSSProperties;
+
   return (
-    <span className={wrapperClassName} style={cleanedStyle as React.CSSProperties}>
+    <span className={wrapperClassName} style={finalStyle}>
       {/* Dot Indicator */}
       {dot && (
         <span className="relative flex h-2 w-2">
