@@ -126,7 +126,7 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
 
   const handleIncrement = useCallback(() => {
     const currentValue = valueRef.current || 0;
-    const newValue = currentValue + step;
+    const newValue = Math.min(currentValue + step, 1000); // Cap at 1000
     onChange(newValue);
     valueRef.current = newValue;
   }, [onChange, step]);
@@ -223,8 +223,14 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
         <input
           type="number"
           value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
+          onChange={(e) => {
+            const newValue = Number(e.target.value);
+            // Cap at 1000 and respect min
+            const cappedValue = Math.min(Math.max(newValue, min ?? -Infinity), 1000);
+            onChange(cappedValue);
+          }}
           min={min}
+          max={1000}
           step={step}
           title={`Exact value: ${value}${unit}`}
           className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
