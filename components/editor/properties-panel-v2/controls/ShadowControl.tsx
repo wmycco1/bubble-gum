@@ -405,8 +405,8 @@ export function ShadowControl({
             </div>
           </div>
 
-          {/* Preset Selector - Responsive Grid */}
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(75px,1fr))] gap-2 mb-3">
+          {/* Preset Selector - Minimalist Design */}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 mb-3">
             {presets.map((p) => {
               // Get the box shadow for this preset
               let shadowStyle = 'none';
@@ -431,25 +431,24 @@ export function ShadowControl({
                   type="button"
                   onClick={() => handlePresetSelect(p.value)}
                   className={`
-                    flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all
+                    flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all bg-gray-50
                     ${
                       preset === p.value
-                        ? 'ring-2 ring-blue-500 bg-blue-50 border-blue-500'
-                        : 'bg-white border-gray-300 hover:border-blue-400 hover:shadow-sm'
+                        ? 'ring-2 ring-blue-500 border-blue-500'
+                        : 'border-gray-200 hover:border-blue-400'
                     }
                   `}
                   title={p.description}
                 >
-                  {/* Visual Preview Area - Gradient background for contrast */}
-                  <div className="w-full h-14 bg-gradient-to-br from-slate-100 to-slate-50 rounded-md flex items-center justify-center p-2">
-                    {/* Shadow demonstration box */}
+                  {/* Shadow demonstration - larger white rectangle */}
+                  <div className="w-full h-16 flex items-center justify-center">
                     <div
-                      className="w-8 h-8 bg-white rounded-md"
+                      className="w-14 h-10 bg-white rounded-md"
                       style={{ boxShadow: shadowStyle }}
                     />
                   </div>
-                  {/* Compact Label */}
-                  <span className="text-[10px] text-gray-600 font-medium leading-none">{p.label}</span>
+                  {/* Clear, readable label */}
+                  <span className="text-xs text-gray-700 font-medium">{p.label}</span>
                 </button>
               );
             })}
