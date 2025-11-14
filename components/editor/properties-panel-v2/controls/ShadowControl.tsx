@@ -449,7 +449,7 @@ export function ShadowControl({
         </div>
       )}
 
-      {/* Custom Mode - Compact Integrated Design */}
+      {/* Custom Mode - Compact Integrated Design with Responsive Grid */}
       {showCustom && (
         <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
           {/* Live Preview at Top */}
@@ -465,11 +465,11 @@ export function ShadowControl({
             </div>
           </div>
 
-          {/* Controls - Compact spacing */}
-          <div className="space-y-1.5">
+          {/* Controls - Responsive Grid: 2 columns on wide, 1 column on narrow */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {/* Offset X */}
             <ShadowInput
-              label="X"
+              label="Offset X"
               value={offsetX}
               unit={offsetXUnit}
               onChange={(value) => onCustomChange?.('offsetX', value)}
@@ -478,7 +478,7 @@ export function ShadowControl({
 
             {/* Offset Y */}
             <ShadowInput
-              label="Y"
+              label="Offset Y"
               value={offsetY}
               unit={offsetYUnit}
               onChange={(value) => onCustomChange?.('offsetY', value)}
@@ -487,7 +487,7 @@ export function ShadowControl({
 
             {/* Blur */}
             <ShadowInput
-              label="B"
+              label="Blur"
               value={blur}
               unit={blurUnit}
               onChange={(value) => onCustomChange?.('blur', value)}
@@ -497,40 +497,37 @@ export function ShadowControl({
 
             {/* Spread */}
             <ShadowInput
-              label="S"
+              label="Spread"
               value={spread}
               unit={spreadUnit}
               onChange={(value) => onCustomChange?.('spread', value)}
               onUnitChange={(unit) => onUnitChange?.('spread', unit)}
             />
 
-            {/* Color & Opacity in one row */}
-            <div className="flex items-center gap-2 pt-1">
-              {/* Color */}
-              <div className="flex items-center gap-1 flex-1">
-                <label className="text-xs text-gray-600 whitespace-nowrap">Color:</label>
-                <input
-                  type="color"
-                  value={color}
-                  onChange={(e) => onCustomChange?.('color', e.target.value)}
-                  className="w-10 h-8 border border-gray-300 rounded cursor-pointer hover:border-blue-400 transition-colors"
-                  title={color}
-                />
-              </div>
+            {/* Color - full width on small, half on large */}
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-gray-600 whitespace-nowrap min-w-[60px]">Color:</label>
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => onCustomChange?.('color', e.target.value)}
+                className="w-12 h-8 border border-gray-300 rounded cursor-pointer hover:border-blue-400 transition-colors"
+                title={color}
+              />
+            </div>
 
-              {/* Opacity */}
-              <div className="flex items-center gap-1 flex-1">
-                <label className="text-xs text-gray-600 whitespace-nowrap">Opacity:</label>
-                <span className="text-xs text-gray-700 font-medium min-w-[32px]">{opacity}%</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={opacity}
-                  onChange={(e) => onOpacityChange?.(Number(e.target.value))}
-                  className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                />
-              </div>
+            {/* Opacity - full width on small, half on large */}
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-gray-600 whitespace-nowrap min-w-[60px]">Opacity:</label>
+              <span className="text-xs text-gray-700 font-medium min-w-[36px]">{opacity}%</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={opacity}
+                onChange={(e) => onOpacityChange?.(Number(e.target.value))}
+                className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              />
             </div>
           </div>
         </div>
