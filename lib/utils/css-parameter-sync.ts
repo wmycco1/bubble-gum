@@ -269,6 +269,35 @@ export function syncCSSToParameters(
       continue; // Skip normal processing for font-size
     }
 
+    // ✨ Special handling for box-shadow: extract shadow parameters
+    if (cssProperty === 'box-shadow' && cssValue) {
+      // Parse box-shadow: offsetX offsetY blur spread color
+      // Example: "70px 110px 10px 5px #000000" or "0 4px 6px rgba(0,0,0,0.1)"
+      const shadowStr = String(cssValue);
+
+      // Match: offsetX offsetY [blur] [spread] [color]
+      const match = shadowStr.match(/^(-?\d+(?:\.\d+)?)(px|rem|em)?\s+(-?\d+(?:\.\d+)?)(px|rem|em)?\s+(-?\d+(?:\.\d+)?)(px|rem|em)?(?:\s+(-?\d+(?:\.\d+)?)(px|rem|em)?)?\s*(.*)$/);
+
+      if (match) {
+        const offsetX = parseFloat(match[1]);
+        const offsetY = parseFloat(match[3]);
+        const blur = match[5] ? parseFloat(match[5]) : 0;
+        const spread = match[7] ? parseFloat(match[7]) : 0;
+        const color = match[9] ? match[9].trim() : '#000000';
+
+        // Set shadow parameters (custom mode)
+        updatedParams['shadow'] = 'custom';
+        updatedParams['shadowOffsetX'] = offsetX;
+        updatedParams['shadowOffsetY'] = offsetY;
+        updatedParams['shadowBlur'] = blur;
+        updatedParams['shadowSpread'] = spread;
+        updatedParams['shadowColor'] = color;
+
+        console.log(`🔄 CSS Sync: box-shadow: ${cssValue} → shadow=custom, offsetX=${offsetX}, offsetY=${offsetY}, blur=${blur}, spread=${spread}, color=${color}`);
+      }
+      continue; // Skip normal processing for box-shadow
+    }
+
     const paramName = CSS_TO_PARAM_MAP[cssProperty];
 
     if (paramName && cssValue) {
@@ -307,9 +336,21 @@ export function syncParametersToCSS(
   // Convert parameters to CSS properties
   const cssProperties: string[] = [];
 
+  // Track which params we've processed
+  const processedParams = new Set<string>();
+
   for (const [paramName, paramValue] of Object.entries(params)) {
     // Skip fontSizeUnit - it's handled with fontSize
     if (paramName === 'fontSizeUnit') {
+      processedParams.add(paramName);
+      continue;
+    }
+
+    // Skip shadow sub-params - they're handled with shadow='custom'
+    if (paramName === 'shadowOffsetX' || paramName === 'shadowOffsetY' ||
+        paramName === 'shadowBlur' || paramName === 'shadowSpread' ||
+        paramName === 'shadowColor') {
+      processedParams.add(paramName);
       continue;
     }
 
@@ -322,6 +363,26 @@ export function syncParametersToCSS(
       delete existingCSSObject['font-size'];
 
       console.log(`🔄 Params Sync: fontSize: ${paramValue}, fontSizeUnit: ${unit} → font-size: ${paramValue}${unit}`);
+      processedParams.add(paramName);
+      continue;
+    }
+
+    // ✨ Special handling for shadow='custom': generate box-shadow CSS
+    if (paramName === 'shadow' && paramValue === 'custom') {
+      const offsetX = params.shadowOffsetX ?? 0;
+      const offsetY = params.shadowOffsetY ?? 0;
+      const blur = params.shadowBlur ?? 0;
+      const spread = params.shadowSpread ?? 0;
+      const color = params.shadowColor || '#000000';
+
+      const boxShadow = `${offsetX}px ${offsetY}px ${blur}px ${spread}px ${color}`;
+      cssProperties.push(`box-shadow: ${boxShadow};`);
+
+      // Remove from existing CSS (we're replacing it)
+      delete existingCSSObject['box-shadow'];
+
+      console.log(`🔄 Params Sync: shadow=custom (offsetX=${offsetX}, offsetY=${offsetY}, blur=${blur}, spread=${spread}, color=${color}) → box-shadow: ${boxShadow}`);
+      processedParams.add(paramName);
       continue;
     }
 
@@ -336,6 +397,7 @@ export function syncParametersToCSS(
         delete existingCSSObject[cssProperty];
       }
     }
+    processedParams.add(paramName);
   }
 
   // Add back existing CSS properties that weren't overridden
@@ -355,7 +417,12 @@ export function syncParametersToCSS(
  * @returns Array of parameter names
  */
 export function getSyncedParameterNames(): string[] {
-  return Object.values(CSS_TO_PARAM_MAP);
+  const baseParams = Object.values(CSS_TO_PARAM_MAP);
+
+  // Add shadow parameters (not in CSS_TO_PARAM_MAP because they're composite)
+  const shadowParams = ['shadow', 'shadowOffsetX', 'shadowOffsetY', 'shadowBlur', 'shadowSpread', 'shadowColor'];
+
+  return [...baseParams, ...shadowParams];
 }
 
 /**

@@ -1079,7 +1079,8 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     }
 
     // V7.1 - Shadow (presets or custom)
-    if (safeShadow && safeShadow !== 'none') {
+    // ✨ FIX: Don't override box-shadow if it came from style prop (customCSS)
+    if (safeShadow && safeShadow !== 'none' && !style?.boxShadow) {
       styleOverrides.push(`box-shadow: ${safeShadow} !important`);
     }
 
