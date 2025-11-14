@@ -1,6 +1,75 @@
 'use client';
 
 /**
+ * Unit conversion utility
+ * Converts spacing values between different CSS units
+ */
+function convertUnit(
+  value: number,
+  fromUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw',
+  toUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'
+): number {
+  if (fromUnit === toUnit) return value;
+
+  // Base font size for rem/em conversion (standard = 16px)
+  const baseFontSize = 16;
+
+  // Viewport dimensions (approximate for conversion reference)
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080;
+
+  // First convert to px (base unit)
+  let valueInPx = value;
+  switch (fromUnit) {
+    case 'rem':
+      valueInPx = value * baseFontSize;
+      break;
+    case 'em':
+      valueInPx = value * baseFontSize; // Simplified: assuming parent font-size = root
+      break;
+    case '%':
+      // % is relative to parent - we'll use a reference of 100% = 400px (typical container)
+      valueInPx = (value / 100) * 400;
+      break;
+    case 'vh':
+      valueInPx = (value / 100) * viewportHeight;
+      break;
+    case 'vw':
+      valueInPx = (value / 100) * viewportWidth;
+      break;
+    case 'px':
+    default:
+      valueInPx = value;
+  }
+
+  // Then convert from px to target unit
+  let result = valueInPx;
+  switch (toUnit) {
+    case 'rem':
+      result = valueInPx / baseFontSize;
+      break;
+    case 'em':
+      result = valueInPx / baseFontSize;
+      break;
+    case '%':
+      result = (valueInPx / 400) * 100;
+      break;
+    case 'vh':
+      result = (valueInPx / viewportHeight) * 100;
+      break;
+    case 'vw':
+      result = (valueInPx / viewportWidth) * 100;
+      break;
+    case 'px':
+    default:
+      result = valueInPx;
+  }
+
+  // Round to 2 decimal places for cleaner values
+  return Math.round(result * 100) / 100;
+}
+
+/**
  * SpacingControl - Modern UI for Margin/Padding (V7.7 - Optimized)
  *
  * Features:
@@ -614,7 +683,18 @@ function SideControl({
       {/* Unit selector dropdown */}
       <select
         value={unit}
-        onChange={(e) => onUnitChange?.(side, e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw')}
+        onChange={(e) => {
+          const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+          // Convert value to new unit if value exists
+          if (value !== undefined && value !== null) {
+            const convertedValue = convertUnit(value, unit, newUnit);
+            onValueChange?.(side, convertedValue);
+          }
+
+          // Update unit
+          onUnitChange?.(side, newUnit);
+        }}
         className="w-14 px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
@@ -735,7 +815,18 @@ function SpacingSimpleMode({ value, unit, setUnit, handleShorthandChange, onChan
       </div>
       <select
         value={unit}
-        onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw')}
+        onChange={(e) => {
+          const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+          // Convert value to new unit if value exists
+          if (value !== undefined && value !== null) {
+            const convertedValue = convertUnit(value, unit, newUnit);
+            onChange(paramName, convertedValue);
+          }
+
+          // Update unit
+          setUnit(newUnit);
+        }}
         className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
