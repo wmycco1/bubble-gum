@@ -1224,8 +1224,11 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       styleOverrides.push(`font-family: ${fontMap[safeFontFamily] || safeFontFamily} !important`);
     }
 
-    if (safeFontSize !== undefined) {
-      styleOverrides.push(`font-size: ${safeFontSize}px !important`);
+    // ✨ FIX: Don't override fontSize if it came from style prop (customCSS)
+    // Also respect fontSizeUnit parameter
+    if (safeFontSize !== undefined && !style?.fontSize) {
+      const unit = (props as any).fontSizeUnit || 'px'; // Get unit from props
+      styleOverrides.push(`font-size: ${safeFontSize}${unit} !important`);
     }
 
     if (safeFontWeight) {
@@ -1434,11 +1437,12 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       if (position !== undefined && position !== 'static') spanRef.current.style.position = '';
 
       // V7.6 - Clear Typography ONLY if props are set
-      if (fontFamily !== undefined) spanRef.current.style.fontFamily = '';
-      if (fontSize !== undefined) spanRef.current.style.fontSize = '';
-      if (fontWeight !== undefined) spanRef.current.style.fontWeight = '';
-      if (fontStyle !== undefined) spanRef.current.style.fontStyle = '';
-      if (letterSpacing !== undefined) spanRef.current.style.letterSpacing = '';
+      // ✨ FIX: Don't clear if values came from style prop (customCSS)
+      if (fontFamily !== undefined && !style?.fontFamily) spanRef.current.style.fontFamily = '';
+      if (fontSize !== undefined && !style?.fontSize) spanRef.current.style.fontSize = '';
+      if (fontWeight !== undefined && !style?.fontWeight) spanRef.current.style.fontWeight = '';
+      if (fontStyle !== undefined && !style?.fontStyle) spanRef.current.style.fontStyle = '';
+      if (letterSpacing !== undefined && !style?.letterSpacing) spanRef.current.style.letterSpacing = '';
       if (textTransform !== undefined) spanRef.current.style.textTransform = '';
 
       // V8.1 - Clear Text Shadow ONLY if props are set

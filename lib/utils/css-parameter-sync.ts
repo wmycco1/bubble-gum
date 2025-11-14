@@ -313,7 +313,7 @@ export function syncCSSToParameters(
 
       // ✨ FIX: Only add valid values (skip undefined/NaN)
       if (paramValue !== undefined && paramValue !== null) {
-        // ✨ NEW: For non-px string values, try to extract numeric part for display in UI
+        // ✨ NEW: For spacing/sizing with non-px units, extract value AND unit separately
         // The actual rendering will use Custom CSS (via style prop), not the parameter
         if (typeof paramValue === 'string' &&
             (paramName.includes('padding') || paramName.includes('margin') ||
@@ -321,14 +321,23 @@ export function syncCSSToParameters(
              paramName.includes('Height') || paramName === 'letterSpacing' ||
              paramName === 'gap')) {
 
-          // Try to extract numeric value for UI display (e.g., "70rem" → 70)
-          const numericMatch = paramValue.match(/^(-?\d+\.?\d*)/);
-          if (numericMatch) {
-            const numericValue = parseFloat(numericMatch[1]);
+          // Try to extract numeric value AND unit (e.g., "70rem" → value=70, unit=rem)
+          const match = paramValue.match(/^(-?\d+\.?\d*)(px|rem|em|%|vh|vw)?$/);
+          if (match) {
+            const numericValue = parseFloat(match[1]);
+            const unit = match[2] || 'px';
+
+            // Set numeric value for parameter
             updatedParams[paramName] = numericValue;
-            console.log(`🔄 CSS Sync: ${paramName}=${numericValue} (from ${paramValue}, displayed in UI but rendered via customCSS)`);
+
+            // ✨ NEW: Set unit parameter (e.g., paddingTopUnit, marginLeftUnit)
+            // These are used for UI display only, rendering uses customCSS
+            const unitParamName = `${paramName}Unit`;
+            updatedParams[unitParamName] = unit;
+
+            console.log(`🔄 CSS Sync: ${paramName}=${numericValue}, ${unitParamName}=${unit} (from ${paramValue}, rendered via customCSS)`);
           } else {
-            console.warn(`⚠️ CSS Sync: Cannot extract numeric value from ${paramName}: ${paramValue}`);
+            console.warn(`⚠️ CSS Sync: Cannot parse ${paramName}: ${paramValue}`);
           }
           continue;
         }
@@ -375,6 +384,13 @@ export function syncParametersToCSS(
   for (const [paramName, paramValue] of Object.entries(params)) {
     // Skip fontSizeUnit - it's handled with fontSize
     if (paramName === 'fontSizeUnit') {
+      processedParams.add(paramName);
+      continue;
+    }
+
+    // ✨ NEW: Skip all unit parameters (paddingTopUnit, marginLeftUnit, etc.)
+    // They are used for UI display only, CSS generation uses the base parameter
+    if (paramName.endsWith('Unit') && paramName !== 'fontSizeUnit') {
       processedParams.add(paramName);
       continue;
     }
@@ -469,7 +485,18 @@ export function getSyncedParameterNames(): string[] {
   // Add shadow parameters (not in CSS_TO_PARAM_MAP because they're composite)
   const shadowParams = ['shadow', 'shadowOffsetX', 'shadowOffsetY', 'shadowBlur', 'shadowSpread', 'shadowColor'];
 
-  return [...baseParams, ...shadowParams];
+  // ✨ NEW: Add unit parameters for spacing/sizing (used for UI display)
+  const unitParams = [
+    'fontSizeUnit',
+    // Padding units
+    'paddingUnit', 'paddingTopUnit', 'paddingRightUnit', 'paddingBottomUnit', 'paddingLeftUnit',
+    // Margin units
+    'marginUnit', 'marginTopUnit', 'marginRightUnit', 'marginBottomUnit', 'marginLeftUnit',
+    // Other units (if needed in future)
+    'borderRadiusUnit', 'letterSpacingUnit', 'gapUnit',
+  ];
+
+  return [...baseParams, ...shadowParams, ...unitParams];
 }
 
 /**
