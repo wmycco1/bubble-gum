@@ -375,7 +375,14 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
 
         {/* Padding Handles - shown ONLY when visualEditingMode === 'padding' */}
         {isSelected && visualEditingMode === 'padding' && (
-          <SpacingHandlesV2 componentId={component.id} mode="padding" />
+          <SpacingHandlesV2
+            componentId={component.id}
+            mode="padding"
+            paddingTopUnit={component.props.paddingTopUnit}
+            paddingRightUnit={component.props.paddingRightUnit}
+            paddingBottomUnit={component.props.paddingBottomUnit}
+            paddingLeftUnit={component.props.paddingLeftUnit}
+          />
         )}
 
         {/* Border Radius Handles - shown ONLY when visualEditingMode === 'borderRadius' */}
@@ -392,7 +399,14 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
 
         {/* V7.0: Margin Handles render AFTER component (so they can use negative positioning) */}
         {isSelected && visualEditingMode === 'margin' && (
-          <SpacingHandlesV2 componentId={component.id} mode="margin" />
+          <SpacingHandlesV2
+            componentId={component.id}
+            mode="margin"
+            marginTopUnit={component.props.marginTopUnit}
+            marginRightUnit={component.props.marginRightUnit}
+            marginBottomUnit={component.props.marginBottomUnit}
+            marginLeftUnit={component.props.marginLeftUnit}
+          />
         )}
       </div>
     </div>

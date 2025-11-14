@@ -41,9 +41,29 @@ type Side = 'top' | 'right' | 'bottom' | 'left';
 interface SpacingHandlesV2Props {
   componentId: string;
   mode?: 'margin' | 'padding'; // Mode is now controlled by parent (RenderComponent)
+  // Units for each side (optional, defaults to 'px')
+  marginTopUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  marginRightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  marginBottomUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  marginLeftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  paddingTopUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  paddingRightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  paddingBottomUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  paddingLeftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
 }
 
-export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }: SpacingHandlesV2Props) {
+export function SpacingHandlesV2({
+  componentId,
+  mode: externalMode = 'margin',
+  marginTopUnit = 'px',
+  marginRightUnit = 'px',
+  marginBottomUnit = 'px',
+  marginLeftUnit = 'px',
+  paddingTopUnit = 'px',
+  paddingRightUnit = 'px',
+  paddingBottomUnit = 'px',
+  paddingLeftUnit = 'px',
+}: SpacingHandlesV2Props) {
   const { components, updateComponentProps, cssCompliantMode } = useCanvasStore();
   const spacingMode: SpacingMode = externalMode; // Use mode from props instead of local state
   const [hoveredSide, setHoveredSide] = useState<Side | null>(null);
@@ -196,6 +216,14 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
   const rightValue = getValue('right');
   const bottomValue = getValue('bottom');
   const leftValue = getValue('left');
+
+  // Get units for each side based on current mode
+  const units = {
+    top: spacingMode === 'margin' ? marginTopUnit : paddingTopUnit,
+    right: spacingMode === 'margin' ? marginRightUnit : paddingRightUnit,
+    bottom: spacingMode === 'margin' ? marginBottomUnit : paddingBottomUnit,
+    left: spacingMode === 'margin' ? marginLeftUnit : paddingLeftUnit,
+  };
 
   // V7.0: MARGIN CONDITIONAL - Measure Badge relative to different parent based on cssCompliantMode
   React.useEffect(() => {
@@ -999,6 +1027,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
         <SpacingBarHandle
           side="top"
           value={topValue}
+          unit={units.top}
           color={color}
           isHovered={hoveredSide === 'top'}
           onHover={() => setHoveredSide('top')}
@@ -1021,6 +1050,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
         <SpacingBarHandle
           side="right"
           value={rightValue}
+          unit={units.right}
           color={color}
           isHovered={hoveredSide === 'right'}
           onHover={() => setHoveredSide('right')}
@@ -1043,6 +1073,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
         <SpacingBarHandle
           side="bottom"
           value={bottomValue}
+          unit={units.bottom}
           color={color}
           isHovered={hoveredSide === 'bottom'}
           onHover={() => setHoveredSide('bottom')}
@@ -1065,6 +1096,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
         <SpacingBarHandle
           side="left"
           value={leftValue}
+          unit={units.left}
           color={color}
           isHovered={hoveredSide === 'left'}
           onHover={() => setHoveredSide('left')}
@@ -1252,6 +1284,7 @@ function UniformSpacingHandle({
 interface SpacingBarHandleProps {
   side: Side;
   value: number;
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'; // Unit for display
   color: string;
   isHovered: boolean;
   onHover: () => void;
@@ -1274,6 +1307,7 @@ interface SpacingBarHandleProps {
 function SpacingBarHandle({
   side,
   value,
+  unit,
   color,
   isHovered,
   onHover,
@@ -2033,7 +2067,7 @@ function SpacingBarHandle({
       {/* Value Label between arrows - always visible */}
       {valueLabelStyles && (
         <div style={valueLabelStyles}>
-          {value}px
+          {value}{unit}
         </div>
       )}
 
