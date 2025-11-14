@@ -1,6 +1,72 @@
 'use client';
 
 /**
+ * convertUnit - Convert values between different CSS units
+ * Two-step conversion: source unit → px → target unit
+ */
+function convertUnit(
+  value: number,
+  fromUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw',
+  toUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'
+): number {
+  if (fromUnit === toUnit) return value;
+
+  const baseFontSize = 16; // 1rem = 16px
+  const referenceWidth = 400; // Reference container width for % calculations
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080;
+
+  // Step 1: Convert from source unit to px
+  let valueInPx = value;
+  switch (fromUnit) {
+    case 'rem':
+      valueInPx = value * baseFontSize;
+      break;
+    case 'em':
+      valueInPx = value * baseFontSize;
+      break;
+    case '%':
+      valueInPx = (value / 100) * referenceWidth;
+      break;
+    case 'vh':
+      valueInPx = (value / 100) * viewportHeight;
+      break;
+    case 'vw':
+      valueInPx = (value / 100) * viewportWidth;
+      break;
+    case 'px':
+    default:
+      valueInPx = value;
+  }
+
+  // Step 2: Convert from px to target unit
+  let result = valueInPx;
+  switch (toUnit) {
+    case 'rem':
+      result = valueInPx / baseFontSize;
+      break;
+    case 'em':
+      result = valueInPx / baseFontSize;
+      break;
+    case '%':
+      result = (valueInPx / referenceWidth) * 100;
+      break;
+    case 'vh':
+      result = (valueInPx / viewportHeight) * 100;
+      break;
+    case 'vw':
+      result = (valueInPx / viewportWidth) * 100;
+      break;
+    case 'px':
+    default:
+      result = valueInPx;
+  }
+
+  // Round to 2 decimal places
+  return Math.round(result * 100) / 100;
+}
+
+/**
  * FontSizeControl - Font Size with Unit Support (V8.1)
  *
  * Features:
@@ -17,9 +83,9 @@ interface FontSizeControlProps {
   name: string;
   label: string;
   value?: number;
-  unit?: 'px' | 'rem' | 'em' | '%';
+  unit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   onChange: (name: string, value: number) => void;
-  onUnitChange?: (name: string, unit: 'px' | 'rem' | 'em' | '%') => void;
+  onUnitChange?: (name: string, unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
   description?: string;
   min?: number;
   max?: number;
@@ -156,13 +222,26 @@ export function FontSizeControl({
           {/* Unit Selector */}
           <select
             value={unit}
-            onChange={(e) => onUnitChange?.(name, e.target.value as 'px' | 'rem' | 'em' | '%')}
+            onChange={(e) => {
+              const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+              // Convert value to new unit if value exists
+              if (value !== undefined && value !== null) {
+                const convertedValue = convertUnit(value, unit, newUnit);
+                onChange(name, convertedValue);
+              }
+
+              // Update unit
+              onUnitChange?.(name, newUnit);
+            }}
             className="px-2 py-2 text-sm border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm hover:border-gray-400 transition-colors"
           >
             <option value="px">px</option>
             <option value="rem">rem</option>
             <option value="em">em</option>
             <option value="%">%</option>
+            <option value="vh">vh</option>
+            <option value="vw">vw</option>
           </select>
         </div>
 
