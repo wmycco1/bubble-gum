@@ -512,23 +512,23 @@ export function ShadowControl({
             />
           </div>
 
-          {/* Color and Opacity - separate rows outside grid */}
-          <div className="space-y-2">
+          {/* Color and Opacity - flexible row outside grid */}
+          <div className="flex items-center gap-3 flex-wrap">
             {/* Color */}
             <div className="flex items-center gap-2">
-              <label className="text-xs text-gray-600 whitespace-nowrap min-w-[60px]">Color:</label>
+              <label className="text-xs text-gray-600 whitespace-nowrap">Color:</label>
               <input
                 type="color"
                 value={color}
                 onChange={(e) => onCustomChange?.('color', e.target.value)}
-                className="w-12 h-8 border border-gray-300 rounded cursor-pointer hover:border-blue-400 transition-colors"
+                className="w-10 h-8 border border-gray-300 rounded cursor-pointer hover:border-blue-400 transition-colors"
                 title={color}
               />
             </div>
 
             {/* Opacity */}
-            <div className="flex items-center gap-2">
-              <label className="text-xs text-gray-600 whitespace-nowrap min-w-[60px]">Opacity:</label>
+            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+              <label className="text-xs text-gray-600 whitespace-nowrap">Opacity:</label>
               <span className="text-xs text-gray-700 font-medium min-w-[36px]">{opacity}%</span>
               <input
                 type="range"
