@@ -43,6 +43,7 @@ import { ComponentToolbar } from './ComponentToolbar';
 import { SpacingHandlesV2 } from './canvas/SpacingHandlesV2';
 import { BorderRadiusHandles } from './canvas/BorderRadiusHandles';
 import { TransformHandles } from './canvas/TransformHandles';
+import { getCanvasEnhancementClasses, getCanvasEnhancementStyles } from '@/lib/utils/canvas-enhancements';
 
 // Combine all components into single registry
 const COMPONENT_REGISTRY = {
@@ -307,6 +308,32 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     return <AtomicComponent {...atomicProps} />;
   };
 
+  // ═══════════════════════════════════════════════════════════════
+  // V8.0: RESPONSIVE VISIBILITY (Enterprise Canvas Enhancement System)
+  // ═══════════════════════════════════════════════════════════════
+  // Apply responsive visibility classes to wrapper div (not component itself)
+  // - Tailwind classes: max-sm:hidden, sm:hidden md:hidden, lg:hidden
+  // - Editor visual indicator: gray + opacity when hidden on current device
+  // - Component inside renders normally with all parameters
+  // - SEO-friendly: content in DOM, CSS-based hiding
+  // ═══════════════════════════════════════════════════════════════
+
+  const responsiveVisibilityClasses = getCanvasEnhancementClasses({
+    hideOnMobile: component.props.hideOnMobile as boolean | undefined,
+    hideOnTablet: component.props.hideOnTablet as boolean | undefined,
+    hideOnDesktop: component.props.hideOnDesktop as boolean | undefined,
+  });
+
+  const editorVisibilityStyles = getCanvasEnhancementStyles(
+    {
+      hideOnMobile: component.props.hideOnMobile as boolean | undefined,
+      hideOnTablet: component.props.hideOnTablet as boolean | undefined,
+      hideOnDesktop: component.props.hideOnDesktop as boolean | undefined,
+    },
+    deviceMode,
+    true // Always in editor mode
+  );
+
   return (
     <div
       ref={setDragRef}
@@ -315,12 +342,16 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       onDoubleClick={handleDoubleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={style}
+      style={{
+        ...style,
+        ...editorVisibilityStyles, // Add gray + opacity if hidden on current device
+      }}
       className={cn(
         'relative cursor-auto transition-all',
         isSelected && 'ring-2 ring-blue-500 bg-blue-50/10',
         isHovered && !isSelected && 'ring-1 ring-slate-300 bg-slate-50',
-        isOver && 'ring-2 ring-blue-400 bg-blue-50'
+        isOver && 'ring-2 ring-blue-400 bg-blue-50',
+        responsiveVisibilityClasses // Add Tailwind responsive classes
       )}
     >
       {/* Selection Label & Drag Handle */}
