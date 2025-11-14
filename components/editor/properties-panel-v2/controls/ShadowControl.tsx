@@ -428,7 +428,7 @@ export function ShadowControl({
       {showCustom && (
         <div className="space-y-3">
           {/* Custom Parameters Grid */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-2">
             {/* Offset X */}
             <ShadowInput
               label="Offset X"
