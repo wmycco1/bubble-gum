@@ -13,13 +13,19 @@
 import type { CanvasComponent } from '@/lib/editor/types';
 import { mergeClassNameWithSpacing, cleanBorderRadiusStyle } from '@/lib/utils/spacing';
 import { generateShadow } from '@/lib/utils/validation';
+import { mergeCanvasClasses, getCanvasEnhancementStyles } from '@/lib/utils/canvas-enhancements';
 import { useMemo } from 'react';
 
 interface BadgeComponentProps {
   component: CanvasComponent;
+  /** Canvas context for editor enhancements (optional - for standalone use) */
+  canvasContext?: {
+    deviceMode: 'mobile' | 'tablet' | 'desktop';
+    isEditorMode: boolean;
+  };
 }
 
-export function BadgeComponent({ component }: BadgeComponentProps) {
+export function BadgeComponent({ component, canvasContext }: BadgeComponentProps) {
   const { style, props } = component;
 
   // Extract props with defaults
@@ -113,13 +119,35 @@ export function BadgeComponent({ component }: BadgeComponentProps) {
 
   // Base wrapper className
   const baseClassName = `inline-flex items-center gap-1.5 font-medium rounded-full ${variantStyles} ${sizeStyles}`;
-  const wrapperClassName = mergeClassNameWithSpacing(baseClassName, style);
+  const spacedClassName = mergeClassNameWithSpacing(baseClassName, style);
+
+  // V8.0: Apply canvas enhancements (responsive visibility, etc.)
+  const wrapperClassName = mergeCanvasClasses(spacedClassName, {
+    hideOnMobile: props.hideOnMobile as boolean | undefined,
+    hideOnTablet: props.hideOnTablet as boolean | undefined,
+    hideOnDesktop: props.hideOnDesktop as boolean | undefined,
+  });
+
   const cleanedStyle = cleanBorderRadiusStyle(style as Record<string, unknown>);
 
-  // Merge generated boxShadow with style
+  // V8.0: Get editor enhancement styles (hidden indicator)
+  const editorStyles = canvasContext
+    ? getCanvasEnhancementStyles(
+        {
+          hideOnMobile: props.hideOnMobile as boolean | undefined,
+          hideOnTablet: props.hideOnTablet as boolean | undefined,
+          hideOnDesktop: props.hideOnDesktop as boolean | undefined,
+        },
+        canvasContext.deviceMode,
+        canvasContext.isEditorMode
+      )
+    : undefined;
+
+  // Merge generated boxShadow with style and editor enhancements
   const finalStyle = {
     ...cleanedStyle,
     ...(boxShadow && { boxShadow }),
+    ...editorStyles,
   } as React.CSSProperties;
 
   return (

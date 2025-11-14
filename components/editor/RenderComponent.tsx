@@ -303,7 +303,22 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       ));
     }
 
-    // Render atomic component with direct props
+    // V8.0: Canvas components with enhancement system
+    // Badge (and future components) use new interface: { component, canvasContext }
+    // TODO: Migrate all components to this pattern
+    if (component.type === 'Badge') {
+      return (
+        <AtomicComponent
+          component={comp}
+          canvasContext={{
+            deviceMode,
+            isEditorMode: true, // Always true in editor
+          }}
+        />
+      );
+    }
+
+    // Legacy components still use spread props
     return <AtomicComponent {...atomicProps} />;
   };
 
