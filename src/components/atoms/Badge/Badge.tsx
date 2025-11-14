@@ -480,6 +480,13 @@ export interface BadgeProps {
 
   /** HTML id attribute */
   id?: string;
+
+  // ============================================
+  // CUSTOM STYLING (V7.7 - CSS/Tailwind Support)
+  // ============================================
+
+  /** Custom inline styles (React CSSProperties) - merged with component styles */
+  style?: React.CSSProperties;
 }
 
 /**
@@ -632,6 +639,10 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     'data-testid': testId = 'badge',
     'aria-label': ariaLabel,
     id,
+
+    // V7.7 - Custom styling
+    style,
+
     ...rest
   } = params;
 
@@ -1111,8 +1122,8 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
 
     // V8.1 - Alignment (horizontal alignment or full width)
     // CRITICAL: Alignment logic must respect display mode
-    // 'none' is treated as no alignment (allows manual margin control)
-    if (align && align !== ALIGNMENT_VALUES.NONE) {
+    // If align is not set (undefined), manual margin control is allowed
+    if (align) {
       devLog('🎯 V8.1 ALIGN ACTIVE:', {
         align,
         display: effectiveDisplay,
@@ -1389,9 +1400,16 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       if (padding !== undefined || paddingBottom !== undefined) spanRef.current.style.paddingBottom = '';
       if (padding !== undefined || paddingLeft !== undefined) spanRef.current.style.paddingLeft = '';
 
-      // V7.1 - Clear shadow & opacity ONLY if props are set
-      if (shadow !== undefined && shadow !== 'none') spanRef.current.style.boxShadow = '';
-      if (opacity !== undefined && opacity !== 100) spanRef.current.style.opacity = '';
+      // V7.7 - Clear shadow ONLY if shadow prop is set AND boxShadow didn't come from style prop (customCSS)
+      // This allows customCSS box-shadow to work while respecting shadow prop
+      if (shadow !== undefined && shadow !== 'none' && !style?.boxShadow) {
+        spanRef.current.style.boxShadow = '';
+      }
+
+      // V7.7 - Clear opacity ONLY if opacity prop is set AND opacity didn't come from style prop (customCSS)
+      if (opacity !== undefined && opacity !== 100 && style?.opacity === undefined) {
+        spanRef.current.style.opacity = '';
+      }
 
       // V8.0 - Clear width/display/position ONLY if props are set (CRITICAL for margin to work!)
       if (display !== undefined) spanRef.current.style.display = '';
@@ -1531,6 +1549,8 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       onKeyDown={handleKeyDown}
       data-testid={testId}
       data-badge-version="8.0"
+      // V7.7 - Custom styling support (from customCSS)
+      style={style}
       // ============================================
       // ARIA ATTRIBUTES (WCAG 2.1 AA Compliance)
       // ============================================
@@ -1565,6 +1585,34 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
 BadgeInner.displayName = 'BadgeInner';
 
 /**
+ * Shallow comparison for objects (helper for React.memo)
+ * Compares object keys and values on first level only
+ *
+ * @param obj1 - First object
+ * @param obj2 - Second object
+ * @returns True if objects are shallow equal, false otherwise
+ */
+const shallowEqualObjects = (obj1: any, obj2: any): boolean => {
+  // Both undefined/null
+  if (obj1 === obj2) return true;
+
+  // One is undefined/null
+  if (!obj1 || !obj2) return false;
+
+  // Different number of keys
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) return false;
+
+  // Compare each key-value pair
+  for (const key of keys1) {
+    if (obj1[key] !== obj2[key]) return false;
+  }
+
+  return true;
+};
+
+/**
  * React.memo wrapper for performance optimization (GOD-TIER V7.0)
  *
  * Prevents unnecessary re-renders by shallow comparing props.
@@ -1583,6 +1631,11 @@ export const Badge = React.memo(BadgeInner, (prevProps, nextProps) => {
   // Custom comparison for optimal performance
   // Return true if props are equal (skip re-render)
   // Return false if props are different (re-render)
+
+  // V7.7 - Check style prop (customCSS) with shallow comparison
+  if (!shallowEqualObjects(prevProps.style, nextProps.style)) {
+    return false; // style changed, re-render
+  }
 
   // V7.1 FIXED: Added ALL V7.1 spacing/shadow/opacity parameters to comparison
   if (prevProps.children === nextProps.children &&

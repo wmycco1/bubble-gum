@@ -44,6 +44,7 @@ import { SpacingHandlesV2 } from './canvas/SpacingHandlesV2';
 import { BorderRadiusHandles } from './canvas/BorderRadiusHandles';
 import { TransformHandles } from './canvas/TransformHandles';
 import { getCanvasEnhancementClasses, getCanvasEnhancementStyles } from '@/lib/utils/canvas-enhancements';
+import { parseCSS } from '@/lib/utils/css-to-tailwind';
 
 // Combine all components into single registry
 const COMPONENT_REGISTRY = {
@@ -243,11 +244,61 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       );
     }
 
-    // V7.0: Pass ALL props to Badge INCLUDING margin/padding - Badge controls everything!
+    // ═══════════════════════════════════════════════════════════════
+    // V7.5: CUSTOM STYLING SUPPORT (CSS/Tailwind + ID/Class)
+    // ═══════════════════════════════════════════════════════════════
+    // Extract custom styling props (customCSS, customTailwind, id, className)
+    // and merge them with component props for 10/10 custom styling experience
+    // ═══════════════════════════════════════════════════════════════
+
+    const {
+      customCSS,
+      customTailwind,
+      id: customId,
+      className: customClassName,
+      ...restProps
+    } = comp.props;
+
+    // V7.5: Parse and merge custom CSS with component styles
+    let mergedStyle = { ...comp.style } as React.CSSProperties;
+    if (customCSS && typeof customCSS === 'string' && customCSS.trim()) {
+      try {
+        const customStyles = parseCSS(customCSS);
+
+        // ✨ FIX: Convert kebab-case to camelCase for React style object
+        // React requires: fontSize, not font-size
+        const camelCaseStyles: Record<string, any> = {};
+        for (const [key, value] of Object.entries(customStyles)) {
+          // Convert kebab-case to camelCase: font-size → fontSize
+          const camelKey = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+          camelCaseStyles[camelKey] = value;
+        }
+
+        mergedStyle = { ...mergedStyle, ...camelCaseStyles };
+        console.log('🎨 RenderComponent: Applied customCSS:', { componentId: component.id, camelCaseStyles });
+      } catch (error) {
+        console.error('❌ RenderComponent: Failed to parse customCSS:', error);
+      }
+    }
+
+    // V7.5: Merge custom Tailwind classes with existing className
+    let mergedClassName = '';
+    if (customClassName && typeof customClassName === 'string') {
+      mergedClassName = customClassName;
+    }
+    if (customTailwind && typeof customTailwind === 'string' && customTailwind.trim()) {
+      mergedClassName = mergedClassName
+        ? `${mergedClassName} ${customTailwind}`
+        : customTailwind;
+      console.log('🎨 RenderComponent: Applied customTailwind:', { componentId: component.id, customTailwind });
+    }
+
+    // V7.5: Build atomic props with custom styling support
     const atomicProps: any = {
-      ...comp.props, // Pass ALL props including margin, padding, display, etc.
-      // Preserve style if exists
-      ...(comp.style && { style: comp.style }),
+      ...restProps, // Pass ALL props (margin, padding, display, etc.)
+      ...(customId && { id: customId }), // Apply custom HTML id
+      ...(mergedClassName && { className: mergedClassName }), // Apply custom classes
+      ...(Object.keys(mergedStyle).length > 0 && { style: mergedStyle }), // Apply merged styles
     };
 
     // DEBUG: Log Badge props right before rendering
