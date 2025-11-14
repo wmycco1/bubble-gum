@@ -284,7 +284,66 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
       window.removeEventListener('resize', handleUpdate);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [componentId, topValue, rightValue, bottomValue, leftValue, cssCompliantMode]); // Re-run when margins change OR mode switches!
+  }, [componentId, topValue, rightValue, bottomValue, leftValue, cssCompliantMode, displayMode, alignMode, spacingMode]); // Re-run when spacing values, display, alignment, or mode change!
+
+  // Additional useEffect: Watch for DOM changes (for when Badge position changes due to layout)
+  React.useEffect(() => {
+    if (!componentId) return;
+
+    const updatePosition = () => {
+      const wrapper = document.querySelector(`[data-component-id="${componentId}"]`) as HTMLElement;
+      if (!wrapper) return;
+
+      const badgeElement = wrapper.querySelector('[data-testid="badge"]') as HTMLElement;
+      if (!badgeElement) return;
+
+      let relativeParent: HTMLElement;
+      if (cssCompliantMode) {
+        relativeParent = wrapper.parentElement as HTMLElement;
+        if (!relativeParent) return;
+      } else {
+        relativeParent = badgeElement.closest('.relative') as HTMLElement;
+        if (!relativeParent) return;
+      }
+
+      const badgeRectRaw = badgeElement.getBoundingClientRect();
+      const relativeParentRectRaw = relativeParent.getBoundingClientRect();
+
+      const relativeBadgeRect = {
+        top: badgeRectRaw.top - relativeParentRectRaw.top,
+        left: badgeRectRaw.left - relativeParentRectRaw.left,
+        width: badgeRectRaw.width,
+        height: badgeRectRaw.height,
+        right: badgeRectRaw.right - relativeParentRectRaw.left,
+        bottom: badgeRectRaw.bottom - relativeParentRectRaw.top,
+        wrapperWidth: relativeParentRectRaw.width,
+        wrapperHeight: relativeParentRectRaw.height,
+      } as DOMRect & { wrapperWidth: number; wrapperHeight: number };
+
+      setBadgeRect(relativeBadgeRect);
+    };
+
+    // Create MutationObserver to watch for DOM changes
+    const observer = new MutationObserver(() => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(updatePosition);
+    });
+
+    // Observe the wrapper for attribute and style changes
+    const wrapper = document.querySelector(`[data-component-id="${componentId}"]`) as HTMLElement;
+    if (wrapper) {
+      observer.observe(wrapper, {
+        attributes: true,
+        attributeFilter: ['style', 'class'],
+        subtree: true,
+      });
+    }
+
+    return () => {
+      observer.disconnect();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [componentId, cssCompliantMode]); // Re-run when component or mode changes
 
   if (!badgeRect) return null;
 
@@ -919,6 +978,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
           rightMargin={rightValue}
           bottomMargin={bottomValue}
           leftMargin={leftValue}
+          instanceId={instanceId}
         />
       )}
 
@@ -939,6 +999,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
           rightMargin={rightValue}
           bottomMargin={bottomValue}
           leftMargin={leftValue}
+          instanceId={instanceId}
         />
       )}
 
@@ -959,6 +1020,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
           rightMargin={rightValue}
           bottomMargin={bottomValue}
           leftMargin={leftValue}
+          instanceId={instanceId}
         />
       )}
 
@@ -979,6 +1041,7 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
           rightMargin={rightValue}
           bottomMargin={bottomValue}
           leftMargin={leftValue}
+          instanceId={instanceId}
         />
       )}
     </>
@@ -1219,11 +1282,11 @@ function SpacingBarHandle({
 
         if (mode === 'margin') {
           // MARGIN: Handle is BETWEEN wrapper edge and Badge edge
-          // Dragging TOWARDS wrapper edge = increase margin (push element away)
-          if (side === 'top') delta = -totalDeltaY; // Drag UP (towards wrapper top) = increase
-          else if (side === 'bottom') delta = totalDeltaY; // Drag DOWN (towards wrapper bottom) = increase
-          else if (side === 'left') delta = -totalDeltaX; // Drag LEFT (towards wrapper left) = increase
-          else if (side === 'right') delta = totalDeltaX; // Drag RIGHT (towards wrapper right) = increase
+          // V3.7: Intuitive drag direction - drag handle in the direction you want element to move
+          if (side === 'top') delta = totalDeltaY; // Drag DOWN (pull element down) = increase
+          else if (side === 'bottom') delta = totalDeltaY; // Drag DOWN (pull element down) = increase
+          else if (side === 'left') delta = totalDeltaX; // Drag RIGHT (pull element right) = increase
+          else if (side === 'right') delta = -totalDeltaX; // Drag LEFT (pull element left) = increase
         } else {
           // PADDING: Handle is INSIDE element on inner edge
           // Dragging INWARD (into element) = increase padding
@@ -1421,6 +1484,7 @@ function SpacingBarHandle({
       whiteSpace: 'nowrap',
       pointerEvents: 'none',
       zIndex: 51,
+      opacity: 1, // Full opacity so tooltip is always fully visible
       boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
       border: '1px solid rgba(255,255,255,0.1)',
     };
@@ -1475,19 +1539,8 @@ function SpacingBarHandle({
       };
     }
 
-    // Fallback to centered position
-    switch (side) {
-      case 'top':
-        return { ...baseStyles, top: '-40px', left: '50%', transform: 'translateX(-50%)' };
-      case 'right':
-        return { ...baseStyles, right: '-68px', top: '50%', transform: 'translateY(-50%)' };
-      case 'bottom':
-        return { ...baseStyles, bottom: '-40px', left: '50%', transform: 'translateX(-50%)' };
-      case 'left':
-        return { ...baseStyles, left: '-68px', top: '50%', transform: 'translateY(-50%)' };
-      default:
-        return baseStyles;
-    }
+    // Fallback: if no mousePos, don't show tooltip (it will be hidden by the render condition)
+    return { ...baseStyles, position: 'fixed', left: '-9999px', top: '-9999px' };
   };
 
   // Get direction name for tooltip
@@ -1828,7 +1881,7 @@ function SpacingBarHandle({
     if (value === 0) return null;
 
     const inset = mode === 'padding';
-    const opacity = isDragging ? 1 : isHovered ? 0.9 : 0.6; // Always visible
+    const opacity = isDragging ? 1 : isHovered ? 1 : 0.9;
 
     const baseStyles: React.CSSProperties = {
       position: 'absolute',
@@ -1963,7 +2016,8 @@ function SpacingBarHandle({
       </div>
 
       {/* Value Tooltip - "Drag to adjust [direction]" - Rendered via Portal */}
-      {(isHovered || isDragging) && typeof document !== 'undefined' && createPortal(
+      {/* Only show tooltip when we have mouse position (prevents jumping to center) */}
+      {(isHovered || isDragging) && mousePos !== null && typeof document !== 'undefined' && createPortal(
         <div style={getTooltipStyles()}>
           Drag to adjust {getDirectionName()}
         </div>,
