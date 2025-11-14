@@ -124,9 +124,12 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
 
   const step = unit === 'px' ? 1 : 0.1;
 
+  // Display value: show max 1000 for UX, but allow real value to be higher
+  const displayValue = Math.min(value, 1000);
+
   const handleIncrement = useCallback(() => {
     const currentValue = valueRef.current || 0;
-    const newValue = Math.min(currentValue + step, 1000); // Cap at 1000
+    const newValue = currentValue + step;
     onChange(newValue);
     valueRef.current = newValue;
   }, [onChange, step]);
@@ -219,20 +222,20 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
           −
         </button>
 
-        {/* Input field */}
+        {/* Input field - shows displayValue (max 1000) but tooltip shows real value */}
         <input
           type="number"
-          value={value}
+          value={displayValue}
           onChange={(e) => {
             const newValue = Number(e.target.value);
-            // Cap at 1000 and respect min
-            const cappedValue = Math.min(Math.max(newValue, min ?? -Infinity), 1000);
-            onChange(cappedValue);
+            // Allow any value but respect min
+            const validValue = Math.max(newValue, min ?? -Infinity);
+            onChange(validValue);
           }}
           min={min}
           max={1000}
           step={step}
-          title={`Exact value: ${value}${unit}`}
+          title={`Exact value: ${value}${unit}${value > 1000 ? ' (showing 1000 for readability)' : ''}`}
           className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           style={{ MozAppearance: 'textfield' }}
         />
@@ -465,8 +468,8 @@ export function ShadowControl({
             </div>
           </div>
 
-          {/* Controls - Responsive Grid: 2 columns on wide, 1 column on narrow */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {/* Controls - Auto-responsive Grid: fits 2 cols if width allows (min 180px each) */}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-2">
             {/* Offset X */}
             <ShadowInput
               label="Offset X"
