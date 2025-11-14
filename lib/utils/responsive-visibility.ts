@@ -45,8 +45,14 @@ export function getResponsiveVisibilityClasses(
   }
 
   // Tablet: 640px - 1023px (sm and md)
+  // CRITICAL FIX: Tailwind is mobile-first!
+  // sm:hidden means "hide on sm AND ABOVE" (includes desktop!)
+  // To hide ONLY on tablet, we need: hide on sm+, but show back on lg
   if (visibility.hideOnTablet) {
-    classes.push('sm:hidden md:hidden');
+    classes.push('sm:hidden'); // Hide on tablet (sm/md) and above
+    if (!visibility.hideOnDesktop) {
+      classes.push('lg:block'); // Show back on desktop if not hidden there
+    }
   }
 
   // Desktop: 1024px+ (lg and above)
