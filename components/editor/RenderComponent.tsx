@@ -263,7 +263,9 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     let mergedStyle = { ...comp.style } as React.CSSProperties;
     if (customCSS && typeof customCSS === 'string' && customCSS.trim()) {
       try {
+        console.log('🎨 RenderComponent: Parsing customCSS:', { componentId: component.id, customCSS });
         const customStyles = parseCSS(customCSS);
+        console.log('🎨 RenderComponent: Parsed CSS object:', customStyles);
 
         // ✨ FIX: Convert kebab-case to camelCase for React style object
         // React requires: fontSize, not font-size
@@ -275,7 +277,7 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
         }
 
         mergedStyle = { ...mergedStyle, ...camelCaseStyles };
-        console.log('🎨 RenderComponent: Applied customCSS:', { componentId: component.id, camelCaseStyles });
+        console.log('🎨 RenderComponent: Applied customCSS:', { componentId: component.id, camelCaseStyles, mergedStyle });
       } catch (error) {
         console.error('❌ RenderComponent: Failed to parse customCSS:', error);
       }

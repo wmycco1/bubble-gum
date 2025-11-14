@@ -655,6 +655,17 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     ...rest
   } = params;
 
+  // ✨ V8.1: Extract unit parameters from params (for correct dependency tracking)
+  const fontSizeUnit = (params as any).fontSizeUnit as string | undefined;
+  const paddingTopUnit = (params as any).paddingTopUnit as string | undefined;
+  const paddingRightUnit = (params as any).paddingRightUnit as string | undefined;
+  const paddingBottomUnit = (params as any).paddingBottomUnit as string | undefined;
+  const paddingLeftUnit = (params as any).paddingLeftUnit as string | undefined;
+  const marginTopUnit = (params as any).marginTopUnit as string | undefined;
+  const marginRightUnit = (params as any).marginRightUnit as string | undefined;
+  const marginBottomUnit = (params as any).marginBottomUnit as string | undefined;
+  const marginLeftUnit = (params as any).marginLeftUnit as string | undefined;
+
   // ============================================
   // SECURITY LAYER (GOD-TIER V7.0)
   // ============================================
@@ -1227,7 +1238,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     // ✨ FIX: Don't override fontSize if it came from style prop (customCSS)
     // Also respect fontSizeUnit parameter
     if (safeFontSize !== undefined && !style?.fontSize) {
-      const unit = (props as any).fontSizeUnit || 'px'; // Get unit from props
+      const unit = fontSizeUnit || 'px'; // Get unit from extracted variable
       styleOverrides.push(`font-size: ${safeFontSize}${unit} !important`);
     }
 
@@ -1355,15 +1366,15 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     safeTransitionDuration,
     safeTransitionTimingFunction,
     // ✨ V8.1 FIX: Add unit parameters for correct fontSize/spacing recalculation
-    (props as any).fontSizeUnit,
-    (props as any).paddingTopUnit,
-    (props as any).paddingRightUnit,
-    (props as any).paddingBottomUnit,
-    (props as any).paddingLeftUnit,
-    (props as any).marginTopUnit,
-    (props as any).marginRightUnit,
-    (props as any).marginBottomUnit,
-    (props as any).marginLeftUnit,
+    fontSizeUnit,
+    paddingTopUnit,
+    paddingRightUnit,
+    paddingBottomUnit,
+    paddingLeftUnit,
+    marginTopUnit,
+    marginRightUnit,
+    marginBottomUnit,
+    marginLeftUnit,
     // ✨ CRITICAL: Add style prop to recalculate when customCSS changes
     style,
   ]);

@@ -104,8 +104,18 @@ export function CustomStyleControl({ componentId }: CustomStyleControlProps) {
   // ✨ NEW: Reverse sync - Parameters → CSS
   // When preset parameters change (e.g., Font Size slider), update Custom CSS
   useEffect(() => {
+    console.log('🔁 useEffect REVERSE SYNC: Triggered', {
+      hasComponent: !!component,
+      syncParameters,
+      isEditingCSS: isUserEditing.current.css,
+      cssInputLength: cssInput.length
+    });
+
     if (!component || !syncParameters) return;
-    if (isUserEditing.current.css) return; // Don't sync if user is editing CSS directly
+    if (isUserEditing.current.css) {
+      console.log('⏭️ useEffect: User is editing CSS, skipping reverse sync');
+      return; // Don't sync if user is editing CSS directly
+    }
 
     // Get current syncable parameters from component
     const currentParams: Record<string, any> = {};
@@ -120,20 +130,50 @@ export function CustomStyleControl({ componentId }: CustomStyleControlProps) {
     // Check if any parameter changed from last sync
     const paramsChanged = JSON.stringify(currentParams) !== JSON.stringify(lastSyncedParams.current);
 
-    if (!paramsChanged) return;
+    console.log('🔍 useEffect: Params comparison', {
+      paramsChanged,
+      currentParams,
+      lastSyncedParams: lastSyncedParams.current
+    });
+
+    if (!paramsChanged) {
+      console.log('⏭️ useEffect: Params unchanged, skipping');
+      return;
+    }
 
     // Generate CSS from parameters (merge with existing CSS)
     const existingCSS = (component.props.customCSS as string) || '';
     const generatedCSS = syncParametersToCSS(currentParams, existingCSS);
 
+    console.log('🔧 useEffect: Generated CSS from params', {
+      existingCSS,
+      generatedCSS,
+      lastSyncedCSS: lastSyncedCSS.current
+    });
+
     // ✨ CRITICAL FIX: Don't update if generated CSS is same as last synced (avoid unnecessary updates)
-    if (generatedCSS === lastSyncedCSS.current) return;
+    if (generatedCSS === lastSyncedCSS.current) {
+      console.log('⏭️ useEffect: Generated CSS same as last synced, skipping');
+      return;
+    }
 
     // ✨ CRITICAL FIX: Don't update if generated CSS is same as current input (avoid overwriting user typing)
-    if (generatedCSS.trim() === cssInput.trim()) return;
+    if (generatedCSS.trim() === cssInput.trim()) {
+      console.log('⏭️ useEffect: Generated CSS same as current input, skipping');
+      return;
+    }
 
-    // Update local CSS input (this won't trigger handleCSSChange)
+    // ✨ CRITICAL FIX: Update BOTH local state AND component props
+    // Otherwise changing parameters won't update canvas (RenderComponent won't see new customCSS)
+    console.log('✅ useEffect: Updating cssInput AND component.props.customCSS with generated CSS:', generatedCSS);
     setCssInput(generatedCSS);
+
+    // ✨ Update component.props.customCSS so RenderComponent can see the change
+    if (component) {
+      updateComponentProps(componentId, {
+        customCSS: generatedCSS,
+      });
+    }
 
     // Update tracking refs
     lastSyncedParams.current = currentParams;
@@ -154,6 +194,8 @@ export function CustomStyleControl({ componentId }: CustomStyleControlProps) {
 
   // ✨ FIX: Handle CSS input change with debounce (prevents cursor jumping)
   const handleCSSChange = (value: string) => {
+    console.log('📝 handleCSSChange: Input changed to:', value);
+
     // Update local state immediately (no lag in typing)
     setCssInput(value);
 
@@ -170,8 +212,10 @@ export function CustomStyleControl({ componentId }: CustomStyleControlProps) {
 
     // Debounce component props update (300ms delay)
     cssDebounceTimer.current = setTimeout(() => {
+      console.log('⏱️ handleCSSChange DEBOUNCED: Updating component props with CSS:', value);
+
       // ✨ Sync CSS to component parameters (bidirectional sync!)
-      let syncedParams = {};
+      let syncedParams: Record<string, any> = {};
       if (syncParameters && value.trim()) {
         try {
           syncedParams = syncCSSToParameters(value, component?.props || {});
@@ -182,13 +226,18 @@ export function CustomStyleControl({ componentId }: CustomStyleControlProps) {
         }
       }
 
+      // ✨ CRITICAL FIX: Remove customCSS/customTailwind from syncedParams to avoid overwriting
+      // syncCSSToParameters returns ALL props including old customCSS, which would overwrite new value
+      const { customCSS: _, customTailwind: __, ...cleanSyncedParams } = syncedParams;
+
       // Update component with customCSS, customTailwind, AND synced parameters
       if (component) {
         updateComponentProps(componentId, {
           customCSS: value,
           customTailwind: autoConvert ? convertCSSStringToTailwind(value) : tailwindInput,
-          ...syncedParams, // ✨ Apply synced parameters (fontSize, padding, etc.)
+          ...cleanSyncedParams, // ✨ Apply ONLY synced parameters (fontSize, padding, etc.) - NO customCSS!
         });
+        console.log('✅ handleCSSChange: Props updated!', { customCSS: value, ...cleanSyncedParams });
       }
 
       // ✨ Update last synced CSS to track user input
