@@ -148,18 +148,27 @@ export function CustomStyleControl({ componentId }: CustomStyleControlProps) {
     console.log('🔧 useEffect: Generated CSS from params', {
       existingCSS,
       generatedCSS,
-      lastSyncedCSS: lastSyncedCSS.current
+      lastSyncedCSS: lastSyncedCSS.current,
+      cssInputCurrent: cssInput
     });
 
-    // ✨ CRITICAL FIX: Don't update if generated CSS is same as last synced (avoid unnecessary updates)
-    if (generatedCSS === lastSyncedCSS.current) {
-      console.log('⏭️ useEffect: Generated CSS same as last synced, skipping');
-      return;
-    }
+    // ✨ CRITICAL FIX: Don't update if BOTH params AND CSS unchanged
+    // (params changed but CSS same = still need to update component.props.customCSS for RenderComponent)
+    const cssUnchanged = generatedCSS.trim() === cssInput.trim();
 
-    // ✨ CRITICAL FIX: Don't update if generated CSS is same as current input (avoid overwriting user typing)
-    if (generatedCSS.trim() === cssInput.trim()) {
-      console.log('⏭️ useEffect: Generated CSS same as current input, skipping');
+    if (cssUnchanged) {
+      console.log('⏭️ useEffect: Generated CSS same as current input, BUT params changed - updating component.props.customCSS');
+      // Update component.props.customCSS even if cssInput is same
+      // This ensures RenderComponent sees the updated CSS
+      if (component && generatedCSS !== (component.props.customCSS as string)) {
+        updateComponentProps(componentId, {
+          customCSS: generatedCSS,
+        });
+      }
+
+      // Update tracking refs
+      lastSyncedParams.current = currentParams;
+      lastSyncedCSS.current = generatedCSS;
       return;
     }
 
