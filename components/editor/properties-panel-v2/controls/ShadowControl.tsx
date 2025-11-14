@@ -406,7 +406,7 @@ export function ShadowControl({
           </div>
 
           {/* Preset Selector - Responsive Grid */}
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(70px,1fr))] gap-1.5 mb-3">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(75px,1fr))] gap-2 mb-3">
             {presets.map((p) => {
               // Get the box shadow for this preset
               let shadowStyle = 'none';
@@ -431,7 +431,7 @@ export function ShadowControl({
                   type="button"
                   onClick={() => handlePresetSelect(p.value)}
                   className={`
-                    flex items-center justify-center p-1.5 rounded-md border-2 transition-all
+                    flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all
                     ${
                       preset === p.value
                         ? 'ring-2 ring-blue-500 bg-blue-50 border-blue-500'
@@ -440,13 +440,16 @@ export function ShadowControl({
                   `}
                   title={p.description}
                 >
-                  {/* Visual Box Preview with Shadow and Label Inside */}
-                  <div
-                    className="w-full h-12 bg-white rounded-md border border-gray-100 flex items-center justify-center"
-                    style={{ boxShadow: shadowStyle }}
-                  >
-                    <span className="text-xs text-gray-600 font-medium">{p.label}</span>
+                  {/* Visual Preview Area - Gradient background for contrast */}
+                  <div className="w-full h-14 bg-gradient-to-br from-slate-100 to-slate-50 rounded-md flex items-center justify-center p-2">
+                    {/* Shadow demonstration box */}
+                    <div
+                      className="w-8 h-8 bg-white rounded-md"
+                      style={{ boxShadow: shadowStyle }}
+                    />
                   </div>
+                  {/* Compact Label */}
+                  <span className="text-[10px] text-gray-600 font-medium leading-none">{p.label}</span>
                 </button>
               );
             })}
