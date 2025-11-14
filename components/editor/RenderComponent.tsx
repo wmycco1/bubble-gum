@@ -311,19 +311,21 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
   // ═══════════════════════════════════════════════════════════════
   // V8.0: RESPONSIVE VISIBILITY (Enterprise Canvas Enhancement System)
   // ═══════════════════════════════════════════════════════════════
-  // Apply responsive visibility classes to wrapper div (not component itself)
-  // - Tailwind classes: max-sm:hidden, sm:hidden md:hidden, lg:hidden
-  // - Editor visual indicator: gray + opacity when hidden on current device
-  // - Component inside renders normally with all parameters
-  // - SEO-friendly: content in DOM, CSS-based hiding
+  // CRITICAL: In EDITOR mode, we SHOW all components with visual indicator (gray)
+  // Tailwind classes (max-sm:hidden, lg:hidden) are for PRODUCTION ONLY!
+  //
+  // Editor Mode Behavior:
+  // - Component always visible (no CSS hiding)
+  // - Visual indicator when hidden: gray + opacity 0.4
+  // - User sees which components are hidden on current device
+  //
+  // Production Mode Behavior (future export):
+  // - Tailwind responsive classes applied
+  // - CSS-based hiding (max-sm:hidden, lg:hidden)
+  // - SEO-friendly (content in DOM)
   // ═══════════════════════════════════════════════════════════════
 
-  const responsiveVisibilityClasses = getCanvasEnhancementClasses({
-    hideOnMobile: component.props.hideOnMobile as boolean | undefined,
-    hideOnTablet: component.props.hideOnTablet as boolean | undefined,
-    hideOnDesktop: component.props.hideOnDesktop as boolean | undefined,
-  });
-
+  // Get editor visual indicator styles ONLY (no Tailwind classes in editor!)
   const editorVisibilityStyles = getCanvasEnhancementStyles(
     {
       hideOnMobile: component.props.hideOnMobile as boolean | undefined,
@@ -333,6 +335,9 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
     deviceMode,
     true // Always in editor mode
   );
+
+  // NOTE: responsiveVisibilityClasses (Tailwind) will be applied during
+  // React export / production build, NOT in editor mode
 
   return (
     <div
@@ -344,14 +349,15 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
       onMouseLeave={handleMouseLeave}
       style={{
         ...style,
-        ...editorVisibilityStyles, // Add gray + opacity if hidden on current device
+        ...editorVisibilityStyles, // Gray + opacity when hidden on current device
       }}
       className={cn(
         'relative cursor-auto transition-all',
         isSelected && 'ring-2 ring-blue-500 bg-blue-50/10',
         isHovered && !isSelected && 'ring-1 ring-slate-300 bg-slate-50',
-        isOver && 'ring-2 ring-blue-400 bg-blue-50',
-        responsiveVisibilityClasses // Add Tailwind responsive classes
+        isOver && 'ring-2 ring-blue-400 bg-blue-50'
+        // NOTE: No responsiveVisibilityClasses here! Editor shows all components.
+        // Tailwind classes will be added during React export generation.
       )}
     >
       {/* Selection Label & Drag Handle */}
