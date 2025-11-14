@@ -1,15 +1,15 @@
 // ═══════════════════════════════════════════════════════════════
 // CSS ↔ COMPONENT PARAMETERS BIDIRECTIONAL SYNC UTILITY
 // ═══════════════════════════════════════════════════════════════
-// Version: 1.0.0 - Enterprise-Grade Parameter Synchronization
+// Version: 2.0.0 - Universal Unit Support for All Parameters
 // Purpose: Keep CSS custom styles in sync with component parameters
 //
 // Features:
-// - CSS → Parameters: Parse CSS and update component props
-// - Parameters → CSS: Generate CSS from component props
+// - CSS → Parameters: Parse CSS and update component props (including units)
+// - Parameters → CSS: Generate CSS from component props (using unit parameters)
 // - Smart mapping: CSS properties ↔ Component parameter names
-// - Unit conversion: px, rem, em, % → numbers
-// - Bidirectional sync for: typography, spacing, colors, sizing
+// - Unit handling: Extracts & preserves units (px, rem, em, %, vh, vw) for bidirectional sync
+// - Bidirectional sync for: typography, spacing, colors, sizing, borders
 // ═══════════════════════════════════════════════════════════════
 
 import { parseCSS } from './css-to-tailwind';
@@ -195,15 +195,18 @@ function cssValueToParamValue(cssProperty: string, cssValue: string): any {
  *
  * @param paramName - Component parameter name
  * @param paramValue - Parameter value
+ * @param allParams - All parameters (to access unit params like fontSizeUnit, paddingTopUnit, etc.)
  * @returns CSS value string
  */
-function paramValueToCssValue(paramName: string, paramValue: any): string {
+function paramValueToCssValue(paramName: string, paramValue: any, allParams?: Record<string, any>): string {
   if (paramValue === null || paramValue === undefined) {
     return '';
   }
 
-  // Number values: add px unit for spacing/sizing
+  // Number values: add unit for spacing/sizing
   if (typeof paramValue === 'number') {
+    // ✨ REFACTORED: Use unit parameter if available, otherwise default to 'px'
+    // This applies to: padding, margin, fontSize, letterSpacing, gap, width, height, borderRadius, borderWidth
     if (
       paramName.includes('margin') ||
       paramName.includes('padding') ||
@@ -212,9 +215,13 @@ function paramValueToCssValue(paramName: string, paramValue: any): string {
       paramName === 'gap' ||
       paramName === 'width' ||
       paramName === 'height' ||
+      paramName === 'borderWidth' ||
       paramName.includes('Radius')
     ) {
-      return `${paramValue}px`;
+      // Check for corresponding unit parameter (e.g., paddingTopUnit, marginLeftUnit, fontSizeUnit)
+      const unitParamName = `${paramName}Unit`;
+      const unit = (allParams && allParams[unitParamName]) || 'px'; // Default to px
+      return `${paramValue}${unit}`;
     }
 
     // Opacity: convert from parameter (0-100%) to CSS (0-1)
@@ -313,8 +320,8 @@ export function syncCSSToParameters(
 
       // ✨ FIX: Only add valid values (skip undefined/NaN)
       if (paramValue !== undefined && paramValue !== null) {
-        // ✨ NEW: For spacing/sizing with non-px units, extract value AND unit separately
-        // The actual rendering will use Custom CSS (via style prop), not the parameter
+        // ✨ REFACTORED: For spacing/sizing with non-px units, extract value AND unit separately
+        // These unit parameters enable bidirectional sync (CSS ↔ Parameters ↔ Canvas)
         if (typeof paramValue === 'string' &&
             (paramName.includes('padding') || paramName.includes('margin') ||
              paramName.includes('Radius') || paramName.includes('Width') ||
@@ -330,12 +337,12 @@ export function syncCSSToParameters(
             // Set numeric value for parameter
             updatedParams[paramName] = numericValue;
 
-            // ✨ NEW: Set unit parameter (e.g., paddingTopUnit, marginLeftUnit)
-            // These are used for UI display only, rendering uses customCSS
+            // ✨ REFACTORED: Set unit parameter (e.g., paddingTopUnit, marginLeftUnit)
+            // Used for bidirectional sync: changing unit in parameters updates CSS and canvas
             const unitParamName = `${paramName}Unit`;
             updatedParams[unitParamName] = unit;
 
-            console.log(`🔄 CSS Sync: ${paramName}=${numericValue}, ${unitParamName}=${unit} (from ${paramValue}, rendered via customCSS)`);
+            console.log(`🔄 CSS Sync: ${paramName}=${numericValue}, ${unitParamName}=${unit} (from ${paramValue})`);
           } else {
             console.warn(`⚠️ CSS Sync: Cannot parse ${paramName}: ${paramValue}`);
           }
@@ -452,8 +459,16 @@ export function syncParametersToCSS(
     const cssProperty = PARAM_TO_CSS_MAP[paramName];
 
     if (cssProperty && paramValue !== null && paramValue !== undefined) {
-      const cssValue = paramValueToCssValue(paramName, paramValue);
+      // ✨ REFACTORED: Pass all params to access unit parameters
+      const cssValue = paramValueToCssValue(paramName, paramValue, params);
       if (cssValue) {
+        // ✨ NEW: Log when unit parameter is used (for debugging)
+        const unitParamName = `${paramName}Unit`;
+        const unit = params[unitParamName];
+        if (unit && unit !== 'px') {
+          console.log(`🔄 Params Sync: ${paramName}: ${paramValue}, ${unitParamName}: ${unit} → ${cssProperty}: ${cssValue}`);
+        }
+
         cssProperties.push(`${cssProperty}: ${cssValue};`);
 
         // Remove from existing CSS (we're replacing it)
@@ -485,15 +500,25 @@ export function getSyncedParameterNames(): string[] {
   // Add shadow parameters (not in CSS_TO_PARAM_MAP because they're composite)
   const shadowParams = ['shadow', 'shadowOffsetX', 'shadowOffsetY', 'shadowBlur', 'shadowSpread', 'shadowColor'];
 
-  // ✨ NEW: Add unit parameters for spacing/sizing (used for UI display)
+  // ✨ REFACTORED: Add unit parameters for spacing/sizing (used for bidirectional sync)
   const unitParams = [
+    // Typography units
     'fontSizeUnit',
+    'letterSpacingUnit',
     // Padding units
     'paddingUnit', 'paddingTopUnit', 'paddingRightUnit', 'paddingBottomUnit', 'paddingLeftUnit',
     // Margin units
     'marginUnit', 'marginTopUnit', 'marginRightUnit', 'marginBottomUnit', 'marginLeftUnit',
-    // Other units (if needed in future)
-    'borderRadiusUnit', 'letterSpacingUnit', 'gapUnit',
+    // Border units
+    'borderWidthUnit',
+    'borderRadiusUnit', 'borderTopLeftRadiusUnit', 'borderTopRightRadiusUnit',
+    'borderBottomRightRadiusUnit', 'borderBottomLeftRadiusUnit',
+    // Sizing units
+    'widthUnit', 'heightUnit',
+    'minWidthUnit', 'minHeightUnit',
+    'maxWidthUnit', 'maxHeightUnit',
+    // Layout units
+    'gapUnit',
   ];
 
   return [...baseParams, ...shadowParams, ...unitParams];
