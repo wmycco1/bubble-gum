@@ -382,11 +382,11 @@ export function ShadowControl({
 
       {/* Simple Mode - Integrated Design with Preview */}
       {!showAdvanced && (
-        <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
-          {/* Live Preview at Top */}
-          <div className="flex justify-center items-center mb-4 py-3">
+        <div className="@container">
+          <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+            {/* Live Preview at Top */}
             <div
-              className="w-24 h-16 bg-white rounded-md flex items-center justify-center text-xs font-medium text-gray-600 transition-all shadow-md"
+              className="w-24 h-16 bg-white rounded-md flex items-center justify-center text-xs font-medium text-gray-600 transition-all shadow-md mb-4 mx-auto"
               style={{
                 boxShadow:
                   preset === 'sm'
@@ -403,10 +403,9 @@ export function ShadowControl({
             >
               Shadow
             </div>
-          </div>
 
-          {/* Preset Selector - Responsive Grid: 5@400px, 3@300px, 2@<300px */}
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(77px,1fr))] gap-1.5 mb-3">
+            {/* Preset Selector - Responsive Grid: 5@380px, 3@<380px */}
+            <div className="grid grid-cols-3 @[380px]:grid-cols-5 gap-1.5 mb-3">
             {presets.map((p) => {
               // Get the box shadow for this preset with user-selected color
               let shadowStyle = 'none';
@@ -441,7 +440,7 @@ export function ShadowControl({
                   title={p.description}
                 >
                   {/* Shadow demonstration - larger white rectangle */}
-                  <div className="w-full h-16 flex items-center justify-center">
+                  <div className="w-full h-12 flex items-center justify-center">
                     <div
                       className="w-16 h-11 bg-white rounded-md"
                       style={{ boxShadow: shadowStyle }}
@@ -456,10 +455,10 @@ export function ShadowControl({
 
           {/* Color and Opacity - Same as Advanced Mode */}
           {preset !== 'none' && (
-            <div className="space-y-2">
+            <div className="flex items-center gap-3 flex-wrap">
               {/* Color */}
-              <div className="flex items-center gap-2">
-                <label className="text-xs text-gray-600 whitespace-nowrap min-w-[50px]">Color:</label>
+              <div className="flex items-center gap-2 shrink-0">
+                <label className="text-xs text-gray-600 whitespace-nowrap">Color:</label>
                 <input
                   type="color"
                   value={color}
@@ -469,9 +468,9 @@ export function ShadowControl({
                 />
               </div>
 
-              {/* Opacity */}
-              <div className="flex items-center gap-2 w-full">
-                <label className="text-xs text-gray-600 whitespace-nowrap min-w-[50px]">Opacity:</label>
+              {/* Opacity - flexible with value after slider */}
+              <div className="flex items-center gap-2 min-w-0 flex-1 basis-[200px]">
+                <label className="text-xs text-gray-600 whitespace-nowrap shrink-0">Opacity:</label>
                 <input
                   type="range"
                   min="0"
@@ -484,6 +483,7 @@ export function ShadowControl({
               </div>
             </div>
           )}
+          </div>
         </div>
       )}
 
