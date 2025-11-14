@@ -1354,6 +1354,18 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     // V7.6 - Animation (safe* values for instant reactivity)
     safeTransitionDuration,
     safeTransitionTimingFunction,
+    // ✨ V8.1 FIX: Add unit parameters for correct fontSize/spacing recalculation
+    (props as any).fontSizeUnit,
+    (props as any).paddingTopUnit,
+    (props as any).paddingRightUnit,
+    (props as any).paddingBottomUnit,
+    (props as any).paddingLeftUnit,
+    (props as any).marginTopUnit,
+    (props as any).marginRightUnit,
+    (props as any).marginBottomUnit,
+    (props as any).marginLeftUnit,
+    // ✨ CRITICAL: Add style prop to recalculate when customCSS changes
+    style,
   ]);
 
   // Apply inline styles with !important using cssText
@@ -1482,7 +1494,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     } else {
       devLog('❌ Badge useEffect: spanRef.current is NULL!');
     }
-  }, [inlineStyleString, color, backgroundColor, borderWidth, borderTopWidth, borderRightWidth, borderBottomWidth, borderLeftWidth, borderStyle, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius, borderRadiusTopLeft, borderRadiusTopRight, borderRadiusBottomLeft, borderRadiusBottomRight, margin, marginTop, marginRight, marginBottom, marginLeft, padding, paddingTop, paddingRight, paddingBottom, paddingLeft, shadow, opacity, display, align, position, fontFamily, fontSize, fontWeight, fontStyle, letterSpacing, textTransform, textShadow, textShadowOffsetX, textShadowOffsetY, textShadowBlur, textShadowColor, textShadowOpacity, rotate, scaleX, scaleY, skewX, skewY, transitionDuration, transitionTimingFunction]);
+  }, [inlineStyleString, color, backgroundColor, borderWidth, borderTopWidth, borderRightWidth, borderBottomWidth, borderLeftWidth, borderStyle, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius, borderRadiusTopLeft, borderRadiusTopRight, borderRadiusBottomLeft, borderRadiusBottomRight, margin, marginTop, marginRight, marginBottom, marginLeft, padding, paddingTop, paddingRight, paddingBottom, paddingLeft, shadow, opacity, display, align, position, fontFamily, fontSize, fontWeight, fontStyle, letterSpacing, textTransform, textShadow, textShadowOffsetX, textShadowOffsetY, textShadowBlur, textShadowColor, textShadowOpacity, rotate, scaleX, scaleY, skewX, skewY, transitionDuration, transitionTimingFunction, style]);
 
   // Debug custom styles
   if (process.env.NODE_ENV === 'development') {
