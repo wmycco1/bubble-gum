@@ -408,20 +408,20 @@ export function ShadowControl({
           {/* Preset Selector - Responsive Grid: 5@400px, 3@300px, 2@<300px */}
           <div className="grid grid-cols-[repeat(auto-fit,minmax(77px,1fr))] gap-1.5 mb-3">
             {presets.map((p) => {
-              // Get the box shadow for this preset
+              // Get the box shadow for this preset with user-selected color
               let shadowStyle = 'none';
               switch (p.value) {
                 case 'sm':
-                  shadowStyle = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                  shadowStyle = `0 1px 2px 0 ${color}`;
                   break;
                 case 'md':
-                  shadowStyle = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+                  shadowStyle = `0 4px 6px -1px ${color}, 0 2px 4px -1px ${color}`;
                   break;
                 case 'lg':
-                  shadowStyle = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+                  shadowStyle = `0 10px 15px -3px ${color}, 0 4px 6px -2px ${color}`;
                   break;
                 case 'xl':
-                  shadowStyle = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+                  shadowStyle = `0 20px 25px -5px ${color}, 0 10px 10px -5px ${color}`;
                   break;
               }
 
