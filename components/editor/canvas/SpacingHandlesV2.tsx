@@ -49,6 +49,8 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
   const [hoveredSide, setHoveredSide] = useState<Side | null>(null);
   const [draggingSide, setDraggingSide] = useState<Side | null>(null);
   const [badgeRect, setBadgeRect] = useState<DOMRect | null>(null);
+  // Mouse position for tooltips (shared across overlay and handle)
+  const [mousePos, setMousePos] = useState<{ x: number; y: number; side: Side } | null>(null);
   // V7.0: Badge controls margin via CSS, overlays conditional based on cssCompliantMode
   const rafRef = React.useRef<number | null>(null);
   const instanceId = React.useRef(`instance-${Math.random().toString(36).substr(2, 9)}`).current;
@@ -459,7 +461,15 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
               data-overlay-type="margin-top"
               data-instance-id={instanceId}
               onMouseEnter={() => setHoveredSide('top')}
-              onMouseLeave={() => setHoveredSide(null)}
+              onMouseLeave={() => {
+                setHoveredSide(null);
+                // Clear mousePos only if it was for this side
+                setMousePos((prev) => (prev?.side === 'top' ? null : prev));
+              }}
+              onMouseMove={(e) => {
+                // Update mousePos for tooltip when hovering over overlay
+                setMousePos({ x: e.clientX, y: e.clientY, side: 'top' });
+              }}
               style={{
                 position: 'absolute',
                 // CONDITIONAL: Visual mode (inside), CSS mode (outside with negative)
@@ -488,7 +498,15 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
               data-overlay-type="margin-right"
               data-instance-id={instanceId}
               onMouseEnter={() => setHoveredSide('right')}
-              onMouseLeave={() => setHoveredSide(null)}
+              onMouseLeave={() => {
+                setHoveredSide(null);
+                // Clear mousePos only if it was for this side
+                setMousePos((prev) => (prev?.side === 'right' ? null : prev));
+              }}
+              onMouseMove={(e) => {
+                // Update mousePos for tooltip when hovering over overlay
+                setMousePos({ x: e.clientX, y: e.clientY, side: 'right' });
+              }}
               style={{
                 position: 'absolute',
                 top: cssCompliantMode ? `-${topValue}px` : `${badgeRect.top}px`,
@@ -516,7 +534,15 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
               data-overlay-type="margin-bottom"
               data-instance-id={instanceId}
               onMouseEnter={() => setHoveredSide('bottom')}
-              onMouseLeave={() => setHoveredSide(null)}
+              onMouseLeave={() => {
+                setHoveredSide(null);
+                // Clear mousePos only if it was for this side
+                setMousePos((prev) => (prev?.side === 'bottom' ? null : prev));
+              }}
+              onMouseMove={(e) => {
+                // Update mousePos for tooltip when hovering over overlay
+                setMousePos({ x: e.clientX, y: e.clientY, side: 'bottom' });
+              }}
               style={{
                 position: 'absolute',
                 top: cssCompliantMode ? `${badgeRect.bottom}px` : `${badgeRect.bottom}px`,
@@ -544,7 +570,15 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
               data-overlay-type="margin-left"
               data-instance-id={instanceId}
               onMouseEnter={() => setHoveredSide('left')}
-              onMouseLeave={() => setHoveredSide(null)}
+              onMouseLeave={() => {
+                setHoveredSide(null);
+                // Clear mousePos only if it was for this side
+                setMousePos((prev) => (prev?.side === 'left' ? null : prev));
+              }}
+              onMouseMove={(e) => {
+                // Update mousePos for tooltip when hovering over overlay
+                setMousePos({ x: e.clientX, y: e.clientY, side: 'left' });
+              }}
               style={{
                 position: 'absolute',
                 top: cssCompliantMode ? `-${topValue}px` : `${badgeRect.top}px`,
@@ -978,7 +1012,8 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
           rightMargin={rightValue}
           bottomMargin={bottomValue}
           leftMargin={leftValue}
-          instanceId={instanceId}
+          sharedMousePos={mousePos}
+          onMousePosChange={setMousePos}
         />
       )}
 
@@ -999,7 +1034,8 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
           rightMargin={rightValue}
           bottomMargin={bottomValue}
           leftMargin={leftValue}
-          instanceId={instanceId}
+          sharedMousePos={mousePos}
+          onMousePosChange={setMousePos}
         />
       )}
 
@@ -1020,7 +1056,8 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
           rightMargin={rightValue}
           bottomMargin={bottomValue}
           leftMargin={leftValue}
-          instanceId={instanceId}
+          sharedMousePos={mousePos}
+          onMousePosChange={setMousePos}
         />
       )}
 
@@ -1041,7 +1078,8 @@ export function SpacingHandlesV2({ componentId, mode: externalMode = 'margin' }:
           rightMargin={rightValue}
           bottomMargin={bottomValue}
           leftMargin={leftValue}
-          instanceId={instanceId}
+          sharedMousePos={mousePos}
+          onMousePosChange={setMousePos}
         />
       )}
     </>
@@ -1228,6 +1266,9 @@ interface SpacingBarHandleProps {
   rightMargin: number;
   bottomMargin: number;
   leftMargin: number;
+  // Shared mouse position from parent (overlay + handle)
+  sharedMousePos: { x: number; y: number; side: Side } | null;
+  onMousePosChange: (pos: { x: number; y: number; side: Side } | null) => void;
 }
 
 function SpacingBarHandle({
@@ -1246,9 +1287,10 @@ function SpacingBarHandle({
   rightMargin,
   bottomMargin,
   leftMargin,
+  sharedMousePos,
+  onMousePosChange,
 }: SpacingBarHandleProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
   const rafRef = React.useRef<number | null>(null);
 
@@ -1488,6 +1530,10 @@ function SpacingBarHandle({
       boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
       border: '1px solid rgba(255,255,255,0.1)',
     };
+
+    // Use sharedMousePos from parent (updated by both overlay and handle)
+    // Only show tooltip if mousePos is for THIS side
+    const mousePos = sharedMousePos?.side === side ? sharedMousePos : null;
 
     // If we have mouse position, show near cursor with smart positioning
     if (mousePos) {
@@ -1997,18 +2043,15 @@ function SpacingBarHandle({
         onMouseEnter={onHover}
         onMouseLeave={() => {
           onLeave();
-          setMousePos(null);
+          // Clear mousePos only if it's for this side
+          onMousePosChange(null);
         }}
         onMouseMove={(e) => {
-          // Track absolute mouse position for tooltip (relative to viewport)
-          const mouseX = e.clientX;
-          const mouseY = e.clientY;
-
-          console.log('🖱️ Mouse position:', { mouseX, mouseY, side });
-
-          setMousePos({
-            x: mouseX,
-            y: mouseY,
+          // Update shared mouse position for tooltip (viewport coordinates)
+          onMousePosChange({
+            x: e.clientX,
+            y: e.clientY,
+            side,
           });
         }}
         style={getPositionStyles()}
@@ -2016,8 +2059,8 @@ function SpacingBarHandle({
       </div>
 
       {/* Value Tooltip - "Drag to adjust [direction]" - Rendered via Portal */}
-      {/* Only show tooltip when we have mouse position (prevents jumping to center) */}
-      {(isHovered || isDragging) && mousePos !== null && typeof document !== 'undefined' && createPortal(
+      {/* Only show tooltip when we have mouse position for THIS side (prevents jumping to center) */}
+      {(isHovered || isDragging) && sharedMousePos?.side === side && typeof document !== 'undefined' && createPortal(
         <div style={getTooltipStyles()}>
           Drag to adjust {getDirectionName()}
         </div>,
