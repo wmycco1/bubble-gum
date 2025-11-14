@@ -3,6 +3,7 @@
 /**
  * convertUnit - Convert values between different CSS units
  * Two-step conversion: source unit → px → target unit
+ * Smart rounding: px = integers, others = max 2 decimals, capped at 1000
  */
 function convertUnit(
   value: number,
@@ -62,8 +63,25 @@ function convertUnit(
       result = valueInPx;
   }
 
-  // Round to 2 decimal places
-  return Math.round(result * 100) / 100;
+  // Smart rounding and capping
+  // Cap at 1000 max
+  result = Math.min(result, 1000);
+
+  // Round based on unit: px = integers, others = max 2 decimals
+  if (toUnit === 'px') {
+    return Math.round(result);
+  } else {
+    return Math.round(result * 100) / 100;
+  }
+}
+
+/**
+ * formatDisplayValue - Format value for display (user-friendly)
+ * Removes unnecessary trailing zeros
+ */
+function formatDisplayValue(value: number): string {
+  // Remove trailing zeros after decimal point
+  return value.toString().replace(/\.?0+$/, '');
 }
 
 /**
@@ -446,6 +464,7 @@ function SimpleMode({ value, unit, setUnit, handleShorthandChange, onChange, onU
           value={value ?? ''}
           onChange={handleShorthandChange}
           placeholder="All corners"
+          title={value !== undefined && value !== null ? `Exact value: ${value}${unit}` : 'All corners'}
           className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           style={{ MozAppearance: 'textfield' }}
         />
@@ -656,6 +675,7 @@ function CompactCornerControl({
         value={value ?? ''}
         onChange={handleInputChange}
         placeholder="0"
+        title={value !== undefined && value !== null ? `Exact value: ${value}${unit}` : '0'}
         className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ MozAppearance: 'textfield' }}
       />
@@ -891,6 +911,7 @@ function CornerControl({
         value={value ?? ''}
         onChange={handleInputChange}
         placeholder="0"
+        title={value !== undefined && value !== null ? `Exact value: ${value}${unit}` : '0'}
         className="w-14 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ MozAppearance: 'textfield' }}
       />

@@ -3,6 +3,7 @@
 /**
  * convertUnit - Convert values between different CSS units
  * Two-step conversion: source unit → px → target unit
+ * Smart rounding: px = integers, others = max 2 decimals, capped at 1000
  */
 function convertUnit(
   value: number,
@@ -62,8 +63,25 @@ function convertUnit(
       result = valueInPx;
   }
 
-  // Round to 2 decimal places
-  return Math.round(result * 100) / 100;
+  // Smart rounding and capping
+  // Cap at 1000 max
+  result = Math.min(result, 1000);
+
+  // Round based on unit: px = integers, others = max 2 decimals
+  if (toUnit === 'px') {
+    return Math.round(result);
+  } else {
+    return Math.round(result * 100) / 100;
+  }
+}
+
+/**
+ * formatDisplayValue - Format value for display (user-friendly)
+ * Removes unnecessary trailing zeros
+ */
+function formatDisplayValue(value: number): string {
+  // Remove trailing zeros after decimal point
+  return value.toString().replace(/\.?0+$/, '');
 }
 
 /**
@@ -208,6 +226,7 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
           onChange={(e) => onChange(Number(e.target.value))}
           min={min}
           step={step}
+          title={`Exact value: ${value}${unit}`}
           className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           style={{ MozAppearance: 'textfield' }}
         />
