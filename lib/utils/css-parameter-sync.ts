@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // CSS ↔ COMPONENT PARAMETERS BIDIRECTIONAL SYNC UTILITY
 // ═══════════════════════════════════════════════════════════════
-// Version: 2.0.0 - Universal Unit Support for All Parameters
+// Version: 2.1.0 - CSS Shorthand Properties Support (padding, margin)
 // Purpose: Keep CSS custom styles in sync with component parameters
 //
 // Features:
@@ -9,6 +9,7 @@
 // - Parameters → CSS: Generate CSS from component props (using unit parameters)
 // - Smart mapping: CSS properties ↔ Component parameter names
 // - Unit handling: Extracts & preserves units (px, rem, em, %, vh, vw) for bidirectional sync
+// - Shorthand parsing: padding/margin with 1-4 values (e.g., "30px 10px", "20px 3em 4rem 7vh")
 // - Bidirectional sync for: typography, spacing, colors, sizing, borders
 // ═══════════════════════════════════════════════════════════════
 
@@ -118,6 +119,97 @@ function extractNumericValue(value: string, allowedUnits: string[] = ['px']): nu
 
   // Return original string if no numeric extraction possible
   return value;
+}
+
+/**
+ * Parse CSS value with unit (e.g., "30px", "3rem", "50%")
+ *
+ * @param valueStr - CSS value string
+ * @returns Object with numeric value and unit, or null if invalid
+ */
+function parseValueWithUnit(valueStr: string): { value: number; unit: string } | null {
+  const match = valueStr.trim().match(/^(-?\d+(?:\.\d+)?)(px|rem|em|%|vh|vw)?$/);
+  if (!match) return null;
+
+  const value = parseFloat(match[1]);
+  const unit = match[2] || 'px';
+
+  return { value, unit };
+}
+
+/**
+ * Parse CSS shorthand padding/margin (1-4 values with units)
+ * CSS spec: https://developer.mozilla.org/en-US/docs/Web/CSS/padding
+ *
+ * - 1 value: all sides (padding: 10px)
+ * - 2 values: vertical horizontal (padding: 10px 20px)
+ * - 3 values: top horizontal bottom (padding: 10px 20px 30px)
+ * - 4 values: top right bottom left (padding: 10px 20px 30px 40px)
+ *
+ * @param value - Shorthand padding/margin value
+ * @param prefix - 'padding' or 'margin'
+ * @returns Object with individual side values and units
+ */
+function parseShorthandSpacing(
+  value: string,
+  prefix: 'padding' | 'margin'
+): Record<string, number | string> | null {
+  const values = value.trim().split(/\s+/);
+  if (values.length === 0 || values.length > 4) return null;
+
+  // Parse all values
+  const parsed = values.map(v => parseValueWithUnit(v));
+  if (parsed.some(p => p === null)) return null; // Some values failed to parse
+
+  const result: Record<string, number | string> = {};
+
+  if (parsed.length === 1) {
+    // padding: 10px → all sides
+    const { value: val, unit } = parsed[0]!;
+    result[`${prefix}Top`] = val;
+    result[`${prefix}TopUnit`] = unit;
+    result[`${prefix}Right`] = val;
+    result[`${prefix}RightUnit`] = unit;
+    result[`${prefix}Bottom`] = val;
+    result[`${prefix}BottomUnit`] = unit;
+    result[`${prefix}Left`] = val;
+    result[`${prefix}LeftUnit`] = unit;
+  } else if (parsed.length === 2) {
+    // padding: 10px 20px → vertical horizontal
+    const [vertical, horizontal] = parsed as Array<{ value: number; unit: string }>;
+    result[`${prefix}Top`] = vertical.value;
+    result[`${prefix}TopUnit`] = vertical.unit;
+    result[`${prefix}Bottom`] = vertical.value;
+    result[`${prefix}BottomUnit`] = vertical.unit;
+    result[`${prefix}Right`] = horizontal.value;
+    result[`${prefix}RightUnit`] = horizontal.unit;
+    result[`${prefix}Left`] = horizontal.value;
+    result[`${prefix}LeftUnit`] = horizontal.unit;
+  } else if (parsed.length === 3) {
+    // padding: 10px 20px 30px → top horizontal bottom
+    const [top, horizontal, bottom] = parsed as Array<{ value: number; unit: string }>;
+    result[`${prefix}Top`] = top.value;
+    result[`${prefix}TopUnit`] = top.unit;
+    result[`${prefix}Right`] = horizontal.value;
+    result[`${prefix}RightUnit`] = horizontal.unit;
+    result[`${prefix}Bottom`] = bottom.value;
+    result[`${prefix}BottomUnit`] = bottom.unit;
+    result[`${prefix}Left`] = horizontal.value;
+    result[`${prefix}LeftUnit`] = horizontal.unit;
+  } else if (parsed.length === 4) {
+    // padding: 10px 20px 30px 40px → top right bottom left
+    const [top, right, bottom, left] = parsed as Array<{ value: number; unit: string }>;
+    result[`${prefix}Top`] = top.value;
+    result[`${prefix}TopUnit`] = top.unit;
+    result[`${prefix}Right`] = right.value;
+    result[`${prefix}RightUnit`] = right.unit;
+    result[`${prefix}Bottom`] = bottom.value;
+    result[`${prefix}BottomUnit`] = bottom.unit;
+    result[`${prefix}Left`] = left.value;
+    result[`${prefix}LeftUnit`] = left.unit;
+  }
+
+  return result;
 }
 
 /**
@@ -312,6 +404,30 @@ export function syncCSSToParameters(
       continue; // Skip normal processing for box-shadow
     }
 
+    // ✨ NEW v2.1: Special handling for shorthand padding (1-4 values with units)
+    if (cssProperty === 'padding' && cssValue) {
+      const paddingValues = parseShorthandSpacing(String(cssValue), 'padding');
+      if (paddingValues) {
+        Object.assign(updatedParams, paddingValues);
+        console.log(`🔄 CSS Sync: padding: ${cssValue} → paddingTop=${paddingValues.paddingTop}${paddingValues.paddingTopUnit}, paddingRight=${paddingValues.paddingRight}${paddingValues.paddingRightUnit}, paddingBottom=${paddingValues.paddingBottom}${paddingValues.paddingBottomUnit}, paddingLeft=${paddingValues.paddingLeft}${paddingValues.paddingLeftUnit}`);
+      } else {
+        console.warn(`⚠️ CSS Sync: Cannot parse padding shorthand: ${cssValue}`);
+      }
+      continue; // Skip normal processing for padding
+    }
+
+    // ✨ NEW v2.1: Special handling for shorthand margin (1-4 values with units)
+    if (cssProperty === 'margin' && cssValue) {
+      const marginValues = parseShorthandSpacing(String(cssValue), 'margin');
+      if (marginValues) {
+        Object.assign(updatedParams, marginValues);
+        console.log(`🔄 CSS Sync: margin: ${cssValue} → marginTop=${marginValues.marginTop}${marginValues.marginTopUnit}, marginRight=${marginValues.marginRight}${marginValues.marginRightUnit}, marginBottom=${marginValues.marginBottom}${marginValues.marginBottomUnit}, marginLeft=${marginValues.marginLeft}${marginValues.marginLeftUnit}`);
+      } else {
+        console.warn(`⚠️ CSS Sync: Cannot parse margin shorthand: ${cssValue}`);
+      }
+      continue; // Skip normal processing for margin
+    }
+
     const paramName = CSS_TO_PARAM_MAP[cssProperty];
 
     if (paramName && cssValue) {
@@ -476,6 +592,24 @@ export function syncParametersToCSS(
       }
     }
     processedParams.add(paramName);
+  }
+
+  // ✨ NEW v2.1: Remove shorthand properties if individual properties were generated
+  // This prevents React warnings about mixing shorthand and longhand properties
+  const hasPaddingParams = Array.from(processedParams).some(p =>
+    ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'].includes(p)
+  );
+  if (hasPaddingParams) {
+    delete existingCSSObject['padding'];
+    console.log('🔧 Params Sync: Removed shorthand padding (individual properties exist)');
+  }
+
+  const hasMarginParams = Array.from(processedParams).some(p =>
+    ['marginTop', 'marginRight', 'marginBottom', 'marginLeft'].includes(p)
+  );
+  if (hasMarginParams) {
+    delete existingCSSObject['margin'];
+    console.log('🔧 Params Sync: Removed shorthand margin (individual properties exist)');
   }
 
   // Add back existing CSS properties that weren't overridden
