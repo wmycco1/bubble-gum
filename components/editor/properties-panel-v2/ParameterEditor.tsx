@@ -260,6 +260,12 @@ function renderControl(
       const bottomLeft = allParams['borderRadiusBottomLeft'];
       const bottomRight = allParams['borderRadiusBottomRight'];
 
+      // ✨ V8.2: Get unit parameters for each corner
+      const topLeftUnit = allParams['borderRadiusTopLeftUnit'] as string | undefined;
+      const topRightUnit = allParams['borderRadiusTopRightUnit'] as string | undefined;
+      const bottomLeftUnit = allParams['borderRadiusBottomLeftUnit'] as string | undefined;
+      const bottomRightUnit = allParams['borderRadiusBottomRightUnit'] as string | undefined;
+
       return (
         <BorderRadiusControl
           key={param.name}
@@ -270,10 +276,18 @@ function renderControl(
           topRight={topRight}
           bottomLeft={bottomLeft}
           bottomRight={bottomRight}
+          topLeftUnit={topLeftUnit}
+          topRightUnit={topRightUnit}
+          bottomLeftUnit={bottomLeftUnit}
+          bottomRightUnit={bottomRightUnit}
           onChange={onChange}
-          onCornerChange={(corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', cornerValue: number | undefined) => {
+          onCornerChange={(corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', cornerValue: number | undefined, unit?: string) => {
             // Handle individual corner changes
             onChange(`borderRadius${corner}`, cornerValue);
+            // ✨ V8.2: Save unit parameter if provided
+            if (unit !== undefined) {
+              onChange(`borderRadius${corner}Unit`, unit);
+            }
           }}
         />
       );

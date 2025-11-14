@@ -170,7 +170,7 @@ const getSmartWidth = (displayMode: string): string => {
 };
 
 /**
- * Apply spacing value (margin or padding) with smart fallback logic
+ * Apply spacing value (margin or padding) with smart fallback logic + unit support (V8.2)
  * DRY utility to avoid code duplication
  *
  * @param params - Spacing parameters
@@ -184,6 +184,8 @@ interface ApplySpacingParams {
   allowedAligns?: string[]; // Which align values allow this property
   debugLabel?: string;
   style?: React.CSSProperties; // ✨ NEW: style prop to check customCSS
+  unit?: string; // ✨ V8.2: Unit for the specific value (e.g., 'rem', 'vh')
+  fallbackUnit?: string; // ✨ V8.2: Unit for the fallback value
 }
 
 const applySpacing = (params: ApplySpacingParams): string[] => {
@@ -195,6 +197,8 @@ const applySpacing = (params: ApplySpacingParams): string[] => {
     allowedAligns = [ALIGNMENT_VALUES.NONE, ''],
     debugLabel = property,
     style, // ✨ NEW
+    unit = 'px', // ✨ V8.2: Default to px if not provided
+    fallbackUnit = 'px', // ✨ V8.2: Default to px if not provided
   } = params;
 
   const styles: string[] = [];
@@ -202,7 +206,7 @@ const applySpacing = (params: ApplySpacingParams): string[] => {
   // ✨ FIX: Don't override if property came from style prop (customCSS)
   const cssProp = property.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); // margin-left → marginLeft
   if (style && (style as any)[cssProp] !== undefined) {
-    devLog(`🚫 V8.1 ${debugLabel.toUpperCase()} SKIPPED: value from customCSS (${cssProp}: ${(style as any)[cssProp]})`);
+    devLog(`🚫 V8.2 ${debugLabel.toUpperCase()} SKIPPED: value from customCSS (${cssProp}: ${(style as any)[cssProp]})`);
     return styles;
   }
 
@@ -210,19 +214,19 @@ const applySpacing = (params: ApplySpacingParams): string[] => {
   const isAlignAllowed = !align || allowedAligns.includes(align);
 
   if (!isAlignAllowed) {
-    devLog(`🚫 V8.1 ${debugLabel.toUpperCase()} SKIPPED: align="${align}" is set (controlled by alignment logic)`);
+    devLog(`🚫 V8.2 ${debugLabel.toUpperCase()} SKIPPED: align="${align}" is set (controlled by alignment logic)`);
     return styles;
   }
 
-  // Apply specific value or fallback
+  // ✨ V8.2 FIX: Apply specific value WITH UNIT or fallback WITH UNIT
   if (specificValue !== undefined) {
-    styles.push(`${property}: ${specificValue}px !important`);
-    devLog(`✅ V8.1 ${debugLabel.toUpperCase()} APPLIED: ${specificValue}px (align="${align}")`);
+    styles.push(`${property}: ${specificValue}${unit} !important`);
+    devLog(`✅ V8.2 ${debugLabel.toUpperCase()} APPLIED: ${specificValue}${unit} (align="${align}")`);
   } else if (fallbackValue !== undefined) {
-    styles.push(`${property}: ${fallbackValue}px !important`);
-    devLog(`✅ V8.1 ${debugLabel.toUpperCase()} APPLIED (from fallback): ${fallbackValue}px (align="${align}")`);
+    styles.push(`${property}: ${fallbackValue}${fallbackUnit} !important`);
+    devLog(`✅ V8.2 ${debugLabel.toUpperCase()} APPLIED (from fallback): ${fallbackValue}${fallbackUnit} (align="${align}")`);
   } else {
-    devLog(`⚠️ V8.1 ${debugLabel.toUpperCase()} NOT APPLIED: specificValue=${specificValue}, fallbackValue=${fallbackValue} (align="${align}")`);
+    devLog(`⚠️ V8.2 ${debugLabel.toUpperCase()} NOT APPLIED: specificValue=${specificValue}, fallbackValue=${fallbackValue} (align="${align}")`);
   }
 
   return styles;
@@ -655,7 +659,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     ...rest
   } = params;
 
-  // ✨ V8.1: Extract unit parameters from params (for correct dependency tracking)
+  // ✨ V8.2: Extract unit parameters from params (for correct dependency tracking)
   const fontSizeUnit = (params as any).fontSizeUnit as string | undefined;
   const paddingTopUnit = (params as any).paddingTopUnit as string | undefined;
   const paddingRightUnit = (params as any).paddingRightUnit as string | undefined;
@@ -665,6 +669,11 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
   const marginRightUnit = (params as any).marginRightUnit as string | undefined;
   const marginBottomUnit = (params as any).marginBottomUnit as string | undefined;
   const marginLeftUnit = (params as any).marginLeftUnit as string | undefined;
+  // ✨ V8.2: Border radius unit parameters
+  const borderRadiusTopLeftUnit = (params as any).borderRadiusTopLeftUnit as string | undefined;
+  const borderRadiusTopRightUnit = (params as any).borderRadiusTopRightUnit as string | undefined;
+  const borderRadiusBottomLeftUnit = (params as any).borderRadiusBottomLeftUnit as string | undefined;
+  const borderRadiusBottomRightUnit = (params as any).borderRadiusBottomRightUnit as string | undefined;
 
   // ============================================
   // SECURITY LAYER (GOD-TIER V7.0)
@@ -1012,32 +1021,36 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       styleOverrides.push(`border-left-color: ${safeBorderColor} !important`);
     }
 
-    // V7.2 - Border Radius (smart: individual corners override shorthand)
+    // V8.2 - Border Radius (smart: individual corners override shorthand, WITH UNITS)
     if (safeBorderRadiusTopLeft !== undefined) {
-      styleOverrides.push(`border-top-left-radius: ${safeBorderRadiusTopLeft}px !important`);
+      const unit = borderRadiusTopLeftUnit || 'px'; // ✨ V8.2: Use unit parameter
+      styleOverrides.push(`border-top-left-radius: ${safeBorderRadiusTopLeft}${unit} !important`);
     } else if (safeBorderRadius !== undefined) {
       styleOverrides.push(`border-top-left-radius: ${safeBorderRadius}px !important`);
     }
 
     if (safeBorderRadiusTopRight !== undefined) {
-      styleOverrides.push(`border-top-right-radius: ${safeBorderRadiusTopRight}px !important`);
+      const unit = borderRadiusTopRightUnit || 'px'; // ✨ V8.2: Use unit parameter
+      styleOverrides.push(`border-top-right-radius: ${safeBorderRadiusTopRight}${unit} !important`);
     } else if (safeBorderRadius !== undefined) {
       styleOverrides.push(`border-top-right-radius: ${safeBorderRadius}px !important`);
     }
 
     if (safeBorderRadiusBottomLeft !== undefined) {
-      styleOverrides.push(`border-bottom-left-radius: ${safeBorderRadiusBottomLeft}px !important`);
+      const unit = borderRadiusBottomLeftUnit || 'px'; // ✨ V8.2: Use unit parameter
+      styleOverrides.push(`border-bottom-left-radius: ${safeBorderRadiusBottomLeft}${unit} !important`);
     } else if (safeBorderRadius !== undefined) {
       styleOverrides.push(`border-bottom-left-radius: ${safeBorderRadius}px !important`);
     }
 
     if (safeBorderRadiusBottomRight !== undefined) {
-      styleOverrides.push(`border-bottom-right-radius: ${safeBorderRadiusBottomRight}px !important`);
+      const unit = borderRadiusBottomRightUnit || 'px'; // ✨ V8.2: Use unit parameter
+      styleOverrides.push(`border-bottom-right-radius: ${safeBorderRadiusBottomRight}${unit} !important`);
     } else if (safeBorderRadius !== undefined) {
       styleOverrides.push(`border-bottom-right-radius: ${safeBorderRadius}px !important`);
     }
 
-    // V8.1 - Margin (smart: individual sides override shorthand, using DRY utility)
+    // V8.2 - Margin (smart: individual sides override shorthand, using DRY utility + UNITS)
     // IMPORTANT: If align is set, margin-left/margin-right are controlled by align, not margin
     // Top & Bottom: Always apply (alignment doesn't affect vertical margins)
     styleOverrides.push(...applySpacing({
@@ -1047,6 +1060,8 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       allowedAligns: undefined, // Always allowed (no align check)
       debugLabel: 'margin-top',
       style, // ✨ Pass style prop to check customCSS
+      unit: marginTopUnit || 'px', // ✨ V8.2: Pass unit parameter
+      fallbackUnit: 'px', // Fallback (margin shorthand) is always px
     }));
 
     // Right: Only apply if align is NOT set or is 'none'
@@ -1058,6 +1073,8 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       allowedAligns: [ALIGNMENT_VALUES.NONE, ''],
       debugLabel: 'margin-right',
       style, // ✨ Pass style prop
+      unit: marginRightUnit || 'px', // ✨ V8.2: Pass unit parameter
+      fallbackUnit: 'px',
     }));
 
     styleOverrides.push(...applySpacing({
@@ -1067,6 +1084,8 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       allowedAligns: undefined, // Always allowed (no align check)
       debugLabel: 'margin-bottom',
       style, // ✨ Pass style prop
+      unit: marginBottomUnit || 'px', // ✨ V8.2: Pass unit parameter
+      fallbackUnit: 'px',
     }));
 
     // Left: Only apply if align is NOT set or is 'none'
@@ -1078,27 +1097,33 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       allowedAligns: [ALIGNMENT_VALUES.NONE, ''],
       debugLabel: 'margin-left',
       style, // ✨ Pass style prop
+      unit: marginLeftUnit || 'px', // ✨ V8.2: Pass unit parameter
+      fallbackUnit: 'px',
     }));
 
-    // V7.1 - Padding (smart: individual sides override shorthand)
+    // V8.2 - Padding (smart: individual sides override shorthand, WITH UNITS)
     // ✨ FIX: Don't override padding if it came from style prop (customCSS)
     if (safePaddingTop !== undefined && !style?.paddingTop) {
-      styleOverrides.push(`padding-top: ${safePaddingTop}px !important`);
+      const unit = paddingTopUnit || 'px'; // ✨ V8.2: Use unit parameter
+      styleOverrides.push(`padding-top: ${safePaddingTop}${unit} !important`);
     } else if (safePadding && !style?.paddingTop) {
       styleOverrides.push(`padding-top: ${safePadding}px !important`);
     }
     if (safePaddingRight !== undefined && !style?.paddingRight) {
-      styleOverrides.push(`padding-right: ${safePaddingRight}px !important`);
+      const unit = paddingRightUnit || 'px'; // ✨ V8.2: Use unit parameter
+      styleOverrides.push(`padding-right: ${safePaddingRight}${unit} !important`);
     } else if (safePadding && !style?.paddingRight) {
       styleOverrides.push(`padding-right: ${safePadding}px !important`);
     }
     if (safePaddingBottom !== undefined && !style?.paddingBottom) {
-      styleOverrides.push(`padding-bottom: ${safePaddingBottom}px !important`);
+      const unit = paddingBottomUnit || 'px'; // ✨ V8.2: Use unit parameter
+      styleOverrides.push(`padding-bottom: ${safePaddingBottom}${unit} !important`);
     } else if (safePadding && !style?.paddingBottom) {
       styleOverrides.push(`padding-bottom: ${safePadding}px !important`);
     }
     if (safePaddingLeft !== undefined && !style?.paddingLeft) {
-      styleOverrides.push(`padding-left: ${safePaddingLeft}px !important`);
+      const unit = paddingLeftUnit || 'px'; // ✨ V8.2: Use unit parameter
+      styleOverrides.push(`padding-left: ${safePaddingLeft}${unit} !important`);
     } else if (safePadding && !style?.paddingLeft) {
       styleOverrides.push(`padding-left: ${safePadding}px !important`);
     }
@@ -1365,7 +1390,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     // V7.6 - Animation (safe* values for instant reactivity)
     safeTransitionDuration,
     safeTransitionTimingFunction,
-    // ✨ V8.1 FIX: Add unit parameters for correct fontSize/spacing recalculation
+    // ✨ V8.2 FIX: Add unit parameters for correct fontSize/spacing/borderRadius recalculation
     fontSizeUnit,
     paddingTopUnit,
     paddingRightUnit,
@@ -1375,6 +1400,10 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
     marginRightUnit,
     marginBottomUnit,
     marginLeftUnit,
+    borderRadiusTopLeftUnit,
+    borderRadiusTopRightUnit,
+    borderRadiusBottomLeftUnit,
+    borderRadiusBottomRightUnit,
     // ✨ CRITICAL: Add style prop to recalculate when customCSS changes
     style,
   ]);

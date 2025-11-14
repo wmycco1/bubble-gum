@@ -213,6 +213,78 @@ function parseShorthandSpacing(
 }
 
 /**
+ * Parse shorthand border-radius (1-4 values with units)
+ * Follows CSS border-radius shorthand rules:
+ * - 1 value: all corners
+ * - 2 values: top-left/bottom-right, top-right/bottom-left
+ * - 3 values: top-left, top-right/bottom-left, bottom-right
+ * - 4 values: top-left, top-right, bottom-right, bottom-left (clockwise from top-left)
+ *
+ * @param value - border-radius value (e.g., "10px 20rem 30% 5vh")
+ * @returns Object with individual corner values and units
+ */
+function parseShorthandBorderRadius(
+  value: string
+): Record<string, number | string> | null {
+  const values = value.trim().split(/\s+/);
+  if (values.length === 0 || values.length > 4) return null;
+
+  // Parse all values
+  const parsed = values.map(v => parseValueWithUnit(v));
+  if (parsed.some(p => p === null)) return null; // Some values failed to parse
+
+  const result: Record<string, number | string> = {};
+
+  if (parsed.length === 1) {
+    // border-radius: 10px → all corners
+    const { value: val, unit } = parsed[0]!;
+    result.borderRadiusTopLeft = val;
+    result.borderRadiusTopLeftUnit = unit;
+    result.borderRadiusTopRight = val;
+    result.borderRadiusTopRightUnit = unit;
+    result.borderRadiusBottomRight = val;
+    result.borderRadiusBottomRightUnit = unit;
+    result.borderRadiusBottomLeft = val;
+    result.borderRadiusBottomLeftUnit = unit;
+  } else if (parsed.length === 2) {
+    // border-radius: 10px 20rem → top-left/bottom-right, top-right/bottom-left
+    const [topLeftBottomRight, topRightBottomLeft] = parsed as Array<{ value: number; unit: string }>;
+    result.borderRadiusTopLeft = topLeftBottomRight.value;
+    result.borderRadiusTopLeftUnit = topLeftBottomRight.unit;
+    result.borderRadiusBottomRight = topLeftBottomRight.value;
+    result.borderRadiusBottomRightUnit = topLeftBottomRight.unit;
+    result.borderRadiusTopRight = topRightBottomLeft.value;
+    result.borderRadiusTopRightUnit = topRightBottomLeft.unit;
+    result.borderRadiusBottomLeft = topRightBottomLeft.value;
+    result.borderRadiusBottomLeftUnit = topRightBottomLeft.unit;
+  } else if (parsed.length === 3) {
+    // border-radius: 10px 20rem 30% → top-left, top-right/bottom-left, bottom-right
+    const [topLeft, topRightBottomLeft, bottomRight] = parsed as Array<{ value: number; unit: string }>;
+    result.borderRadiusTopLeft = topLeft.value;
+    result.borderRadiusTopLeftUnit = topLeft.unit;
+    result.borderRadiusTopRight = topRightBottomLeft.value;
+    result.borderRadiusTopRightUnit = topRightBottomLeft.unit;
+    result.borderRadiusBottomLeft = topRightBottomLeft.value;
+    result.borderRadiusBottomLeftUnit = topRightBottomLeft.unit;
+    result.borderRadiusBottomRight = bottomRight.value;
+    result.borderRadiusBottomRightUnit = bottomRight.unit;
+  } else if (parsed.length === 4) {
+    // border-radius: 10px 20rem 30% 5vh → top-left, top-right, bottom-right, bottom-left (clockwise)
+    const [topLeft, topRight, bottomRight, bottomLeft] = parsed as Array<{ value: number; unit: string }>;
+    result.borderRadiusTopLeft = topLeft.value;
+    result.borderRadiusTopLeftUnit = topLeft.unit;
+    result.borderRadiusTopRight = topRight.value;
+    result.borderRadiusTopRightUnit = topRight.unit;
+    result.borderRadiusBottomRight = bottomRight.value;
+    result.borderRadiusBottomRightUnit = bottomRight.unit;
+    result.borderRadiusBottomLeft = bottomLeft.value;
+    result.borderRadiusBottomLeftUnit = bottomLeft.unit;
+  }
+
+  return result;
+}
+
+/**
  * Convert CSS value to component parameter value
  * Handles unit conversion and type coercion
  *
@@ -428,6 +500,18 @@ export function syncCSSToParameters(
       continue; // Skip normal processing for margin
     }
 
+    // ✨ NEW v2.2: Special handling for shorthand border-radius (1-4 values with units)
+    if (cssProperty === 'border-radius' && cssValue) {
+      const borderRadiusValues = parseShorthandBorderRadius(String(cssValue));
+      if (borderRadiusValues) {
+        Object.assign(updatedParams, borderRadiusValues);
+        console.log(`🔄 CSS Sync: border-radius: ${cssValue} → borderRadiusTopLeft=${borderRadiusValues.borderRadiusTopLeft}${borderRadiusValues.borderRadiusTopLeftUnit}, borderRadiusTopRight=${borderRadiusValues.borderRadiusTopRight}${borderRadiusValues.borderRadiusTopRightUnit}, borderRadiusBottomRight=${borderRadiusValues.borderRadiusBottomRight}${borderRadiusValues.borderRadiusBottomRightUnit}, borderRadiusBottomLeft=${borderRadiusValues.borderRadiusBottomLeft}${borderRadiusValues.borderRadiusBottomLeftUnit}`);
+      } else {
+        console.warn(`⚠️ CSS Sync: Cannot parse border-radius shorthand: ${cssValue}`);
+      }
+      continue; // Skip normal processing for border-radius
+    }
+
     const paramName = CSS_TO_PARAM_MAP[cssProperty];
 
     if (paramName && cssValue) {
@@ -610,6 +694,15 @@ export function syncParametersToCSS(
   if (hasMarginParams) {
     delete existingCSSObject['margin'];
     console.log('🔧 Params Sync: Removed shorthand margin (individual properties exist)');
+  }
+
+  // ✨ NEW v2.2: Remove shorthand border-radius if individual corner properties exist
+  const hasBorderRadiusParams = Array.from(processedParams).some(p =>
+    ['borderRadiusTopLeft', 'borderRadiusTopRight', 'borderRadiusBottomRight', 'borderRadiusBottomLeft'].includes(p)
+  );
+  if (hasBorderRadiusParams) {
+    delete existingCSSObject['border-radius'];
+    console.log('🔧 Params Sync: Removed shorthand border-radius (individual corner properties exist)');
   }
 
   // Add back existing CSS properties that weren't overridden

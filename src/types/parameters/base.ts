@@ -96,7 +96,7 @@ export interface BaseParameters {
    * Use for: decorative elements, duplicate content
    *
    * @example
-   * <Icon aria-hidden={true} /> {/* Decorative icon */}
+   * <Icon aria-hidden={true} /> // Decorative icon
    */
   'aria-hidden'?: boolean;
 

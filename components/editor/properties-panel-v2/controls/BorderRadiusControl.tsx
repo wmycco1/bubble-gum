@@ -136,7 +136,7 @@ interface BorderRadiusControlProps {
   /** Callback for shorthand change */
   onChange: (name: string, value: number | undefined) => void;
   /** Callback for individual corner change */
-  onCornerChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined) => void;
+  onCornerChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined, unit?: string) => void;
   description?: string;
   /** Unit selectors for each corner (Advanced mode) */
   topLeftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
@@ -558,7 +558,7 @@ interface CompactCornerControlProps {
   corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight';
   value?: number;
   unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
-  onValueChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined) => void;
+  onValueChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined, unit?: string) => void;
   onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
 }
 
@@ -585,19 +585,19 @@ function CompactCornerControl({
     const currentValue = valueRef.current;
     const newValue = currentValue + 1;
     if (onValueChange) {
-      onValueChange(corner, newValue);
+      onValueChange(corner, newValue, unit);
       valueRef.current = newValue;
     }
-  }, [corner, onValueChange]);
+  }, [corner, onValueChange, unit]);
 
   const handleDecrement = React.useCallback(() => {
     const currentValue = valueRef.current;
     const newValue = Math.max(0, currentValue - 1);
     if (onValueChange) {
-      onValueChange(corner, newValue);
+      onValueChange(corner, newValue, unit);
       valueRef.current = newValue;
     }
-  }, [corner, onValueChange]);
+  }, [corner, onValueChange, unit]);
 
   const startIncrement = () => {
     setIsIncrementPressed(true);
@@ -655,7 +655,7 @@ function CompactCornerControl({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? undefined : Number(e.target.value);
     if (onValueChange) {
-      onValueChange(corner, newValue);
+      onValueChange(corner, newValue, unit);
     }
   };
 
@@ -731,7 +731,7 @@ function CompactCornerControl({
           // Convert value to new unit if value exists
           if (value !== undefined && value !== null && onValueChange) {
             const convertedValue = convertUnit(value, unit, newUnit);
-            onValueChange(corner, convertedValue);
+            onValueChange(corner, convertedValue, newUnit);
           }
 
           // Update unit
@@ -758,7 +758,7 @@ interface CornerControlProps {
   corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight';
   value?: number;
   unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
-  onValueChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined) => void;
+  onValueChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined, unit?: string) => void;
   onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
 }
 
@@ -784,19 +784,19 @@ function CornerControl({
     const currentValue = valueRef.current;
     const newValue = currentValue + 1;
     if (onValueChange) {
-      onValueChange(corner, newValue);
+      onValueChange(corner, newValue, unit);
       valueRef.current = newValue;
     }
-  }, [corner, onValueChange]);
+  }, [corner, onValueChange, unit]);
 
   const handleDecrement = React.useCallback(() => {
     const currentValue = valueRef.current;
     const newValue = Math.max(0, currentValue - 1);
     if (onValueChange) {
-      onValueChange(corner, newValue);
+      onValueChange(corner, newValue, unit);
       valueRef.current = newValue;
     }
-  }, [corner, onValueChange]);
+  }, [corner, onValueChange, unit]);
 
   const startIncrement = () => {
     setIsIncrementPressed(true);
@@ -854,7 +854,7 @@ function CornerControl({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value === '' ? undefined : Number(e.target.value);
     if (onValueChange) {
-      onValueChange(corner, newValue);
+      onValueChange(corner, newValue, unit);
     }
   };
 
@@ -925,7 +925,7 @@ function CornerControl({
           // Convert value to new unit if value exists
           if (value !== undefined && value !== null && onValueChange) {
             const convertedValue = convertUnit(value, unit, newUnit);
-            onValueChange(corner, convertedValue);
+            onValueChange(corner, convertedValue, newUnit);
           }
 
           // Update unit
