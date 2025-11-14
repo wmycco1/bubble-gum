@@ -183,6 +183,7 @@ interface ApplySpacingParams {
   align?: string;
   allowedAligns?: string[]; // Which align values allow this property
   debugLabel?: string;
+  style?: React.CSSProperties; // ✨ NEW: style prop to check customCSS
 }
 
 const applySpacing = (params: ApplySpacingParams): string[] => {
@@ -193,9 +194,17 @@ const applySpacing = (params: ApplySpacingParams): string[] => {
     align,
     allowedAligns = [ALIGNMENT_VALUES.NONE, ''],
     debugLabel = property,
+    style, // ✨ NEW
   } = params;
 
   const styles: string[] = [];
+
+  // ✨ FIX: Don't override if property came from style prop (customCSS)
+  const cssProp = property.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()); // margin-left → marginLeft
+  if (style && (style as any)[cssProp] !== undefined) {
+    devLog(`🚫 V8.1 ${debugLabel.toUpperCase()} SKIPPED: value from customCSS (${cssProp}: ${(style as any)[cssProp]})`);
+    return styles;
+  }
 
   // Check if alignment allows this property
   const isAlignAllowed = !align || allowedAligns.includes(align);
@@ -1026,6 +1035,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       property: 'margin-top',
       allowedAligns: undefined, // Always allowed (no align check)
       debugLabel: 'margin-top',
+      style, // ✨ Pass style prop to check customCSS
     }));
 
     // Right: Only apply if align is NOT set or is 'none'
@@ -1036,6 +1046,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       align,
       allowedAligns: [ALIGNMENT_VALUES.NONE, ''],
       debugLabel: 'margin-right',
+      style, // ✨ Pass style prop
     }));
 
     styleOverrides.push(...applySpacing({
@@ -1044,6 +1055,7 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       property: 'margin-bottom',
       allowedAligns: undefined, // Always allowed (no align check)
       debugLabel: 'margin-bottom',
+      style, // ✨ Pass style prop
     }));
 
     // Left: Only apply if align is NOT set or is 'none'
@@ -1054,27 +1066,29 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       align,
       allowedAligns: [ALIGNMENT_VALUES.NONE, ''],
       debugLabel: 'margin-left',
+      style, // ✨ Pass style prop
     }));
 
     // V7.1 - Padding (smart: individual sides override shorthand)
-    if (safePaddingTop !== undefined) {
+    // ✨ FIX: Don't override padding if it came from style prop (customCSS)
+    if (safePaddingTop !== undefined && !style?.paddingTop) {
       styleOverrides.push(`padding-top: ${safePaddingTop}px !important`);
-    } else if (safePadding) {
+    } else if (safePadding && !style?.paddingTop) {
       styleOverrides.push(`padding-top: ${safePadding}px !important`);
     }
-    if (safePaddingRight !== undefined) {
+    if (safePaddingRight !== undefined && !style?.paddingRight) {
       styleOverrides.push(`padding-right: ${safePaddingRight}px !important`);
-    } else if (safePadding) {
+    } else if (safePadding && !style?.paddingRight) {
       styleOverrides.push(`padding-right: ${safePadding}px !important`);
     }
-    if (safePaddingBottom !== undefined) {
+    if (safePaddingBottom !== undefined && !style?.paddingBottom) {
       styleOverrides.push(`padding-bottom: ${safePaddingBottom}px !important`);
-    } else if (safePadding) {
+    } else if (safePadding && !style?.paddingBottom) {
       styleOverrides.push(`padding-bottom: ${safePadding}px !important`);
     }
-    if (safePaddingLeft !== undefined) {
+    if (safePaddingLeft !== undefined && !style?.paddingLeft) {
       styleOverrides.push(`padding-left: ${safePaddingLeft}px !important`);
-    } else if (safePadding) {
+    } else if (safePadding && !style?.paddingLeft) {
       styleOverrides.push(`padding-left: ${safePadding}px !important`);
     }
 
@@ -1392,14 +1406,16 @@ export const BadgeInner: React.FC<BadgeProps> = (props) => {
       }
 
       // V7.1 - Clear spacing ONLY if props are set
-      if (margin !== undefined || marginTop !== undefined) spanRef.current.style.marginTop = '';
-      if (margin !== undefined || marginRight !== undefined) spanRef.current.style.marginRight = '';
-      if (margin !== undefined || marginBottom !== undefined) spanRef.current.style.marginBottom = '';
-      if (margin !== undefined || marginLeft !== undefined) spanRef.current.style.marginLeft = '';
-      if (padding !== undefined || paddingTop !== undefined) spanRef.current.style.paddingTop = '';
-      if (padding !== undefined || paddingRight !== undefined) spanRef.current.style.paddingRight = '';
-      if (padding !== undefined || paddingBottom !== undefined) spanRef.current.style.paddingBottom = '';
-      if (padding !== undefined || paddingLeft !== undefined) spanRef.current.style.paddingLeft = '';
+      // ✨ FIX: Don't clear margin if it came from style prop (customCSS)
+      if ((margin !== undefined || marginTop !== undefined) && !style?.marginTop) spanRef.current.style.marginTop = '';
+      if ((margin !== undefined || marginRight !== undefined) && !style?.marginRight) spanRef.current.style.marginRight = '';
+      if ((margin !== undefined || marginBottom !== undefined) && !style?.marginBottom) spanRef.current.style.marginBottom = '';
+      if ((margin !== undefined || marginLeft !== undefined) && !style?.marginLeft) spanRef.current.style.marginLeft = '';
+      // ✨ FIX: Don't clear padding if it came from style prop (customCSS)
+      if ((padding !== undefined || paddingTop !== undefined) && !style?.paddingTop) spanRef.current.style.paddingTop = '';
+      if ((padding !== undefined || paddingRight !== undefined) && !style?.paddingRight) spanRef.current.style.paddingRight = '';
+      if ((padding !== undefined || paddingBottom !== undefined) && !style?.paddingBottom) spanRef.current.style.paddingBottom = '';
+      if ((padding !== undefined || paddingLeft !== undefined) && !style?.paddingLeft) spanRef.current.style.paddingLeft = '';
 
       // V7.7 - Clear shadow ONLY if shadow prop is set AND boxShadow didn't come from style prop (customCSS)
       // This allows customCSS box-shadow to work while respecting shadow prop

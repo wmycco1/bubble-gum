@@ -90,26 +90,30 @@ const PARAM_TO_CSS_MAP: Record<string, string> = Object.fromEntries(
  * Extract numeric value from CSS unit string
  *
  * @param value - CSS value (e.g., "16px", "1.5rem", "100%")
+ * @param allowedUnits - Array of allowed units (default: ['px'])
  * @returns Numeric value or original string
  *
  * @example
  * extractNumericValue("16px") // 16
- * extractNumericValue("1.5rem") // 1.5
+ * extractNumericValue("1.5rem") // "1.5rem" (non-px unit, return as string)
  * extractNumericValue("auto") // "auto"
  */
-function extractNumericValue(value: string): number | string {
+function extractNumericValue(value: string, allowedUnits: string[] = ['px']): number | string {
   // Try to extract number from string like "16px", "1.5rem", etc.
-  const match = value.match(/^(-?\d+\.?\d*)(px|rem|em|%)?$/);
+  const match = value.match(/^(-?\d+\.?\d*)(px|rem|em|%|vh|vw)?$/);
   if (match) {
     const numValue = parseFloat(match[1]);
-    const unit = match[2];
+    const unit = match[2] || 'px'; // Default to px if no unit specified
 
-    // Convert rem/em to px (assuming 1rem = 16px)
-    if (unit === 'rem' || unit === 'em') {
-      return numValue * 16;
+    // ✨ FIX: Only extract numeric value if unit is allowed
+    // For spacing (padding/margin), only px is supported in parameters
+    // Other units (rem, em, %, vh, vw) should stay in Custom CSS only
+    if (allowedUnits.includes(unit)) {
+      return numValue;
     }
 
-    return numValue;
+    // Return original string if unit is not allowed (keeps "70rem" as is)
+    return value;
   }
 
   // Return original string if no numeric extraction possible
@@ -139,19 +143,22 @@ function cssValueToParamValue(cssProperty: string, cssValue: string): any {
     return weightMap[cssValue] || parseInt(cssValue) || cssValue;
   }
 
-  // Spacing properties: extract numeric value
+  // Spacing properties: extract numeric value (px only!)
+  // ✨ FIX: Only px units are supported in parameters for spacing
+  // Other units (rem, em, %, vh, vw) should stay in Custom CSS only
   if (paramName.includes('margin') || paramName.includes('padding') || paramName.includes('gap')) {
-    return extractNumericValue(cssValue);
+    return extractNumericValue(cssValue, ['px']); // Only px allowed
   }
 
-  // Font size: extract numeric value
+  // Font size: extract numeric value (handled specially in syncCSSToParameters)
+  // This is a fallback for cases where fontSize is not parsed with unit
   if (paramName === 'fontSize') {
-    return extractNumericValue(cssValue);
+    return extractNumericValue(cssValue, ['px']); // Fallback: only px
   }
 
-  // Letter spacing: extract numeric value
+  // Letter spacing: extract numeric value (px only!)
   if (paramName === 'letterSpacing') {
-    return extractNumericValue(cssValue);
+    return extractNumericValue(cssValue, ['px']); // Only px allowed
   }
 
   // Opacity: CSS uses 0-1, but OpacityControl expects 0-100
@@ -169,14 +176,14 @@ function cssValueToParamValue(cssProperty: string, cssValue: string): any {
     return Math.round(opacity * 100);
   }
 
-  // Border radius: extract numeric value
+  // Border radius: extract numeric value (px only!)
   if (paramName.includes('borderRadius') || paramName.includes('Radius')) {
-    return extractNumericValue(cssValue);
+    return extractNumericValue(cssValue, ['px']); // Only px allowed
   }
 
-  // Border width: extract numeric value
+  // Border width: extract numeric value (px only!)
   if (paramName === 'borderWidth') {
-    return extractNumericValue(cssValue);
+    return extractNumericValue(cssValue, ['px']); // Only px allowed
   }
 
   // Default: return as-is
@@ -306,6 +313,17 @@ export function syncCSSToParameters(
 
       // ✨ FIX: Only add valid values (skip undefined/NaN)
       if (paramValue !== undefined && paramValue !== null) {
+        // ✨ FIX: Skip string values for numeric parameters (e.g., "70rem" for paddingTop)
+        // These non-px units should stay in Custom CSS only, not sync to parameters
+        if (typeof paramValue === 'string' &&
+            (paramName.includes('padding') || paramName.includes('margin') ||
+             paramName.includes('Radius') || paramName.includes('Width') ||
+             paramName.includes('Height') || paramName === 'letterSpacing' ||
+             paramName === 'gap' || paramName === 'fontSize')) {
+          console.warn(`⚠️ CSS Sync: Skipping non-px value for ${paramName}: ${paramValue} (only px supported in parameters)`);
+          continue; // Skip this parameter
+        }
+
         updatedParams[paramName] = paramValue;
       }
     }
