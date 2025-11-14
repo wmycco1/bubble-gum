@@ -441,9 +441,9 @@ export function ShadowControl({
                   title={p.description}
                 >
                   {/* Shadow demonstration - larger white rectangle */}
-                  <div className="w-full h-14 flex items-center justify-center">
+                  <div className="w-full h-16 flex items-center justify-center">
                     <div
-                      className="w-12 h-9 bg-white rounded-md"
+                      className="w-16 h-11 bg-white rounded-md"
                       style={{ boxShadow: shadowStyle }}
                     />
                   </div>
