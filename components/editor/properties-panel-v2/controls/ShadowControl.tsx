@@ -473,7 +473,7 @@ export function ShadowControl({
           </div>
 
           {/* Controls - Auto-responsive Grid: fits 2 cols if width allows (min 180px each) */}
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-2">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-2 mb-2">
             {/* Offset X */}
             <ShadowInput
               label="Offset X"
@@ -510,8 +510,11 @@ export function ShadowControl({
               onChange={(value) => onCustomChange?.('spread', value)}
               onUnitChange={(unit) => onUnitChange?.('spread', unit)}
             />
+          </div>
 
-            {/* Color - full width on small, half on large */}
+          {/* Color and Opacity - separate rows outside grid */}
+          <div className="space-y-2">
+            {/* Color */}
             <div className="flex items-center gap-2">
               <label className="text-xs text-gray-600 whitespace-nowrap min-w-[60px]">Color:</label>
               <input
@@ -523,7 +526,7 @@ export function ShadowControl({
               />
             </div>
 
-            {/* Opacity - full width on small, half on large */}
+            {/* Opacity */}
             <div className="flex items-center gap-2">
               <label className="text-xs text-gray-600 whitespace-nowrap min-w-[60px]">Opacity:</label>
               <span className="text-xs text-gray-700 font-medium min-w-[36px]">{opacity}%</span>
