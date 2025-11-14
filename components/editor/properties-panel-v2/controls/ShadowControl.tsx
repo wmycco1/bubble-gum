@@ -212,26 +212,7 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
           style={{ MozAppearance: 'textfield' }}
         />
 
-        {/* Unit selector */}
-        <select
-          value={unit}
-          onChange={(e) => {
-            const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
-            const convertedValue = convertUnit(value, unit, newUnit);
-            onChange(convertedValue);
-            onUnitChange(newUnit);
-          }}
-          className="px-2 py-1.5 text-sm border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm hover:border-gray-400 transition-colors"
-        >
-          <option value="px">px</option>
-          <option value="rem">rem</option>
-          <option value="em">em</option>
-          <option value="%">%</option>
-          <option value="vh">vh</option>
-          <option value="vw">vw</option>
-        </select>
-
-        {/* Increment button (right) */}
+        {/* Increment button */}
         <button
           type="button"
           onMouseDown={startIncrement}
@@ -250,6 +231,25 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
         >
           +
         </button>
+
+        {/* Unit selector (after + button) */}
+        <select
+          value={unit}
+          onChange={(e) => {
+            const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+            const convertedValue = convertUnit(value, unit, newUnit);
+            onChange(convertedValue);
+            onUnitChange(newUnit);
+          }}
+          className="px-2 py-1.5 text-sm border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm hover:border-gray-400 transition-colors"
+        >
+          <option value="px">px</option>
+          <option value="rem">rem</option>
+          <option value="em">em</option>
+          <option value="%">%</option>
+          <option value="vh">vh</option>
+          <option value="vw">vw</option>
+        </select>
       </div>
     </div>
   );
