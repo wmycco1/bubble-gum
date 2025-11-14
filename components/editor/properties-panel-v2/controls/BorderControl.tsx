@@ -1,6 +1,72 @@
 'use client';
 
 /**
+ * convertUnit - Convert values between different CSS units
+ * Two-step conversion: source unit → px → target unit
+ */
+function convertUnit(
+  value: number,
+  fromUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw',
+  toUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'
+): number {
+  if (fromUnit === toUnit) return value;
+
+  const baseFontSize = 16; // 1rem = 16px
+  const referenceWidth = 400; // Reference container width for % calculations
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080;
+
+  // Step 1: Convert from source unit to px
+  let valueInPx = value;
+  switch (fromUnit) {
+    case 'rem':
+      valueInPx = value * baseFontSize;
+      break;
+    case 'em':
+      valueInPx = value * baseFontSize;
+      break;
+    case '%':
+      valueInPx = (value / 100) * referenceWidth;
+      break;
+    case 'vh':
+      valueInPx = (value / 100) * viewportHeight;
+      break;
+    case 'vw':
+      valueInPx = (value / 100) * viewportWidth;
+      break;
+    case 'px':
+    default:
+      valueInPx = value;
+  }
+
+  // Step 2: Convert from px to target unit
+  let result = valueInPx;
+  switch (toUnit) {
+    case 'rem':
+      result = valueInPx / baseFontSize;
+      break;
+    case 'em':
+      result = valueInPx / baseFontSize;
+      break;
+    case '%':
+      result = (valueInPx / referenceWidth) * 100;
+      break;
+    case 'vh':
+      result = (valueInPx / viewportHeight) * 100;
+      break;
+    case 'vw':
+      result = (valueInPx / viewportWidth) * 100;
+      break;
+    case 'px':
+    default:
+      result = valueInPx;
+  }
+
+  // Round to 2 decimal places
+  return Math.round(result * 100) / 100;
+}
+
+/**
  * BorderControl - Modern UI for Border (V8.0 - External Buttons)
  *
  * Features:
@@ -31,10 +97,17 @@ interface BorderControlProps {
   rightColor?: string;
   bottomColor?: string;
   leftColor?: string;
+  /** Unit selectors for each side (Advanced mode) */
+  topUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  rightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  bottomUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  leftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   /** Callback for shorthand change */
   onChange: (name: string, value: number | undefined) => void;
   /** Callback for individual side change */
   onSideChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', value: number | undefined) => void;
+  /** Callback for unit change */
+  onUnitChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
   /** Callback for style change */
   onStyleChange?: (style: string) => void;
   /** Callback for color change (shorthand) */
@@ -58,12 +131,14 @@ const BORDER_STYLES = [
  */
 interface BorderWidthInputProps {
   value?: number;
-  unit: 'px' | 'rem' | 'em' | '%';
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onUnitChange?: (unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
   step: number;
+  onValueChange: (value: number | undefined) => void;
 }
 
-function BorderWidthInput({ value, unit, onChange, step }: BorderWidthInputProps) {
+function BorderWidthInput({ value, unit, onChange, onUnitChange, step, onValueChange }: BorderWidthInputProps) {
   const [isIncrementPressed, setIsIncrementPressed] = React.useState(false);
   const [isDecrementPressed, setIsDecrementPressed] = React.useState(false);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -219,10 +294,10 @@ interface BorderSideControlProps {
   side: 'Top' | 'Right' | 'Bottom' | 'Left';
   value?: number;
   fallbackValue?: number;
-  unit: 'px' | 'rem' | 'em' | '%';
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   color: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onUnitChange: (unit: 'px' | 'rem' | 'em' | '%') => void;
+  onUnitChange: (unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
   onColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   step: number;
 }
@@ -383,13 +458,28 @@ function BorderSideControl({
       {/* Unit selector dropdown */}
       <select
         value={unit}
-        onChange={(e) => onUnitChange(e.target.value as 'px' | 'rem' | 'em' | '%')}
+        onChange={(e) => {
+          const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+          // Convert value if it exists
+          if (displayValue && typeof displayValue === 'number') {
+            const convertedValue = convertUnit(displayValue, unit, newUnit);
+            const syntheticEvent = {
+              target: { value: String(convertedValue) },
+            } as React.ChangeEvent<HTMLInputElement>;
+            onChange(syntheticEvent);
+          }
+
+          onUnitChange(newUnit);
+        }}
         className="w-14 px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
         <option value="em">em</option>
         <option value="%">%</option>
+        <option value="vh">vh</option>
+        <option value="vw">vw</option>
       </select>
 
       {/* Color picker */}
@@ -417,15 +507,20 @@ export function BorderControl({
   rightColor,
   bottomColor,
   leftColor,
+  topUnit = 'px',
+  rightUnit = 'px',
+  bottomUnit = 'px',
+  leftUnit = 'px',
   onChange,
   onSideChange,
+  onUnitChange,
   onStyleChange,
   onColorChange,
   onSideColorChange,
   description,
 }: BorderControlProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [unit, setUnit] = useState<'px' | 'rem' | 'em' | '%'>('px');
+  const [unit, setUnit] = useState<'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'>('px');
 
   // Check if any individual sides are set
   const hasIndividualValues = top !== undefined || right !== undefined || bottom !== undefined || left !== undefined;
@@ -480,6 +575,12 @@ export function BorderControl({
   const handleSideColorChange = (side: 'Top' | 'Right' | 'Bottom' | 'Left', e: React.ChangeEvent<HTMLInputElement>) => {
     if (onSideColorChange) {
       onSideColorChange(side, e.target.value);
+    }
+  };
+
+  const handleUnitChange = (side: 'Top' | 'Right' | 'Bottom' | 'Left', newUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => {
+    if (onUnitChange) {
+      onUnitChange(side, newUnit);
     }
   };
 
@@ -559,17 +660,39 @@ export function BorderControl({
                   value={value}
                   unit={unit}
                   onChange={handleShorthandChange}
+                  onValueChange={(newValue) => onChange('border', newValue)}
                   step={unit === 'px' ? 1 : 0.1}
                 />
                 <select
                   value={unit}
-                  onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
+                  onChange={(e) => {
+                    const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+                    // Convert value to new unit if value exists
+                    if (value !== undefined && value !== null) {
+                      const convertedValue = convertUnit(value, unit, newUnit);
+                      onChange('border', convertedValue);
+                    }
+
+                    // Update unit for all 4 sides (so canvas displays the new unit)
+                    if (onUnitChange) {
+                      onUnitChange('Top', newUnit);
+                      onUnitChange('Right', newUnit);
+                      onUnitChange('Bottom', newUnit);
+                      onUnitChange('Left', newUnit);
+                    }
+
+                    // Update local state
+                    setUnit(newUnit);
+                  }}
                   className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 >
                   <option value="px">px</option>
                   <option value="rem">rem</option>
                   <option value="em">em</option>
                   <option value="%">%</option>
+                  <option value="vh">vh</option>
+                  <option value="vw">vw</option>
                 </select>
               </div>
             </div>
@@ -723,12 +846,12 @@ export function BorderControl({
                 side="Top"
                 value={top}
                 fallbackValue={value}
-                unit={unit}
+                unit={topUnit}
                 color={topColor ?? borderColor}
                 onChange={(e) => handleSideChange('Top', e)}
-                onUnitChange={setUnit}
+                onUnitChange={(newUnit) => handleUnitChange('Top', newUnit)}
                 onColorChange={(e) => handleSideColorChange('Top', e)}
-                step={unit === 'px' ? 1 : 0.1}
+                step={topUnit === 'px' ? 1 : 0.1}
               />
             </div>
 
@@ -738,12 +861,12 @@ export function BorderControl({
                 side="Right"
                 value={right}
                 fallbackValue={value}
-                unit={unit}
+                unit={rightUnit}
                 color={rightColor ?? borderColor}
                 onChange={(e) => handleSideChange('Right', e)}
-                onUnitChange={setUnit}
+                onUnitChange={(newUnit) => handleUnitChange('Right', newUnit)}
                 onColorChange={(e) => handleSideColorChange('Right', e)}
-                step={unit === 'px' ? 1 : 0.1}
+                step={rightUnit === 'px' ? 1 : 0.1}
               />
             </div>
 
@@ -753,12 +876,12 @@ export function BorderControl({
                 side="Bottom"
                 value={bottom}
                 fallbackValue={value}
-                unit={unit}
+                unit={bottomUnit}
                 color={bottomColor ?? borderColor}
                 onChange={(e) => handleSideChange('Bottom', e)}
-                onUnitChange={setUnit}
+                onUnitChange={(newUnit) => handleUnitChange('Bottom', newUnit)}
                 onColorChange={(e) => handleSideColorChange('Bottom', e)}
-                step={unit === 'px' ? 1 : 0.1}
+                step={bottomUnit === 'px' ? 1 : 0.1}
               />
             </div>
 
@@ -768,12 +891,12 @@ export function BorderControl({
                 side="Left"
                 value={left}
                 fallbackValue={value}
-                unit={unit}
+                unit={leftUnit}
                 color={leftColor ?? borderColor}
                 onChange={(e) => handleSideChange('Left', e)}
-                onUnitChange={setUnit}
+                onUnitChange={(newUnit) => handleUnitChange('Left', newUnit)}
                 onColorChange={(e) => handleSideColorChange('Left', e)}
-                step={unit === 'px' ? 1 : 0.1}
+                step={leftUnit === 'px' ? 1 : 0.1}
               />
             </div>
           </div>

@@ -267,6 +267,12 @@ function renderControl(
       const bottomColor = allParams['borderBottomColor'];
       const leftColor = allParams['borderLeftColor'];
 
+      // Get units for each side (default to 'px')
+      const topUnit = allParams['borderTopWidthUnit'] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+      const rightUnit = allParams['borderRightWidthUnit'] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+      const bottomUnit = allParams['borderBottomWidthUnit'] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+      const leftUnit = allParams['borderLeftWidthUnit'] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+
       return (
         <BorderControl
           key={param.name}
@@ -283,10 +289,18 @@ function renderControl(
           rightColor={rightColor}
           bottomColor={bottomColor}
           leftColor={leftColor}
+          topUnit={topUnit}
+          rightUnit={rightUnit}
+          bottomUnit={bottomUnit}
+          leftUnit={leftUnit}
           onChange={onChange}
           onSideChange={(side: 'Top' | 'Right' | 'Bottom' | 'Left', sideValue: number | undefined) => {
             // Handle individual side changes
             onChange(`border${side}Width`, sideValue);
+          }}
+          onUnitChange={(side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => {
+            // Handle unit changes
+            onChange(`border${side}WidthUnit`, unit);
           }}
           onStyleChange={(style: string) => {
             onChange('borderStyle', style);
