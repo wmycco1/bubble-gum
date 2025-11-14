@@ -359,6 +359,7 @@ export function SpacingControl({
           handleShorthandChange={handleShorthandChange}
           onChange={onChange}
           paramName={paramName}
+          onUnitChange={onUnitChange}
         />
       )}
 
@@ -718,9 +719,10 @@ interface SpacingSimpleModeProps {
   handleShorthandChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onChange: (name: string, value: number | undefined) => void;
   paramName: string;
+  onUnitChange?: (side: 'Top' | 'Right' | 'Bottom' | 'Left', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
 }
 
-function SpacingSimpleMode({ value, unit, setUnit, handleShorthandChange, onChange, paramName }: SpacingSimpleModeProps) {
+function SpacingSimpleMode({ value, unit, setUnit, handleShorthandChange, onChange, paramName, onUnitChange }: SpacingSimpleModeProps) {
   const [isIncrementPressed, setIsIncrementPressed] = React.useState(false);
   const [isDecrementPressed, setIsDecrementPressed] = React.useState(false);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -824,7 +826,15 @@ function SpacingSimpleMode({ value, unit, setUnit, handleShorthandChange, onChan
             onChange(paramName, convertedValue);
           }
 
-          // Update unit
+          // Update unit for all 4 sides (so canvas displays the new unit)
+          if (onUnitChange) {
+            onUnitChange('Top', newUnit);
+            onUnitChange('Right', newUnit);
+            onUnitChange('Bottom', newUnit);
+            onUnitChange('Left', newUnit);
+          }
+
+          // Update local state
           setUnit(newUnit);
         }}
         className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
