@@ -1,6 +1,72 @@
 'use client';
 
 /**
+ * convertUnit - Convert values between different CSS units
+ * Two-step conversion: source unit → px → target unit
+ */
+function convertUnit(
+  value: number,
+  fromUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw',
+  toUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'
+): number {
+  if (fromUnit === toUnit) return value;
+
+  const baseFontSize = 16; // 1rem = 16px
+  const referenceWidth = 400; // Reference container width for % calculations
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080;
+
+  // Step 1: Convert from source unit to px
+  let valueInPx = value;
+  switch (fromUnit) {
+    case 'rem':
+      valueInPx = value * baseFontSize;
+      break;
+    case 'em':
+      valueInPx = value * baseFontSize;
+      break;
+    case '%':
+      valueInPx = (value / 100) * referenceWidth;
+      break;
+    case 'vh':
+      valueInPx = (value / 100) * viewportHeight;
+      break;
+    case 'vw':
+      valueInPx = (value / 100) * viewportWidth;
+      break;
+    case 'px':
+    default:
+      valueInPx = value;
+  }
+
+  // Step 2: Convert from px to target unit
+  let result = valueInPx;
+  switch (toUnit) {
+    case 'rem':
+      result = valueInPx / baseFontSize;
+      break;
+    case 'em':
+      result = valueInPx / baseFontSize;
+      break;
+    case '%':
+      result = (valueInPx / referenceWidth) * 100;
+      break;
+    case 'vh':
+      result = (valueInPx / viewportHeight) * 100;
+      break;
+    case 'vw':
+      result = (valueInPx / viewportWidth) * 100;
+      break;
+    case 'px':
+    default:
+      result = valueInPx;
+  }
+
+  // Round to 2 decimal places
+  return Math.round(result * 100) / 100;
+}
+
+/**
  * BorderRadiusControl - Modern UI for Border Radius (V9.1 - Visual Perfection)
  *
  * Features:
@@ -55,12 +121,12 @@ interface BorderRadiusControlProps {
   onCornerChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined) => void;
   description?: string;
   /** Unit selectors for each corner (Advanced mode) */
-  topLeftUnit?: 'px' | 'rem' | 'em' | '%';
-  topRightUnit?: 'px' | 'rem' | 'em' | '%';
-  bottomLeftUnit?: 'px' | 'rem' | 'em' | '%';
-  bottomRightUnit?: 'px' | 'rem' | 'em' | '%';
+  topLeftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  topRightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  bottomLeftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  bottomRightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   /** Callback for unit change */
-  onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%') => void;
+  onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
 }
 
 export function BorderRadiusControl({
@@ -80,7 +146,7 @@ export function BorderRadiusControl({
   onUnitChange,
 }: BorderRadiusControlProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [unit, setUnit] = useState<'px' | 'rem' | 'em' | '%'>('px');
+  const [unit, setUnit] = useState<'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'>('px');
 
   // Check if any individual corners are set
   const hasIndividualValues = topLeft !== undefined || topRight !== undefined || bottomLeft !== undefined || bottomRight !== undefined;
@@ -131,6 +197,7 @@ export function BorderRadiusControl({
           setUnit={setUnit}
           handleShorthandChange={handleShorthandChange}
           onChange={onChange}
+          onUnitChange={onUnitChange}
         />
       )}
 
@@ -283,13 +350,14 @@ export function BorderRadiusControl({
  */
 interface SimpleModeProps {
   value?: number;
-  unit: 'px' | 'rem' | 'em' | '%';
-  setUnit: (unit: 'px' | 'rem' | 'em' | '%') => void;
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  setUnit: (unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
   handleShorthandChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onChange: (name: string, value: number | undefined) => void;
+  onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
 }
 
-function SimpleMode({ value, unit, setUnit, handleShorthandChange, onChange }: SimpleModeProps) {
+function SimpleMode({ value, unit, setUnit, handleShorthandChange, onChange, onUnitChange }: SimpleModeProps) {
   const [isIncrementPressed, setIsIncrementPressed] = React.useState(false);
   const [isDecrementPressed, setIsDecrementPressed] = React.useState(false);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -384,13 +452,34 @@ function SimpleMode({ value, unit, setUnit, handleShorthandChange, onChange }: S
       </div>
       <select
         value={unit}
-        onChange={(e) => setUnit(e.target.value as 'px' | 'rem' | 'em' | '%')}
+        onChange={(e) => {
+          const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+          // Convert value to new unit if value exists
+          if (value !== undefined && value !== null) {
+            const convertedValue = convertUnit(value, unit, newUnit);
+            onChange('borderRadius', convertedValue);
+          }
+
+          // Update unit for all 4 corners (so canvas displays the new unit)
+          if (onUnitChange) {
+            onUnitChange('TopLeft', newUnit);
+            onUnitChange('TopRight', newUnit);
+            onUnitChange('BottomLeft', newUnit);
+            onUnitChange('BottomRight', newUnit);
+          }
+
+          // Update local state
+          setUnit(newUnit);
+        }}
         className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
         <option value="em">em</option>
         <option value="%">%</option>
+        <option value="vh">vh</option>
+        <option value="vw">vw</option>
       </select>
       <div className="flex flex-col gap-0.5">
         <button
@@ -449,9 +538,9 @@ interface CompactCornerControlProps {
   label: string;
   corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight';
   value?: number;
-  unit: 'px' | 'rem' | 'em' | '%';
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   onValueChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined) => void;
-  onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%') => void;
+  onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
 }
 
 function CompactCornerControl({
@@ -616,13 +705,26 @@ function CompactCornerControl({
       {/* Unit selector dropdown */}
       <select
         value={unit}
-        onChange={(e) => onUnitChange?.(corner, e.target.value as 'px' | 'rem' | 'em' | '%')}
+        onChange={(e) => {
+          const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+          // Convert value to new unit if value exists
+          if (value !== undefined && value !== null && onValueChange) {
+            const convertedValue = convertUnit(value, unit, newUnit);
+            onValueChange(corner, convertedValue);
+          }
+
+          // Update unit
+          onUnitChange?.(corner, newUnit);
+        }}
         className="px-2 py-1 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
         <option value="em">em</option>
         <option value="%">%</option>
+        <option value="vh">vh</option>
+        <option value="vw">vw</option>
       </select>
     </div>
   );
@@ -635,9 +737,9 @@ function CompactCornerControl({
 interface CornerControlProps {
   corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight';
   value?: number;
-  unit: 'px' | 'rem' | 'em' | '%';
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   onValueChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', value: number | undefined) => void;
-  onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%') => void;
+  onUnitChange?: (corner: 'TopLeft' | 'TopRight' | 'BottomLeft' | 'BottomRight', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
 }
 
 function CornerControl({
@@ -796,13 +898,26 @@ function CornerControl({
       {/* Unit selector dropdown */}
       <select
         value={unit}
-        onChange={(e) => onUnitChange?.(corner, e.target.value as 'px' | 'rem' | 'em' | '%')}
+        onChange={(e) => {
+          const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+          // Convert value to new unit if value exists
+          if (value !== undefined && value !== null && onValueChange) {
+            const convertedValue = convertUnit(value, unit, newUnit);
+            onValueChange(corner, convertedValue);
+          }
+
+          // Update unit
+          onUnitChange?.(corner, newUnit);
+        }}
         className="w-14 px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
         <option value="em">em</option>
         <option value="%">%</option>
+        <option value="vh">vh</option>
+        <option value="vw">vw</option>
       </select>
     </div>
   );
