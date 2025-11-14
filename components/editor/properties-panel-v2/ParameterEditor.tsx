@@ -192,6 +192,12 @@ function renderControl(
       const color = allParams['shadowColor'];
       const shadowOpacity = allParams['shadowOpacity'];
 
+      // Get units for each shadow parameter (default to 'px')
+      const offsetXUnit = allParams['shadowOffsetXUnit'] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+      const offsetYUnit = allParams['shadowOffsetYUnit'] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+      const blurUnit = allParams['shadowBlurUnit'] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+      const spreadUnit = allParams['shadowSpreadUnit'] as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw' || 'px';
+
       return (
         <ShadowControl
           key={param.name}
@@ -204,10 +210,18 @@ function renderControl(
           spread={spread}
           color={color}
           opacity={shadowOpacity}
+          offsetXUnit={offsetXUnit}
+          offsetYUnit={offsetYUnit}
+          blurUnit={blurUnit}
+          spreadUnit={spreadUnit}
           onPresetChange={(preset) => onChange('shadow', preset)}
           onCustomChange={(paramType, customValue) => {
             // Handle custom shadow parameters
             onChange(`shadow${paramType.charAt(0).toUpperCase()}${paramType.slice(1)}`, customValue);
+          }}
+          onUnitChange={(paramType, unit) => {
+            // Handle unit changes
+            onChange(`shadow${paramType.charAt(0).toUpperCase()}${paramType.slice(1)}Unit`, unit);
           }}
           onOpacityChange={(opacityValue) => {
             onChange('shadowOpacity', opacityValue);

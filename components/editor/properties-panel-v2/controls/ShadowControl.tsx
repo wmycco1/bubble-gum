@@ -1,6 +1,72 @@
 'use client';
 
 /**
+ * convertUnit - Convert values between different CSS units
+ * Two-step conversion: source unit → px → target unit
+ */
+function convertUnit(
+  value: number,
+  fromUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw',
+  toUnit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'
+): number {
+  if (fromUnit === toUnit) return value;
+
+  const baseFontSize = 16; // 1rem = 16px
+  const referenceWidth = 400; // Reference container width for % calculations
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080;
+
+  // Step 1: Convert from source unit to px
+  let valueInPx = value;
+  switch (fromUnit) {
+    case 'rem':
+      valueInPx = value * baseFontSize;
+      break;
+    case 'em':
+      valueInPx = value * baseFontSize;
+      break;
+    case '%':
+      valueInPx = (value / 100) * referenceWidth;
+      break;
+    case 'vh':
+      valueInPx = (value / 100) * viewportHeight;
+      break;
+    case 'vw':
+      valueInPx = (value / 100) * viewportWidth;
+      break;
+    case 'px':
+    default:
+      valueInPx = value;
+  }
+
+  // Step 2: Convert from px to target unit
+  let result = valueInPx;
+  switch (toUnit) {
+    case 'rem':
+      result = valueInPx / baseFontSize;
+      break;
+    case 'em':
+      result = valueInPx / baseFontSize;
+      break;
+    case '%':
+      result = (valueInPx / referenceWidth) * 100;
+      break;
+    case 'vh':
+      result = (valueInPx / viewportHeight) * 100;
+      break;
+    case 'vw':
+      result = (valueInPx / viewportWidth) * 100;
+      break;
+    case 'px':
+    default:
+      result = valueInPx;
+  }
+
+  // Round to 2 decimal places
+  return Math.round(result * 100) / 100;
+}
+
+/**
  * ShadowControl - Modern Shadow UI (V7.1)
  *
  * Features:
@@ -11,7 +77,183 @@
  * - User-friendly UX 2025
  */
 
-import { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+
+/**
+ * ShadowInput - Input with external increment/decrement buttons (horizontal layout)
+ * Layout: [−] [input] [unit selector] [+]
+ */
+interface ShadowInputProps {
+  value: number;
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  onChange: (value: number) => void;
+  onUnitChange: (unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
+  min?: number;
+  label: string;
+}
+
+function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: ShadowInputProps) {
+  const [isIncrementPressed, setIsIncrementPressed] = useState(false);
+  const [isDecrementPressed, setIsDecrementPressed] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const speedRef = useRef(100);
+  const valueRef = useRef(value);
+
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  const step = unit === 'px' ? 1 : 0.1;
+
+  const handleIncrement = useCallback(() => {
+    const currentValue = valueRef.current || 0;
+    const newValue = currentValue + step;
+    onChange(newValue);
+    valueRef.current = newValue;
+  }, [onChange, step]);
+
+  const handleDecrement = useCallback(() => {
+    const currentValue = valueRef.current || 0;
+    const newValue = currentValue - step;
+    if (min === undefined || newValue >= min) {
+      onChange(newValue);
+      valueRef.current = newValue;
+    }
+  }, [onChange, step, min]);
+
+  const startIncrement = () => {
+    setIsIncrementPressed(true);
+    handleIncrement();
+    speedRef.current = 100;
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        handleIncrement();
+        if (speedRef.current > 20) {
+          speedRef.current = Math.max(20, speedRef.current - 10);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = setInterval(handleIncrement, speedRef.current);
+        }
+      }, speedRef.current);
+    }, 200);
+  };
+
+  const startDecrement = () => {
+    setIsDecrementPressed(true);
+    handleDecrement();
+    speedRef.current = 100;
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        handleDecrement();
+        if (speedRef.current > 20) {
+          speedRef.current = Math.max(20, speedRef.current - 10);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = setInterval(handleDecrement, speedRef.current);
+        }
+      }, speedRef.current);
+    }, 200);
+  };
+
+  const stopChange = () => {
+    setIsIncrementPressed(false);
+    setIsDecrementPressed(false);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    speedRef.current = 100;
+  };
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  return (
+    <div>
+      <label className="block text-xs text-gray-600 mb-1">{label}</label>
+      <div className="flex items-center gap-1">
+        {/* Decrement button (left) */}
+        <button
+          type="button"
+          onMouseDown={startDecrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startDecrement}
+          onTouchEnd={stopChange}
+          disabled={min !== undefined && value <= min}
+          className={`
+            px-2 py-1.5 border-2 rounded-md transition-all shadow-sm text-sm font-bold
+            ${isDecrementPressed && !(min !== undefined && value <= min)
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+            }
+            disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+          `}
+          title="Decrement (hold to repeat)"
+        >
+          −
+        </button>
+
+        {/* Input field */}
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          min={min}
+          step={step}
+          className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          style={{ MozAppearance: 'textfield' }}
+        />
+
+        {/* Unit selector */}
+        <select
+          value={unit}
+          onChange={(e) => {
+            const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+            const convertedValue = convertUnit(value, unit, newUnit);
+            onChange(convertedValue);
+            onUnitChange(newUnit);
+          }}
+          className="px-2 py-1.5 text-sm border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm hover:border-gray-400 transition-colors"
+        >
+          <option value="px">px</option>
+          <option value="rem">rem</option>
+          <option value="em">em</option>
+          <option value="%">%</option>
+          <option value="vh">vh</option>
+          <option value="vw">vw</option>
+        </select>
+
+        {/* Increment button (right) */}
+        <button
+          type="button"
+          onMouseDown={startIncrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startIncrement}
+          onTouchEnd={stopChange}
+          className={`
+            px-2 py-1.5 border-2 rounded-md transition-all shadow-sm text-sm font-bold
+            ${isIncrementPressed
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+            }
+          `}
+          title="Increment (hold to repeat)"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
 
 interface ShadowControlProps {
   label: string;
@@ -25,10 +267,17 @@ interface ShadowControlProps {
   color?: string;
   /** Shadow opacity (0-100%) */
   opacity?: number;
+  /** Units for each shadow parameter */
+  offsetXUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  offsetYUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  blurUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  spreadUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
   /** Callback for preset change */
   onPresetChange: (preset: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'custom') => void;
   /** Callback for custom parameter change */
   onCustomChange?: (param: 'offsetX' | 'offsetY' | 'blur' | 'spread' | 'color', value: number | string) => void;
+  /** Callback for unit change */
+  onUnitChange?: (param: 'offsetX' | 'offsetY' | 'blur' | 'spread', unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
   /** Callback for opacity change */
   onOpacityChange?: (opacity: number) => void;
   description?: string;
@@ -43,8 +292,13 @@ export function ShadowControl({
   spread = 0,
   color = '#000000',
   opacity = 100,
+  offsetXUnit = 'px',
+  offsetYUnit = 'px',
+  blurUnit = 'px',
+  spreadUnit = 'px',
   onPresetChange,
   onCustomChange,
+  onUnitChange,
   onOpacityChange,
   description,
 }: ShadowControlProps) {
@@ -176,61 +430,41 @@ export function ShadowControl({
           {/* Custom Parameters Grid */}
           <div className="grid grid-cols-2 gap-2">
             {/* Offset X */}
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">Offset X</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  value={offsetX}
-                  onChange={(e) => onCustomChange?.('offsetX', Number(e.target.value))}
-                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                />
-                <span className="text-xs text-gray-400">px</span>
-              </div>
-            </div>
+            <ShadowInput
+              label="Offset X"
+              value={offsetX}
+              unit={offsetXUnit}
+              onChange={(value) => onCustomChange?.('offsetX', value)}
+              onUnitChange={(unit) => onUnitChange?.('offsetX', unit)}
+            />
 
             {/* Offset Y */}
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">Offset Y</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  value={offsetY}
-                  onChange={(e) => onCustomChange?.('offsetY', Number(e.target.value))}
-                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                />
-                <span className="text-xs text-gray-400">px</span>
-              </div>
-            </div>
+            <ShadowInput
+              label="Offset Y"
+              value={offsetY}
+              unit={offsetYUnit}
+              onChange={(value) => onCustomChange?.('offsetY', value)}
+              onUnitChange={(unit) => onUnitChange?.('offsetY', unit)}
+            />
 
             {/* Blur */}
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">Blur</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  min="0"
-                  value={blur}
-                  onChange={(e) => onCustomChange?.('blur', Number(e.target.value))}
-                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                />
-                <span className="text-xs text-gray-400">px</span>
-              </div>
-            </div>
+            <ShadowInput
+              label="Blur"
+              value={blur}
+              unit={blurUnit}
+              onChange={(value) => onCustomChange?.('blur', value)}
+              onUnitChange={(unit) => onUnitChange?.('blur', unit)}
+              min={0}
+            />
 
             {/* Spread */}
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">Spread</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  value={spread}
-                  onChange={(e) => onCustomChange?.('spread', Number(e.target.value))}
-                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                />
-                <span className="text-xs text-gray-400">px</span>
-              </div>
-            </div>
+            <ShadowInput
+              label="Spread"
+              value={spread}
+              unit={spreadUnit}
+              onChange={(value) => onCustomChange?.('spread', value)}
+              onUnitChange={(unit) => onUnitChange?.('spread', unit)}
+            />
           </div>
 
           {/* Shadow Color - Only Color Picker */}
