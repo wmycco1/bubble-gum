@@ -124,19 +124,22 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
 
   const step = unit === 'px' ? 1 : 0.1;
 
-  // Display value: show max 1000 for UX, but allow real value to be higher
-  const displayValue = Math.min(value, 1000);
+  // Display value: show max 1000 for UX, round to 2 decimals for readability
+  const displayValue = Math.min(
+    Math.round(value * 100) / 100, // Round to 2 decimals
+    1000
+  );
 
   const handleIncrement = useCallback(() => {
     const currentValue = valueRef.current || 0;
-    const newValue = currentValue + step;
+    const newValue = Math.round((currentValue + step) * 100) / 100; // Round to 2 decimals
     onChange(newValue);
     valueRef.current = newValue;
   }, [onChange, step]);
 
   const handleDecrement = useCallback(() => {
     const currentValue = valueRef.current || 0;
-    const newValue = currentValue - step;
+    const newValue = Math.round((currentValue - step) * 100) / 100; // Round to 2 decimals
     if (min === undefined || newValue >= min) {
       onChange(newValue);
       valueRef.current = newValue;
@@ -228,8 +231,9 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
           value={displayValue}
           onChange={(e) => {
             const newValue = Number(e.target.value);
-            // Allow any value but respect min
-            const validValue = Math.max(newValue, min ?? -Infinity);
+            // Round to 2 decimals and respect min
+            const roundedValue = Math.round(newValue * 100) / 100;
+            const validValue = Math.max(roundedValue, min ?? -Infinity);
             onChange(validValue);
           }}
           min={min}
