@@ -405,8 +405,8 @@ export function ShadowControl({
             </div>
           </div>
 
-          {/* Preset Selector - Minimalist Design */}
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-1.5 mb-3">
+          {/* Preset Selector - Responsive Grid: 5@400px, 3@300px, 2@<300px */}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(77px,1fr))] gap-1.5 mb-3">
             {presets.map((p) => {
               // Get the box shadow for this preset
               let shadowStyle = 'none';
