@@ -380,11 +380,33 @@ export function ShadowControl({
         </button>
       </div>
 
-      {/* Simple Mode */}
+      {/* Simple Mode - Integrated Design with Preview */}
       {!showAdvanced && (
-        <div className="space-y-3">
-          {/* Preset Selector - Visual Preview Buttons */}
-          <div className="grid grid-cols-5 gap-2">
+        <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+          {/* Live Preview at Top */}
+          <div className="flex justify-center items-center mb-4 py-3">
+            <div
+              className="w-24 h-16 bg-white rounded-md flex items-center justify-center text-xs font-medium text-gray-600 transition-all shadow-md"
+              style={{
+                boxShadow:
+                  preset === 'sm'
+                    ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                    : preset === 'md'
+                      ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                      : preset === 'lg'
+                        ? '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                        : preset === 'xl'
+                          ? '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                          : 'none',
+                opacity: opacity / 100,
+              }}
+            >
+              Shadow
+            </div>
+          </div>
+
+          {/* Preset Selector - Responsive Grid */}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(70px,1fr))] gap-2 mb-3">
             {presets.map((p) => {
               // Get the box shadow for this preset
               let shadowStyle = 'none';
@@ -409,7 +431,7 @@ export function ShadowControl({
                   type="button"
                   onClick={() => handlePresetSelect(p.value)}
                   className={`
-                    flex flex-col items-center justify-center p-3 rounded-md border-2 transition-all
+                    flex flex-col items-center justify-center p-2 rounded-md border-2 transition-all
                     ${
                       preset === p.value
                         ? 'ring-2 ring-blue-500 bg-blue-50 border-blue-500'
@@ -420,7 +442,7 @@ export function ShadowControl({
                 >
                   {/* Visual Box Preview with Shadow */}
                   <div
-                    className="w-16 h-12 bg-white rounded-md mb-1 border border-gray-100"
+                    className="w-12 h-8 bg-white rounded-md mb-1 border border-gray-100"
                     style={{ boxShadow: shadowStyle }}
                   />
                   {/* Label */}
@@ -430,26 +452,33 @@ export function ShadowControl({
             })}
           </div>
 
-          {/* Live Preview - Enhanced */}
+          {/* Color and Opacity - Same as Advanced Mode */}
           {preset !== 'none' && (
-            <div className="p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm flex justify-center items-center">
-              <div
-                className="w-24 h-16 bg-white rounded-md flex items-center justify-center text-xs font-medium text-gray-600 transition-all"
-                style={{
-                  boxShadow:
-                    preset === 'sm'
-                      ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
-                      : preset === 'md'
-                        ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                        : preset === 'lg'
-                          ? '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-                          : preset === 'xl'
-                            ? '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-                            : 'none',
-                  opacity: opacity / 100,
-                }}
-              >
-                Shadow
+            <div className="space-y-2">
+              {/* Color */}
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-gray-600 whitespace-nowrap min-w-[50px]">Color:</label>
+                <input
+                  type="color"
+                  value={color}
+                  onChange={(e) => onCustomChange?.('color', e.target.value)}
+                  className="w-10 h-8 border border-gray-300 rounded cursor-pointer hover:border-blue-400 transition-colors"
+                  title={color}
+                />
+              </div>
+
+              {/* Opacity */}
+              <div className="flex items-center gap-2 w-full">
+                <label className="text-xs text-gray-600 whitespace-nowrap min-w-[50px]">Opacity:</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={opacity}
+                  onChange={(e) => onOpacityChange?.(Number(e.target.value))}
+                  className="flex-1 min-w-0 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <span className="text-xs text-gray-700 font-medium shrink-0 min-w-[36px]">{opacity}%</span>
               </div>
             </div>
           )}
@@ -543,22 +572,6 @@ export function ShadowControl({
         </div>
       )}
 
-      {/* Opacity Slider (Simple Mode Only - Advanced has it integrated) */}
-      {preset !== 'none' && !showAdvanced && (
-        <div className="mt-3">
-          <label className="block text-xs text-gray-600 mb-1">
-            Shadow Opacity: {opacity}%
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={opacity}
-            onChange={(e) => onOpacityChange?.(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-          />
-        </div>
-      )}
     </div>
   );
 }
