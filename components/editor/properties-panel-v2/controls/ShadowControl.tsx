@@ -240,7 +240,7 @@ function ShadowInput({ value, unit, onChange, onUnitChange, min, label }: Shadow
           max={1000}
           step={step}
           title={`Exact value: ${value}${unit}${value > 1000 ? ' (showing 1000 for readability)' : ''}`}
-          className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="flex-1 min-w-[60px] px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           style={{ MozAppearance: 'textfield' }}
         />
 
