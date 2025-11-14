@@ -313,15 +313,24 @@ export function syncCSSToParameters(
 
       // ✨ FIX: Only add valid values (skip undefined/NaN)
       if (paramValue !== undefined && paramValue !== null) {
-        // ✨ FIX: Skip string values for numeric parameters (e.g., "70rem" for paddingTop)
-        // These non-px units should stay in Custom CSS only, not sync to parameters
+        // ✨ NEW: For non-px string values, try to extract numeric part for display in UI
+        // The actual rendering will use Custom CSS (via style prop), not the parameter
         if (typeof paramValue === 'string' &&
             (paramName.includes('padding') || paramName.includes('margin') ||
              paramName.includes('Radius') || paramName.includes('Width') ||
              paramName.includes('Height') || paramName === 'letterSpacing' ||
-             paramName === 'gap' || paramName === 'fontSize')) {
-          console.warn(`⚠️ CSS Sync: Skipping non-px value for ${paramName}: ${paramValue} (only px supported in parameters)`);
-          continue; // Skip this parameter
+             paramName === 'gap')) {
+
+          // Try to extract numeric value for UI display (e.g., "70rem" → 70)
+          const numericMatch = paramValue.match(/^(-?\d+\.?\d*)/);
+          if (numericMatch) {
+            const numericValue = parseFloat(numericMatch[1]);
+            updatedParams[paramName] = numericValue;
+            console.log(`🔄 CSS Sync: ${paramName}=${numericValue} (from ${paramValue}, displayed in UI but rendered via customCSS)`);
+          } else {
+            console.warn(`⚠️ CSS Sync: Cannot extract numeric value from ${paramName}: ${paramValue}`);
+          }
+          continue;
         }
 
         updatedParams[paramName] = paramValue;
