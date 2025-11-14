@@ -317,6 +317,16 @@ export interface StyleProperties {
   paddingBottom?: string;
   paddingLeft?: string;
 
+  // Spacing - Units for individual sides
+  marginTopUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  marginRightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  marginBottomUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  marginLeftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  paddingTopUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  paddingRightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  paddingBottomUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  paddingLeftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
   // Display & Flexbox
   display?: string;
   flexDirection?: string;
