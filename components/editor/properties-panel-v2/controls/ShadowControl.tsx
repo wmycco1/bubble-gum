@@ -449,14 +449,27 @@ export function ShadowControl({
         </div>
       )}
 
-      {/* Custom Mode */}
+      {/* Custom Mode - Compact Integrated Design */}
       {showCustom && (
-        <div className="space-y-3">
-          {/* Custom Parameters Grid */}
-          <div className="space-y-2">
+        <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+          {/* Live Preview at Top */}
+          <div className="flex justify-center items-center mb-4 py-3">
+            <div
+              className="w-24 h-16 bg-white rounded-md flex items-center justify-center text-xs font-medium text-gray-600 transition-all shadow-md"
+              style={{
+                boxShadow: `${offsetX}px ${offsetY}px ${blur}px ${spread}px ${color}`,
+                opacity: opacity / 100,
+              }}
+            >
+              Shadow
+            </div>
+          </div>
+
+          {/* Controls - Compact spacing */}
+          <div className="space-y-1.5">
             {/* Offset X */}
             <ShadowInput
-              label="Offset X"
+              label="X"
               value={offsetX}
               unit={offsetXUnit}
               onChange={(value) => onCustomChange?.('offsetX', value)}
@@ -465,7 +478,7 @@ export function ShadowControl({
 
             {/* Offset Y */}
             <ShadowInput
-              label="Offset Y"
+              label="Y"
               value={offsetY}
               unit={offsetYUnit}
               onChange={(value) => onCustomChange?.('offsetY', value)}
@@ -474,7 +487,7 @@ export function ShadowControl({
 
             {/* Blur */}
             <ShadowInput
-              label="Blur"
+              label="B"
               value={blur}
               unit={blurUnit}
               onChange={(value) => onCustomChange?.('blur', value)}
@@ -484,43 +497,47 @@ export function ShadowControl({
 
             {/* Spread */}
             <ShadowInput
-              label="Spread"
+              label="S"
               value={spread}
               unit={spreadUnit}
               onChange={(value) => onCustomChange?.('spread', value)}
               onUnitChange={(unit) => onUnitChange?.('spread', unit)}
             />
-          </div>
 
-          {/* Shadow Color - Only Color Picker */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Shadow Color</label>
-            <input
-              type="color"
-              value={color}
-              onChange={(e) => onCustomChange?.('color', e.target.value)}
-              className="w-full h-10 border-2 border-gray-300 rounded-md cursor-pointer hover:border-blue-400 transition-colors"
-              title={color}
-            />
-          </div>
+            {/* Color & Opacity in one row */}
+            <div className="flex items-center gap-2 pt-1">
+              {/* Color */}
+              <div className="flex items-center gap-1 flex-1">
+                <label className="text-xs text-gray-600 whitespace-nowrap">Color:</label>
+                <input
+                  type="color"
+                  value={color}
+                  onChange={(e) => onCustomChange?.('color', e.target.value)}
+                  className="w-10 h-8 border border-gray-300 rounded cursor-pointer hover:border-blue-400 transition-colors"
+                  title={color}
+                />
+              </div>
 
-          {/* Live Preview (Custom) - Enhanced */}
-          <div className="p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm flex justify-center items-center">
-            <div
-              className="w-24 h-16 bg-white rounded-md flex items-center justify-center text-xs font-medium text-gray-600 transition-all"
-              style={{
-                boxShadow: `${offsetX}px ${offsetY}px ${blur}px ${spread}px ${color}`,
-                opacity: opacity / 100,
-              }}
-            >
-              Shadow
+              {/* Opacity */}
+              <div className="flex items-center gap-1 flex-1">
+                <label className="text-xs text-gray-600 whitespace-nowrap">Opacity:</label>
+                <span className="text-xs text-gray-700 font-medium min-w-[32px]">{opacity}%</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={opacity}
+                  onChange={(e) => onOpacityChange?.(Number(e.target.value))}
+                  className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Opacity Slider (Both Modes) */}
-      {preset !== 'none' && (
+      {/* Opacity Slider (Preset Mode Only - Custom has it integrated) */}
+      {preset !== 'none' && !showCustom && (
         <div className="mt-3">
           <label className="block text-xs text-gray-600 mb-1">
             Shadow Opacity: {opacity}%
