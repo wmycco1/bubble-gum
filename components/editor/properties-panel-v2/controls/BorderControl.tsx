@@ -501,7 +501,7 @@ export function BorderControl({
   right,
   bottom,
   left,
-  borderStyle = 'solid',
+  borderStyle = 'none',
   borderColor = '#000000',
   topColor,
   rightColor,
