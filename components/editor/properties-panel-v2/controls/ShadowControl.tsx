@@ -431,7 +431,7 @@ export function ShadowControl({
                   type="button"
                   onClick={() => handlePresetSelect(p.value)}
                   className={`
-                    flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all bg-slate-100
+                    flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all bg-slate-100
                     ${
                       preset === p.value
                         ? 'ring-2 ring-blue-500 border-blue-500'
@@ -441,9 +441,9 @@ export function ShadowControl({
                   title={p.description}
                 >
                   {/* Shadow demonstration - larger white rectangle */}
-                  <div className="w-full h-16 flex items-center justify-center">
+                  <div className="w-full h-14 flex items-center justify-center">
                     <div
-                      className="w-14 h-10 bg-white rounded-md"
+                      className="w-12 h-9 bg-white rounded-md"
                       style={{ boxShadow: shadowStyle }}
                     />
                   </div>
