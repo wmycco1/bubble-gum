@@ -431,11 +431,11 @@ export function ShadowControl({
                   type="button"
                   onClick={() => handlePresetSelect(p.value)}
                   className={`
-                    flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all bg-gray-50
+                    flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all bg-slate-100
                     ${
                       preset === p.value
                         ? 'ring-2 ring-blue-500 border-blue-500'
-                        : 'border-gray-200 hover:border-blue-400'
+                        : 'border-gray-300 hover:border-blue-400'
                     }
                   `}
                   title={p.description}
