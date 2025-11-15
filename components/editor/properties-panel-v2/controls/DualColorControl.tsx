@@ -32,12 +32,7 @@ export function DualColorControl({
 }: DualColorControlProps) {
   const [textPickerOpen, setTextPickerOpen] = useState(false);
   const [bgPickerOpen, setBgPickerOpen] = useState(false);
-  const [isEyeDropperSupported, setIsEyeDropperSupported] = useState(false);
-
-  // Check if EyeDropper API is supported
-  React.useEffect(() => {
-    setIsEyeDropperSupported('EyeDropper' in window);
-  }, []);
+  const isEyeDropperSupported = typeof window !== 'undefined' && 'EyeDropper' in window;
 
   // Handle eyedropper for text color
   const handleTextEyeDropper = async () => {
