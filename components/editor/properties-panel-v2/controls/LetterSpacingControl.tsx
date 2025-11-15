@@ -1,11 +1,13 @@
 'use client';
 
 /**
- * LetterSpacingControl - Letter Spacing with live preview (V8.1)
+ * LetterSpacingControl - Letter Spacing with live preview (V8.2)
  *
  * Features:
- * - Number input with increment/decrement
+ * - Horizontal - and + buttons layout (consistent design pattern)
+ * - Number input with increment/decrement (hold to repeat with acceleration)
  * - Live text preview showing spacing
+ * - Unit selector (px)
  * - Modern 2025 UX
  */
 
@@ -131,7 +133,30 @@ export function LetterSpacingControl({
           </span>
         )}
       </label>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
+        {/* Decrement Button */}
+        <button
+          type="button"
+          onMouseDown={startDecrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startDecrement}
+          onTouchEnd={stopChange}
+          disabled={value <= min}
+          className={`
+            px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+            ${isDecrementPressed && value > min
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+            }
+            disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+          `}
+          title="Decrement (hold to repeat)"
+        >
+          −
+        </button>
+
+        {/* Input Field */}
         <input
           type="number"
           value={value}
@@ -139,56 +164,36 @@ export function LetterSpacingControl({
           min={min}
           max={max}
           step="0.5"
-          className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           style={{ MozAppearance: 'textfield' }}
         />
-        <div className="flex flex-col gap-0.5">
-          <button
-            type="button"
-            onMouseDown={startIncrement}
-            onMouseUp={stopChange}
-            onMouseLeave={stopChange}
-            onTouchStart={startIncrement}
-            onTouchEnd={stopChange}
-            disabled={value >= max}
-            className={`
-              p-1.5 border-2 rounded-md transition-all shadow-sm
-              ${isIncrementPressed && value < max
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-              }
-              disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-            `}
-            title="Increment (hold to repeat)"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onMouseDown={startDecrement}
-            onMouseUp={stopChange}
-            onMouseLeave={stopChange}
-            onTouchStart={startDecrement}
-            onTouchEnd={stopChange}
-            disabled={value <= min}
-            className={`
-              p-1.5 border-2 rounded-md transition-all shadow-sm
-              ${isDecrementPressed && value > min
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-              }
-              disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-            `}
-            title="Decrement (hold to repeat)"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+
+        {/* Increment Button */}
+        <button
+          type="button"
+          onMouseDown={startIncrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startIncrement}
+          onTouchEnd={stopChange}
+          disabled={value >= max}
+          className={`
+            px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+            ${isIncrementPressed && value < max
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+            }
+            disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+          `}
+          title="Increment (hold to repeat)"
+        >
+          +
+        </button>
+
+        {/* Unit Selector */}
+        <div className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-white text-gray-600">
+          px
         </div>
-        <div className="text-xs text-gray-400 min-w-[60px] text-right">{min}-{max}px</div>
       </div>
       {/* Live Preview */}
       <div className="mt-2 p-3 bg-gray-50 rounded-md border border-gray-200">

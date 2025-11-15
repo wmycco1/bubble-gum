@@ -85,13 +85,13 @@ function formatDisplayValue(value: number): string {
 }
 
 /**
- * FontSizeControl - Font Size with Unit Support (V8.1)
+ * FontSizeControl - Font Size with Unit Support (V8.2)
  *
  * Features:
- * - Multiple units: px, rem, em, %
- * - Number input with external increment/decrement buttons
+ * - Multiple units: px, rem, em, %, vh, vw
+ * - Horizontal layout: - | input | + | unit selector
  * - Hold-to-repeat with acceleration
- * - Vertically centered buttons relative to input field
+ * - Consistent design pattern with BorderControl
  * - Modern 2025 UX
  */
 
@@ -224,93 +224,89 @@ export function FontSizeControl({
           </span>
         )}
       </label>
-      <div className="flex items-center gap-2">
-        {/* Input + Unit Selector */}
-        <div className="relative flex-1 flex gap-1">
-          <input
-            type="number"
-            value={value}
-            onChange={(e) => onChange(name, Number(e.target.value))}
-            min={min}
-            max={max}
-            step={step}
-            title={`Exact value: ${value}${unit}`}
-            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            style={{ MozAppearance: 'textfield' }}
-          />
-          {/* Unit Selector */}
-          <select
-            value={unit}
-            onChange={(e) => {
-              const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+      {/* Horizontal layout: - | input | + | unit */}
+      <div className="flex items-center gap-1">
+        {/* Decrement Button */}
+        <button
+          type="button"
+          onMouseDown={startDecrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startDecrement}
+          onTouchEnd={stopChange}
+          disabled={min !== undefined && (value || 0) <= min}
+          className={`
+            px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+            ${isDecrementPressed && !(min !== undefined && (value || 0) <= min)
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+            }
+            disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+          `}
+          title="Decrement (hold to repeat)"
+        >
+          −
+        </button>
 
-              // Convert value to new unit if value exists
-              if (value !== undefined && value !== null) {
-                const convertedValue = convertUnit(value, unit, newUnit);
-                onChange(name, convertedValue);
-              }
+        {/* Input */}
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(name, Number(e.target.value))}
+          min={min}
+          max={max}
+          step={step}
+          title={`Exact value: ${value}${unit}`}
+          className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          style={{ MozAppearance: 'textfield' }}
+        />
 
-              // Update unit
-              onUnitChange?.(name, newUnit);
-            }}
-            className="px-2 py-2 text-sm border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm hover:border-gray-400 transition-colors"
-          >
-            <option value="px">px</option>
-            <option value="rem">rem</option>
-            <option value="em">em</option>
-            <option value="%">%</option>
-            <option value="vh">vh</option>
-            <option value="vw">vw</option>
-          </select>
-        </div>
+        {/* Increment Button */}
+        <button
+          type="button"
+          onMouseDown={startIncrement}
+          onMouseUp={stopChange}
+          onMouseLeave={stopChange}
+          onTouchStart={startIncrement}
+          onTouchEnd={stopChange}
+          disabled={max !== undefined && (value || 0) >= max}
+          className={`
+            px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+            ${isIncrementPressed && !(max !== undefined && (value || 0) >= max)
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+            }
+            disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+          `}
+          title="Increment (hold to repeat)"
+        >
+          +
+        </button>
 
-        {/* External Increment/Decrement Buttons - Vertically Centered */}
-        <div className="flex flex-col gap-0.5">
-          <button
-            type="button"
-            onMouseDown={startIncrement}
-            onMouseUp={stopChange}
-            onMouseLeave={stopChange}
-            onTouchStart={startIncrement}
-            onTouchEnd={stopChange}
-            disabled={max !== undefined && (value || 0) >= max}
-            className={`
-              p-1.5 border-2 rounded-md transition-all shadow-sm
-              ${isIncrementPressed && !(max !== undefined && (value || 0) >= max)
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-              }
-              disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-            `}
-            title="Increment (hold to repeat)"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onMouseDown={startDecrement}
-            onMouseUp={stopChange}
-            onMouseLeave={stopChange}
-            onTouchStart={startDecrement}
-            onTouchEnd={stopChange}
-            disabled={min !== undefined && (value || 0) <= min}
-            className={`
-              p-1.5 border-2 rounded-md transition-all shadow-sm
-              ${isDecrementPressed && !(min !== undefined && (value || 0) <= min)
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-              }
-              disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-            `}
-            title="Decrement (hold to repeat)"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        </div>
+        {/* Unit Selector */}
+        <select
+          value={unit}
+          onChange={(e) => {
+            const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+            // Convert value to new unit if value exists
+            if (value !== undefined && value !== null) {
+              const convertedValue = convertUnit(value, unit, newUnit);
+              onChange(name, convertedValue);
+            }
+
+            // Update unit
+            onUnitChange?.(name, newUnit);
+          }}
+          className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer hover:border-gray-400 transition-colors"
+        >
+          <option value="px">px</option>
+          <option value="rem">rem</option>
+          <option value="em">em</option>
+          <option value="%">%</option>
+          <option value="vh">vh</option>
+          <option value="vw">vw</option>
+        </select>
       </div>
     </div>
   );

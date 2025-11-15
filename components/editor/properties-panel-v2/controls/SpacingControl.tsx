@@ -696,7 +696,7 @@ function SideControl({
           // Update unit
           onUnitChange?.(side, newUnit);
         }}
-        className="w-14 px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+        className="w-14 px-1 py-1 text-xs border-2 border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
@@ -802,19 +802,62 @@ function SpacingSimpleMode({ value, unit, setUnit, handleShorthandChange, onChan
   }, []);
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="relative flex-1">
-        <input
-          type="number"
-          min="0"
-          step={unit === 'px' ? '1' : '0.1'}
-          value={value ?? ''}
-          onChange={handleShorthandChange}
-          placeholder="All sides"
-          className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          style={{ MozAppearance: 'textfield' }}
-        />
-      </div>
+    <div className="flex items-center gap-1">
+      {/* - button */}
+      <button
+        type="button"
+        onMouseDown={startDecrement}
+        onMouseUp={stopChange}
+        onMouseLeave={stopChange}
+        onTouchStart={startDecrement}
+        onTouchEnd={stopChange}
+        disabled={(value || 0) <= 0}
+        className={`
+          px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+          ${isDecrementPressed && (value || 0) > 0
+            ? 'border-blue-500 bg-blue-50 text-blue-700'
+            : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+          }
+          disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+        `}
+        title="Decrement (hold to repeat)"
+      >
+        −
+      </button>
+
+      {/* Input field */}
+      <input
+        type="number"
+        min="0"
+        step={unit === 'px' ? '1' : '0.1'}
+        value={value ?? ''}
+        onChange={handleShorthandChange}
+        placeholder="0"
+        className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        style={{ MozAppearance: 'textfield' }}
+      />
+
+      {/* + button */}
+      <button
+        type="button"
+        onMouseDown={startIncrement}
+        onMouseUp={stopChange}
+        onMouseLeave={stopChange}
+        onTouchStart={startIncrement}
+        onTouchEnd={stopChange}
+        className={`
+          px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+          ${isIncrementPressed
+            ? 'border-blue-500 bg-blue-50 text-blue-700'
+            : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+          }
+        `}
+        title="Increment (hold to repeat)"
+      >
+        +
+      </button>
+
+      {/* Unit selector */}
       <select
         value={unit}
         onChange={(e) => {
@@ -837,7 +880,7 @@ function SpacingSimpleMode({ value, unit, setUnit, handleShorthandChange, onChan
           // Update local state
           setUnit(newUnit);
         }}
-        className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+        className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
@@ -846,50 +889,6 @@ function SpacingSimpleMode({ value, unit, setUnit, handleShorthandChange, onChan
         <option value="vh">vh</option>
         <option value="vw">vw</option>
       </select>
-      <div className="flex flex-col gap-0.5">
-        <button
-          type="button"
-          onMouseDown={startIncrement}
-          onMouseUp={stopChange}
-          onMouseLeave={stopChange}
-          onTouchStart={startIncrement}
-          onTouchEnd={stopChange}
-          className={`
-            p-1.5 border-2 rounded-md transition-all shadow-sm
-            ${isIncrementPressed
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-            }
-          `}
-          title="Increment (hold to repeat)"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onMouseDown={startDecrement}
-          onMouseUp={stopChange}
-          onMouseLeave={stopChange}
-          onTouchStart={startDecrement}
-          onTouchEnd={stopChange}
-          disabled={(value || 0) <= 0}
-          className={`
-            p-1.5 border-2 rounded-md transition-all shadow-sm
-            ${isDecrementPressed && (value || 0) > 0
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-            }
-            disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-          `}
-          title="Decrement (hold to repeat)"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      </div>
     </div>
   );
 }
