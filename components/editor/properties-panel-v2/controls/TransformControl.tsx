@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * TransformControl - Rotation, Scale & Transition controls (V4.0)
+ * TransformControl - Rotation, Scale & Transition controls (V4.1)
  *
  * Features:
  * - Rotation with horizontal - and + buttons
@@ -11,6 +11,10 @@
  * - Visual preview indicators
  * - Hold-to-repeat with acceleration (100ms → 20ms)
  * - Consistent design pattern matching BorderControl
+ *
+ * V4.1 Changes:
+ * - ADDED: Transition Duration now visible in Simple mode (was Advanced-only)
+ * - LAYOUT: Simple mode shows Rotation + Scale (2 cols), then Transition (full width)
  *
  * V4.0 Changes:
  * - REPLACED: Vertical ↑↓ buttons with horizontal - and + buttons
@@ -489,81 +493,142 @@ export function TransformControl({
 
       {/* Simple Mode */}
       {!isExpanded && (
-        <div className="grid grid-cols-2 gap-3">
-          {/* Rotation */}
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Rotation</label>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onMouseDown={startRotateDecrement}
-                onMouseUp={stopRotateChange}
-                onMouseLeave={stopRotateChange}
-                onTouchStart={startRotateDecrement}
-                onTouchEnd={stopRotateChange}
-                disabled={rotateValue <= -360}
-                className={`
-                  px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                  ${isRotateDecPressed && rotateValue > -360
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                  }
-                  disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                `}
-                title="Decrement (hold to repeat)"
-              >
-                −
-              </button>
-              <input
-                type="number"
-                min="-360"
-                max="360"
-                step="1"
-                value={rotateValue}
-                onChange={handleRotateChange}
-                placeholder="0"
-                className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ MozAppearance: 'textfield' }}
-              />
-              <button
-                type="button"
-                onMouseDown={startRotateIncrement}
-                onMouseUp={stopRotateChange}
-                onMouseLeave={stopRotateChange}
-                onTouchStart={startRotateIncrement}
-                onTouchEnd={stopRotateChange}
-                disabled={rotateValue >= 360}
-                className={`
-                  px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                  ${isRotateIncPressed && rotateValue < 360
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                  }
-                  disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                `}
-                title="Increment (hold to repeat)"
-              >
-                +
-              </button>
-              <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">°</span>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Rotation */}
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Rotation</label>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onMouseDown={startRotateDecrement}
+                  onMouseUp={stopRotateChange}
+                  onMouseLeave={stopRotateChange}
+                  onTouchStart={startRotateDecrement}
+                  onTouchEnd={stopRotateChange}
+                  disabled={rotateValue <= -360}
+                  className={`
+                    px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+                    ${isRotateDecPressed && rotateValue > -360
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                    }
+                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                  `}
+                  title="Decrement (hold to repeat)"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  min="-360"
+                  max="360"
+                  step="1"
+                  value={rotateValue}
+                  onChange={handleRotateChange}
+                  placeholder="0"
+                  className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  style={{ MozAppearance: 'textfield' }}
+                />
+                <button
+                  type="button"
+                  onMouseDown={startRotateIncrement}
+                  onMouseUp={stopRotateChange}
+                  onMouseLeave={stopRotateChange}
+                  onTouchStart={startRotateIncrement}
+                  onTouchEnd={stopRotateChange}
+                  disabled={rotateValue >= 360}
+                  className={`
+                    px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+                    ${isRotateIncPressed && rotateValue < 360
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                    }
+                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                  `}
+                  title="Increment (hold to repeat)"
+                >
+                  +
+                </button>
+                <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">°</span>
+              </div>
+            </div>
+
+            {/* Uniform Scale */}
+            <div>
+              <label className="block text-xs text-gray-600 mb-1">Scale</label>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onMouseDown={startUniformScaleDecrement}
+                  onMouseUp={stopUniformScaleChange}
+                  onMouseLeave={stopUniformScaleChange}
+                  onTouchStart={startUniformScaleDecrement}
+                  onTouchEnd={stopUniformScaleChange}
+                  disabled={uniformScaleValue <= 0}
+                  className={`
+                    px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+                    ${isUniformScaleDecPressed && uniformScaleValue > 0
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                    }
+                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                  `}
+                  title="Decrement (hold to repeat)"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={uniformScaleValue.toFixed(1)}
+                  onChange={handleUniformScaleChange}
+                  placeholder="1"
+                  className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  style={{ MozAppearance: 'textfield' }}
+                />
+                <button
+                  type="button"
+                  onMouseDown={startUniformScaleIncrement}
+                  onMouseUp={stopUniformScaleChange}
+                  onMouseLeave={stopUniformScaleChange}
+                  onTouchStart={startUniformScaleIncrement}
+                  onTouchEnd={stopUniformScaleChange}
+                  disabled={uniformScaleValue >= 10}
+                  className={`
+                    px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+                    ${isUniformScaleIncPressed && uniformScaleValue < 10
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                    }
+                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                  `}
+                  title="Increment (hold to repeat)"
+                >
+                  +
+                </button>
+                <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">×</span>
+              </div>
             </div>
           </div>
 
-          {/* Uniform Scale */}
+          {/* Transition Duration (full width row) */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Scale</label>
+            <label className="block text-xs text-gray-600 mb-1">Transition</label>
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onMouseDown={startUniformScaleDecrement}
-                onMouseUp={stopUniformScaleChange}
-                onMouseLeave={stopUniformScaleChange}
-                onTouchStart={startUniformScaleDecrement}
-                onTouchEnd={stopUniformScaleChange}
-                disabled={uniformScaleValue <= 0}
+                onMouseDown={startTransitionDecrement}
+                onMouseUp={stopTransitionChange}
+                onMouseLeave={stopTransitionChange}
+                onTouchStart={startTransitionDecrement}
+                onTouchEnd={stopTransitionChange}
+                disabled={transitionValue <= 0}
                 className={`
                   px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                  ${isUniformScaleDecPressed && uniformScaleValue > 0
+                  ${isTransitionDecPressed && transitionValue > 0
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
                     : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
                   }
@@ -576,25 +641,25 @@ export function TransformControl({
               <input
                 type="number"
                 min="0"
-                max="10"
-                step="0.1"
-                value={uniformScaleValue.toFixed(1)}
-                onChange={handleUniformScaleChange}
-                placeholder="1"
+                max="5000"
+                step="50"
+                value={transitionValue}
+                onChange={handleTransitionChange}
+                placeholder="300"
                 className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ MozAppearance: 'textfield' }}
               />
               <button
                 type="button"
-                onMouseDown={startUniformScaleIncrement}
-                onMouseUp={stopUniformScaleChange}
-                onMouseLeave={stopUniformScaleChange}
-                onTouchStart={startUniformScaleIncrement}
-                onTouchEnd={stopUniformScaleChange}
-                disabled={uniformScaleValue >= 10}
+                onMouseDown={startTransitionIncrement}
+                onMouseUp={stopTransitionChange}
+                onMouseLeave={stopTransitionChange}
+                onTouchStart={startTransitionIncrement}
+                onTouchEnd={stopTransitionChange}
+                disabled={transitionValue >= 5000}
                 className={`
                   px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                  ${isUniformScaleIncPressed && uniformScaleValue < 10
+                  ${isTransitionIncPressed && transitionValue < 5000
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
                     : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
                   }
@@ -604,7 +669,7 @@ export function TransformControl({
               >
                 +
               </button>
-              <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">×</span>
+              <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">ms</span>
             </div>
           </div>
         </div>
