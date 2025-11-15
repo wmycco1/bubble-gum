@@ -12,6 +12,7 @@
  */
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 
 interface TransformHandlesProps {
@@ -198,6 +199,7 @@ function UniformScaleHandle({
   const { updateComponentProps } = useCanvasStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const dragStartRef = React.useRef<{ x: number; y: number; initialScaleX: number; initialScaleY: number } | null>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -328,8 +330,21 @@ function UniformScaleHandle({
       {/* Center Uniform Scale Handle (PROMINENT - INDIGO COLOR) */}
       <div
         onMouseDown={handleMouseDown}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={(e) => {
+          setIsHovered(true);
+          setMousePos({ x: e.clientX, y: e.clientY });
+        }}
+        onMouseMove={(e) => {
+          if (!isDragging) {
+            setMousePos({ x: e.clientX, y: e.clientY });
+          }
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          if (!isDragging) {
+            setMousePos(null);
+          }
+        }}
         style={{
           position: 'absolute',
           left: `${handleX}px`,
@@ -390,13 +405,13 @@ function UniformScaleHandle({
         }
       `}</style>
 
-      {/* Tooltip - Brutalist dark style */}
-      {(isHovered || isDragging) && (
+      {/* Tooltip - Portal rendered for correct cursor-relative positioning */}
+      {mousePos && typeof document !== 'undefined' && createPortal(
         <div
           style={{
-            position: 'absolute',
-            left: `${centerX}px`,
-            top: `${centerY - 36}px`,
+            position: 'fixed',
+            left: `${mousePos.x}px`,
+            top: `${mousePos.y + 10}px`,
             transform: 'translateX(-50%)',
             backgroundColor: '#1f2937', // Dark gray (gray-800) - 14.6:1 contrast with white
             color: 'white',
@@ -406,14 +421,15 @@ function UniformScaleHandle({
             fontWeight: 600,
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
-            zIndex: 51,
+            zIndex: 9999,
             boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
             border: '1px solid rgba(255,255,255,0.1)', // Subtle highlight
           }}
         >
           ↔↕ uniform: ×{avgScale.toFixed(2)}
           {isDragging && <span className="ml-1 text-gray-300">(all sides)</span>}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
@@ -434,6 +450,7 @@ function RotationHandle({ componentId, centerX, centerY, elementRect, currentRot
   const { updateComponentProps } = useCanvasStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const dragStartRef = React.useRef<{ x: number; y: number; initialRotation: number } | null>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -501,8 +518,21 @@ function RotationHandle({ componentId, centerX, centerY, elementRect, currentRot
       {/* Rotation Handle (LARGE Circular with Icon) */}
       <div
         onMouseDown={handleMouseDown}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={(e) => {
+          setIsHovered(true);
+          setMousePos({ x: e.clientX, y: e.clientY });
+        }}
+        onMouseMove={(e) => {
+          if (!isDragging) {
+            setMousePos({ x: e.clientX, y: e.clientY });
+          }
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          if (!isDragging) {
+            setMousePos(null);
+          }
+        }}
         style={{
           position: 'absolute',
           left: `${handleX - 14}px`,
@@ -528,13 +558,13 @@ function RotationHandle({ componentId, centerX, centerY, elementRect, currentRot
         🔄
       </div>
 
-      {/* Tooltip - Brutalist dark style */}
-      {(isHovered || isDragging) && (
+      {/* Tooltip - Portal rendered for correct cursor-relative positioning */}
+      {mousePos && typeof document !== 'undefined' && createPortal(
         <div
           style={{
-            position: 'absolute',
-            left: `${handleX}px`,
-            top: `${handleY - 32}px`,
+            position: 'fixed',
+            left: `${mousePos.x}px`,
+            top: `${mousePos.y + 10}px`,
             transform: 'translateX(-50%)',
             backgroundColor: '#1f2937', // Dark gray (gray-800) - 14.6:1 contrast with white
             color: 'white',
@@ -544,14 +574,15 @@ function RotationHandle({ componentId, centerX, centerY, elementRect, currentRot
             fontWeight: 600,
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
-            zIndex: 51,
+            zIndex: 9999,
             boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
             border: '1px solid rgba(255,255,255,0.1)', // Subtle highlight
           }}
         >
           ↻ {currentRotation}°
           {isDragging && <span className="ml-1 text-gray-300">(Shift: snap 15°)</span>}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
@@ -574,6 +605,7 @@ function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentS
   const { updateComponentProps } = useCanvasStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const dragStartRef = React.useRef<{ x: number; y: number; initialScaleX: number; initialScaleY: number } | null>(null);
   const rafRef = React.useRef<number | null>(null);
 
@@ -796,17 +828,49 @@ function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentS
       {/* Handle */}
       <div
         onMouseDown={handleMouseDown}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={(e) => {
+          setIsHovered(true);
+          setMousePos({ x: e.clientX, y: e.clientY });
+        }}
+        onMouseMove={(e) => {
+          if (!isDragging) {
+            setMousePos({ x: e.clientX, y: e.clientY });
+          }
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          if (!isDragging) {
+            setMousePos(null);
+          }
+        }}
         style={getPositionStyles()}
       />
 
-      {/* Tooltip - No emoji, clean text */}
-      {(isHovered || isDragging) && (
-        <div style={getTooltipStyles()}>
+      {/* Tooltip - Portal rendered for correct cursor-relative positioning */}
+      {mousePos && typeof document !== 'undefined' && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            left: `${mousePos.x}px`,
+            top: `${mousePos.y + 10}px`,
+            transform: 'translateX(-50%)',
+            backgroundColor: '#1f2937', // Dark gray (gray-800) - 14.6:1 contrast with white
+            color: 'white',
+            padding: '6px 10px',
+            borderRadius: '6px',
+            fontSize: '11px',
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            zIndex: 9999,
+            boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.1)', // Subtle highlight
+          }}
+        >
           scale: {currentScaleX.toFixed(2)}×{currentScaleY.toFixed(2)}
           {isDragging && <span className="ml-1 text-gray-300">(Shift: uniform)</span>}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
