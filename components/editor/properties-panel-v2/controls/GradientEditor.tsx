@@ -257,18 +257,6 @@ export function GradientEditor({ value, onChange, label }: GradientEditorProps) 
         </div>
       )}
 
-      {/* Gradient Preview */}
-      <div
-        className="h-24 rounded-lg border-2 border-slate-300 relative overflow-hidden"
-        style={{ background: currentGradient }}
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-medium text-white drop-shadow-lg bg-black/30 px-2 py-1 rounded">
-            Preview
-          </span>
-        </div>
-      </div>
-
       {/* Color Stops */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
