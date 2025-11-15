@@ -291,8 +291,7 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
 };
 
 // Common parameters for ALL components
+// NOTE: id and className are handled by CustomStyleControl (in "Custom Styling" section)
 export const COMMON_PARAMETERS: ParameterDefinition[] = [
-  { name: 'id', type: 'text', label: 'ID', description: 'Unique identifier' },
-  { name: 'className', type: 'text', label: 'CSS Classes', description: 'Custom CSS classes' },
   { name: 'aria-label', type: 'text', label: 'ARIA Label', description: 'Accessibility label' },
 ];
