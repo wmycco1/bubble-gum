@@ -166,7 +166,7 @@ export function ColorPicker({
             title="Pick a color"
           />
           <div
-            className="w-12 h-12 rounded-lg border-2 border-slate-300 cursor-pointer transition-all hover:border-slate-400 hover:scale-105"
+            className="w-12 h-12 rounded-sm border-2 border-slate-300 cursor-pointer transition-all hover:border-slate-400 hover:scale-105"
             style={{
               backgroundColor: showOpacity && opacity < 100
                 ? hexToRgba(selectedHex, opacity / 100)
@@ -239,7 +239,7 @@ export function ColorPicker({
               <button
                 key={presetColor}
                 onClick={() => handleHexChange(presetColor)}
-                className={`w-8 h-8 rounded-md border-2 transition-all hover:scale-110 ${
+                className={`w-8 h-8 rounded-sm border-2 transition-all hover:scale-110 ${
                   selectedHex.toLowerCase() === presetColor.toLowerCase()
                     ? 'border-slate-900 ring-2 ring-slate-900 ring-offset-2'
                     : 'border-slate-300 hover:border-slate-400'
@@ -265,7 +265,7 @@ export function ColorPicker({
                 <button
                   key={`${recentColor}-${index}`}
                   onClick={() => onChange(recentColor)}
-                  className="w-8 h-8 rounded-md border-2 border-slate-300 transition-all hover:scale-110 hover:border-slate-400"
+                  className="w-8 h-8 rounded-sm border-2 border-slate-300 transition-all hover:scale-110 hover:border-slate-400"
                   style={{ backgroundColor: recentColor }}
                   title={`${recentHex} ${recentOpacity < 1 ? `(${Math.round(recentOpacity * 100)}%)` : ''}`}
                 />
