@@ -28,6 +28,7 @@ import { TextShadowControl } from './controls/TextShadowControl';
 import { DisplayControl } from './controls/DisplayControl';
 import { PositionControl } from './controls/PositionControl';
 import { CustomStyleControl } from './controls/CustomStyleControl';
+import { BackgroundControl } from './controls/BackgroundControl';
 import { COMPONENT_PARAMETERS, COMMON_PARAMETERS } from './componentParametersMap';
 
 interface ParameterEditorProps {
@@ -102,6 +103,11 @@ export function ParameterEditor({ component, onParameterChange }: ParameterEdito
       <div>
         <h3 className="text-sm font-semibold text-gray-700 mb-3">Common Properties</h3>
         {COMMON_PARAMETERS.map((param) => renderControl(param, params[param.name], handleParameterChange, params))}
+      </div>
+
+      {/* ✨ Background Control (Color, Gradient, Image) */}
+      <div className="border-t border-slate-200 pt-4 mt-4">
+        <BackgroundControl componentId={component.id} />
       </div>
 
       {/* ✨ NEW: Custom Styling (CSS/Tailwind + ID/Class) */}
