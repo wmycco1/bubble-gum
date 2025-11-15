@@ -544,12 +544,23 @@ const RotationHandle = React.memo(function RotationHandle({ componentId, centerX
           setMousePos({ x: e.clientX, y: e.clientY });
         }}
         onMouseMove={(e) => {
+          // ⚡ RAF throttling: Update at max 60fps
           if (!isDragging) {
-            setMousePos({ x: e.clientX, y: e.clientY });
+            if (mouseMoveRafRef.current) {
+              cancelAnimationFrame(mouseMoveRafRef.current);
+            }
+            mouseMoveRafRef.current = requestAnimationFrame(() => {
+              setMousePos({ x: e.clientX, y: e.clientY });
+            });
           }
         }}
         onMouseLeave={() => {
           setIsHovered(false);
+          // ⚡ Cancel RAF and clear mouse position
+          if (mouseMoveRafRef.current) {
+            cancelAnimationFrame(mouseMoveRafRef.current);
+            mouseMoveRafRef.current = null;
+          }
           if (!isDragging) {
             setMousePos(null);
           }
@@ -607,7 +618,14 @@ const RotationHandle = React.memo(function RotationHandle({ componentId, centerX
       )}
     </>
   );
-}
+}, (prevProps, nextProps) => {
+  // ⚡ Custom comparison - only re-render if these values change
+  return (
+    prevProps.centerX === nextProps.centerX &&
+    prevProps.centerY === nextProps.centerY &&
+    prevProps.currentRotation === nextProps.currentRotation
+  );
+});
 
 // ═══════════════════════════════════════════════════════════════
 // SCALE HANDLE (4 corners)
@@ -622,13 +640,14 @@ interface ScaleHandleProps {
   currentScaleY: number;
 }
 
-function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentScaleY }: ScaleHandleProps) {
+const ScaleHandle = React.memo(function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentScaleY }: ScaleHandleProps) {
   const { updateComponentProps } = useCanvasStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const dragStartRef = React.useRef<{ x: number; y: number; initialScaleX: number; initialScaleY: number } | null>(null);
   const rafRef = React.useRef<number | null>(null);
+  const mouseMoveRafRef = React.useRef<number | null>(null); // ⚡ RAF for hover mouse tracking
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -854,12 +873,23 @@ function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentS
           setMousePos({ x: e.clientX, y: e.clientY });
         }}
         onMouseMove={(e) => {
+          // ⚡ RAF throttling: Update at max 60fps
           if (!isDragging) {
-            setMousePos({ x: e.clientX, y: e.clientY });
+            if (mouseMoveRafRef.current) {
+              cancelAnimationFrame(mouseMoveRafRef.current);
+            }
+            mouseMoveRafRef.current = requestAnimationFrame(() => {
+              setMousePos({ x: e.clientX, y: e.clientY });
+            });
           }
         }}
         onMouseLeave={() => {
           setIsHovered(false);
+          // ⚡ Cancel RAF and clear mouse position
+          if (mouseMoveRafRef.current) {
+            cancelAnimationFrame(mouseMoveRafRef.current);
+            mouseMoveRafRef.current = null;
+          }
           if (!isDragging) {
             setMousePos(null);
           }
@@ -895,4 +925,11 @@ function ScaleHandle({ componentId, corner, elementRect, currentScaleX, currentS
       )}
     </>
   );
-}
+}, (prevProps, nextProps) => {
+  // ⚡ Custom comparison - only re-render if these values change
+  return (
+    prevProps.corner === nextProps.corner &&
+    prevProps.currentScaleX === nextProps.currentScaleX &&
+    prevProps.currentScaleY === nextProps.currentScaleY
+  );
+});
