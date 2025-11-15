@@ -73,6 +73,7 @@ export function SpacingHandlesV2({
   const [mousePos, setMousePos] = useState<{ x: number; y: number; side: Side } | null>(null);
   // V7.0: Badge controls margin via CSS, overlays conditional based on cssCompliantMode
   const rafRef = React.useRef<number | null>(null);
+  const mouseMoveRafRef = React.useRef<number | null>(null); // ⚡ RAF for overlay hover mouse tracking
   const instanceId = React.useRef(`instance-${Math.random().toString(36).substr(2, 9)}`).current;
 
   // Enable keyboard shortcuts
@@ -491,12 +492,23 @@ export function SpacingHandlesV2({
               onMouseEnter={() => setHoveredSide('top')}
               onMouseLeave={() => {
                 setHoveredSide(null);
+                // ⚡ Cancel RAF and clear mouse position
+                if (mouseMoveRafRef.current) {
+                  cancelAnimationFrame(mouseMoveRafRef.current);
+                  mouseMoveRafRef.current = null;
+                }
                 // Clear mousePos only if it was for this side
                 setMousePos((prev) => (prev?.side === 'top' ? null : prev));
               }}
               onMouseMove={(e) => {
-                // Update mousePos for tooltip when hovering over overlay
-                setMousePos({ x: e.clientX, y: e.clientY, side: 'top' });
+                // ⚡ RAF throttling: Update at max 60fps
+                if (mouseMoveRafRef.current) {
+                  cancelAnimationFrame(mouseMoveRafRef.current);
+                }
+                mouseMoveRafRef.current = requestAnimationFrame(() => {
+                  // Update mousePos for tooltip when hovering over overlay
+                  setMousePos({ x: e.clientX, y: e.clientY, side: 'top' });
+                });
               }}
               style={{
                 position: 'absolute',
@@ -528,12 +540,23 @@ export function SpacingHandlesV2({
               onMouseEnter={() => setHoveredSide('right')}
               onMouseLeave={() => {
                 setHoveredSide(null);
+                // ⚡ Cancel RAF and clear mouse position
+                if (mouseMoveRafRef.current) {
+                  cancelAnimationFrame(mouseMoveRafRef.current);
+                  mouseMoveRafRef.current = null;
+                }
                 // Clear mousePos only if it was for this side
                 setMousePos((prev) => (prev?.side === 'right' ? null : prev));
               }}
               onMouseMove={(e) => {
-                // Update mousePos for tooltip when hovering over overlay
-                setMousePos({ x: e.clientX, y: e.clientY, side: 'right' });
+                // ⚡ RAF throttling: Update at max 60fps
+                if (mouseMoveRafRef.current) {
+                  cancelAnimationFrame(mouseMoveRafRef.current);
+                }
+                mouseMoveRafRef.current = requestAnimationFrame(() => {
+                  // Update mousePos for tooltip when hovering over overlay
+                  setMousePos({ x: e.clientX, y: e.clientY, side: 'right' });
+                });
               }}
               style={{
                 position: 'absolute',
@@ -564,12 +587,23 @@ export function SpacingHandlesV2({
               onMouseEnter={() => setHoveredSide('bottom')}
               onMouseLeave={() => {
                 setHoveredSide(null);
+                // ⚡ Cancel RAF and clear mouse position
+                if (mouseMoveRafRef.current) {
+                  cancelAnimationFrame(mouseMoveRafRef.current);
+                  mouseMoveRafRef.current = null;
+                }
                 // Clear mousePos only if it was for this side
                 setMousePos((prev) => (prev?.side === 'bottom' ? null : prev));
               }}
               onMouseMove={(e) => {
-                // Update mousePos for tooltip when hovering over overlay
-                setMousePos({ x: e.clientX, y: e.clientY, side: 'bottom' });
+                // ⚡ RAF throttling: Update at max 60fps
+                if (mouseMoveRafRef.current) {
+                  cancelAnimationFrame(mouseMoveRafRef.current);
+                }
+                mouseMoveRafRef.current = requestAnimationFrame(() => {
+                  // Update mousePos for tooltip when hovering over overlay
+                  setMousePos({ x: e.clientX, y: e.clientY, side: 'bottom' });
+                });
               }}
               style={{
                 position: 'absolute',
@@ -600,12 +634,23 @@ export function SpacingHandlesV2({
               onMouseEnter={() => setHoveredSide('left')}
               onMouseLeave={() => {
                 setHoveredSide(null);
+                // ⚡ Cancel RAF and clear mouse position
+                if (mouseMoveRafRef.current) {
+                  cancelAnimationFrame(mouseMoveRafRef.current);
+                  mouseMoveRafRef.current = null;
+                }
                 // Clear mousePos only if it was for this side
                 setMousePos((prev) => (prev?.side === 'left' ? null : prev));
               }}
               onMouseMove={(e) => {
-                // Update mousePos for tooltip when hovering over overlay
-                setMousePos({ x: e.clientX, y: e.clientY, side: 'left' });
+                // ⚡ RAF throttling: Update at max 60fps
+                if (mouseMoveRafRef.current) {
+                  cancelAnimationFrame(mouseMoveRafRef.current);
+                }
+                mouseMoveRafRef.current = requestAnimationFrame(() => {
+                  // Update mousePos for tooltip when hovering over overlay
+                  setMousePos({ x: e.clientX, y: e.clientY, side: 'left' });
+                });
               }}
               style={{
                 position: 'absolute',
@@ -1327,6 +1372,7 @@ function SpacingBarHandle({
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
   const rafRef = React.useRef<number | null>(null);
+  const mouseMoveRafRef = React.useRef<number | null>(null); // ⚡ RAF for hover mouse tracking
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -2077,15 +2123,26 @@ function SpacingBarHandle({
         onMouseEnter={onHover}
         onMouseLeave={() => {
           onLeave();
+          // ⚡ Cancel RAF and clear mouse position
+          if (mouseMoveRafRef.current) {
+            cancelAnimationFrame(mouseMoveRafRef.current);
+            mouseMoveRafRef.current = null;
+          }
           // Clear mousePos only if it's for this side
           onMousePosChange(null);
         }}
         onMouseMove={(e) => {
-          // Update shared mouse position for tooltip (viewport coordinates)
-          onMousePosChange({
-            x: e.clientX,
-            y: e.clientY,
-            side,
+          // ⚡ RAF throttling: Update at max 60fps
+          if (mouseMoveRafRef.current) {
+            cancelAnimationFrame(mouseMoveRafRef.current);
+          }
+          mouseMoveRafRef.current = requestAnimationFrame(() => {
+            // Update shared mouse position for tooltip (viewport coordinates)
+            onMousePosChange({
+              x: e.clientX,
+              y: e.clientY,
+              side,
+            });
           });
         }}
         style={getPositionStyles()}
