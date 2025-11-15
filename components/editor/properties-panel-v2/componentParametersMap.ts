@@ -98,13 +98,10 @@ export const COMPONENT_PARAMETERS: Record<string, ParameterDefinition[]> = {
 
     // V7.7 - TRANSFORM (2D Transformations - unified control)
     { name: 'transform', type: 'transform', label: 'Transform',
-      description: 'Rotation, Scale & Transition Duration (Simple: uniform, Advanced: individual X/Y)' },
+      description: 'Rotation, Scale, Transition Duration & Timing Function (Simple: uniform, Advanced: individual X/Y)' },
 
     // V7.6 - ANIMATION
-    // NOTE: transitionDuration is now part of Transform control above
-    { name: 'transitionTimingFunction', type: 'select', label: 'Timing Function',
-      options: ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'],
-      description: 'Animation easing function', defaultValue: 'ease' },
+    // NOTE: transitionDuration and transitionTimingFunction are now part of Transform control above
 
     // V7.8 - RESPONSIVE VISIBILITY
     { name: 'responsive', type: 'responsive', label: 'Device Visibility',

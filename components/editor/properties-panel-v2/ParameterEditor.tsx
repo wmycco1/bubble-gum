@@ -369,6 +369,7 @@ function renderControl(
       const scaleX = allParams['scaleX'];
       const scaleY = allParams['scaleY'];
       const transitionDuration = allParams['transitionDuration'];
+      const transitionTimingFunction = allParams['transitionTimingFunction'];
 
       return (
         <TransformControl
@@ -379,6 +380,7 @@ function renderControl(
           scaleX={scaleX}
           scaleY={scaleY}
           transitionDuration={transitionDuration}
+          transitionTimingFunction={transitionTimingFunction}
           onChange={onChange}
         />
       );

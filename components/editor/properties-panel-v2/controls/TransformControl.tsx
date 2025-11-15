@@ -44,8 +44,10 @@ interface TransformControlProps {
   scaleY?: number;
   // Transition Duration (milliseconds)
   transitionDuration?: number;
+  // Transition Timing Function
+  transitionTimingFunction?: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
   // Callbacks
-  onChange: (name: string, value: number | undefined) => void;
+  onChange: (name: string, value: number | string | undefined) => void;
   description?: string;
 }
 
@@ -55,22 +57,17 @@ export function TransformControl({
   scaleX,
   scaleY,
   transitionDuration,
+  transitionTimingFunction,
   onChange,
   description,
 }: TransformControlProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [transitionUnit, setTransitionUnit] = useState<'ms' | 's'>('ms');
 
   // Use provided values or defaults
   const rotateValue = rotate ?? 0;
   const scaleXValue = scaleX ?? 1;
   const scaleYValue = scaleY ?? 1;
-  const transitionValueMs = transitionDuration ?? 300;
-
-  // Convert transition value based on selected unit
-  const transitionValue = transitionUnit === 'ms'
-    ? transitionValueMs
-    : transitionValueMs / 1000;
+  const transitionValue = transitionDuration ?? 300;
 
   // For simple mode, show uniform scale (average of X and Y)
   const uniformScaleValue = scaleX !== undefined || scaleY !== undefined
@@ -381,22 +378,17 @@ export function TransformControl({
 
   const handleTransitionIncrement = useCallback(() => {
     const currentValue = transitionValueRef.current || 0;
-    const step = transitionUnit === 'ms' ? 50 : 0.1;
-    const max = transitionUnit === 'ms' ? 5000 : 5;
-    const newValueInUnit = Math.min(max, currentValue + step);
-    const newValueMs = transitionUnit === 'ms' ? newValueInUnit : newValueInUnit * 1000;
-    onChange('transitionDuration', newValueMs);
-    transitionValueRef.current = newValueMs;
-  }, [onChange, transitionUnit]);
+    const newValue = Math.min(5000, currentValue + 50);
+    onChange('transitionDuration', newValue);
+    transitionValueRef.current = newValue;
+  }, [onChange]);
 
   const handleTransitionDecrement = useCallback(() => {
     const currentValue = transitionValueRef.current || 0;
-    const step = transitionUnit === 'ms' ? 50 : 0.1;
-    const newValueInUnit = Math.max(0, currentValue - step);
-    const newValueMs = transitionUnit === 'ms' ? newValueInUnit : newValueInUnit * 1000;
-    onChange('transitionDuration', newValueMs);
-    transitionValueRef.current = newValueMs;
-  }, [onChange, transitionUnit]);
+    const newValue = Math.max(0, currentValue - 50);
+    onChange('transitionDuration', newValue);
+    transitionValueRef.current = newValue;
+  }, [onChange]);
 
   const startTransitionIncrement = () => {
     setIsTransitionIncPressed(true);
@@ -484,19 +476,7 @@ export function TransformControl({
 
   const handleTransitionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const numValue = value === '' ? undefined : parseFloat(value);
-    if (numValue !== undefined) {
-      // Convert to ms before saving
-      const valueMs = transitionUnit === 'ms' ? numValue : numValue * 1000;
-      onChange('transitionDuration', valueMs);
-    } else {
-      onChange('transitionDuration', undefined);
-    }
-  };
-
-  const handleTransitionUnitChange = (newUnit: 'ms' | 's') => {
-    setTransitionUnit(newUnit);
-    // Value stays the same in ms (no conversion needed as we're just changing display)
+    onChange('transitionDuration', value === '' ? undefined : parseFloat(value));
   };
 
   return (
@@ -641,69 +621,83 @@ export function TransformControl({
             </div>
           </div>
 
-          {/* Transition Duration (full width row) */}
+          {/* Animation Section (Transition + Timing Function) */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Transition</label>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onMouseDown={startTransitionDecrement}
-                onMouseUp={stopTransitionChange}
-                onMouseLeave={stopTransitionChange}
-                onTouchStart={startTransitionDecrement}
-                onTouchEnd={stopTransitionChange}
-                disabled={transitionValue <= 0}
-                className={`
-                  px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                  ${isTransitionDecPressed && transitionValue > 0
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                  }
-                  disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                `}
-                title="Decrement (hold to repeat)"
-              >
-                −
-              </button>
-              <input
-                type="number"
-                min="0"
-                max={transitionUnit === 'ms' ? "5000" : "5"}
-                step={transitionUnit === 'ms' ? "50" : "0.1"}
-                value={transitionValue.toFixed(transitionUnit === 'ms' ? 0 : 1)}
-                onChange={handleTransitionChange}
-                placeholder={transitionUnit === 'ms' ? '300' : '0.3'}
-                className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                style={{ MozAppearance: 'textfield' }}
-              />
-              <button
-                type="button"
-                onMouseDown={startTransitionIncrement}
-                onMouseUp={stopTransitionChange}
-                onMouseLeave={stopTransitionChange}
-                onTouchStart={startTransitionIncrement}
-                onTouchEnd={stopTransitionChange}
-                disabled={transitionUnit === 'ms' ? transitionValue >= 5000 : transitionValue >= 5}
-                className={`
-                  px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                  ${isTransitionIncPressed && (transitionUnit === 'ms' ? transitionValue < 5000 : transitionValue < 5)
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                  }
-                  disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                `}
-                title="Increment (hold to repeat)"
-              >
-                +
-              </button>
-              <select
-                value={transitionUnit}
-                onChange={(e) => handleTransitionUnitChange(e.target.value as 'ms' | 's')}
-                className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-white text-gray-700 hover:border-gray-400 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="ms">ms</option>
-                <option value="s">s</option>
-              </select>
+            <label className="block text-xs font-medium text-gray-700 mb-2">Animation</label>
+            <div className="grid grid-cols-2 gap-3">
+              {/* Transition Duration */}
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Duration (ms)</label>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onMouseDown={startTransitionDecrement}
+                    onMouseUp={stopTransitionChange}
+                    onMouseLeave={stopTransitionChange}
+                    onTouchStart={startTransitionDecrement}
+                    onTouchEnd={stopTransitionChange}
+                    disabled={transitionValue <= 0}
+                    className={`
+                      px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+                      ${isTransitionDecPressed && transitionValue > 0
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                    `}
+                    title="Decrement (hold to repeat)"
+                  >
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    min="0"
+                    max="5000"
+                    step="50"
+                    value={transitionValue}
+                    onChange={handleTransitionChange}
+                    placeholder="300"
+                    className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    style={{ MozAppearance: 'textfield' }}
+                  />
+                  <button
+                    type="button"
+                    onMouseDown={startTransitionIncrement}
+                    onMouseUp={stopTransitionChange}
+                    onMouseLeave={stopTransitionChange}
+                    onTouchStart={startTransitionIncrement}
+                    onTouchEnd={stopTransitionChange}
+                    disabled={transitionValue >= 5000}
+                    className={`
+                      px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+                      ${isTransitionIncPressed && transitionValue < 5000
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                      }
+                      disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                    `}
+                    title="Increment (hold to repeat)"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Timing Function */}
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Timing</label>
+                <select
+                  value={transitionTimingFunction || 'ease'}
+                  onChange={(e) => onChange('transitionTimingFunction', e.target.value)}
+                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-sm bg-white text-gray-700 hover:border-gray-400 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="linear">Linear</option>
+                  <option value="ease">Ease</option>
+                  <option value="ease-in">Ease In</option>
+                  <option value="ease-out">Ease Out</option>
+                  <option value="ease-in-out">Ease In-Out</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -891,69 +885,83 @@ export function TransformControl({
               </div>
             </div>
 
-            {/* Transition Duration */}
+            {/* Animation Section (Transition + Timing Function) */}
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Transition</label>
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onMouseDown={startTransitionDecrement}
-                  onMouseUp={stopTransitionChange}
-                  onMouseLeave={stopTransitionChange}
-                  onTouchStart={startTransitionDecrement}
-                  onTouchEnd={stopTransitionChange}
-                  disabled={transitionValue <= 0}
-                  className={`
-                    px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                    ${isTransitionDecPressed && transitionValue > 0
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Decrement (hold to repeat)"
-                >
-                  −
-                </button>
-                <input
-                  type="number"
-                  min="0"
-                  max={transitionUnit === 'ms' ? "5000" : "5"}
-                  step={transitionUnit === 'ms' ? "50" : "0.1"}
-                  value={transitionValue.toFixed(transitionUnit === 'ms' ? 0 : 1)}
-                  onChange={handleTransitionChange}
-                  placeholder={transitionUnit === 'ms' ? '300' : '0.3'}
-                  className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  style={{ MozAppearance: 'textfield' }}
-                />
-                <button
-                  type="button"
-                  onMouseDown={startTransitionIncrement}
-                  onMouseUp={stopTransitionChange}
-                  onMouseLeave={stopTransitionChange}
-                  onTouchStart={startTransitionIncrement}
-                  onTouchEnd={stopTransitionChange}
-                  disabled={transitionUnit === 'ms' ? transitionValue >= 5000 : transitionValue >= 5}
-                  className={`
-                    px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                    ${isTransitionIncPressed && (transitionUnit === 'ms' ? transitionValue < 5000 : transitionValue < 5)
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-                    }
-                    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-                  `}
-                  title="Increment (hold to repeat)"
-                >
-                  +
-                </button>
-                <select
-                  value={transitionUnit}
-                  onChange={(e) => handleTransitionUnitChange(e.target.value as 'ms' | 's')}
-                  className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-white text-gray-700 hover:border-gray-400 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="ms">ms</option>
-                  <option value="s">s</option>
-                </select>
+              <label className="block text-xs font-medium text-gray-700 mb-2">Animation</label>
+              <div className="grid grid-cols-2 gap-3">
+                {/* Transition Duration */}
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Duration (ms)</label>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onMouseDown={startTransitionDecrement}
+                      onMouseUp={stopTransitionChange}
+                      onMouseLeave={stopTransitionChange}
+                      onTouchStart={startTransitionDecrement}
+                      onTouchEnd={stopTransitionChange}
+                      disabled={transitionValue <= 0}
+                      className={`
+                        px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+                        ${isTransitionDecPressed && transitionValue > 0
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                        }
+                        disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                      `}
+                      title="Decrement (hold to repeat)"
+                    >
+                      −
+                    </button>
+                    <input
+                      type="number"
+                      min="0"
+                      max="5000"
+                      step="50"
+                      value={transitionValue}
+                      onChange={handleTransitionChange}
+                      placeholder="300"
+                      className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      style={{ MozAppearance: 'textfield' }}
+                    />
+                    <button
+                      type="button"
+                      onMouseDown={startTransitionIncrement}
+                      onMouseUp={stopTransitionChange}
+                      onMouseLeave={stopTransitionChange}
+                      onTouchStart={startTransitionIncrement}
+                      onTouchEnd={stopTransitionChange}
+                      disabled={transitionValue >= 5000}
+                      className={`
+                        px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+                        ${isTransitionIncPressed && transitionValue < 5000
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                        }
+                        disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+                      `}
+                      title="Increment (hold to repeat)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                {/* Timing Function */}
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Timing</label>
+                  <select
+                    value={transitionTimingFunction || 'ease'}
+                    onChange={(e) => onChange('transitionTimingFunction', e.target.value)}
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-sm bg-white text-gray-700 hover:border-gray-400 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="linear">Linear</option>
+                    <option value="ease">Ease</option>
+                    <option value="ease-in">Ease In</option>
+                    <option value="ease-out">Ease Out</option>
+                    <option value="ease-in-out">Ease In-Out</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
