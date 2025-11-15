@@ -276,8 +276,47 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
           camelCaseStyles[camelKey] = value;
         }
 
+        // ✨ FIX v2.0.1: Remove shorthand properties if longhand properties exist
+        // React warns: "don't mix shorthand and non-shorthand properties"
+        // If paddingTop/Right/Bottom/Left exist, remove padding
+        const hasLonghandPadding = ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'].some(
+          prop => prop in camelCaseStyles
+        );
+        if (hasLonghandPadding && 'padding' in camelCaseStyles) {
+          delete camelCaseStyles.padding;
+          console.log('🔧 RenderComponent: Removed shorthand padding (longhand properties exist)');
+        }
+
+        // If marginTop/Right/Bottom/Left exist, remove margin
+        const hasLonghandMargin = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft'].some(
+          prop => prop in camelCaseStyles
+        );
+        if (hasLonghandMargin && 'margin' in camelCaseStyles) {
+          delete camelCaseStyles.margin;
+          console.log('🔧 RenderComponent: Removed shorthand margin (longhand properties exist)');
+        }
+
+        // If borderTopLeftRadius etc. exist, remove borderRadius
+        const hasLonghandBorderRadius = [
+          'borderTopLeftRadius',
+          'borderTopRightRadius',
+          'borderBottomRightRadius',
+          'borderBottomLeftRadius'
+        ].some(prop => prop in camelCaseStyles);
+        if (hasLonghandBorderRadius && 'borderRadius' in camelCaseStyles) {
+          delete camelCaseStyles.borderRadius;
+          console.log('🔧 RenderComponent: Removed shorthand borderRadius (longhand properties exist)');
+        }
+
         mergedStyle = { ...mergedStyle, ...camelCaseStyles };
         console.log('🎨 RenderComponent: Applied customCSS:', { componentId: component.id, camelCaseStyles, mergedStyle });
+
+        // ✨ DEBUG v2.1: Log margin/padding values to verify units are preserved
+        const spacingKeys = Object.keys(camelCaseStyles).filter(k => k.includes('margin') || k.includes('padding'));
+        if (spacingKeys.length > 0) {
+          console.log('🔍 RenderComponent: Spacing values from customCSS:', spacingKeys.reduce((acc, key) => ({ ...acc, [key]: camelCaseStyles[key] }), {}));
+          console.log('🔍 RenderComponent: Final mergedStyle spacing:', spacingKeys.reduce((acc, key) => ({ ...acc, [key]: mergedStyle[key] }), {}));
+        }
       } catch (error) {
         console.error('❌ RenderComponent: Failed to parse customCSS:', error);
       }
@@ -477,7 +516,13 @@ export function RenderComponent({ component, isSelected, deviceMode = 'desktop' 
 
         {/* Border Radius Handles - shown ONLY when visualEditingMode === 'borderRadius' */}
         {isSelected && visualEditingMode === 'borderRadius' && (
-          <BorderRadiusHandles componentId={component.id} />
+          <BorderRadiusHandles
+            componentId={component.id}
+            borderRadiusTopLeftUnit={component.props.borderRadiusTopLeftUnit}
+            borderRadiusTopRightUnit={component.props.borderRadiusTopRightUnit}
+            borderRadiusBottomLeftUnit={component.props.borderRadiusBottomLeftUnit}
+            borderRadiusBottomRightUnit={component.props.borderRadiusBottomRightUnit}
+          />
         )}
 
         {/* Transform Handles - shown ONLY when visualEditingMode === 'transform' */}

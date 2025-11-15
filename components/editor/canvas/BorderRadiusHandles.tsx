@@ -17,12 +17,25 @@ type Corner = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 
 interface BorderRadiusHandlesProps {
   componentId: string;
+  // ✨ Unit parameters for each corner
+  borderRadiusTopLeftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  borderRadiusTopRightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  borderRadiusBottomLeftUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+  borderRadiusBottomRightUnit?: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
 }
 
-export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
+export function BorderRadiusHandles({
+  componentId,
+  borderRadiusTopLeftUnit = 'px',
+  borderRadiusTopRightUnit = 'px',
+  borderRadiusBottomLeftUnit = 'px',
+  borderRadiusBottomRightUnit = 'px',
+}: BorderRadiusHandlesProps) {
   const { components, updateComponentProps } = useCanvasStore();
   const [hoveredCorner, setHoveredCorner] = useState<Corner | null>(null);
   const [badgeRect, setBadgeRect] = useState<DOMRect | null>(null);
+  // ✨ Mouse position for cursor-following tooltips
+  const [mousePos, setMousePos] = useState<{ x: number; y: number; corner: Corner } | null>(null);
   const rafRef = React.useRef<number | null>(null);
 
   // Get component
@@ -169,41 +182,53 @@ export function BorderRadiusHandles({ componentId }: BorderRadiusHandlesProps) {
       <BorderRadiusHandle
         corner="topLeft"
         value={topLeftValue}
+        unit={borderRadiusTopLeftUnit}
         isHovered={hoveredCorner === 'topLeft'}
         onHover={() => setHoveredCorner('topLeft')}
         onLeave={() => setHoveredCorner(null)}
         onDrag={(newValue, isFinished) => handleCornerDrag('topLeft', newValue, isFinished)}
         badgeRect={badgeRect}
+        sharedMousePos={mousePos?.corner === 'topLeft' ? mousePos : null}
+        onMousePosChange={setMousePos}
       />
 
       <BorderRadiusHandle
         corner="topRight"
         value={topRightValue}
+        unit={borderRadiusTopRightUnit}
         isHovered={hoveredCorner === 'topRight'}
         onHover={() => setHoveredCorner('topRight')}
         onLeave={() => setHoveredCorner(null)}
         onDrag={(newValue, isFinished) => handleCornerDrag('topRight', newValue, isFinished)}
         badgeRect={badgeRect}
+        sharedMousePos={mousePos?.corner === 'topRight' ? mousePos : null}
+        onMousePosChange={setMousePos}
       />
 
       <BorderRadiusHandle
         corner="bottomLeft"
         value={bottomLeftValue}
+        unit={borderRadiusBottomLeftUnit}
         isHovered={hoveredCorner === 'bottomLeft'}
         onHover={() => setHoveredCorner('bottomLeft')}
         onLeave={() => setHoveredCorner(null)}
         onDrag={(newValue, isFinished) => handleCornerDrag('bottomLeft', newValue, isFinished)}
         badgeRect={badgeRect}
+        sharedMousePos={mousePos?.corner === 'bottomLeft' ? mousePos : null}
+        onMousePosChange={setMousePos}
       />
 
       <BorderRadiusHandle
         corner="bottomRight"
         value={bottomRightValue}
+        unit={borderRadiusBottomRightUnit}
         isHovered={hoveredCorner === 'bottomRight'}
         onHover={() => setHoveredCorner('bottomRight')}
         onLeave={() => setHoveredCorner(null)}
         onDrag={(newValue, isFinished) => handleCornerDrag('bottomRight', newValue, isFinished)}
         badgeRect={badgeRect}
+        sharedMousePos={mousePos?.corner === 'bottomRight' ? mousePos : null}
+        onMousePosChange={setMousePos}
       />
     </>
   );
@@ -556,21 +581,28 @@ function UniformBorderRadiusHandle({
 interface BorderRadiusHandleProps {
   corner: Corner;
   value: number;
+  unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'; // ✨ Unit for display
   isHovered: boolean;
   onHover: () => void;
   onLeave: () => void;
   onDrag: (newValue: number, isFinished?: boolean) => void;
   badgeRect: DOMRect;
+  // ✨ Shared mouse position from parent
+  sharedMousePos: { x: number; y: number; corner: Corner } | null;
+  onMousePosChange: (pos: { x: number; y: number; corner: Corner } | null) => void;
 }
 
 function BorderRadiusHandle({
   corner,
   value,
+  unit,
   isHovered,
   onHover,
   onLeave,
   onDrag,
   badgeRect,
+  sharedMousePos,
+  onMousePosChange,
 }: BorderRadiusHandleProps) {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
@@ -581,8 +613,14 @@ function BorderRadiusHandle({
     setIsDragging(true);
     dragStartRef.current = { x: e.clientX, y: e.clientY, initialValue: value };
 
+    // ✨ Update mouse position for tooltip
+    onMousePosChange({ x: e.clientX, y: e.clientY, corner });
+
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragStartRef.current) return;
+
+      // ✨ Update mouse position for cursor-following tooltip
+      onMousePosChange({ x: e.clientX, y: e.clientY, corner });
 
       // Cancel previous animation frame
       if (rafRef.current) {
@@ -657,6 +695,9 @@ function BorderRadiusHandle({
 
       setIsDragging(false);
       dragStartRef.current = null;
+
+      // ✨ Clear mouse position
+      onMousePosChange(null);
 
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
@@ -741,10 +782,9 @@ function BorderRadiusHandle({
     }
   };
 
-  // Tooltip position - Brutalist dark style
+  // ✨ Tooltip position - Cursor-following (like SpacingHandlesV2)
   const getTooltipStyles = (): React.CSSProperties => {
     const baseStyles: React.CSSProperties = {
-      position: 'absolute',
       backgroundColor: '#1f2937', // Dark gray (gray-800) - 14.6:1 contrast with white
       color: 'white',
       padding: '6px 10px',
@@ -758,16 +798,56 @@ function BorderRadiusHandle({
       border: '1px solid rgba(255,255,255,0.1)', // Subtle highlight
     };
 
-    switch (corner) {
-      case 'topLeft':
-        return { ...baseStyles, top: '-26px', left: '0' };
-      case 'topRight':
-        return { ...baseStyles, top: '-26px', right: '0' };
-      case 'bottomLeft':
-        return { ...baseStyles, bottom: '-26px', left: '0' };
-      case 'bottomRight':
-        return { ...baseStyles, bottom: '-26px', right: '0' };
+    const mousePos = sharedMousePos?.corner === corner ? sharedMousePos : null;
+
+    // ✨ If we have mouse position, show near cursor with smart positioning (10px offset)
+    if (mousePos) {
+      const tooltipWidth = 120; // Approximate width
+      const tooltipHeight = 30; // Approximate height
+      const offset = 10; // Gap between cursor and tooltip (like SpacingHandlesV2)
+
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      const cursorX = mousePos.x;
+      const cursorY = mousePos.y;
+
+      // Default: center horizontally, 10px below cursor
+      let left = cursorX;
+      let top = cursorY + offset;
+      let transform = 'translateX(-50%)'; // Center horizontally
+
+      // Check if tooltip fits below cursor
+      if (top + tooltipHeight > viewportHeight) {
+        // Not enough space below, show above cursor
+        top = cursorY - tooltipHeight - offset;
+      }
+
+      // Check horizontal boundaries
+      const leftEdge = cursorX - tooltipWidth / 2;
+      const rightEdge = cursorX + tooltipWidth / 2;
+
+      if (leftEdge < 0) {
+        // Too close to left edge, align to left
+        left = offset;
+        transform = 'translateX(0)';
+      } else if (rightEdge > viewportWidth) {
+        // Too close to right edge, align to right
+        left = viewportWidth - tooltipWidth - offset;
+        transform = 'translateX(0)';
+      }
+
+      return {
+        ...baseStyles,
+        position: 'fixed', // Use fixed to position relative to viewport
+        left: `${left}px`,
+        top: `${top}px`,
+        transform,
+      };
     }
+
+    // Fallback: if no mousePos, don't show tooltip (hidden by render condition)
+    return { ...baseStyles, position: 'fixed', left: '-9999px', top: '-9999px' };
   };
 
   // Visual indicator - arc showing border radius effect
@@ -839,15 +919,25 @@ function BorderRadiusHandle({
       {/* Handle (no arrow - arrows are separate inside element) */}
       <div
         onMouseDown={handleMouseDown}
-        onMouseEnter={onHover}
-        onMouseLeave={onLeave}
+        onMouseEnter={(e) => {
+          onHover();
+          // ✨ Update mouse position when hovering over handle
+          onMousePosChange({ x: e.clientX, y: e.clientY, corner });
+        }}
+        onMouseLeave={() => {
+          onLeave();
+          // ✨ Clear mouse position when leaving handle (if not dragging)
+          if (!isDragging) {
+            onMousePosChange(null);
+          }
+        }}
         style={getPositionStyles()}
       />
 
-      {/* Tooltip */}
-      {(isHovered || isDragging) && (
+      {/* ✨ Tooltip - показывается только когда есть mousePos (hover или dragging) */}
+      {(sharedMousePos?.corner === corner) && (
         <div style={getTooltipStyles()}>
-          {getTooltipArrow()} radius: {value}px
+          {getTooltipArrow()} radius: {value}{unit}
         </div>
       )}
     </>
