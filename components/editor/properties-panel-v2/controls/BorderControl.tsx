@@ -344,7 +344,7 @@ function BorderWidthInput({ value, unit, onChange, onUnitChange, step, onValueCh
             onUnitChange(newUnit);
           }
         }}
-        className="px-2 py-1.5 text-xs border-2 border-gray-300 rounded-sm bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+        className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
@@ -591,7 +591,7 @@ function BorderSideControl({
 
           onUnitChange(newUnit);
         }}
-        className="w-14 px-1 py-0.5 text-xs border-2 border-gray-300 rounded-sm bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+        className="w-14 px-1 py-1 text-xs border-2 border-gray-300 rounded-sm bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
