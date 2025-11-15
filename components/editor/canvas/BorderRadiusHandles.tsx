@@ -11,6 +11,7 @@
  */
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useCanvasStore } from '@/lib/editor/canvas-store';
 
 type Corner = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
@@ -837,6 +838,17 @@ function BorderRadiusHandle({
         transform = 'translateX(0)';
       }
 
+      console.log(`[BorderRadius ${corner}] Tooltip position:`, {
+        cursorX,
+        cursorY,
+        left,
+        top,
+        transform,
+        offset,
+        viewportWidth,
+        viewportHeight,
+      });
+
       return {
         ...baseStyles,
         position: 'fixed', // Use fixed to position relative to viewport
@@ -941,11 +953,12 @@ function BorderRadiusHandle({
         style={getPositionStyles()}
       />
 
-      {/* ✨ Tooltip - показывается только когда есть mousePos (hover или dragging) */}
-      {(sharedMousePos?.corner === corner) && (
+      {/* ✨ Tooltip - рендерится через Portal в document.body (как SpacingHandlesV2) */}
+      {(sharedMousePos?.corner === corner) && typeof document !== 'undefined' && createPortal(
         <div style={getTooltipStyles()}>
           {getTooltipArrow()} radius: {value}{unit}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
