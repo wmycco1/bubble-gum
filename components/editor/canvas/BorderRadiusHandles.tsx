@@ -924,6 +924,13 @@ function BorderRadiusHandle({
           // ✨ Update mouse position when hovering over handle
           onMousePosChange({ x: e.clientX, y: e.clientY, corner });
         }}
+        onMouseMove={(e) => {
+          // ✨ CRITICAL: Update mouse position continuously while hovering
+          // This ensures tooltip follows cursor (not just on click)
+          if (!isDragging) {
+            onMousePosChange({ x: e.clientX, y: e.clientY, corner });
+          }
+        }}
         onMouseLeave={() => {
           onLeave();
           // ✨ Clear mouse position when leaving handle (if not dragging)
