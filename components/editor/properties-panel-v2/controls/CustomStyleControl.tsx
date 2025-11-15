@@ -94,12 +94,12 @@ export function CustomStyleControl({ componentId }: CustomStyleControlProps) {
     const customCSS = (component.props.customCSS as string) || '';
     const customTailwind = (component.props.customTailwind as string) || '';
 
-    // ✨ FIX: Only update local state if user is NOT actively editing
-    if (!isUserEditing.current.id) setCustomId(id);
-    if (!isUserEditing.current.className) setCustomClassName(className);
-    if (!isUserEditing.current.css) setCssInput(customCSS);
-    if (!isUserEditing.current.tailwind) setTailwindInput(customTailwind);
-  }, [component]);
+    // ✨ FIX: Only update local state if user is NOT actively editing AND value changed
+    if (!isUserEditing.current.id && id !== customId) setCustomId(id);
+    if (!isUserEditing.current.className && className !== customClassName) setCustomClassName(className);
+    if (!isUserEditing.current.css && customCSS !== cssInput) setCssInput(customCSS);
+    if (!isUserEditing.current.tailwind && customTailwind !== tailwindInput) setTailwindInput(customTailwind);
+  }, [component, customId, customClassName, cssInput, tailwindInput]);
 
   // ✨ NEW: Reverse sync - Parameters → CSS
   // When preset parameters change (e.g., Font Size slider), update Custom CSS
