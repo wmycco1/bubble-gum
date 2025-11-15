@@ -96,6 +96,8 @@ function formatDisplayValue(value: number): string {
  */
 
 import React, { useState } from 'react';
+import { ColorPicker } from '@/components/editor/controls/ColorPicker';
+import { Pipette } from 'lucide-react';
 
 interface BorderControlProps {
   label: string;
@@ -145,7 +147,7 @@ const BORDER_STYLES = [
 ];
 
 /**
- * BorderWidthInput - Width input with external hold-to-repeat buttons (Simple mode)
+ * BorderWidthInput - Width input with horizontal -/+ buttons and color picker (Simple mode)
  */
 interface BorderWidthInputProps {
   value?: number;
@@ -154,9 +156,11 @@ interface BorderWidthInputProps {
   onUnitChange?: (unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
   step: number;
   onValueChange: (value: number | undefined) => void;
+  color?: string;
+  onColorChange?: (color: string) => void;
 }
 
-function BorderWidthInput({ value, unit, onChange, onUnitChange, step, onValueChange }: BorderWidthInputProps) {
+function BorderWidthInput({ value, unit, onChange, onUnitChange, step, onValueChange, color = '#000000', onColorChange }: BorderWidthInputProps) {
   const [isIncrementPressed, setIsIncrementPressed] = React.useState(false);
   const [isDecrementPressed, setIsDecrementPressed] = React.useState(false);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -243,65 +247,158 @@ function BorderWidthInput({ value, unit, onChange, onUnitChange, step, onValueCh
     };
   }, []);
 
+  const [isColorPickerOpen, setIsColorPickerOpen] = React.useState(false);
+  const isEyeDropperSupported = typeof window !== 'undefined' && 'EyeDropper' in window;
+
+  const handleEyeDropper = async () => {
+    if (!('EyeDropper' in window)) {
+      return;
+    }
+
+    try {
+      // @ts-ignore
+      const eyeDropper = new window.EyeDropper();
+      const result = await eyeDropper.open();
+
+      if (result?.sRGBHex && onColorChange) {
+        onColorChange(result.sRGBHex);
+      }
+    } catch (error) {
+      console.log('EyeDropper cancelled:', error);
+    }
+  };
+
   return (
     <div className="flex items-center gap-1">
-      <div className="relative flex-1">
-        <input
-          type="number"
-          min="0"
-          step={step}
-          value={value ?? ''}
-          onChange={onChange}
-          placeholder="0"
-          title={value !== undefined && value !== null ? `Exact value: ${value}${unit}` : '0'}
-          className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          style={{ MozAppearance: 'textfield' }}
+      {/* - button */}
+      <button
+        type="button"
+        onMouseDown={startDecrement}
+        onMouseUp={stopChange}
+        onMouseLeave={stopChange}
+        onTouchStart={startDecrement}
+        onTouchEnd={stopChange}
+        disabled={(value || 0) <= 0}
+        className={`
+          px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+          ${isDecrementPressed && (value || 0) > 0
+            ? 'border-blue-500 bg-blue-50 text-blue-700'
+            : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+          }
+          disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
+        `}
+        title="Decrement (hold to repeat)"
+      >
+        −
+      </button>
+
+      {/* Input field */}
+      <input
+        type="number"
+        min="0"
+        step={step}
+        value={value ?? ''}
+        onChange={onChange}
+        placeholder="0"
+        title={value !== undefined && value !== null ? `Exact value: ${value}${unit}` : '0'}
+        className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        style={{ MozAppearance: 'textfield' }}
+      />
+
+      {/* + button */}
+      <button
+        type="button"
+        onMouseDown={startIncrement}
+        onMouseUp={stopChange}
+        onMouseLeave={stopChange}
+        onTouchStart={startIncrement}
+        onTouchEnd={stopChange}
+        className={`
+          px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
+          ${isIncrementPressed
+            ? 'border-blue-500 bg-blue-50 text-blue-700'
+            : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+          }
+        `}
+        title="Increment (hold to repeat)"
+      >
+        +
+      </button>
+
+      {/* Unit selector */}
+      <select
+        value={unit}
+        onChange={(e) => {
+          const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+
+          // Convert value if it exists
+          if (value !== undefined && value !== null) {
+            const convertedValue = convertUnit(value, unit, newUnit);
+            const syntheticEvent = {
+              target: { value: String(convertedValue) },
+            } as React.ChangeEvent<HTMLInputElement>;
+            onChange(syntheticEvent);
+          }
+
+          if (onUnitChange) {
+            onUnitChange(newUnit);
+          }
+        }}
+        className="px-2 py-1.5 text-xs border border-gray-300 rounded-sm bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+      >
+        <option value="px">px</option>
+        <option value="rem">rem</option>
+        <option value="em">em</option>
+        <option value="%">%</option>
+        <option value="vh">vh</option>
+        <option value="vw">vw</option>
+      </select>
+
+      {/* Color Swatch */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
+          className="w-9 h-9 border-2 border-gray-300 rounded-sm cursor-pointer hover:border-blue-400 hover:scale-105 transition-all"
+          style={{ backgroundColor: color }}
+          title={`Border Color: ${color}`}
         />
+
+        {/* Dropdown ColorPicker */}
+        {isColorPickerOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setIsColorPickerOpen(false)}
+            />
+            <div className="absolute left-0 top-11 z-50 bg-white rounded-lg shadow-xl border-2 border-gray-200 p-4 min-w-[280px]">
+              <ColorPicker
+                value={color}
+                onChange={(newColor) => {
+                  if (onColorChange) {
+                    onColorChange(newColor || '#000000');
+                  }
+                }}
+                showOpacity={true}
+                showPresets={true}
+                label=""
+              />
+            </div>
+          </>
+        )}
       </div>
-      <div className="flex flex-col gap-0.5">
+
+      {/* Eyedropper Button */}
+      {isEyeDropperSupported && (
         <button
           type="button"
-          onMouseDown={startIncrement}
-          onMouseUp={stopChange}
-          onMouseLeave={stopChange}
-          onTouchStart={startIncrement}
-          onTouchEnd={stopChange}
-          className={`
-            p-1 border-2 rounded-md transition-all shadow-sm
-            ${isIncrementPressed
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-            }
-          `}
-          title="Increment (hold to repeat)"
+          onClick={handleEyeDropper}
+          className="p-2 border-2 border-gray-300 rounded-sm hover:border-blue-400 hover:bg-blue-50 transition-all"
+          title="Pick color from page"
         >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
-          </svg>
+          <Pipette className="w-4 h-4 text-gray-600" />
         </button>
-        <button
-          type="button"
-          onMouseDown={startDecrement}
-          onMouseUp={stopChange}
-          onMouseLeave={stopChange}
-          onTouchStart={startDecrement}
-          onTouchEnd={stopChange}
-          disabled={(value || 0) <= 0}
-          className={`
-            p-1 border-2 rounded-md transition-all shadow-sm
-            ${isDecrementPressed && (value || 0) > 0
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
-            }
-            disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300
-          `}
-          title="Decrement (hold to repeat)"
-        >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      </div>
+      )}
     </div>
   );
 }
@@ -317,7 +414,7 @@ interface BorderSideControlProps {
   color: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onUnitChange: (unit: 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw') => void;
-  onColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onColorChange: (color: string) => void;
   step: number;
 }
 
@@ -417,6 +514,8 @@ function BorderSideControl({
     };
   }, []);
 
+  const [isColorPickerOpen, setIsColorPickerOpen] = React.useState(false);
+
   // Vertical layout: [- +] → input → unit → color
   return (
     <div className="flex flex-col items-center gap-1">
@@ -431,7 +530,7 @@ function BorderSideControl({
           onTouchEnd={stopChange}
           disabled={valueRef.current <= 0}
           className={`
-            px-1.5 py-0.5 text-sm font-bold border rounded transition-all
+            px-1.5 py-0.5 text-sm font-bold border rounded-sm transition-all
             ${isDecrementPressed && valueRef.current > 0
               ? 'border-blue-500 bg-blue-50 text-blue-700'
               : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
@@ -450,7 +549,7 @@ function BorderSideControl({
           onTouchStart={startIncrement}
           onTouchEnd={stopChange}
           className={`
-            px-1.5 py-0.5 text-sm font-bold border rounded transition-all
+            px-1.5 py-0.5 text-sm font-bold border rounded-sm transition-all
             ${isIncrementPressed
               ? 'border-blue-500 bg-blue-50 text-blue-700'
               : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
@@ -471,7 +570,7 @@ function BorderSideControl({
         onChange={onChange}
         placeholder="0"
         title={displayValue !== '' && displayValue !== null && displayValue !== undefined ? `Exact value: ${displayValue}${unit}` : '0'}
-        className="w-14 px-1 py-1 text-xs text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-14 px-1 py-1 text-xs text-center border border-gray-300 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{ MozAppearance: 'textfield' }}
       />
 
@@ -492,7 +591,7 @@ function BorderSideControl({
 
           onUnitChange(newUnit);
         }}
-        className="w-14 px-1 py-0.5 text-xs border border-gray-300 rounded bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
+        className="w-14 px-1 py-0.5 text-xs border border-gray-300 rounded-sm bg-white focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         <option value="px">px</option>
         <option value="rem">rem</option>
@@ -502,14 +601,37 @@ function BorderSideControl({
         <option value="vw">vw</option>
       </select>
 
-      {/* Color picker */}
-      <input
-        type="color"
-        value={color}
-        onChange={onColorChange}
-        className="w-14 h-7 border-2 border-gray-300 rounded cursor-pointer shadow-sm hover:border-blue-400 transition-colors"
-        title={`${side} color`}
-      />
+      {/* Color Swatch (Square) */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
+          className="w-14 h-7 border-2 border-gray-300 rounded-sm cursor-pointer hover:border-blue-400 transition-colors"
+          style={{ backgroundColor: color }}
+          title={`${side} border color`}
+        />
+
+        {/* Dropdown ColorPicker */}
+        {isColorPickerOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setIsColorPickerOpen(false)}
+            />
+            <div className="absolute left-0 top-8 z-50 bg-white rounded-lg shadow-xl border-2 border-gray-200 p-4 min-w-[280px]">
+              <ColorPicker
+                value={color}
+                onChange={(newColor) => {
+                  onColorChange(newColor || '#000000');
+                }}
+                showOpacity={true}
+                showPresets={true}
+                label=""
+              />
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -672,63 +794,44 @@ export function BorderControl({
             </div>
           </div>
 
-          {/* Width & Color */}
-          <div className="grid grid-cols-2 gap-2">
-            {/* Width */}
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">Width</label>
-              <div className="flex items-center gap-1">
-                <BorderWidthInput
-                  value={value}
-                  unit={unit}
-                  onChange={handleShorthandChange}
-                  onValueChange={(newValue) => onChange('border', newValue)}
-                  step={unit === 'px' ? 1 : 0.1}
-                />
-                <select
-                  value={unit}
-                  onChange={(e) => {
-                    const newUnit = e.target.value as 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
+          {/* Width & Color (Integrated) */}
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Width & Color</label>
+            <BorderWidthInput
+              value={value}
+              unit={unit}
+              onChange={handleShorthandChange}
+              onUnitChange={(newUnit) => {
+                // Update unit for all 4 sides (so canvas displays the new unit)
+                if (onUnitChange) {
+                  onUnitChange('Top', newUnit);
+                  onUnitChange('Right', newUnit);
+                  onUnitChange('Bottom', newUnit);
+                  onUnitChange('Left', newUnit);
+                }
 
-                    // Convert value to new unit if value exists
-                    if (value !== undefined && value !== null) {
-                      const convertedValue = convertUnit(value, unit, newUnit);
-                      onChange('border', convertedValue);
-                    }
+                // Update local state
+                setUnit(newUnit);
+              }}
+              onValueChange={(newValue) => onChange('border', newValue)}
+              step={unit === 'px' ? 1 : 0.1}
+              color={borderColor}
+              onColorChange={(newColor) => {
+                const hasIndividualColors = topColor !== undefined || rightColor !== undefined || bottomColor !== undefined || leftColor !== undefined;
 
-                    // Update unit for all 4 sides (so canvas displays the new unit)
-                    if (onUnitChange) {
-                      onUnitChange('Top', newUnit);
-                      onUnitChange('Right', newUnit);
-                      onUnitChange('Bottom', newUnit);
-                      onUnitChange('Left', newUnit);
-                    }
-
-                    // Update local state
-                    setUnit(newUnit);
-                  }}
-                  className="px-2 py-1.5 text-xs border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
-                >
-                  <option value="px">px</option>
-                  <option value="rem">rem</option>
-                  <option value="em">em</option>
-                  <option value="%">%</option>
-                  <option value="vh">vh</option>
-                  <option value="vw">vw</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Color */}
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">Color</label>
-              <input
-                type="color"
-                value={borderColor}
-                onChange={handleColorChange}
-                className="w-full h-9 border border-gray-300 rounded cursor-pointer"
-              />
-            </div>
+                if (onSideColorChange && hasIndividualColors && onColorChange) {
+                  setTimeout(() => {
+                    onSideColorChange('Top', undefined);
+                    onSideColorChange('Right', undefined);
+                    onSideColorChange('Bottom', undefined);
+                    onSideColorChange('Left', undefined);
+                    onColorChange(newColor);
+                  }, 0);
+                } else if (onColorChange) {
+                  onColorChange(newColor);
+                }
+              }}
+            />
           </div>
         </div>
       )}
@@ -874,7 +977,11 @@ export function BorderControl({
                 color={topColor ?? borderColor}
                 onChange={(e) => handleSideChange('Top', e)}
                 onUnitChange={(newUnit) => handleUnitChange('Top', newUnit)}
-                onColorChange={(e) => handleSideColorChange('Top', e)}
+                onColorChange={(color) => {
+                  if (onSideColorChange) {
+                    onSideColorChange('Top', color);
+                  }
+                }}
                 step={topUnit === 'px' ? 1 : 0.1}
               />
             </div>
@@ -889,7 +996,11 @@ export function BorderControl({
                 color={rightColor ?? borderColor}
                 onChange={(e) => handleSideChange('Right', e)}
                 onUnitChange={(newUnit) => handleUnitChange('Right', newUnit)}
-                onColorChange={(e) => handleSideColorChange('Right', e)}
+                onColorChange={(color) => {
+                  if (onSideColorChange) {
+                    onSideColorChange('Right', color);
+                  }
+                }}
                 step={rightUnit === 'px' ? 1 : 0.1}
               />
             </div>
@@ -904,7 +1015,11 @@ export function BorderControl({
                 color={bottomColor ?? borderColor}
                 onChange={(e) => handleSideChange('Bottom', e)}
                 onUnitChange={(newUnit) => handleUnitChange('Bottom', newUnit)}
-                onColorChange={(e) => handleSideColorChange('Bottom', e)}
+                onColorChange={(color) => {
+                  if (onSideColorChange) {
+                    onSideColorChange('Bottom', color);
+                  }
+                }}
                 step={bottomUnit === 'px' ? 1 : 0.1}
               />
             </div>
@@ -919,7 +1034,11 @@ export function BorderControl({
                 color={leftColor ?? borderColor}
                 onChange={(e) => handleSideChange('Left', e)}
                 onUnitChange={(newUnit) => handleUnitChange('Left', newUnit)}
-                onColorChange={(e) => handleSideColorChange('Left', e)}
+                onColorChange={(color) => {
+                  if (onSideColorChange) {
+                    onSideColorChange('Left', color);
+                  }
+                }}
                 step={leftUnit === 'px' ? 1 : 0.1}
               />
             </div>
