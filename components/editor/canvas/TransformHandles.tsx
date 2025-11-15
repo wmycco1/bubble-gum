@@ -188,7 +188,7 @@ interface UniformScaleHandleProps {
   currentScaleY: number;
 }
 
-function UniformScaleHandle({
+const UniformScaleHandle = React.memo(function UniformScaleHandle({
   componentId,
   centerX,
   centerY,
@@ -201,6 +201,7 @@ function UniformScaleHandle({
   const [isHovered, setIsHovered] = useState(false);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const dragStartRef = React.useRef<{ x: number; y: number; initialScaleX: number; initialScaleY: number } | null>(null);
+  const mouseMoveRafRef = React.useRef<number | null>(null); // ⚡ RAF for hover mouse tracking
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -335,12 +336,23 @@ function UniformScaleHandle({
           setMousePos({ x: e.clientX, y: e.clientY });
         }}
         onMouseMove={(e) => {
+          // ⚡ RAF throttling: Update at max 60fps
           if (!isDragging) {
-            setMousePos({ x: e.clientX, y: e.clientY });
+            if (mouseMoveRafRef.current) {
+              cancelAnimationFrame(mouseMoveRafRef.current);
+            }
+            mouseMoveRafRef.current = requestAnimationFrame(() => {
+              setMousePos({ x: e.clientX, y: e.clientY });
+            });
           }
         }}
         onMouseLeave={() => {
           setIsHovered(false);
+          // ⚡ Cancel RAF and clear mouse position
+          if (mouseMoveRafRef.current) {
+            cancelAnimationFrame(mouseMoveRafRef.current);
+            mouseMoveRafRef.current = null;
+          }
           if (!isDragging) {
             setMousePos(null);
           }
@@ -433,7 +445,15 @@ function UniformScaleHandle({
       )}
     </>
   );
-}
+}, (prevProps, nextProps) => {
+  // ⚡ Custom comparison - only re-render if these values change
+  return (
+    prevProps.centerX === nextProps.centerX &&
+    prevProps.centerY === nextProps.centerY &&
+    prevProps.currentScaleX === nextProps.currentScaleX &&
+    prevProps.currentScaleY === nextProps.currentScaleY
+  );
+});
 
 // ═══════════════════════════════════════════════════════════════
 // ROTATION HANDLE (Circular, top-center)
@@ -446,12 +466,13 @@ interface RotationHandleProps {
   currentRotation: number;
 }
 
-function RotationHandle({ componentId, centerX, centerY, elementRect, currentRotation }: RotationHandleProps) {
+const RotationHandle = React.memo(function RotationHandle({ componentId, centerX, centerY, elementRect, currentRotation }: RotationHandleProps) {
   const { updateComponentProps } = useCanvasStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const dragStartRef = React.useRef<{ x: number; y: number; initialRotation: number } | null>(null);
+  const mouseMoveRafRef = React.useRef<number | null>(null); // ⚡ RAF for hover mouse tracking
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();

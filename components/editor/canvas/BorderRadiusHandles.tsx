@@ -593,7 +593,8 @@ interface BorderRadiusHandleProps {
   onMousePosChange: (pos: { x: number; y: number; corner: Corner } | null) => void;
 }
 
-function BorderRadiusHandle({
+// ⚡ React.memo for performance optimization
+const BorderRadiusHandle = React.memo(function BorderRadiusHandle({
   corner,
   value,
   unit,
@@ -608,6 +609,7 @@ function BorderRadiusHandle({
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = React.useRef<{ x: number; y: number; initialValue: number } | null>(null);
   const rafRef = React.useRef<number | null>(null);
+  const mouseMoveRafRef = React.useRef<number | null>(null); // ⚡ RAF for hover mouse tracking
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -620,8 +622,13 @@ function BorderRadiusHandle({
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragStartRef.current) return;
 
-      // ✨ Update mouse position for cursor-following tooltip
-      onMousePosChange({ x: e.clientX, y: e.clientY, corner });
+      // ⚡ Update mouse position for cursor-following tooltip (throttled via RAF below)
+      if (mouseMoveRafRef.current) {
+        cancelAnimationFrame(mouseMoveRafRef.current);
+      }
+      mouseMoveRafRef.current = requestAnimationFrame(() => {
+        onMousePosChange({ x: e.clientX, y: e.clientY, corner });
+      });
 
       // Cancel previous animation frame
       if (rafRef.current) {
@@ -697,12 +704,17 @@ function BorderRadiusHandle({
       setIsDragging(false);
       dragStartRef.current = null;
 
-      // ✨ Clear mouse position
+      // ⚡ Cleanup: Clear mouse position and cancel RAF
       onMousePosChange(null);
 
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
+      }
+
+      if (mouseMoveRafRef.current) {
+        cancelAnimationFrame(mouseMoveRafRef.current);
+        mouseMoveRafRef.current = null;
       }
 
       document.removeEventListener('mousemove', handleMouseMove);
@@ -937,15 +949,23 @@ function BorderRadiusHandle({
           onMousePosChange({ x: e.clientX, y: e.clientY, corner });
         }}
         onMouseMove={(e) => {
-          // ✨ CRITICAL: Update mouse position continuously while hovering
-          // This ensures tooltip follows cursor (not just on click)
+          // ⚡ RAF throttling: Update mouse position at max 60fps
           if (!isDragging) {
-            onMousePosChange({ x: e.clientX, y: e.clientY, corner });
+            if (mouseMoveRafRef.current) {
+              cancelAnimationFrame(mouseMoveRafRef.current);
+            }
+            mouseMoveRafRef.current = requestAnimationFrame(() => {
+              onMousePosChange({ x: e.clientX, y: e.clientY, corner });
+            });
           }
         }}
         onMouseLeave={() => {
           onLeave();
-          // ✨ Clear mouse position when leaving handle (if not dragging)
+          // ⚡ Cancel RAF and clear mouse position when leaving handle
+          if (mouseMoveRafRef.current) {
+            cancelAnimationFrame(mouseMoveRafRef.current);
+            mouseMoveRafRef.current = null;
+          }
           if (!isDragging) {
             onMousePosChange(null);
           }
@@ -962,4 +982,15 @@ function BorderRadiusHandle({
       )}
     </>
   );
-}
+}, (prevProps, nextProps) => {
+  // ⚡ Custom comparison - only re-render if these values change
+  return (
+    prevProps.corner === nextProps.corner &&
+    prevProps.value === nextProps.value &&
+    prevProps.unit === nextProps.unit &&
+    prevProps.isHovered === nextProps.isHovered &&
+    prevProps.badgeRect === nextProps.badgeRect &&
+    prevProps.sharedMousePos === nextProps.sharedMousePos
+    // Note: onHover, onLeave, onDrag, onMousePosChange are callbacks - stable references assumed
+  );
+});
