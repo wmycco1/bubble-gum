@@ -34,6 +34,10 @@ export function DualColorControl({
   const [bgPickerOpen, setBgPickerOpen] = useState(false);
   const isEyeDropperSupported = typeof window !== 'undefined' && 'EyeDropper' in window;
 
+  // Debug log
+  console.log('[DualColorControl] EyeDropper supported:', isEyeDropperSupported);
+  console.log('[DualColorControl] Window EyeDropper:', typeof window !== 'undefined' ? window.EyeDropper : 'undefined');
+
   // Handle eyedropper for text color
   const handleTextEyeDropper = async () => {
     if (!('EyeDropper' in window)) {
