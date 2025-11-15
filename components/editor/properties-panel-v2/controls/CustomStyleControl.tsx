@@ -189,7 +189,7 @@ export function CustomStyleControl({ componentId }: CustomStyleControlProps) {
     lastSyncedCSS.current = generatedCSS;
 
     console.log('🔄 CustomStyleControl: Synced parameters to CSS (reverse):', currentParams);
-  }, [component, syncParameters, cssInput]);
+  }, [component, syncParameters, componentId, updateComponentProps]);
 
   // ✨ FIX: Cleanup debounce timers on unmount (prevent memory leaks)
   useEffect(() => {
