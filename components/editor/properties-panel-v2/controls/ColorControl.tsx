@@ -18,12 +18,7 @@ import { Pipette } from 'lucide-react';
 
 export function ColorControl({ name, label, value = '#000000', onChange }: any) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isEyeDropperSupported, setIsEyeDropperSupported] = useState(false);
-
-  // Check if EyeDropper API is supported
-  React.useEffect(() => {
-    setIsEyeDropperSupported('EyeDropper' in window);
-  }, []);
+  const isEyeDropperSupported = typeof window !== 'undefined' && 'EyeDropper' in window;
 
   // Handle eyedropper color pick
   const handleEyeDropper = async () => {
