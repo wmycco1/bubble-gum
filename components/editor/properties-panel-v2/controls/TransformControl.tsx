@@ -1,16 +1,21 @@
 'use client';
 
 /**
- * TransformControl - Rotation, Scale & Transition controls (V4.1)
+ * TransformControl - Rotation, Scale & Transition controls (V4.2)
  *
  * Features:
- * - Rotation with horizontal - and + buttons
- * - Scale (uniform or individual X/Y) with horizontal - and + buttons
- * - Transition Duration with horizontal - and + buttons
+ * - Rotation with horizontal - and + buttons (° in label)
+ * - Scale (uniform or individual X/Y) with horizontal - and + buttons (× in label)
+ * - Transition Duration with horizontal - and + buttons + unit selector (ms/s)
  * - Simple/Advanced mode toggle
  * - Visual preview indicators
  * - Hold-to-repeat with acceleration (100ms → 20ms)
- * - Consistent design pattern matching BorderControl
+ * - Consistent design pattern matching other controls
+ *
+ * V4.2 Changes:
+ * - ADDED: Unit selector for Transition Duration (ms / s)
+ * - UPDATED: Transition values auto-convert between ms and s
+ * - LAYOUT: [−] [input] [+] [unit select] for Transition
  *
  * V4.1 Changes:
  * - ADDED: Transition Duration now visible in Simple mode (was Advanced-only)
@@ -24,7 +29,8 @@
  * - STANDARDIZED: Container gap to gap-1
  *
  * Button Layout:
- * [- Button] [Input Field] [+ Button] [Unit Display]
+ * Rotation/Scale: [− Button] [Input] [+ Button]
+ * Transition: [− Button] [Input] [+ Button] [Unit Select]
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
@@ -53,12 +59,18 @@ export function TransformControl({
   description,
 }: TransformControlProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [transitionUnit, setTransitionUnit] = useState<'ms' | 's'>('ms');
 
   // Use provided values or defaults
   const rotateValue = rotate ?? 0;
   const scaleXValue = scaleX ?? 1;
   const scaleYValue = scaleY ?? 1;
-  const transitionValue = transitionDuration ?? 300;
+  const transitionValueMs = transitionDuration ?? 300;
+
+  // Convert transition value based on selected unit
+  const transitionValue = transitionUnit === 'ms'
+    ? transitionValueMs
+    : transitionValueMs / 1000;
 
   // For simple mode, show uniform scale (average of X and Y)
   const uniformScaleValue = scaleX !== undefined || scaleY !== undefined
@@ -369,17 +381,22 @@ export function TransformControl({
 
   const handleTransitionIncrement = useCallback(() => {
     const currentValue = transitionValueRef.current || 0;
-    const newValue = Math.min(5000, currentValue + 50);
-    onChange('transitionDuration', newValue);
-    transitionValueRef.current = newValue;
-  }, [onChange]);
+    const step = transitionUnit === 'ms' ? 50 : 0.1;
+    const max = transitionUnit === 'ms' ? 5000 : 5;
+    const newValueInUnit = Math.min(max, currentValue + step);
+    const newValueMs = transitionUnit === 'ms' ? newValueInUnit : newValueInUnit * 1000;
+    onChange('transitionDuration', newValueMs);
+    transitionValueRef.current = newValueMs;
+  }, [onChange, transitionUnit]);
 
   const handleTransitionDecrement = useCallback(() => {
     const currentValue = transitionValueRef.current || 0;
-    const newValue = Math.max(0, currentValue - 50);
-    onChange('transitionDuration', newValue);
-    transitionValueRef.current = newValue;
-  }, [onChange]);
+    const step = transitionUnit === 'ms' ? 50 : 0.1;
+    const newValueInUnit = Math.max(0, currentValue - step);
+    const newValueMs = transitionUnit === 'ms' ? newValueInUnit : newValueInUnit * 1000;
+    onChange('transitionDuration', newValueMs);
+    transitionValueRef.current = newValueMs;
+  }, [onChange, transitionUnit]);
 
   const startTransitionIncrement = () => {
     setIsTransitionIncPressed(true);
@@ -467,7 +484,19 @@ export function TransformControl({
 
   const handleTransitionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    onChange('transitionDuration', value === '' ? undefined : parseFloat(value));
+    const numValue = value === '' ? undefined : parseFloat(value);
+    if (numValue !== undefined) {
+      // Convert to ms before saving
+      const valueMs = transitionUnit === 'ms' ? numValue : numValue * 1000;
+      onChange('transitionDuration', valueMs);
+    } else {
+      onChange('transitionDuration', undefined);
+    }
+  };
+
+  const handleTransitionUnitChange = (newUnit: 'ms' | 's') => {
+    setTransitionUnit(newUnit);
+    // Value stays the same in ms (no conversion needed as we're just changing display)
   };
 
   return (
@@ -614,7 +643,7 @@ export function TransformControl({
 
           {/* Transition Duration (full width row) */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Transition (ms)</label>
+            <label className="block text-xs text-gray-600 mb-1">Transition</label>
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -639,11 +668,11 @@ export function TransformControl({
               <input
                 type="number"
                 min="0"
-                max="5000"
-                step="50"
-                value={transitionValue}
+                max={transitionUnit === 'ms' ? "5000" : "5"}
+                step={transitionUnit === 'ms' ? "50" : "0.1"}
+                value={transitionValue.toFixed(transitionUnit === 'ms' ? 0 : 1)}
                 onChange={handleTransitionChange}
-                placeholder="300"
+                placeholder={transitionUnit === 'ms' ? '300' : '0.3'}
                 className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 style={{ MozAppearance: 'textfield' }}
               />
@@ -654,10 +683,10 @@ export function TransformControl({
                 onMouseLeave={stopTransitionChange}
                 onTouchStart={startTransitionIncrement}
                 onTouchEnd={stopTransitionChange}
-                disabled={transitionValue >= 5000}
+                disabled={transitionUnit === 'ms' ? transitionValue >= 5000 : transitionValue >= 5}
                 className={`
                   px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                  ${isTransitionIncPressed && transitionValue < 5000
+                  ${isTransitionIncPressed && (transitionUnit === 'ms' ? transitionValue < 5000 : transitionValue < 5)
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
                     : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
                   }
@@ -667,6 +696,14 @@ export function TransformControl({
               >
                 +
               </button>
+              <select
+                value={transitionUnit}
+                onChange={(e) => handleTransitionUnitChange(e.target.value as 'ms' | 's')}
+                className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-white text-gray-700 hover:border-gray-400 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="ms">ms</option>
+                <option value="s">s</option>
+              </select>
             </div>
           </div>
         </div>
@@ -856,7 +893,7 @@ export function TransformControl({
 
             {/* Transition Duration */}
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Transition (ms)</label>
+              <label className="block text-xs text-gray-600 mb-1">Transition</label>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -881,11 +918,11 @@ export function TransformControl({
                 <input
                   type="number"
                   min="0"
-                  max="5000"
-                  step="50"
-                  value={transitionValue}
+                  max={transitionUnit === 'ms' ? "5000" : "5"}
+                  step={transitionUnit === 'ms' ? "50" : "0.1"}
+                  value={transitionValue.toFixed(transitionUnit === 'ms' ? 0 : 1)}
                   onChange={handleTransitionChange}
-                  placeholder="300"
+                  placeholder={transitionUnit === 'ms' ? '300' : '0.3'}
                   className="w-16 px-2 py-1.5 text-sm text-center border border-gray-300 rounded-sm focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   style={{ MozAppearance: 'textfield' }}
                 />
@@ -896,10 +933,10 @@ export function TransformControl({
                   onMouseLeave={stopTransitionChange}
                   onTouchStart={startTransitionIncrement}
                   onTouchEnd={stopTransitionChange}
-                  disabled={transitionValue >= 5000}
+                  disabled={transitionUnit === 'ms' ? transitionValue >= 5000 : transitionValue >= 5}
                   className={`
                     px-2 py-1.5 text-sm font-bold border-2 rounded-sm transition-all
-                    ${isTransitionIncPressed && transitionValue < 5000
+                    ${isTransitionIncPressed && (transitionUnit === 'ms' ? transitionValue < 5000 : transitionValue < 5)
                       ? 'border-blue-500 bg-blue-50 text-blue-700'
                       : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-400'
                     }
@@ -909,6 +946,14 @@ export function TransformControl({
                 >
                   +
                 </button>
+                <select
+                  value={transitionUnit}
+                  onChange={(e) => handleTransitionUnitChange(e.target.value as 'ms' | 's')}
+                  className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-white text-gray-700 hover:border-gray-400 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="ms">ms</option>
+                  <option value="s">s</option>
+                </select>
               </div>
             </div>
           </div>
