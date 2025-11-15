@@ -497,7 +497,7 @@ export function TransformControl({
           <div className="grid grid-cols-2 gap-3">
             {/* Rotation */}
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Rotation</label>
+              <label className="block text-xs text-gray-600 mb-1">Rotation °</label>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -550,13 +550,12 @@ export function TransformControl({
                 >
                   +
                 </button>
-                <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">°</span>
               </div>
             </div>
 
             {/* Uniform Scale */}
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Scale</label>
+              <label className="block text-xs text-gray-600 mb-1">Scale ×</label>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -609,14 +608,13 @@ export function TransformControl({
                 >
                   +
                 </button>
-                <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">×</span>
               </div>
             </div>
           </div>
 
           {/* Transition Duration (full width row) */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Transition</label>
+            <label className="block text-xs text-gray-600 mb-1">Transition (ms)</label>
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -669,7 +667,6 @@ export function TransformControl({
               >
                 +
               </button>
-              <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">ms</span>
             </div>
           </div>
         </div>
@@ -682,7 +679,7 @@ export function TransformControl({
           <div className="grid grid-cols-2 gap-3">
             {/* Rotation */}
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Rotation</label>
+              <label className="block text-xs text-gray-600 mb-1">Rotation °</label>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -735,13 +732,12 @@ export function TransformControl({
                 >
                   +
                 </button>
-                <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">°</span>
               </div>
             </div>
 
             {/* Scale X */}
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Scale X</label>
+              <label className="block text-xs text-gray-600 mb-1">Scale X ×</label>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -794,7 +790,6 @@ export function TransformControl({
                 >
                   +
                 </button>
-                <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">×</span>
               </div>
             </div>
           </div>
@@ -803,7 +798,7 @@ export function TransformControl({
           <div className="grid grid-cols-2 gap-3">
             {/* Scale Y */}
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Scale Y</label>
+              <label className="block text-xs text-gray-600 mb-1">Scale Y ×</label>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -856,13 +851,12 @@ export function TransformControl({
                 >
                   +
                 </button>
-                <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">×</span>
               </div>
             </div>
 
             {/* Transition Duration */}
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Transition</label>
+              <label className="block text-xs text-gray-600 mb-1">Transition (ms)</label>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -915,7 +909,6 @@ export function TransformControl({
                 >
                   +
                 </button>
-                <span className="px-2 py-1.5 text-sm border-2 border-gray-300 rounded-sm bg-gray-50 text-gray-600">ms</span>
               </div>
             </div>
           </div>
